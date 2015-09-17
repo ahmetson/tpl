@@ -1,0 +1,79 @@
+# Project: tpl
+# Makefile created by Dev-C++ 5.8.3
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
+LINKOBJ  = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32 -g3
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include/c++"
+BIN      = tpl.exe
+CXXFLAGS = $(CXXINCS) -m32 -g3
+CFLAGS   = $(INCS) -m32 -g3
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+fns.o: fns.c
+	$(CC) -c fns.c -o fns.o $(CFLAGS)
+
+tokens.o: tokens.c
+	$(CC) -c tokens.c -o tokens.o $(CFLAGS)
+
+other.o: other.c
+	$(CC) -c other.c -o other.o $(CFLAGS)
+
+cmd.o: cmd.c
+	$(CC) -c cmd.c -o cmd.o $(CFLAGS)
+
+dev_debug.o: dev_debug.c
+	$(CC) -c dev_debug.c -o dev_debug.o $(CFLAGS)
+
+error.o: error.c
+	$(CC) -c error.c -o error.o $(CFLAGS)
+
+tpl.o: tpl.c
+	$(CC) -c tpl.c -o tpl.o $(CFLAGS)
+
+init_and_files.o: init_and_files.c
+	$(CC) -c init_and_files.c -o init_and_files.o $(CFLAGS)
+
+parser.o: parser.c
+	$(CC) -c parser.c -o parser.o $(CFLAGS)
+
+token/def_types.o: token/def_types.c
+	$(CC) -c token/def_types.c -o token/def_types.o $(CFLAGS)
+
+token/glob.o: token/glob.c
+	$(CC) -c token/glob.c -o token/glob.o $(CFLAGS)
+
+token/token_types.o: token/token_types.c
+	$(CC) -c token/token_types.c -o token/token_types.o $(CFLAGS)
+
+token/keywords.o: token/keywords.c
+	$(CC) -c token/keywords.c -o token/keywords.o $(CFLAGS)
+
+token/token_word.o: token/token_word.c
+	$(CC) -c token/token_word.c -o token/token_word.o $(CFLAGS)
+
+algor.o: algor.c
+	$(CC) -c algor.c -o algor.o $(CFLAGS)
+
+pragma/pragma.o: pragma/pragma.c
+	$(CC) -c pragma/pragma.c -o pragma/pragma.o $(CFLAGS)
+
+translator_to_c.o: translator_to_c.c
+	$(CC) -c translator_to_c.c -o translator_to_c.o $(CFLAGS)

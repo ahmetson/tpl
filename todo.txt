@@ -1,0 +1,7 @@
+// Next
+// Tokenin bolup biljek gornushlerinin ichinde
+// 1. token gornushi boyuncha
+// 2. token gornushinde gutardymy ya daldigi boyuncha barlayan funksiyalar yasalyar
+
+// Mysal uchin make_algol faylda, hachanda taze token tanalmadyk yagdayynda onki tokeni komanda gechirmeli yerde,
+// tokenin bolup biljek gornushlerinde ulni barmy ya gutarandygyny gormeli
