@@ -29,6 +29,7 @@ extern int CODE2_UNKNOWN_TOKENS_CHAR;
 extern int CODE2_PRAGMA_NOT_END;
 extern int CODE2_PRAGMA_NOT_IDENT;
 extern int CODE2_REMAIN_TOKEN;
+extern int CODE2_TOKEN_TOO_BIG;
 
 extern int CODE3_PREV_TOK_INCORRECT;
 
@@ -49,6 +50,6 @@ extern char *err_texts[][10];
  * @line - Yalnyshlygyn chykan setiri
  * @ch   - Yalnyshlyk chykanda, parserin saklanan harpy
 **/
-void print_err(int part, int num);
+void print_err(int num);
 
 #endif

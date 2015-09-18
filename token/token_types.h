@@ -32,8 +32,8 @@ extern char *type_classes[];
 #include "token_structs.h"
 
 // tokenleri tanayan funksiyalar
-int is_token_def_type(token *tok, token_word *token_val);
-int is_token_def_glob(token *tok, token_word *token_val);
-int is_token_ident(token *tok, token_word *token_val);
+int is_token_def_type(token *tok, char *token_val);
+int is_token_def_glob(token *tok, char *token_val);
+int is_token_ident(token *tok, char *token_val);
 
 #endif

@@ -30,16 +30,9 @@ typedef struct{
 	int type_class;
 }token;
 
-
-// Harplardan yasalyan geljekki tokenin teksti
-typedef struct{
-	int  len;
-	char val[MAX_VAR_LEN];
-}token_word;
-
 // Her tokenin tipi uchin funksiyalar
 typedef struct{
-	int (*is_token) (token *tok, token_word *token_val);
+	int (*is_token) (token *tok, char*token_val);
 }is_token_item;
 
 

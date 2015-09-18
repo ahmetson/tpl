@@ -1,5 +1,5 @@
-#ifndef INIT_AND_FILES_H
-#define INIT_AND_FILES_H
+#ifndef INIT_AND_WORK_WITH_FILES_H
+#define INIT_AND_WORK_WITH_FILES_H
 
 int init();
 

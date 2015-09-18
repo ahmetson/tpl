@@ -4,8 +4,8 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
-LINKOBJ  = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
+OBJ      = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_work_with_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
+LINKOBJ  = main.o fns.o tokens.o other.o cmd.o dev_debug.o error.o tpl.o init_and_work_with_files.o parser.o token/def_types.o token/glob.o token/token_types.o token/keywords.o token/token_word.o algor.o pragma/pragma.o translator_to_c.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32 -g3
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include/c++"
@@ -48,8 +48,8 @@ error.o: error.c
 tpl.o: tpl.c
 	$(CC) -c tpl.c -o tpl.o $(CFLAGS)
 
-init_and_files.o: init_and_files.c
-	$(CC) -c init_and_files.c -o init_and_files.o $(CFLAGS)
+init_and_work_with_files.o: init_and_work_with_files.c
+	$(CC) -c init_and_work_with_files.c -o init_and_work_with_files.o $(CFLAGS)
 
 parser.o: parser.c
 	$(CC) -c parser.c -o parser.o $(CFLAGS)

@@ -31,7 +31,7 @@ char *type_classes[] = {
 
 
 // tokenleri tanayan funksiyalar
-int is_token_def_type(token *tok, token_word *tok_val)
+int is_token_def_type(token *tok, char *tok_val)
 {
 	//printf("Called is_token_tip\nReturned 1");
 	/*Go through array of possible types*/
@@ -41,7 +41,7 @@ int is_token_def_type(token *tok, token_word *tok_val)
 	for(i=0; i<DEF_TYPES_NUM; i++)
 	{ 
 
-		answer = strstr_by_offset(def_type_list[i].tk_name, tok_val->val, 0);
+		answer = strstr_by_offset(def_type_list[i].tk_name, tok_val, 0);
 		if (answer>=0)
 		{
 			tok_type.type_num = i;							// Number of token type
@@ -68,12 +68,12 @@ int is_token_def_type(token *tok, token_word *tok_val)
 	return found;
 }
 
-int is_token_def_glob(token *tok, token_word *tok_val)
+int is_token_def_glob(token *tok, char *tok_val)
 {
 	int answer;
 	token_type tok_type;
 
-	answer = strstr_by_offset(glob_def_string, tok_val->val, 0);
+	answer = strstr_by_offset(glob_def_string, tok_val, 0);
 	if (answer>=0)
 	{
 		tok_type.type_num = 0;							// Number of token type
@@ -93,13 +93,13 @@ int is_token_def_glob(token *tok, token_word *tok_val)
 	return 0;
 }
 
-int is_token_ident(token *tok, token_word *tok_val)
+int is_token_ident(token *tok, char *tok_val)
 {
 	token_type tok_type;
 	//printf("Identifikator barlagy: %s\n", tok_val->val);
 	
 	// Identifikatorlar birinji harpy harp bolmaly
-	if (!isalpha(tok_val->val[0]))
+	if (!isalpha(tok_val[0]))
 		return 0;
 	//printf("Identifikator harpdan bashlayar\n");
 	
@@ -107,20 +107,20 @@ int is_token_ident(token *tok, token_word *tok_val)
 	// Identifikator achar sozi bolup bilenok
 	for(i=0; i<MAX_KEYWORDS_NUM; i++)
 	{
-		if (strlen(keywords[i])!=strlen(tok_val->val))
+		if (strlen(keywords[i])!=strlen(tok_val))
 			continue;
 		//len = (strlen(keywords[i])>strlen(tok_val->val)) ? strlen(keywords[i]) : strlen(tok_val->val);
 		
 		//printf("For %s, Result of comparing: %0d\n", tok_val->val, strncmp(tok_val->val, keywords[i], strlen(keywords[i])));
-		if (strncmp(tok_val->val, keywords[i], strlen(keywords[i]) )==0 )
+		if (strncmp(tok_val, keywords[i], strlen(keywords[i]) )==0 )
 			return 0;
 	}
 	//printf("Identifikator achar sozi dal\n");
 	
 	// Identifikator harplardan, sanlardan we '_' belgiden durmaly
-	for(i=0; i<strlen(tok_val->val); i++)
+	for(i=0; i<strlen(tok_val); i++)
 	{
-		if (isalnum(tok_val->val[i])==0 && tok_val->val[i]!='_')
+		if (isalnum(tok_val[i])==0 && tok_val[i]!='_')
 			return 0;
 	}
 	//printf("Identifikator harpdan, sandan we '_' belgiden duryar\n");
@@ -130,7 +130,7 @@ int is_token_ident(token *tok, token_word *tok_val)
 	
 	tok_type.need_value = 1;
 	tok_type.type_class = IDENT_TYPE_CLASS;
-	strncpy(tok_type.value, tok_val->val, strlen(tok_val->val)+1);
+	strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
 	tok_type.is_compl = 1;
 	tok->is_compl = 1;
 	
