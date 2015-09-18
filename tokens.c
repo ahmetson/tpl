@@ -58,7 +58,7 @@ void empty_token(token *tok)
  * Returns 0, if everything is OK!
  * Otherwise returns error code.
 **/
-int recognize_token(token *tok, token_word *val)
+int recognize_token(token *tok, char *val)
 {
 	int i;
 	for (i=0; i<TOKEN_TYPES_NUM; i++)
@@ -69,11 +69,11 @@ int recognize_token(token *tok, token_word *val)
 	// Token not recognized
 	if (tok->potentional_types_num==0)
 	{
-		//printf("Token not recognized\t(Inputted text:%s len:%d)\n", val->val, val->len);
+		//printf("Token not recognized\t(Inputted text:%s)\n", val);
 		return 1;												// Token tanalmady
 	}
 	//debug_token(tok);
-	//printf("Token Recognized\t(Inputted text:%s len:%d)\n", val->val, val->len);
+	//printf("Token Recognized\t(Inputted text:%s)\n", val);
 	return 0;
 }
 
@@ -155,32 +155,34 @@ int is_token_empty(token *tok)
 /*
  * Tokeni komanda gechiryar. Ichini boshadyar
 **/
-int move_to_cmd(token *tok, token_word *tok_word)
+int move_to_cmd(token *tok, char *tok_string)
 {
+	int prev_part = CUR_PART;
+	CUR_PART = 3;
 	// Komandadaky onki token gutarylan bolmaly 
 	if (cmd.tokens_num!=0 && cmd.tokens[cmd.tokens_num-1].is_compl==0)
 	{
-		print_err(part_code, CODE3_PREV_TOK_INCORRECT);
+		//printf("hawa dogry");
+		print_err(CODE3_PREV_TOK_INCORRECT);
 	}
 
 	finishize_token(tok);
-				//printf("---------Finisizasiyadan son\n");
-				//debug_token(&tok);
-				
-				//printf("Komanda goshuljak token tipi: %d, bolup biljek gornusherinin sany: %d\n",tok.type_class, tok.potentional_types_num);
-				//printf("Tokenin gornushi: %d\n",tok.potentional_types[0].type_num);
-				//debug_cmd(&cmd);
-				//cmd.tokens[cmd.tokens_num++] = tok;
+
 	if (!add_to_cmd(&cmd, tok))
 	{
-		print_err(4, CODE4_TOO_MANY_TOKENS);
+		//debug_token(&tok);
+		debug_cmd(&cmd);
+		debug_token(tok);
+		//printf("Hawa dogry, gaty kan token");
+		print_err(CODE4_TOO_MANY_TOKENS);
 	}
 				//printf("Token goshulan son:\n");
 				//debug_cmd(&cmd);
 
 	empty_token(tok);
-	init_token_word(tok_word);
+	tok_string[0] = '\0';
 	
+	CUR_PART = prev_part;
 	return 1;
 }
 

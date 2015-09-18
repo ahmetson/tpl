@@ -21,7 +21,7 @@ extern void empty_token(token *tok);
 extern is_token_item tok_types[];
 
 // FNS
-int recognize_token(token *tok, token_word *val);
+int recognize_token(token *tok, char *val);
 
 
 int add_potentional_token_type(token *tok, token_type tok_type);
@@ -30,7 +30,7 @@ int finishize_token(token *tok);
 
 int is_token_empty(token *tok);
 
-int move_to_cmd(token *tok, token_word *tok_word);
+int move_to_cmd(token *tok, char *tok_word);
 
 
 #endif

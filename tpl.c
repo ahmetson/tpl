@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "tpl.h"
-#include "init_and_files.h"
+#include "init_and_work_with_files.h"
 #include "tokens.h"
 #include "cmd.h"
 #include "algor.h"
@@ -19,33 +19,40 @@
 #include "dev_debug.h"
 #include "error.h"
 
-
+// GLOBAL yglan edilen ulniler, butin programma boyuncha ulanylyar
+	// komandanyn sony diymegi anladyar
 char cmd_end = '.';
 
+	// Programmanyn bash fayly
+char main_file_name[];
+
+	// Hazirki parsing edilyan faylyn maglumatlary
 char cur_parse_file_name[];	
 char cur_parse_char;
 unsigned int  cur_parse_line_num;
 
+	// Hazir TPL-in haysy bolumi kod bilen ishleyar
+int CUR_PART;
 
-// Programma boyuncha, bashlanyan nokatly fayl
-char main_file_name[];
-
+	// Hazirki yasalyp duran komanda
 command cmd;
-//char cur_parse_file_name;
 
+	// Hazirki faylyn algoritmi
 long cur_file_algor_size;		// Yatdaky algoritmin gowrumi
 int cur_file_algor_cmds;		// Algoritmdaki komandalaryn sany
 command *cur_file_algor;
 
-// global yglan edilen ulniler
+	// Hazirki faylda yglan edilen ulnilerin sanawy
+long loc_def_vars_size;
+int loc_def_vars_num;
+local_def_var *loc_def_vars; 
+
+	// Butin programma bouyuncha yglan edilen global ulnilerin sanawy,
+	// Yglan edilen faylynyn ady bilen yazylyar.
 long glob_def_vars_size;
 int glob_def_vars_cmds;
 global_def_var *glob_def_vars;
 
-// Lokal yglan edilen ulniler
-long loc_def_vars_size;
-int loc_def_vars_num;
-local_def_var *loc_def_vars; 
 
 
 char *tpl(int argc, const char **args)
@@ -54,11 +61,9 @@ char *tpl(int argc, const char **args)
 	has_argument(argc);
 
 	// Inisializasiya
-	int i;
 	init();
-	sys_mkdir(C_SOURCE_FOLDER, 1);
-	//printf("TPL() inisializasiya edildi\n");
 	
+	int i;
 	// Her fayl boyuncha parseri chagyrmaly
 	for (i=1; i<argc; ++i)
 	{
@@ -76,7 +81,7 @@ char *tpl(int argc, const char **args)
 	// Yasalmaly programmanyn bash fayly bolmaly
 	if (!strlen(main_file_name))
 	{
-		print_err(0, CODE0_NOT_FOUND_MAIN_FILE);
+		print_err(CODE0_NOT_FOUND_MAIN_FILE);
 	}
 	//debug_glob_def_vars(glob_def_vars);
 	free_globs();

@@ -12,7 +12,7 @@ Additonal functions
 // Folder name = 255, command name = 45
 #define MAX_SYS_CMD_LEN 300
 
-/* Concationation of string and character
+/* 2 sozi we bir harpy goshyar
  *  
  * @to        - final string
  * @from      - first  adding string
@@ -20,14 +20,12 @@ Additonal functions
  * @from_len  - number of characters of first string
  * @to_len    - number of characters of final string
 **/
-void strcat_ch(token_word *to, token_word *from, char c)
+void strstrchcat(char *to, char *from, char c)
 {
-	strncpy(to->val, from->val, from->len);
-	to->len = from->len;
+	strncpy(to, from, strlen(from)+1);
 		
-	to->val[to->len-1] = c;	        		// Delete last \0
-	to->len++;
-	to->val[to->len-1] = '\0';			// Add to end \0
+	to[strlen(to)] = c;	        		// Sonky \0 deregine
+	to[strlen(to)+1] = '\0';
 }
 // Soze soz bilen harpy goshyar
 void strcat_ch2(char *to, char *from, char c)
@@ -95,6 +93,35 @@ int sys_rmdir(char *folder_name)
 }
 
 
+// Berlen fayl adynyn onundaki papkalaryn atlaryny pozyar.
+char *remove_dirnames(char *f)
+{
+	int i;
+	for (i=0; i<strlen(f); ++i)
+	{
+		if (f[i]=='/')
+		    f[i]='\\';
+	}
+	i = 0;
+	
+	if (strrchr(f, '\\'))
+	{
+	    char *t = strrchr(f, '\\');
+	    
+	    if (strlen(t)>1)
+		{
+			int i;
+		    for (i=1; i<strlen(t); ++i)
+		    {
+			    f[i-1] = t[i];
+		    }
+		    f[i-1] = '\0';
+		}
+	}
+	
+	return f;
+}
+
 // Berlen fayl adynyn gornushini pozyar.
 char *remove_ext(char *f, char *e)
 {
@@ -106,5 +133,28 @@ char *remove_ext(char *f, char *e)
 		f[strlen(f)-strlen(e)] = '\0';
 	}
 
+	return f;
+}
+
+/*
+ * Berlen sozun bolmaly uzynlygyndaky,
+ * ichindaki hemme harplaryn deregine \0 bilen dolduryar.
+ *
+ * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa, 
+ * ol strlen() funksiyasy arkaly tanalyar.
+ *   Shonda dine sozde birinji \0 dushyancha hemme harplaryn deregine \0 goyular
+**/
+char *empty_string(char *f, int len)
+{
+	int i, last;
+	if (len<0)
+		last = strlen(f)-1;
+	else
+		last = len-1;
+		
+	for (i=0; i<=last; ++i)
+	{
+		f[i] = '\0';
+	}
 	return f;
 }

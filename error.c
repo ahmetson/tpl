@@ -4,7 +4,8 @@
 #include <stdio.h>																// Make_algol.h fayllar bilen ishleyar
 #include <stdlib.h>
 
-#include "tpl.h"															// Yalnyshlykly faylyn we setirin adresleri
+#include "tpl.h"
+#include "translator_to_c.h"															// Yalnyshlykly faylyn we setirin adresleri
 #include "error.h"
 
 /* Kompilyatoryn bolekleri*/
@@ -32,6 +33,7 @@ int CODE2_UNKNOWN_TOKENS_CHAR = 0;
 int CODE2_PRAGMA_NOT_END = 1;
 int CODE2_PRAGMA_NOT_IDENT = 2;
 int CODE2_REMAIN_TOKEN = 3;
+int CODE2_TOKEN_TOO_BIG = 4;
 
 int CODE3_PREV_TOK_INCORRECT = 0;
 
@@ -50,7 +52,8 @@ Ony '#b1' pragmasy bilen kodyn ichinde bellemeli."},
 	{"Bu harpdan token bashlanok",										// 2.Harplar (parsing)
 	 "Pragma dolylygyna yazylmady",
 	 "Pragma tanalmady",
-	 "Sonky tokenden son, komandany gutaryan token yetenok"},										
+	 "Sonky tokenden son, komandany gutaryan token yetenok",
+	 "Token gaty uzyn bolyar. Ony gysgaldyn"},										
 	{"Mundan onki token gutarylmadyk"},									// 3.Tokenler
 	{"Hich bir komanda beyle tokenden bashlanok",						// 4.Komandalar
 	 "Komanda maksimum 3 tokenden durmaly",
@@ -71,10 +74,10 @@ Ony '#b1' pragmasy bilen kodyn ichinde bellemeli."},
  * @line - Yalnyshlygyn chykan setiri
  * @ch   - Yalnyshlyk chykanda, parserin saklanan harpy
 **/
-void print_err(int part, int num)
+void print_err(int num)
 {
 	printf("\n\nYalnyshlyk yuze chykdy!\n");												// Yalnyshlyk hakda title
-	if (part>=2 && part<=7)
+	if (CUR_PART>=2 && CUR_PART<=7)
 	{	
 	    printf("Fayl: '%s', Setir: '%d' ", cur_parse_file_name, cur_parse_line_num);	// Source faylda yalnyshlygyn tapylan yeri, 
 		if (cur_parse_char!=-1)
@@ -82,9 +85,11 @@ void print_err(int part, int num)
 		printf("\n");																	// yalnyshlygyn tapylan yeri
 	}																					
 	
-	printf("(Yalnyshlygyn nomeri: %d.%d) %s! \n\n", part, num, err_texts[part][num]);					// Yalnyshlyk sozi
+	printf("(Yalnyshlygyn nomeri: %d.%d) %s! \n\n", CUR_PART, num, err_texts[CUR_PART][num]);					// Yalnyshlyk sozi
 
 	free_globs();
+	
+	sys_rmdir(C_SOURCE_FOLDER);
 
 	exit(num);
 }

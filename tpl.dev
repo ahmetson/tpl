@@ -181,7 +181,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=init_and_files.c
+FileName=init_and_work_with_files.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -191,7 +191,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=init_and_files.h
+FileName=init_and_work_with_files.h
 CompileCpp=0
 Folder=
 Compile=1

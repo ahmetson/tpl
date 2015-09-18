@@ -11,6 +11,9 @@ extern char cur_parse_file_name[MAX_FILE_LEN];
 extern char cur_parse_char;
 extern unsigned int cur_parse_line_num;
 
+// Hazir TPL-in haysy bolumi kod bilen ishleyar
+extern int CUR_PART;
+
 // Translyator arkaly yasalan programmadaky esasy fayl
 extern char main_file_name[MAX_FILE_LEN];
 

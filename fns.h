@@ -18,6 +18,18 @@ int sys_mkdir(char *folder_name, char rm_prev_dir);
 // Onki papkany pozyar
 int sys_rmdir(char *folder_name)
 
+/*
+ * Berlen sozun bolmaly uzynlygyndaky,
+ * ichindaki hemme harplaryn deregine \0 bilen dolduryar.
+ *
+ * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa, 
+ * ol strlen() funksiyasy arkaly tanalyar.
+ *   Shonda dine sozde birinji \0 dushyancha hemme harplaryn deregine \0 goyular
+**/
+char *empty_string(char *f, int len);
 
+char *remove_dirnames(char *f);
 char *remove_ext(char *f, char *e);
+
+
 #endif

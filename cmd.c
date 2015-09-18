@@ -4,12 +4,10 @@ All Command information
 #include <stdio.h>
 #include <string.h>
 
+#include "tpl.h"
 #include "cmd.h"
 #include "dev_debug.h"
 #include "error.h"
-
-// Kompilyatoryn komandalar bolegi bashinji nomerde
-static part_code = 4;
 
 // Command can contain maximum 3 tokens
 const int CMD_MAX_TOKENS = 3;
@@ -63,6 +61,8 @@ void init_cmd(command *cmd)
 
 int recognize_cmd(command *cmd)
 {
+	int prev_part = CUR_PART;
+	CUR_PART = 4;
 	int i, first_tok = 0, tok_num=0;				// komanda-da tokenin nomeri
 	command prev_cmd; init_cmd(&prev_cmd);
 	prev_cmd = *cmd; init_cmd(cmd);
@@ -79,7 +79,7 @@ int recognize_cmd(command *cmd)
 	}
 	if (!first_tok)
 	{
-		print_err(part_code, CODE4_CMD_HASNT_FIRST_TOKEN);
+		print_err(CODE4_CMD_HASNT_FIRST_TOKEN);
 	}
 	//printf("birinji tokeni eken\n");
 	cmd_add_token(cmd, prev_cmd.tokens[tok_num]);
@@ -102,6 +102,7 @@ int recognize_cmd(command *cmd)
 	if (cmd->cmd_class<1 && cmd->cmd_type<1)
 		return 0;
 	
+	CUR_PART = prev_part;
 	// Komandany saygaryp boldy
 	return 1;
 }

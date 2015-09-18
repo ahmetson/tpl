@@ -85,21 +85,26 @@ int recognise_pragma(pragma *prag)
 // Pragmanyn komandasy boyuncha, pragmany yerine yetiryar
 void act_pragma(pragma *prag)
 {
+	int prev_part = CUR_PART;
+	CUR_PART = 0;
 	int i, len_to_cmp;
 	for (i=0; i<PRAGMAS_NUM; ++i)
 	{
 		if (strncmp(act_pragma_items[i].name, prag->name, strlen(prag->name))==0)
 		{
 			act_pragma_items[i].act(prag);
+			CUR_PART = prev_part;
 			return;
 		}
 	}
-	print_err(0, CODE0_PRAGMA_ACT_NOT_IDENTIFIED);
+	print_err(CODE0_PRAGMA_ACT_NOT_IDENTIFIED);
 }
 
 
 void act_pragma_main_file(pragma *prag)
 {
+	int prev_part = CUR_PART;
+	CUR_PART = 0;
 	//printf("Fayl chagyryldy\n");
 	if (strlen(main_file_name)<1)
 	{
@@ -107,6 +112,8 @@ void act_pragma_main_file(pragma *prag)
 	}
 	else
 	{
-		print_err(0, CODE0_MAIN_FILE_ALREADY_CHOSED);
+		print_err(CODE0_MAIN_FILE_ALREADY_CHOSED);
 	}
+
+	CUR_PART = prev_part;
 }

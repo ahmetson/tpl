@@ -117,16 +117,6 @@ int loc_vars_add_cmd(command cmd)
 }
 
 
-/*void write_loc_def_var()
-{
-	char source[MAX_FILE_LEN];
-	strncat(source, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(source, "\\", strlen("\\"));
-	strncat(source, cur_parse_file_name, strlen(cur_parse_file_name));
-	strncat(source, ".def_var", strlen(".def_var"));
-	printf("Yazylmaly fayl: %s\n", source);
-}*/
-
 // Lokal fayllar uchin
 char loc_head_file[] = ".h";
 char loc_source_file[] = ".c";
