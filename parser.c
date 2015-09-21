@@ -29,9 +29,7 @@ int parser(FILE *source)
 	// Ulni, kodda has dushnikli bolar yaly ulanylyar.
 	char PARSER_DEFAULT_MODE = 0;
 	char mode = PARSER_DEFAULT_MODE;
-	
-	
-	
+
 	// Adaty komandalary saygarmaly bolanda, parserin ishlejek ulnileri
 	char prev_tok_string[MAX_TOK_LEN] = {0};    
 	char new_tok_string[MAX_TOK_LEN] = {0};
@@ -46,7 +44,6 @@ int parser(FILE *source)
 	// Pargma modunda, parserin ishlejek ulnileri
 	pragma prev_prag; init_pragma(&prev_prag);
 	pragma prag;	  init_pragma(&prag);
-
 
 	while((c=fgetc(source))!=EOF) 
 	{
@@ -95,39 +92,10 @@ int parser(FILE *source)
 				}			
 				else if (c==cmd_end)
 				{
-					// Komanda saygarylyp showly gutardy
-					if (recognize_cmd(&cmd))
-					{
-						
-						//printf("Komanda showly saygaryldy\n");
-	
-						if (is_glob_def_var_cmd(&cmd))
-						{
-							// Komandany global funksiyalara goshjak bolyas
-							glob_vars_add_cmd(cmd);
-							//printf("global ulni yglan edilipdir\n");
-						}
-						else if (is_def_var_cmd(&cmd))
-						{
-							//printf("Lokal ulni yglan edilipdir\n");
-							//debug_cmd(&cmd);
-							loc_vars_add_cmd(cmd);
-						}
-						else
-						{
-							// Komandany algoritme goshulyar
-							algor_add_cmd(cmd);
-							//printf("Komanda algoritme goshuldy\n");
-						}
-						
-						init_cmd(&cmd);
-						init_token(&tok);
-					}
-					else
-					{
-						print_err(CODE4_CANT_IDENT_CMD);
-					}
-						
+					// Komanda bilen ishleyan bolume gechilyar
+					work_with_cmd();
+					init_cmd(&cmd);
+					init_token(&tok);
 				}
 				else
 				{
@@ -209,69 +177,8 @@ int parser(FILE *source)
 	}
 	
 	// TRANSLATOR TO C
-	char f_name[MAX_FILE_LEN] = {0};// = cur_parse_file_name;
-	strncpy(f_name, cur_parse_file_name, strlen(cur_parse_file_name)+1);
-
-	remove_dirnames(f_name);
-	remove_ext(f_name, ".tepl");
-
-	
-	
-	// TODO. Eger faylyn ady fayllaryn sanawynda eyyam bar bolsa
-	//		Onda yalnyshlyk chykarylyar.
-	
-	// .h faylyn boljak adresi
-	char h_path[MAX_FILE_LEN] = {0};
-	strncat(h_path, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(h_path, "\\", strlen("\\"));
-	strncat(h_path, f_name, strlen(f_name));
-	strncat(h_path, ".h", strlen(".h"));
-
-	// .c faylyn boljak adresi
-	char c_path[MAX_FILE_LEN] = {0};
-	strncat(c_path, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(c_path, "\\", strlen("\\"));
-	strncat(c_path, f_name, strlen(f_name));
-	strncat(c_path, ".c", strlen(".c"));
-
-	// Fayllar achylyar:
-	FILE *c_source = fopen(c_path, "w");
-	FILE *h_source = fopen(h_path, "w");
-		
-	// Faylyn ichine maglumat yazylyar:
-	//printf("%s-%s-\n\n", cur_parse_file_name);
-	//printf("%s\n", f_name);
-	
-	prepare_h_source(h_source, f_name);
-	prepare_c_source(c_source, strncat(f_name, ".h", strlen(".h")));
-	
-	if (glob_def_vars_cmds && is_glob_def_var_in_cur())
-	{
-		//printf("Global ulni yglan edilipdir\n");
-		c_trans_header_add_glob_def_var(h_source);
-		c_trans_source_add_glob_def_var(c_source);
-	}
-	
-	// Bash fayl bolsa, bash fayla degishli maglumatlar salynyar
-	if (strlen(main_file_name)==strlen(cur_parse_file_name) &&
-	    !strncmp(main_file_name, cur_parse_file_name, strlen(main_file_name)))
-	{
-		main_file = 1;
-		// Bash sahypada esasy funksiya achylyar.
-		prepare_main_func(c_source);
-	}
-	
-	// Lokal yglan edilen funksiyalar
-	c_trans_source_add_loc_def_var(c_source, main_file);
-	
-	if (main_file)
-		finishize_main_func(c_source);
-	
-	finishize_h_source(h_source);
-	
-	// Fayllar yapylyar
-	fclose(c_source);
-	fclose(h_source);
+	// Algoritmleri fayla yazylyar
+	work_with_translator('1');
 	
 	free_locals();
 	
