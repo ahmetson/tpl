@@ -158,7 +158,7 @@ int is_token_empty(token *tok)
 int move_to_cmd(token *tok, char *tok_string)
 {
 	int prev_part = CUR_PART;
-	CUR_PART = 3;
+	CUR_PART = 4;
 	// Komandadaky onki token gutarylan bolmaly 
 	if (cmd.tokens_num!=0 && cmd.tokens[cmd.tokens_num-1].is_compl==0)
 	{
@@ -171,8 +171,8 @@ int move_to_cmd(token *tok, char *tok_string)
 	if (!add_to_cmd(&cmd, tok))
 	{
 		//debug_token(&tok);
-		debug_cmd(&cmd);
-		debug_token(tok);
+		//debug_cmd(&cmd);
+		//debug_token(tok);
 		//printf("Hawa dogry, gaty kan token");
 		print_err(CODE4_TOO_MANY_TOKENS);
 	}

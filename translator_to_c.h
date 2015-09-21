@@ -23,4 +23,7 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file);
 
 int prepare_main_func(FILE *f);
 int finishize_main_func(FILE *f);
+
+// Lokal faylyn algoritmlerini yasayar
+int work_with_translator(char main_file);
 #endif

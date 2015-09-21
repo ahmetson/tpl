@@ -51,12 +51,6 @@ typedef struct{
 	int is_required;
 }cmd_token;
 
-typedef struct{
-	int (*by_token) ();//command *cmd, token *tok, int tok_num);
-}modify_cmd_item;
-
-extern modify_cmd_item modify_cmd[];
-
 extern int cmd_first_tokens_classes[];
 
 int cmd_add_token(command *to, token tok);
@@ -77,5 +71,6 @@ int is_glob_def_var_cmd(command *cmd);
 // Komandanyn gornushinin ulni yglan etmedigini barlayar
 int is_def_var_cmd(command *cmd);
 
-
+// Komandalar bilen ishleyan bolum
+int work_with_cmd();
 #endif
