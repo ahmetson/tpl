@@ -353,35 +353,4 @@ int work_with_cmd()
 }
 
 
-/*
- * Bir komandany bashga komanda kopiyasyny yasayar
-**/
-int copy_cmd(command *to, command *from)
-{
-	to->cmd_class = from->cmd_class;
-	to->cmd_type  = from->cmd_type;
-	to->is_compl  = from->is_compl;
-	to->ns        = from->ns;
-	to->items_num = from->items_num;
-	if (from->items_num)
-	{
-		int i;
-		long size = sizeof(from->items[0]) * from->items_num;
-		to->items = malloc(size);
-		for(i=0; i<to->items_num; ++i)
-		{
-			to->items[i] = from->items[i];
-		}
-	}
-	return 1;
-}
 
-/*
- * ichindaki obyektleri kuchadan boshadyar
-**/
-int free_items(command *c)
-{
-	if (c->items_num)
-		free(c->items);
-	return 1;
-}
