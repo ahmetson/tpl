@@ -2,15 +2,16 @@
 All Command information
 */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "tpl.h"
-#include "cmd.h"
+#include "cmds.h"
 #include "dev_debug.h"
 #include "error.h"
 
 // Command can contain maximum 3 tokens
-const int CMD_MAX_TOKENS = 3;
+const int CMD_MAX_TOKENS = 4;
 const int DEF_VAR_MAX_TOKENS = 3;
 
 // Komandalaryn sanawy
@@ -46,14 +47,19 @@ int cmd_first_tokens_classes[] = {
 };
 
 
-void init_cmd(command *cmd)
+void init_cmd(command *cmd, char free_items)
 {
-	cmd->tokens_num = 0;
+	if (free_items && cmd->items_num)
+	{
+	    free(cmd->items);
+	    cmd->items = 0;			// Kop free() funksiyany chagyrmakdan gorayar
+	}
+	cmd->items_num = 0;
 	cmd->is_compl = 0;
-	cmd->max_tokens_num = 0;
 	cmd->cmd_type = 0;
 	cmd->cmd_class = 0;
 	cmd->ns = -1;
+	
 }
 
 
@@ -61,40 +67,20 @@ int recognize_cmd(command *cmd)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
-	int i, first_tok = 0, tok_num=0;				// komanda-da tokenin nomeri
-	command prev_cmd; init_cmd(&prev_cmd);
-	prev_cmd = *cmd; init_cmd(cmd);
-	
-	// Birinji token hokman komandanyn bashy bolmaly
-	for (i=0; i<CMD_FIRST_TOKENS_NUM; i++)
-	{
-		if (cmd_first_tokens_classes[i]==prev_cmd.tokens[tok_num].type_class)
-		{
-			//debug_token(&cmd->tokens[tok_num]);
-			first_tok=1;
-			break;
-		}
-	}
-	if (!first_tok)
-	{
-		print_err(CODE4_CMD_HASNT_FIRST_TOKEN);
-	}
+	//COPY CMD DIYMELI
+
 	//printf("birinji tokeni eken\n");
-	cmd_add_token(cmd, prev_cmd.tokens[tok_num]);
-		
+	
+	
 	//printf("birinji token komanda goshuldy\n");
 	// Komandanyn ikinji tokeninden, ta gutaryancha
-	for (tok_num=1; tok_num<prev_cmd.tokens_num; tok_num++)
-	{
-		cmd_add_token(cmd, prev_cmd.tokens[tok_num]);
-
-		if (!parse_cmd(cmd))
+	//if (!parse_cmd(cmd))
 		{
 			//printf("Komanda saygarylmady\n");
 			//debug_cmd(cmd);
 			//init_token(cmd->tokens_num--;
 		}
-		else
+		//else
 		{
 			//printf("Komanda saygaryldy\n");
 		}
@@ -107,8 +93,6 @@ int recognize_cmd(command *cmd)
 		//     komanda saygarylmady diyilip yalnyshlyk gaytarylyar.
 
 		//printf("hawa");
-		
-	}
 	
 	// Komandany saygaryp bolmady ya ol gutarylmadyk
 	if (cmd->cmd_class<1 && cmd->cmd_type<1 || !cmd->is_compl)
@@ -116,21 +100,12 @@ int recognize_cmd(command *cmd)
 		//debug_cmd(cmd);
 		return 0;
    }
+   //if (cmd->items_num==4)
+//	debug_cmd(cmd);
 	CUR_PART = prev_part;
 	// Komandany saygaryp boldy
-	return 1;
-}
-
-
-/*
- * Tokeni komandanyn ichine goshyar
-**/
-int cmd_add_token(command *to, token tok)
-{
-	to->tokens[to->tokens_num++] = tok;
-	//to->ns = tok.ns;
 	
-	return 0;
+	return 1;
 }
 
 /*
@@ -148,6 +123,7 @@ int parse_cmd(command *cmd)
 	if (cmd->cmd_class==0 && cmd->cmd_type==0)
 	{
 		//printf("Debug! Komanda tanalmady\n");
+		//debug_cmd(cmd);
 		return 0;												// Token tanalmady
 	}
 	//printf("Debug! Komanda tanaldy\n");
@@ -161,34 +137,40 @@ int parse_cmd(command *cmd)
 // 1. Ulni yglan etmani saygaryan komanda
 int is_cmd_def_var(command *cmd)
 {
-	if (cmd->tokens_num>DEF_VAR_MAX_TOKENS)
+	if (cmd->items_num>DEF_VAR_MAX_TOKENS)
 	{
+		// Komandany saygaryp bolmady
+		cmd->cmd_class = 0;
+		cmd->cmd_type = 0;
+		printf("Tokenlerin sany gaty kan\n");
 		return 0;
 	}
 	
 	// Maksimum bolup biljek tokenlerden duryar, diymek global ulni yglan edilyar
 	// Emma global ulni yglan edilmandir
-	if (cmd->tokens_num==DEF_VAR_MAX_TOKENS && cmd->tokens[0].type_class!=GLOB_TYPE_CLASS)
+	if (cmd->items_num==DEF_VAR_MAX_TOKENS && cmd->items[0].type==1 &&
+	cmd->items[0].tok.type_class!=GLOB_TYPE_CLASS)
 	{
 		// Komandany saygaryp bolmady
 		cmd->cmd_class = 0;
 		cmd->cmd_type = 0;
+		printf("Umumy ulni bolmaly");
 		return 0;
 	}
 
 	int next=-1;	
 	// Birinji token umumy ya maglumat tipi bolup bilyar
-	if (cmd->tokens[0].type_class==GLOB_TYPE_CLASS)
+	if (cmd->items[0].type==1 &&
+	cmd->items[0].tok.type_class==GLOB_TYPE_CLASS)
 	{
-		if (cmd->tokens_num==3)
-
-		def_var_cmd_mod(cmd, &cmd->tokens[0], 0);
-
+		def_var_cmd_mod(cmd, &cmd->items[0].tok, 0);
+		//debug_cmd(cmd);
 		next = DEF_TYPE_TYPE_CLASS;
 	}
-	else if (cmd->tokens[0].type_class==DEF_TYPE_TYPE_CLASS)
+	else if (cmd->items[0].type==1 &&
+	cmd->items[0].tok.type_class==DEF_TYPE_TYPE_CLASS)
 	{
-		def_var_cmd_mod(cmd, &cmd->tokens[0], 0);
+		def_var_cmd_mod(cmd, &cmd->items[0].tok, 0);
 		next = IDENT_TYPE_CLASS;
 	}
 	else
@@ -199,10 +181,12 @@ int is_cmd_def_var(command *cmd)
 	// Eger birinji umumylygy anladyan token bolsa onda ikinji token maglumat
 	// 	tipi bolup bilyar
 	// Yada identifikator bolup bilyar
-	if (cmd->tokens[1].type_class==next)
+	if (cmd->items[1].type==1 &&
+	cmd->items[1].tok.type_class==next)
 	{
-		def_var_cmd_mod(cmd, &cmd->tokens[1], 1);
-		if (cmd->tokens[0].type_class==GLOB_TYPE_CLASS)
+		
+		def_var_cmd_mod(cmd, &cmd->items[1].tok, 1);
+		if (cmd->items[0].tok.type_class==GLOB_TYPE_CLASS)
 			next = IDENT_TYPE_CLASS;
 		else
 			next = -1;
@@ -214,12 +198,12 @@ int is_cmd_def_var(command *cmd)
 	
 	// Eger birinji umumylygy anladyan token bolmasa,
 	//	identifikator bolup bilyar.
-if (cmd->tokens_num==3)
 	if (next>0)
 	{ 
-		if(next==cmd->tokens[2].type_class)
+		if(cmd->items[2].type==1 &&
+		next==cmd->items[2].tok.type_class)
 		{
-			def_var_cmd_mod(cmd, &cmd->tokens[2], 2);
+			def_var_cmd_mod(cmd, &cmd->items[2].tok, 2);
 		}
 		else
 		{
@@ -237,13 +221,18 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 {
 	if (tok->type_class==IDENT_TYPE_CLASS)
 	{
-		if (tok_num==cmd->tokens_num-1)
+		// Komandanyn in sonky tokeni bolmaly
+		if (tok_num==cmd->items_num-1)
 		{
 			cmd->cmd_class = 1;
 			cmd->cmd_type = 1;
 			
 			cmd->is_compl = 1;
-			cmd->ns = 1;
+			
+			// Global ulni yglan edilmandir
+			// Bu token in sonky. Shonun uchin lokalmy ya yokdugyny barlap bolyar
+			if (cmd->items_num<DEF_VAR_MAX_TOKENS)
+				cmd->ns = 1;
 		
 			return 1;
 		}
@@ -251,12 +240,15 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 	}
 	else if (tok->type_class==DEF_TYPE_TYPE_CLASS)
 	{
-		if (cmd->tokens_num>tok_num+1)
+		// Eger ulni global ulninin yglan edilshi bolsa, ikinji token,
+		// yogsa komanda-da birinji token bolmaly
+		if ((cmd->items[0].type==1 && 
+			 cmd->items[0].tok.type_class==GLOB_TYPE_CLASS &&
+			 tok_num==1) ||
+			 tok_num==0)
 		{
 			cmd->cmd_class = 1;
 			cmd->cmd_type = 1;
-
-			cmd->ns = 1;
 		
 			return 1;
 		}
@@ -264,6 +256,7 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 	}
 	else if (tok->type_class==GLOB_TYPE_CLASS)
 	{
+		// Komandanyn birinji tokeni bolmaly
 		if (tok_num==0)
 		{
 			cmd->cmd_class = 1;
@@ -286,11 +279,28 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 int add_to_cmd(command *cmd, token *tok)
 {
 	// Komanda-da gaty kan tokenler bar
-	//if (cmd->tokens_num==CMD_MAX_TOKENS)
-	//	return 0;
+	if (cmd->items_num==CMD_MAX_TOKENS)
+		return 0;
 
-	cmd->tokens[cmd->tokens_num++] = *tok;
-	return 1;
+	command_item cmd_item = {};
+	cmd_item.type = 1;
+	cmd_item.tok = *tok;
+	
+	long size = (cmd->items_num+1)*sizeof(command_item);
+	command_item *tmp = realloc(cmd->items,size);
+	if (tmp)
+	{
+		cmd->items = tmp;
+		cmd->items[cmd->items_num++] = cmd_item;
+		//printf("Kuchada yer berildi (tokenlerin sany:%d gowrumi:%d)\n", cmd->items_num, size);
+		return 1;
+	}
+	else
+	{
+		//printf("Kuchada yer tapylmady\n");
+		return 0;
+	}
+	
 }
 
 // Komandanyn global ulni yglan etmedigini barlayar
@@ -318,20 +328,17 @@ int work_with_cmd()
 	// Komanda saygarylyp showly gutardy
 	if (!recognize_cmd(&cmd))
 	{
-		
 		print_err(CODE4_CANT_IDENT_CMD);
 	}
-	
+
 	//printf("Komanda showly saygaryldy\n");
 	if (is_glob_def_var_cmd(&cmd))
 	{
 		// Komandany global funksiyalara goshjak bolyas
 		glob_vars_add_cmd(cmd);
-		//printf("global ulni yglan edilipdir\n");
 	}
 	else if (is_def_var_cmd(&cmd))
 	{
-		//printf("Lokal ulni yglan edilipdir\n");
 		//debug_cmd(&cmd);
 		loc_vars_add_cmd(cmd);
 	}
@@ -342,5 +349,39 @@ int work_with_cmd()
 		//printf("Komanda algoritme goshuldy\n");
 	}
 	CUR_PART = prev_part;
+	return 1;
+}
+
+
+/*
+ * Bir komandany bashga komanda kopiyasyny yasayar
+**/
+int copy_cmd(command *to, command *from)
+{
+	to->cmd_class = from->cmd_class;
+	to->cmd_type  = from->cmd_type;
+	to->is_compl  = from->is_compl;
+	to->ns        = from->ns;
+	to->items_num = from->items_num;
+	if (from->items_num)
+	{
+		int i;
+		long size = sizeof(from->items[0]) * from->items_num;
+		to->items = malloc(size);
+		for(i=0; i<to->items_num; ++i)
+		{
+			to->items[i] = from->items[i];
+		}
+	}
+	return 1;
+}
+
+/*
+ * ichindaki obyektleri kuchadan boshadyar
+**/
+int free_items(command *c)
+{
+	if (c->items_num)
+		free(c->items);
 	return 1;
 }

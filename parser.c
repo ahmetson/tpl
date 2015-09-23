@@ -44,8 +44,9 @@ int parser(FILE *source)
 	// Pargma modunda, parserin ishlejek ulnileri
 	pragma prev_prag; init_pragma(&prev_prag);
 	pragma prag;	  init_pragma(&prag);
+	
 
-	while((c=fgetc(source))!=EOF) 
+ 	while((c=fgetc(source))!=EOF) 
 	{
 		
 		if (mode==PARSER_DEFAULT_MODE)
@@ -63,26 +64,23 @@ int parser(FILE *source)
 				//printf("Token tanalmady %s\n", new_tok_string);
 				empty_token(&new_tok);
 				empty_string(new_tok_string, MAX_TOK_LEN);
-				
 				// 1. Onki token bar
 				if (is_token_empty(&tok))
 				{
+					//debug_cmd(&cmd);
 					move_to_cmd(&tok, prev_tok_string);
 				}
-	
 				// 2. Eger pragmanyn bashy diyen nushana bolsa
 				if (c==PRAGMA_START_CHAR)
 				{
 					mode = PRAGMA_MODE;
 					continue;
 				}
-				
 				// 3. Boshluk harplara seredilenok
 				if (isspace(c))
 				{
 					continue;
 				}
-	
 				// 4. Mumkin harp taze tokenin bashydyr
 				set_token_word_value(new_tok_string, c);
 				if (!recognize_token(&new_tok, new_tok_string))	// 0 = O
@@ -94,7 +92,7 @@ int parser(FILE *source)
 				{
 					// Komanda bilen ishleyan bolume gechilyar
 					work_with_cmd();
-					init_cmd(&cmd);
+					init_cmd(&cmd, 1);
 					init_token(&tok);
 				}
 				else
@@ -171,7 +169,7 @@ int parser(FILE *source)
 	// Eger token bar bolsa, diymek komanda salynmandyr
 	//debug_token(&tok);
 	//printf("After end of parsing\n");
-	if (tok.potentional_types_num || cmd.tokens_num)
+	if (tok.potentional_types_num || cmd.items_num)
 	{
 		print_err(CODE2_REMAIN_TOKEN);
 	}
@@ -179,7 +177,6 @@ int parser(FILE *source)
 	// TRANSLATOR TO C
 	// Algoritmleri fayla yazylyar
 	work_with_translator('1');
-	
 	free_locals();
 	
 	CUR_PART = prev_part;

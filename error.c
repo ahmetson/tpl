@@ -88,7 +88,7 @@ void print_err(int num)
 	printf("(Yalnyshlygyn nomeri: %d.%d) %s! \n\n", CUR_PART, num, err_texts[CUR_PART][num]);					// Yalnyshlyk sozi
 
 	free_globs();
-	
+
 	sys_rmdir(C_SOURCE_FOLDER);
 
 	exit(num);

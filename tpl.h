@@ -2,7 +2,7 @@
 #define TPL_H
 
 #include "algor.h"
-#include "cmd.h"
+#include "cmds.h"
 
 #define MAX_FILE_LEN 255
 #define MAX_TOKEN_LEN 32
@@ -30,6 +30,7 @@ extern char cmd_end;
 
 // Parser edilyan komanda
 extern command cmd;
+extern command prev_cmd;
 
 // Yglan edilen global ulnilerin sany
 extern long glob_def_vars_size;

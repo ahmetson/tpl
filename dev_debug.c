@@ -6,7 +6,7 @@
 
 #include "tpl.h"
 #include "tokens.h"
-#include "cmd.h"
+#include "cmds.h"
 #include "algor.h"
 #include "dev_debug.h"
 
@@ -21,14 +21,19 @@ void debug_cmd(command *cmd)
 	
 	printf("\nINFO ABOUT COMMAND++++++++++++++++++++++++++\n");
 	printf("'%s', '%s' command, in '%s'->'%s'\n", ns, complete, cmd_class, cmd_type);
-	printf("Has %d tokens\n\n", cmd->tokens_num);
-	if (cmd->tokens_num>0)
+	printf("Has %d tokens\n\n", cmd->items_num);
+	if (cmd->items_num>0)
 	{
 		int i;
 		printf("Tokens are:\n");
 		//printf("  potentional types: %d", tok->potentional_types_num);
-		for(i=0; i<cmd->tokens_num; i++)
-			debug_token(&cmd->tokens[i]);
+		for(i=0; i<cmd->items_num; i++)
+		{
+			if (cmd->items[i].type==1)
+				debug_token(&cmd->items[i].tok);
+			else if(cmd->items[i].type==2)
+				debug_cmd(&cmd->items[i].cmd);
+		}
 	}
 	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
 			
