@@ -81,12 +81,5 @@ int is_def_var_cmd(command *cmd);
 // Komandalar bilen ishleyan bolum
 int work_with_cmd();
 
-/*
- * Bir komandany bashga komanda kopiyasyny yasayar
-**/
-int copy_cmd(command *to, command *from);
-/*
- * ichindaki obyektleri kuchadan boshadyar
-**/
-int free_items(command *c);
+
 #endif
