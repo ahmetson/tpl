@@ -12,7 +12,7 @@
 #include "tpl.h"
 #include "init_and_work_with_files.h"
 #include "tokens.h"
-#include "cmd.h"
+#include "cmds.h"
 #include "algor.h"
 #include "translator_to_c.h"
 #include "fns.h"
@@ -94,7 +94,6 @@ void free_globs(void)
 	// Global ulnileri yatdan boshadyas
 	if (glob_def_vars_size)
 		free(glob_def_vars);
-	
 	free_locals();
 }
 
@@ -112,5 +111,11 @@ void free_locals(void)
 	{
 		init_loc_def_vars();
 		free(loc_def_vars);
-	}	
+	}
+	// Eger komanda-da token bar bolsa
+	if (cmd.items_num)
+	{
+		free(cmd.items);
+	}
+
 }

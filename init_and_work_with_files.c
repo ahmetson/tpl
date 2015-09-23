@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "tpl.h"
-#include "cmd.h"
+#include "cmds.h"
 #include "parser.h"
 #include "algor.h"
 #include "translator_to_c.h"
@@ -27,7 +27,7 @@ int init()
 	// Hazirki harp
 	cur_parse_char = -1;
 	
-	init_cmd(&cmd);
+	init_cmd(&cmd, 0);
 	
 	// Algoritmler uchin
 	cur_file_algor_size = 0;

@@ -7,7 +7,7 @@
 #define MAX_FILE_LEN 255
 #define MAX_TOKEN_LEN 32
 
-#include "cmd.h"
+#include "cmds.h"
 #include "tokens.h"
 
 typedef struct{

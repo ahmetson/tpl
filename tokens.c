@@ -154,33 +154,61 @@ int is_token_empty(token *tok)
 
 /*
  * Tokeni komanda gechiryar. Ichini boshadyar
+ * Komanda goshulan son, ichini barlayar
 **/
 int move_to_cmd(token *tok, char *tok_string)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
+
 	// Komandadaky onki token gutarylan bolmaly 
-	if (cmd.tokens_num!=0 && cmd.tokens[cmd.tokens_num-1].is_compl==0)
+	if (cmd.items_num!=0 &&
+		(cmd.items[cmd.items_num-1].type==1 && cmd.items[cmd.items_num-1].tok.is_compl==0 ||
+		 cmd.items[cmd.items_num-1].type==2 && cmd.items[cmd.items_num-1].cmd.is_compl==0)
+		)
 	{
 		//printf("hawa dogry");
 		print_err(CODE3_PREV_TOK_INCORRECT);
 	}
 
 	finishize_token(tok);
-
 	if (!add_to_cmd(&cmd, tok))
 	{
-		//debug_token(&tok);
-		//debug_cmd(&cmd);
 		//debug_token(tok);
 		//printf("Hawa dogry, gaty kan token");
 		print_err(CODE4_TOO_MANY_TOKENS);
 	}
 				//printf("Token goshulan son:\n");
 				//debug_cmd(&cmd);
+	// Eger token birinji bolsa, ol komandanyn bashlayan tokenlerinden bolmaly
+					// komanda-da tokenin nomeri
+	if (cmd.items_num==1)
+	{
+		int i; char first_tok = 0;
+		for (i=0; i<CMD_FIRST_TOKENS_NUM; i++)
+		{
+			if (cmd.items[0].type==1 &&
+				cmd_first_tokens_classes[i]==cmd.items[0].tok.type_class)
+			{
+				
+				first_tok=1;
+				break;
+			}
+			
+		}
+		if (!first_tok)
+		{
+			print_err(CODE4_CMD_HASNT_FIRST_TOKEN);
+		}
+	}
+	
+	if (!parse_cmd(&cmd))
+	{
+		print_err(CODE4_CANT_IDENT_CMD);
+	}
 
 	empty_token(tok);
-	tok_string[0] = '\0';
+	empty_string(tok_string, strlen(tok_string));
 	
 	CUR_PART = prev_part;
 	return 1;

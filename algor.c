@@ -37,7 +37,7 @@ int glob_vars_add_cmd(command cmd)
 	
 	// Lokal yglan edilen funksiyalar boyuncha barlanyar.
 	// Eger eyyam sheyle lokal ulni yglan edilen bolsa, yalnyshlyk gaytarylyar.
-	char *tok_name = cmd.tokens[2].potentional_types[0].value;
+	char *tok_name = cmd.items[2].tok.potentional_types[0].value;
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
@@ -48,8 +48,8 @@ int glob_vars_add_cmd(command cmd)
 	global_def_var new_def = {
 		"", 
 		"",
-		cmd.tokens[1].potentional_types[0].type_class,
-		cmd.tokens[1].potentional_types[0].type_num
+		cmd.items[1].tok.potentional_types[0].type_class,
+		cmd.items[1].tok.potentional_types[0].type_num
 	};
 	strncpy(new_def.file_name, cur_parse_file_name, strlen(cur_parse_file_name)+1);
 	strncpy(new_def.tok_name, tok_name, strlen(tok_name)+1);
@@ -82,7 +82,7 @@ void init_loc_def_vars()
 
 int loc_vars_add_cmd(command cmd)
 {
-	char *tok_name = cmd.tokens[1].potentional_types[0].value;
+	char *tok_name = cmd.items[1].tok.potentional_types[0].value;
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
@@ -94,8 +94,8 @@ int loc_vars_add_cmd(command cmd)
 	//debug_token_type(&cmd.tokens[0].potentional_types[0]);
 	local_def_var new_def = {
 		"",
-		cmd.tokens[0].potentional_types[0].type_class,
-		cmd.tokens[0].potentional_types[0].type_num
+		cmd.items[0].tok.potentional_types[0].type_class,
+		cmd.items[0].tok.potentional_types[0].type_num
 	};
 	strncpy(new_def.tok_name, tok_name, strlen(tok_name)+1);
 

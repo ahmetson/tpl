@@ -101,26 +101,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=cmd.c
-CompileCpp=0
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit8]
-FileName=cmd.h
-CompileCpp=0
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit9]
 FileName=dev_debug.c
 CompileCpp=0
 Folder=
@@ -130,7 +110,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit8]
 FileName=dev_debug.h
 CompileCpp=0
 Folder=
@@ -140,17 +120,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
-FileName=error.h
-CompileCpp=0
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
+[Unit9]
 FileName=error.c
 CompileCpp=0
 Folder=
@@ -160,8 +130,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
-FileName=tpl.c
+[Unit10]
+FileName=error.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -170,7 +140,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit12]
 FileName=tpl.h
 CompileCpp=0
 Folder=
@@ -180,7 +150,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit11]
+FileName=tpl.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit13]
 FileName=init_and_work_with_files.c
 CompileCpp=0
 Folder=
@@ -190,7 +170,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit14]
 FileName=init_and_work_with_files.h
 CompileCpp=0
 Folder=
@@ -200,7 +180,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit15]
 FileName=parser.c
 CompileCpp=0
 Folder=
@@ -210,7 +190,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit16]
 FileName=parser.h
 CompileCpp=0
 Folder=
@@ -220,7 +200,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit17]
 FileName=token\def_types.c
 CompileCpp=0
 Folder=token
@@ -230,7 +210,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit18]
 FileName=token\def_types.h
 CompileCpp=0
 Folder=token
@@ -240,17 +220,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
-FileName=token\glob.c
-CompileCpp=0
-Folder=token
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit21]
+[Unit19]
 FileName=token\glob.h
 CompileCpp=0
 Folder=token
@@ -260,8 +230,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
-FileName=token\token_types.h
+[Unit20]
+FileName=token\glob.c
 CompileCpp=0
 Folder=token
 Compile=1
@@ -270,7 +240,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit22]
 FileName=token\token_types.c
 CompileCpp=0
 Folder=token
@@ -280,7 +250,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit21]
+FileName=token\token_types.h
+CompileCpp=0
+Folder=token
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit23]
 FileName=token\token.h
 CompileCpp=0
 Folder=token
@@ -290,7 +270,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
+[Unit24]
 FileName=token\token_structs.h
 CompileCpp=0
 Folder=token
@@ -300,7 +280,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit25]
 FileName=token\keywords.h
 CompileCpp=0
 Folder=token
@@ -310,7 +290,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit26]
 FileName=token\keywords.c
 CompileCpp=0
 Folder=token
@@ -320,7 +300,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
+[Unit27]
 FileName=token\token_word.h
 CompileCpp=0
 Folder=token
@@ -330,7 +310,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit28]
 FileName=token\token_word.c
 CompileCpp=0
 Folder=token
@@ -340,7 +320,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=algor.c
 CompileCpp=0
 Folder=
@@ -350,10 +330,30 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit30]
 FileName=algor.h
 CompileCpp=0
 Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit31]
+FileName=pragma\pragma.h
+CompileCpp=0
+Folder=pragma
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit32]
+FileName=pragma\pragma.c
+CompileCpp=0
+Folder=pragma
 Compile=1
 Link=1
 Priority=1000
@@ -371,9 +371,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit34]
-FileName=pragma\pragma.c
+FileName=translator_to_c.c
 CompileCpp=0
-Folder=pragma
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -381,7 +381,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit35]
-FileName=translator_to_c.h
+FileName=cmds.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -391,9 +391,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit33]
-FileName=pragma\pragma.h
+FileName=translator_to_c.h
 CompileCpp=0
-Folder=pragma
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -401,7 +401,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit36]
-FileName=translator_to_c.c
+FileName=cmds.h
 CompileCpp=0
 Folder=
 Compile=1

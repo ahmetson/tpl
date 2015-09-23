@@ -1,27 +1,36 @@
-#ifndef FNS_H
-#define FNS_H
+#ifndef CMDS_H
+#define CMDS_H
+
+#define CONST_CMD_MAX_ITEMS 4
 /*
 COMMAND TYPES AND CLASSES ARE:
 	1. var class
 		1. decl
 */
 #include "tokens.h"
+#include "cmd/cmd_structs.h"
 
-// Commands can contain maximum 3 tokens
-#define CONST_CMD_MAX_TOKENS 3
-extern const int CMD_MAX_TOKENS;
+typedef struct command_item command_item;
+typedef struct command command;
 
-typedef struct{
-	token tokens[CONST_CMD_MAX_TOKENS];
-	int tokens_num;
+// Bashga komandalar ya tokenler bolup bilyan komanda
+struct command{
+	command_item *items;
+	unsigned int items_num;
 	int cmd_type;
 	int cmd_class;
 	int is_compl;
 	int ns;
-	int max_tokens_num;						// Komandanyn tipine we klasyna gora maximum nache tokenden ybarat bolup bilyar
-} command;
+};
 
-extern void init_cmd(command *cmd);
+struct command_item{
+	char type;				// Ya token (1), ya komanda (2) bolup bilyar
+	token tok;
+	command cmd;
+};
+
+
+extern void init_cmd(command *cmd, char free_items);
 
 extern int recognize_cmd(command *cmd);
 
@@ -53,8 +62,6 @@ typedef struct{
 
 extern int cmd_first_tokens_classes[];
 
-int cmd_add_token(command *to, token tok);
-
 int parse_cmd(command *cmd);
 
 int is_cmd_def_var(command *cmd);
@@ -73,4 +80,13 @@ int is_def_var_cmd(command *cmd);
 
 // Komandalar bilen ishleyan bolum
 int work_with_cmd();
+
+/*
+ * Bir komandany bashga komanda kopiyasyny yasayar
+**/
+int copy_cmd(command *to, command *from);
+/*
+ * ichindaki obyektleri kuchadan boshadyar
+**/
+int free_items(command *c);
 #endif
