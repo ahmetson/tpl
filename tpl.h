@@ -47,6 +47,9 @@ extern command *cur_file_algor;
 extern long cur_file_algor_size;
 extern int cur_file_algor_cmds;
 
+command_item **inline_cmd_items;
+unsigned int   inline_cmds_num;
+
 // Programmadan chykmazdan onurti chagyrylmaly,
 // Hemme programmanyn ulanyan yadyny boshadyar.
 void free_globs(void);

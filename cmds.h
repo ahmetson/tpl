@@ -8,7 +8,15 @@ COMMAND TYPES AND CLASSES ARE:
 		1. decl
 */
 #include "tokens.h"
-#include "cmd/cmd_structs.h"
+
+// Komandanyn birliginin nomeri
+extern const int TOKEN_ITEM;
+extern const int CMD_ITEM;
+
+extern const int DEF_VAR_MAX_TOKENS;
+extern const int ASSIGN_MAX_ITEMS;
+
+extern int ASSIGN_CLASS_NUM;
 
 typedef struct command_item command_item;
 typedef struct command command;
@@ -46,12 +54,11 @@ extern int CMDS_TYPES_NUM;
 
 extern char *cmd_classes[];
 
-#define CONST_MAX_CLASS_TYPES 1
-extern int MAX_CLASS_TYPES;
+#define CONST_MAX_CLASS_TYPES 2
 extern char *cmd_class_types[][CONST_MAX_CLASS_TYPES];
 
 // Komandanyn bashynda bolup bilyan tokenlerin sany
-extern int CMD_FIRST_TOKENS_NUM;
+extern int CMD_FIRST_ITEMS_NUM;
 
 // Komanda-da bolup biljek tokenlerin sanawynda ulanylyan tip
 typedef struct{
@@ -60,15 +67,25 @@ typedef struct{
 	int is_required;
 }cmd_token;
 
-extern int cmd_first_tokens_classes[];
+
+// Komanda-da bolup biljek birlikleri tanamak uchin ulanylyan tip
+typedef struct{
+	char type;
+	int  item_class;
+	int  item_type;
+}command_item_recog;
+
+extern command_item_recog cmd_first_items_classes[];
 
 int parse_cmd(command *cmd);
 
 int is_cmd_def_var(command *cmd);
+int is_cmd_assign(command  *cmd);
 
 int is_tok_in_list(cmd_token *list_tok, token *tok);
 
-int def_var_cmd_mod();//command *cmd, token *tok, int tok_num);
+int def_var_cmd_mod(command *cmd, token *tok, int tok_num);//command *cmd, token *tok, int tok_num);
+int assign_cmd_mod(command *cmd, int tok_num);
 
 int add_to_cmd(command *cmd, token *tok);
 

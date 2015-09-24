@@ -8,25 +8,28 @@
 
 #include "def_types.h"
 #include "glob.h"
+#include "assign.h"
 #include "keywords.h"
 #include "token_types.h"
 
 // 3 sany tokenlerin tipleri bar
-const int TOKEN_TYPES_NUM= 3;
+const int TOKEN_TYPES_NUM = CONST_TOKEN_TYPES_NUM;
 
 // In uly token 'ident' - 6 harpdan ybarat
-const int TOKEN_TYPE_MAX_LEN = 6;
+const int TOKEN_TYPE_MAX_LEN = CONST_TOKEN_TYPE_MAX_LEN;
 
 // Nache sany token tip bar bolsa, shonchada klas bar
-const int DEF_TYPE_TYPE_CLASS = 1;
-const int GLOB_TYPE_CLASS = 2;
-const int IDENT_TYPE_CLASS = 3;
+const int DEF_TYPE_TYPE_CLASS 	 = 1;
+const int GLOB_TYPE_CLASS 		 = 2;
+const int IDENT_TYPE_CLASS       = 3;
+const int ASSIGN_TYPE_CLASS		 = 4;
 
 // Used for debugging
 char *type_classes[] = {
 	"def_type",
 	"glob",
-	"ident"
+	"ident",
+	"assign"
 };
 
 
@@ -49,7 +52,7 @@ int is_token_def_type(token *tok, char *tok_val)
 			tok_type.need_value = 0;
 			tok_type.is_compl = (answer==0) ? 1 : 0;
 			tok->is_compl = (answer==0) ? 1 : 0;
-			
+
 			add_potentional_token_type(tok, tok_type);
 			
 			// Tokene gornush girizilen son chagyrylmaly
@@ -145,4 +148,30 @@ int is_token_ident(token *tok, char *tok_val)
 		tok->type_class = IDENT_TYPE_CLASS;
 
 	return 1;
+}
+
+
+int is_token_var_left_assign(token *tok, char *tok_val)
+{
+	int answer;
+	token_type tok_type;
+
+	answer = strstr_by_offset(LEFT_ASSIGN_TOKEN_VALUE, tok_val, 0);
+	if (answer>=0)
+	{
+		tok_type.type_num = LEFT_ASSIGN_TOK_NUM;	// Number of token type
+		tok_type.type_class = ASSIGN_TYPE_CLASS;
+		tok_type.need_value = 0;
+		tok_type.is_compl = (answer==0) ? 1 : 0;
+		tok->is_compl = (answer==0) ? 1 : 0;	
+
+		add_potentional_token_type(tok, tok_type);
+		
+		// Tokene gornush girizilen son chagyrylmaly
+		if (tok_type.is_compl==1)
+			tok->type_class = ASSIGN_TYPE_CLASS;
+	
+		return 1;
+	}
+	return 0;
 }

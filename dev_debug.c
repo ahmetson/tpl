@@ -46,7 +46,7 @@ void debug_token(token *tok)
 	char *type_class = get_type_class(tok->type_class);
 
 	char *complete = (tok->is_compl) ? "Complete" : "Not complete";
-	
+
 	// Print results
 	printf("\n  INFO ABOUT TOKEN===================\n");
 	printf("  '%s', '%s' token, in '%s' class\n", ns, complete, type_class);
@@ -69,8 +69,13 @@ void debug_token_type(token_type *tok_type)
 	
 	if (tok_type->type_class==DEF_TYPE_TYPE_CLASS)
 		strncpy(type, def_type_list[tok_type->type_num].tk_name, strlen(def_type_list[tok_type->type_num].tk_name)+1);
+	else if (tok_type->type_class==ASSIGN_TYPE_CLASS)
+	{
+		strncpy(type, ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1], strlen(ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1])+1);
+	}
 	else
 		strncpy(type, "", strlen("")+1);
+	
 		
 	printf("\tTOK_TYPE------------\n");
 	printf("\t('%s') '%s'->'%s' token type\n", complete, type_class, type);
