@@ -5,6 +5,7 @@
 // Token tiplerinin her bir gornushinin dine ozune gerekli maglumatlar
 #include "token/def_types.h"
 #include "token/glob.h"
+#include "token/assign.h"
 // Umumy we ahli token tiplerine degishli funksiyalar
 #include "token/token_types.h"
 // Tokenler uchin strukturalar arkaly yasalan tipler

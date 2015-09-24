@@ -27,6 +27,18 @@ int init()
 	// Hazirki harp
 	cur_parse_char = -1;
 	
+	cmd_first_items_classes[0].type		 = TOKEN_ITEM;
+	cmd_first_items_classes[0].item_class= DEF_TYPE_TYPE_CLASS;
+	cmd_first_items_classes[0].item_type = -1;
+	cmd_first_items_classes[1].type=       TOKEN_ITEM;
+	cmd_first_items_classes[1].item_class= GLOB_TYPE_CLASS;
+	cmd_first_items_classes[1].item_type = -1;
+	cmd_first_items_classes[2].type=       CMD_ITEM;
+	cmd_first_items_classes[2].item_class= ASSIGN_CLASS_NUM;
+	cmd_first_items_classes[2].item_type = LEFT_ASSIGN_TOK_NUM;
+	cmd_first_items_classes[3].type=       TOKEN_ITEM;
+	cmd_first_items_classes[3].item_class= IDENT_TYPE_CLASS;
+	cmd_first_items_classes[3].item_type = -1;
 	init_cmd(&cmd, 0);
 	
 	// Algoritmler uchin
@@ -34,6 +46,9 @@ int init()
 	//printf("%d is sizeof cmd, %d is size of cmd type\n", cur_file_algor_size), sizeof(command);
 	cur_file_algor_cmds = 0;
 	//cur_file_algor = malloc(cur_file_algor_size);
+
+	// Butin programma boyuncha ichki komandalaryn sanawy.
+	inline_cmds_num = 0;
 
 	// Global yglan edilen ulniler
 	glob_def_vars_size = glob_def_vars_cmds = 0;

@@ -19,7 +19,8 @@ static part_code = 3;
 is_token_item tok_types[] = {
 	   {is_token_def_type},
 	   {is_token_def_glob},
-	   {is_token_ident}
+	   {is_token_ident},
+	   {is_token_var_left_assign}
 };
 
 
@@ -27,7 +28,7 @@ is_token_item tok_types[] = {
 // Sets default parameters
 void init_token(token *tok)
 {
-	tok->ns = 0;												// Namespace of token
+	tok->ns = 0;							// Namespace of token
 	
 	int i; token_type tok_type;
 	
@@ -65,6 +66,7 @@ int recognize_token(token *tok, char *val)
 	{		
 		tok_types[i].is_token(tok, val);
 	}
+	
 	
 	// Token not recognized
 	if (tok->potentional_types_num==0)
@@ -170,8 +172,10 @@ int move_to_cmd(token *tok, char *tok_string)
 		//printf("hawa dogry");
 		print_err(CODE3_PREV_TOK_INCORRECT);
 	}
+	//printf("Komanda goshuljak bolyar. Token gutarylan eken\n");
 
 	finishize_token(tok);
+	//printf("Token komanda goshulmana tayynlandy\n");
 	if (!add_to_cmd(&cmd, tok))
 	{
 		//debug_token(tok);
@@ -181,16 +185,15 @@ int move_to_cmd(token *tok, char *tok_string)
 				//printf("Token goshulan son:\n");
 				//debug_cmd(&cmd);
 	// Eger token birinji bolsa, ol komandanyn bashlayan tokenlerinden bolmaly
-					// komanda-da tokenin nomeri
+	// komanda-da tokenin nomeri
 	if (cmd.items_num==1)
 	{
 		int i; char first_tok = 0;
-		for (i=0; i<CMD_FIRST_TOKENS_NUM; i++)
+		for (i=0; i<CMD_FIRST_ITEMS_NUM; i++)
 		{
-			if (cmd.items[0].type==1 &&
-				cmd_first_tokens_classes[i]==cmd.items[0].tok.type_class)
+			if (cmd.items[0].type==cmd_first_items_classes[i].type &&
+				cmd_first_items_classes[i].item_class==cmd.items[0].tok.type_class)
 			{
-				
 				first_tok=1;
 				break;
 			}
@@ -201,13 +204,107 @@ int move_to_cmd(token *tok, char *tok_string)
 			print_err(CODE4_CMD_HASNT_FIRST_TOKEN);
 		}
 	}
-	
+	//printf("komanda barlanmana gechmeli\n");
 	if (!parse_cmd(&cmd))
 	{
-		print_err(CODE4_CANT_IDENT_CMD);
+		//printf("Komanda saygaryldy\n");
+		cmd.items_num--;
+		if (!cmd.items_num || !parse_cmd(&cmd))
+			print_err(CODE4_CANT_IDENT_CMD);
+		else
+		{
+			// Ichki komandalaryn sanyny kopeltmeli
+			inline_cmds_num++;
+			inline_cmd_items = realloc(inline_cmd_items, sizeof(command_item*)*inline_cmds_num);
+			if (inline_cmd_items==NULL)
+			{
+				//printf("Ichki komandalar uchin yer taplymady\n");
+				print_err(CODE4_CANT_IDENT_CMD);
+			}
+			else
+			{
+				//printf("Ichki komandalar uchin yer bar\n");
+
+				// Ichki komanda uchin yer.
+				long size = cmd.items_num * sizeof(command_item);
+				inline_cmd_items[inline_cmds_num-1] = malloc(size);
+
+				// Ichki komanda uchin yere, birlikler gechirilyar.
+				int i=0;
+				for (i=0; i<cmd.items_num; ++i)
+				{
+					inline_cmd_items[inline_cmds_num-1][i] = cmd.items[i];
+				}
+				
+				command new_cmd;
+				new_cmd = cmd;
+				new_cmd.items = inline_cmd_items[inline_cmds_num-1];
+				init_cmd(&cmd, 0);
+				cmd.items_num = 2;
+				command_item *tmp = realloc(cmd.items, cmd.items_num*sizeof(command_item));
+				if (tmp==NULL)
+				{
+					//printf("Komanda ichki komandany goshmak uchin yer tapylmady\n");
+					print_err(CODE4_CANT_IDENT_CMD);
+				}
+				else
+				{
+					//printf("Komanda ichki komandany goshmak uchin yer bar\n");
+					cmd.items = tmp;
+					
+					// Onki komanda goshulyar
+					command_item cmd_item = {};
+					cmd_item.type = 2;
+					cmd_item.cmd = new_cmd;
+					
+					cmd.items[0] = cmd_item;
+					
+					// Taze token goshulyar
+					command_item cmd_tok_item;
+					cmd_tok_item.type = 1;
+					cmd_tok_item.tok = *tok;
+					cmd.items[1] = cmd_tok_item;
+					//debug_cmd(&cmd);
+					if (!parse_cmd(&cmd))
+					{
+						//printf("Taze komanda tanalmady\n");
+						print_err(CODE4_CANT_IDENT_CMD);
+					}
+					else
+					{
+						//printf("Taze komanda tanaldy\n");
+					}
+					//debug_cmd(&cmd);
+				}
+			}
+		}
+		//new_cmd.items = malloc(sizeof(command_item)*CMD_MAX_TOKENS);
+		//new_cmd.items[cmd.items_num++] = cmd;
+		//   sonky token pozulyar
+		//   taze komanda yasalyar
+		//   onki komanda taze komandanyn birinji komandasy diyilip yazylyar
+		//   hazirki token komandanyn itemi diyilip yazylyar
+		//   Eger komanda saygarylmasa
+		//     komanda saygarylmady diyilip yalnyshlyk gaytarylyar.
+		
+	}else
+	{
+		//printf("Komanda saygaryldy\n");
 	}
+	//if (!parse_cmd(cmd))
+		{
+			//printf("Komanda saygarylmady\n");
+			//debug_cmd(cmd);
+			//init_token(cmd->tokens_num--;
+		}
+		
+		
+		
+
+		//printf("hawa");
 
 	empty_token(tok);
+	//printf("Token boshadyldy\n");
 	empty_string(tok_string, strlen(tok_string));
 	
 	CUR_PART = prev_part;

@@ -54,6 +54,17 @@ int glob_def_vars_cmds;
 global_def_var *glob_def_vars;
 
 
+/* 
+ * Komandanyn ichindaki komandalaryn birlikleri kuchada yerleshmeli
+ * Programmadan chykylanda, olary kuchadan boshatmaly
+ * Shonun uchin olaryn hemmesinin adresleri yatda saklanylyar.
+ * 
+ * Global programma boyuncha yer boshadyan funksiya bu sanawdaky kuchadaky
+ * Yerleri hem boshadyar
+**/
+command_item **inline_cmd_items;
+unsigned int   inline_cmds_num;
+
 
 char *tpl(int argc, const char **args)
 {
@@ -94,6 +105,18 @@ void free_globs(void)
 	// Global ulnileri yatdan boshadyas
 	if (glob_def_vars_size)
 		free(glob_def_vars);
+	// Komandanyn ichindaki komandalaram kuchada yer eyeleyarler
+	if (inline_cmds_num)
+	{
+		int i;
+		for (i=0; i<inline_cmds_num; ++i)
+		{
+			// Ichki komandalaryn yerleri boshadylyar.
+			free(inline_cmd_items[i]);
+		}
+		// Ichki komandalar uchin berlen yerin ozi boshadylyar.
+		free(inline_cmd_items);
+	}
 	free_locals();
 }
 

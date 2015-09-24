@@ -44,20 +44,22 @@ int parser(FILE *source)
 	// Pargma modunda, parserin ishlejek ulnileri
 	pragma prev_prag; init_pragma(&prev_prag);
 	pragma prag;	  init_pragma(&prag);
-	
 
- 	while((c=fgetc(source))!=EOF) 
+	//printf("Parsinge bashlandy\n");
+ 	
+	while((c=fgetc(source))!=EOF) 
 	{
-		
 		if (mode==PARSER_DEFAULT_MODE)
 		{
+			//printf("Harp parsing edilyar: '%c'\n", c);
 			// tokenin sozi 32 harpdan duryp bilyar
 			if (strlen(prev_tok_string)+1 >= MAX_TOK_LEN)
 			{
 				print_err(CODE2_TOKEN_TOO_BIG);
 			}
 			strstrchcat(new_tok_string, prev_tok_string, c);
-
+			//printf("Taze token sozi emele geldi: '%s'\n", new_tok_string);
+			
 			// Hazirki harp onki tokenin bolegi DAL!
 			if (recognize_token(&new_tok, new_tok_string))	// 0 = OK
 			{
@@ -67,15 +69,19 @@ int parser(FILE *source)
 				// 1. Onki token bar
 				if (is_token_empty(&tok))
 				{
+					//printf("Komanda gechirmeli\n");
 					//debug_cmd(&cmd);
 					move_to_cmd(&tok, prev_tok_string);
 				}
+				//printf("Eger onki token bosh bolmasa, komanda gechirilyar\n");
+				
 				// 2. Eger pragmanyn bashy diyen nushana bolsa
 				if (c==PRAGMA_START_CHAR)
 				{
 					mode = PRAGMA_MODE;
 					continue;
 				}
+				
 				// 3. Boshluk harplara seredilenok
 				if (isspace(c))
 				{
@@ -92,6 +98,7 @@ int parser(FILE *source)
 				{
 					// Komanda bilen ishleyan bolume gechilyar
 					work_with_cmd();
+					//debug_cmd(&cmd);
 					init_cmd(&cmd, 1);
 					init_token(&tok);
 				}
@@ -103,7 +110,9 @@ int parser(FILE *source)
 			//ty_token(token);
 			}
 			else
-			{	empty_string(prev_tok_string, MAX_TOK_LEN);
+			{	
+				//printf("Token tanaldy\n");
+				empty_string(prev_tok_string, MAX_TOK_LEN);
 				strncpy(prev_tok_string, new_tok_string, strlen(new_tok_string)+1);
 				
 				empty_string(new_tok_string, MAX_TOK_LEN);

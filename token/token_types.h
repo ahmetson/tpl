@@ -12,18 +12,18 @@
  * ident (class num: 3)
 **/
 
-// token types number
-#define CONST_TOKEN_TYPES_NUM 3
+// token types number, doks/token_goshmak_tertipleri
+#define CONST_TOKEN_TYPES_NUM 4
 extern const int TOKEN_TYPES_NUM;
 
 // The longest type 'ident' has 6 characters.
 #define CONST_TOKEN_TYPE_MAX_LEN 6
 extern const int TOKEN_TYPE_MAX_LEN;
 
-
 extern const int DEF_TYPE_TYPE_CLASS;
 extern const int GLOB_TYPE_CLASS;
 extern const int IDENT_TYPE_CLASS;
+extern const int ASSIGN_TYPE_CLASS;
 
 // Debug uchin
 extern char *type_classes[];
@@ -35,5 +35,5 @@ extern char *type_classes[];
 int is_token_def_type(token *tok, char *token_val);
 int is_token_def_glob(token *tok, char *token_val);
 int is_token_ident(token *tok, char *token_val);
-
+int is_token_var_left_assign(token *tok, char *token_val);
 #endif
