@@ -16,10 +16,15 @@ extern const int CMD_ITEM;
 extern const int DEF_VAR_MAX_TOKENS;
 extern const int ASSIGN_MAX_ITEMS;
 
+extern int DEF_VAR_CLASS_NUM;
 extern int ASSIGN_CLASS_NUM;
+
+extern int GLOB;
+extern int LOCAL;
 
 typedef struct command_item command_item;
 typedef struct command command;
+
 
 // Bashga komandalar ya tokenler bolup bilyan komanda
 struct command{
@@ -98,5 +103,6 @@ int is_def_var_cmd(command *cmd);
 // Komandalar bilen ishleyan bolum
 int work_with_cmd();
 
-
+// Komanda ulni yglan etme bolsa, ulni yglan etmelerin sanawyna goshyar
+int add_to_def_var_list(command *cmd);
 #endif

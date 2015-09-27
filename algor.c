@@ -12,20 +12,22 @@
 
 int algor_add_cmd(command cmd)
 {
+    // komanda dogrylygy barlanyar
+    check_semantics(&cmd);
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
 		size += (cmd.tokens_num * sizeof(token));*/
-	
-	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar	
-	long new_cur_file_algor_size = cur_file_algor_size+sizeof(cmd);
-	//printf("%d new size\n", new_cur_file_algor_size);
-	cur_file_algor = realloc(cur_file_algor, new_cur_file_algor_size);
-	
-	cur_file_algor[cur_file_algor_cmds++] = cmd;
-	
-	cur_file_algor_size = new_cur_file_algor_size;
-	
+
+	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
+	long new_CUR_ALGOR_SIZE = CUR_ALGOR_SIZE+sizeof(cmd);
+	//printf("%d new size\n", new_CUR_ALGOR_SIZE);
+	CUR_ALGOR = realloc(CUR_ALGOR, new_CUR_ALGOR_SIZE);
+
+	CUR_ALGOR[CUR_ALGOR_ITEMS_NUM++] = cmd;
+
+	CUR_ALGOR_SIZE = new_CUR_ALGOR_SIZE;
+
 	return 1;
 }
 
@@ -34,60 +36,63 @@ int glob_vars_add_cmd(command cmd)
 {
 	// Yglan edilen ulniler boyuncha gidilyar.
 	// Eger eyyam sheyle ulni yglan edilen bolsa, chykylyar.
-	
+
 	// Lokal yglan edilen funksiyalar boyuncha barlanyar.
 	// Eger eyyam sheyle lokal ulni yglan edilen bolsa, yalnyshlyk gaytarylyar.
 	char *tok_name = cmd.items[2].tok.potentional_types[0].value;
+
+
+	// Identifikator eyyam yglan edilen eken.
+	if (is_ident_used(tok_name))
+        return 0;
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
 		size += (cmd.tokens_num * sizeof(token));*/
-	//printf("%s -> %s\n", cur_parse_file_name, tok_name);
+	//printf("%s -> %s\n", CUR_FILE_NAME, tok_name);
 	//printf("%d -> %d", cmd.tokens[1].potentional_types[0].type_class, cmd.tokens[1].potentional_types[0].type_num);
 	//debug_cmd(&cmd);
 	global_def_var new_def = {
-		"", 
+		"",
 		"",
 		cmd.items[1].tok.potentional_types[0].type_class,
 		cmd.items[1].tok.potentional_types[0].type_num
 	};
-	strncpy(new_def.file_name, cur_parse_file_name, strlen(cur_parse_file_name)+1);
+	strncpy(new_def.file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
 	strncpy(new_def.tok_name, tok_name, strlen(tok_name)+1);
 
-	
+
 	//debug_token(&cmd.tokens[1]);
 	//printf("\n%s -> %s\n", new_def.file_name, new_def.tok_name);
 	//printf("%d -> %d\n", new_def.tok_class, new_def.tok_type);
 
-	
-	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar	
-	long new_size = glob_def_vars_size+sizeof(new_def);
-	//printf("%d new size\n", new_cur_file_algor_size);
-	glob_def_vars = realloc(glob_def_vars, new_size);
-	
-	glob_def_vars[glob_def_vars_cmds++] = new_def;
-	
-	glob_def_vars_size = new_size;
-	
+
+	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
+	long new_size = GLOB_VAR_DEFS_SIZE+sizeof(new_def);
+	//printf("%d new size\n", new_CUR_ALGOR_SIZE);
+	GLOB_VAR_DEFS = realloc(GLOB_VAR_DEFS, new_size);
+
+	GLOB_VAR_DEFS[GLOB_VAR_DEFS_NUM++] = new_def;
+
+	GLOB_VAR_DEFS_SIZE = new_size;
+
 	return 1;
-	
-}
 
-
-void init_loc_def_vars()
-{
-	loc_def_vars_size = loc_def_vars_num = 0;
 }
 
 
 int loc_vars_add_cmd(command cmd)
 {
 	char *tok_name = cmd.items[1].tok.potentional_types[0].value;
+
+    // Identifikator eyyam yglan edilen eken.
+	if (is_ident_used(tok_name))
+        return 0;
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
 		size += (cmd.tokens_num * sizeof(token));*/
-	//printf("%s -> %s\n", cur_parse_file_name, tok_name);
+	//printf("%s -> %s\n", CUR_FILE_NAME, tok_name);
 	//printf("%d -> %d", cmd.tokens[0].potentional_types[0].type_class, cmd.tokens[0].potentional_types[0].type_num);
 	//debug_cmd(&cmd);
 	//debug_cmd(&cmd);
@@ -99,20 +104,20 @@ int loc_vars_add_cmd(command cmd)
 	};
 	strncpy(new_def.tok_name, tok_name, strlen(tok_name)+1);
 
-	
+
 	//debug_token(&cmd.tokens[1]);
 	//printf("%d -> %d\n", new_def.tok_class, new_def.tok_type);
 
-	
-	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar	
-	long new_size = loc_def_vars_size+sizeof(new_def);
-	//printf("%d new size\n", new_cur_file_algor_size);
-	loc_def_vars = realloc(loc_def_vars, new_size);
-	
-	loc_def_vars[loc_def_vars_num++] = new_def;
-	
-	loc_def_vars_size = new_size;
-	
+
+	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
+	long new_size = LOCAL_VAR_DEFS_SIZE+sizeof(new_def);
+	//printf("%d new size\n", new_CUR_ALGOR_SIZE);
+	LOCAL_VAR_DEFS = realloc(LOCAL_VAR_DEFS, new_size);
+
+	LOCAL_VAR_DEFS[LOCAL_VAR_DEFS_NUM++] = new_def;
+
+	LOCAL_VAR_DEFS_SIZE = new_size;
+
 	return 1;
 }
 
@@ -124,11 +129,38 @@ char loc_source_file[] = ".c";
 int is_glob_def_var_in_cur()
 {
 	int i;
-	for(i=0; i<glob_def_vars_cmds; ++i)
+	for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
 	{
-		if (strlen(glob_def_vars[i].file_name)==strlen(cur_parse_file_name) &&
-			!strncmp(glob_def_vars[i].file_name, cur_parse_file_name, strlen(cur_parse_file_name)))
+		if (strlen(GLOB_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
+			!strncmp(GLOB_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
 			return 1;
 	}
 	return 0;
+}
+
+
+/*
+ * Ulninin ady boyuncha onun on yglan edilenmidigini barlayar.
+**/
+int is_ident_used(char *ident)
+{
+    int i, len;
+    // Lokal yglan edilen ulnilerin arasynda barlanyar
+    for (i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
+    {
+        len = (strlen(ident)<strlen(LOCAL_VAR_DEFS[i].tok_name))?strlen(LOCAL_VAR_DEFS[i].tok_name):strlen(ident);
+        if (!strncmp(LOCAL_VAR_DEFS[i].tok_name, ident, len))
+            return 1;
+    }
+
+    // Global yglan edilen ulnilerin arasynda barlanyar
+    for (i=0; i<GLOB_VAR_DEFS_NUM; ++i)
+    {
+        len = (strlen(ident)<strlen(GLOB_VAR_DEFS[i].tok_name))?strlen(GLOB_VAR_DEFS[i].tok_name):strlen(ident);
+        if (!strncmp(GLOB_VAR_DEFS[i].tok_name, ident, len))
+            return 1;
+    }
+
+    // Identifikator on ulanylanok eken
+    return 0;
 }

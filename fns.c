@@ -13,7 +13,7 @@ Additonal functions
 #define MAX_SYS_CMD_LEN 300
 
 /* 2 sozi we bir harpy goshyar
- *  
+ *
  * @to        - final string
  * @from      - first  adding string
  * @c         - second adding char
@@ -22,20 +22,10 @@ Additonal functions
 **/
 void strstrchcat(char *to, char *from, char c)
 {
-	strncpy(to, from, strlen(from)+1);
-		
-	to[strlen(to)] = c;	        		// Sonky \0 deregine
-	to[strlen(to)+1] = '\0';
-}
-// Soze soz bilen harpy goshyar
-void strcat_ch2(char *to, char *from, char c)
-{
-	strncpy(to, from, strlen(from)+1);	// +1 sebabi gutaryan \0 goshmaly
-		
-	// Harp goshulyar.
-	int len = strlen(to);
-	to[len] = c;
-	to[len+1] = '\0';
+    strncpy(to, from, strlen(from)+1);
+
+	to[strlen(to)+1] = '\0';	        		// Sonky \0 bire suyshirilyar
+	to[strlen(to)] = c;
 }
 
 /* Checks first occurance of substring in string started from offset
@@ -54,21 +44,21 @@ int strstr_by_offset(const char *string, const char*sub, unsigned int offset)
 	int i;
 	int len     = strlen(string);
 	int sub_len = strlen(sub);
-	
+
 	// Can not search long string in smaller one;
 	if (len<sub_len)
 		return -1;
-	
+
 	// The strings are equal
 	if (strncmp(string, sub, len)==0)
 		return 0;
-	
+
 	for(i=0; offset<sub_len; offset++, i++)
 	{
 		if (string[offset]!=sub[i])
 			return -2;
 	}
-	
+
 	return 1;
 }
 
@@ -103,11 +93,11 @@ char *remove_dirnames(char *f)
 		    f[i]='\\';
 	}
 	i = 0;
-	
+
 	if (strrchr(f, '\\'))
 	{
 	    char *t = strrchr(f, '\\');
-	    
+
 	    if (strlen(t)>1)
 		{
 			int i;
@@ -118,7 +108,7 @@ char *remove_dirnames(char *f)
 		    f[i-1] = '\0';
 		}
 	}
-	
+
 	return f;
 }
 
@@ -127,7 +117,7 @@ char *remove_ext(char *f, char *e)
 {
 	//if (strlen(e)>=strlen(f))
 	//	return f;
-	
+
 	if (strstr(f,e)!=NULL)
 	{
 		f[strlen(f)-strlen(e)] = '\0';
@@ -140,7 +130,7 @@ char *remove_ext(char *f, char *e)
  * Berlen sozun bolmaly uzynlygyndaky,
  * ichindaki hemme harplaryn deregine \0 bilen dolduryar.
  *
- * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa, 
+ * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa,
  * ol strlen() funksiyasy arkaly tanalyar.
  *   Shonda dine sozde birinji \0 dushyancha hemme harplaryn deregine \0 goyular
 **/
@@ -151,7 +141,7 @@ char *empty_string(char *f, int len)
 		last = strlen(f)-1;
 	else
 		last = len-1;
-		
+
 	for (i=0; i<=last; ++i)
 	{
 		f[i] = '\0';
