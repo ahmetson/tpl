@@ -25,7 +25,6 @@ typedef struct{
 	int potentional_types_num;									// Number of recognized types for token
 	//char source_file[MAXLEN];									// source file of token
 	char value[MAXLEN];
-	int value_len;
 	int is_compl;
 	int type_class;
 }token;

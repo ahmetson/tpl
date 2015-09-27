@@ -14,11 +14,11 @@ void debug_cmd(command *cmd)
 {
 	char *cmd_class = get_cmd_class(cmd->cmd_class);
 	char *cmd_type = get_cmd_class_type(cmd->cmd_class, cmd->cmd_type);
-	
+
 	char *complete = (cmd->is_compl) ? "Complete" : "Not complete";
-	
+
 	char *ns = (cmd->ns==1)?"local":"global";
-	
+
 	printf("\nINFO ABOUT COMMAND++++++++++++++++++++++++++\n");
 	printf("'%s', '%s' command, in '%s'->'%s'\n", ns, complete, cmd_class, cmd_type);
 	printf("Has %d tokens\n\n", cmd->items_num);
@@ -36,13 +36,13 @@ void debug_cmd(command *cmd)
 		}
 	}
 	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
-			
+
 }
 
 void debug_token(token *tok)
 {
 	char *ns = (tok->ns==1)?"local":"global";
-	
+
 	char *type_class = get_type_class(tok->type_class);
 
 	char *complete = (tok->is_compl) ? "Complete" : "Not complete";
@@ -66,7 +66,7 @@ void debug_token_type(token_type *tok_type)
 	char type[256];
 	char *complete = (tok_type->is_compl) ? "Complete" : "Not complete";
 	char *type_class = get_type_class(tok_type->type_class);
-	
+
 	if (tok_type->type_class==DEF_TYPE_TYPE_CLASS)
 		strncpy(type, def_type_list[tok_type->type_num].tk_name, strlen(def_type_list[tok_type->type_num].tk_name)+1);
 	else if (tok_type->type_class==ASSIGN_TYPE_CLASS)
@@ -75,11 +75,11 @@ void debug_token_type(token_type *tok_type)
 	}
 	else
 		strncpy(type, "", strlen("")+1);
-	
-		
+
+
 	printf("\tTOK_TYPE------------\n");
 	printf("\t('%s') '%s'->'%s' token type\n", complete, type_class, type);
-	
+
 	if (tok_type->need_value==0)
 		printf("\tValue doesn't required\n");
 	else
@@ -92,7 +92,7 @@ char *get_type_class(int type_class_num)
 {
 	if (type_class_num>0)
 		return type_classes[type_class_num-1];
-	
+
 	return "Tipin klasy nabelli";
 }
 
@@ -100,7 +100,7 @@ char *get_cmd_class(int cmd_class_num)
 {
 	if (cmd_class_num>0)
 		return cmd_classes[cmd_class_num-1];
-	
+
 	return "Komandanyn klasy nabelli";
 }
 
@@ -108,14 +108,14 @@ char *get_cmd_class_type(int cmd_class_num, int cmd_type_num)
 {
 	if (cmd_class_num>0 && cmd_type_num>0)
 		return cmd_class_types[cmd_class_num-1][cmd_type_num-1];
-	
+
 	return "Komandanyn tipi nabelli";
 }
 
-void debug_glob_def_vars(global_def_var *g)
+void debug_GLOB_VAR_DEFS(global_def_var *g)
 {
 	printf("\tGLOBAL YGLAN EDILEN ULNILER----\n");
-	if (glob_def_vars_cmds<1)
+	if (GLOB_VAR_DEFS_NUM<1)
 	{
 		printf("\n\tGlobal ulniler yglan edilmandir\n");
 	}
@@ -123,25 +123,25 @@ void debug_glob_def_vars(global_def_var *g)
 	{
 		printf("\n");
 		int i;
-		for(i=0; i<glob_def_vars_cmds; ++i)
+		for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
 		{
 			char *type_class = get_type_class(g[i].tok_class);
 
 			const char *type       = def_type_list[ g[i].tok_type ].tk_name;
-			printf("\t%d. %s faylda, (%s) %s %s\n", i+1, 
+			printf("\t%d. %s faylda, (%s) %s %s\n", i+1,
 				g[i].file_name,
-				type_class, 
-				type, 
+				type_class,
+				type,
 				g[i].tok_name);
 		}
 	}
 	printf("\n\n\n");
 }
 
-void debug_loc_def_vars(local_def_var *l)
+void debug_LOCAL_VAR_DEFS(local_def_var *l)
 {
 	printf("\tLOKAL YGLAN EDILEN ULNILER----\n");
-	if (loc_def_vars_num<1)
+	if (LOCAL_VAR_DEFS_NUM<1)
 	{
 		printf("\n\tFaylda ulniler yglan edilmandir\n");
 	}
@@ -149,15 +149,15 @@ void debug_loc_def_vars(local_def_var *l)
 	{
 		printf("\n");
 		int i;
-		for(i=0; i<loc_def_vars_num; ++i)
+		for(i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
 		{
 			char *type_class = get_type_class(l[i].tok_class);
 
 			const char *type       = def_type_list[ l[i].tok_type ].tk_name;
-			printf("\t%d. %s faylda, (%s) %s %s\n", i+1, 
-				cur_parse_file_name,
-				type_class, 
-				type, 
+			printf("\t%d. %s faylda, (%s) %s %s\n", i+1,
+				CUR_FILE_NAME,
+				type_class,
+				type,
 				l[i].tok_name);
 		}
 	}

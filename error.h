@@ -34,9 +34,13 @@ extern int CODE2_TOKEN_TOO_BIG;
 extern int CODE3_PREV_TOK_INCORRECT;
 
 extern int CODE4_CMD_HASNT_FIRST_TOKEN;
-extern int CODE4_TOO_MANY_TOKENS;
+extern int CODE4_CANT_ADD_TOKEN;
 extern int CODE4_CANT_IDENT_CMD;
+extern int CODE4_VARS_IDENT_USED;
 
+extern int CODE7_LEFT_IDENT_DEFINED;
+extern int CODE7_LEFT_IDENT_NOT_DEFINED;
+extern int CODE7_RIGHT_IDENT_NOT_DEFINED;
 
 /* Yalnyshlyklaryn tekstleri */
 extern char *err_texts[][10];

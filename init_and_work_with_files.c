@@ -13,20 +13,19 @@
 #include "error.h"
 
 /*
- * TPL-in ishlemezden on, ozuni duzmeleshdiryar we taynlayar
+ * Işe başlamazdan öňürti, hemme ulanyljak ülňiler taýynlanmaly.
+ * Şu funksiýa arkaly
 **/
 int init()
 {
-	// TPL bashlanda, bitarap bolumden bashlayar
+	// TPL ulgam bölüminden başlanýar
 	CUR_PART = 0;
-	
-	// Hazirki fayl
-	strncpy(cur_parse_file_name, "", strlen("")+1);
-	// Hazirki setir
-	cur_parse_line_num = 0;
-	// Hazirki harp
-	cur_parse_char = -1;
-	
+
+	// Häzirki  parsing edilýän: faýlyň ady, setiri, harpy
+	strncpy(CUR_FILE_NAME, "", strlen("")+1);
+	CUR_LINE = 0;
+	CUR_CHAR = -1;
+
 	cmd_first_items_classes[0].type		 = TOKEN_ITEM;
 	cmd_first_items_classes[0].item_class= DEF_TYPE_TYPE_CLASS;
 	cmd_first_items_classes[0].item_type = -1;
@@ -40,19 +39,19 @@ int init()
 	cmd_first_items_classes[3].item_class= IDENT_TYPE_CLASS;
 	cmd_first_items_classes[3].item_type = -1;
 	init_cmd(&cmd, 0);
-	
+
 	// Algoritmler uchin
-	cur_file_algor_size = 0;
-	//printf("%d is sizeof cmd, %d is size of cmd type\n", cur_file_algor_size), sizeof(command);
-	cur_file_algor_cmds = 0;
-	//cur_file_algor = malloc(cur_file_algor_size);
+	CUR_ALGOR_SIZE = 0;
+	//printf("%d is sizeof cmd, %d is size of cmd type\n", CUR_ALGOR_SIZE), sizeof(command);
+	CUR_ALGOR_ITEMS_NUM = 0;
+	//CUR_ALGOR = malloc(CUR_ALGOR_SIZE);
 
 	// Butin programma boyuncha ichki komandalaryn sanawy.
-	inline_cmds_num = 0;
+	GLOB_SUBCMDS_NUM = 0;
 
 	// Global yglan edilen ulniler
-	glob_def_vars_size = glob_def_vars_cmds = 0;
-	
+	GLOB_VAR_DEFS_SIZE = GLOB_VAR_DEFS_NUM = 0;
+
 	// Lokal ulniler uchin
 
 	// C dilinin kody uchin papkany tayynlayar
@@ -69,10 +68,10 @@ int has_argument(int argc)
 {
 	if (argc>1)
 		return 1;
-	
+
 	CUR_PART = 1;
 	print_err(CODE1_FILE_NOT_FOUND);
-	
+
 }
 
 /*
@@ -81,17 +80,17 @@ int has_argument(int argc)
 int read_source_file(const char *parse_file_name)
 {
 	FILE *source = fopen(parse_file_name, "r");
-		
+
 	if (source==NULL)
 	{
 		CUR_PART = 1;
 		//printf("Init we fayllar bilen ishleyan bolumde");
 		print_err(CODE1_FILE_CANT_OPEN);
 	}
-	
+
 	// 2-nji TPL-in bolumine gechildi
 	parser(source);
-	
+
 	fclose(source);
 }
 

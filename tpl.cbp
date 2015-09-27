@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tpl" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="tpl" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Unit filename="algor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="algor.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/assign.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/assign.o">
+			<Option link="0" />
+		</Unit>
+		<Unit filename="cmds.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmds.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dev_debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dev_debug.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="error.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fns.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fns.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="init_and_work_with_files.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="init_and_work_with_files.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="other.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="parser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="parser.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pragma/pragma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pragma/pragma.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="semantic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="semantic.h" />
+		<Unit filename="token/assign.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/assign.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/assign.o">
+			<Option link="0" />
+		</Unit>
+		<Unit filename="token/def_types.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/def_types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/glob.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/glob.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/keywords.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/keywords.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_structs.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_word.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_word.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tokens.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tokens.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translator_to_c.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translator_to_c.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

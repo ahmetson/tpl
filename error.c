@@ -8,16 +8,16 @@
 #include "translator_to_c.h"															// Yalnyshlykly faylyn we setirin adresleri
 #include "error.h"
 
-/* Kompilyatoryn bolekleri*/
+/* TPL şu bölümlerden durýar.*/
 char *parts_names[] = {
-"0. ulgam",
-"1. inisalizasiya we kodly fayllary saygarma",
-"2. harplar",
-"3. tokenler",
-"4. komandalar",
-"5. algoritm",
-"6. global sanawlar",
-"7. semantika",
+"0. TPL ulgamy",
+"1. Giriş we faýllar bilen işleme",
+"2. Harplar",
+"3. Tokenler",
+"4. Komandalar",
+"5. Algoritm",
+"6. Global sanawlar",
+"7. Semantika",
 "8. C translator"
 };
 
@@ -38,54 +38,62 @@ int CODE2_TOKEN_TOO_BIG = 4;
 int CODE3_PREV_TOK_INCORRECT = 0;
 
 int CODE4_CMD_HASNT_FIRST_TOKEN = 0;
-int CODE4_TOO_MANY_TOKENS = 1;
+int CODE4_CANT_ADD_TOKEN = 1;
 int CODE4_CANT_IDENT_CMD = 2;
+int CODE4_VARS_IDENT_USED= 3;
 
-/* Yalnyshlyklaryn tekstleri */
+int CODE7_LEFT_IDENT_DEFINED = 0;
+int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
+int CODE7_RIGHT_IDENT_NOT_DEFINED = 2;
+
+/* Ýalňyşlyklaryň tekstleri */
 char *err_texts[][10] = {
 	{"Kompilyatora niyetlenen komandanyn achyp bolmady",				// 0.Ulgam
 	 "Eyyam bash fayl oturdildi",
-	 "Programma-da bash fayl bellenmandir.\n \
-Ony '#b1' pragmasy bilen kodyn ichinde bellemeli."},				
-	{"Kodly fayllar tapylmady",											// 1.File we inisializasiya
-	 "Kodly fayly achmak bashartmady"},	
-	{"Bu harpdan token bashlanok",										// 2.Harplar (parsing)
-	 "Pragma dolylygyna yazylmady",
+	 "Ýazyljak programmanyň baş faýly tanalmady.\n \
+Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
+	{"Kodly faýl gelmedi",											// 1.File we inisializasiya
+	 "Kodly faýly açmak başartmady"},
+	{"Şeýle symboldan harp başlanok",										// 2.Harplar (parsing)
+	 "Pragma dolylygyna ýazylmady",
 	 "Pragma tanalmady",
-	 "Sonky tokenden son, komandany gutaryan token yetenok",
-	 "Token gaty uzyn bolyar. Ony gysgaldyn"},										
-	{"Mundan onki token gutarylmadyk"},									// 3.Tokenler
-	{"Hich bir komanda beyle tokenden bashlanok",						// 4.Komandalar
-	 "Komanda maksimum 3 tokenden durmaly",
-	 "Komandany saygaryp bolmady"},
+	 "Komandany gutarýan token ýetenok",
+	 "Token gaty uzyn"},
+	{"Mundan öňki token tanalmandy (ýa gutarylmandy)"},									// 3.Tokenler
+	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",						// 4.Komandalar
+	 "Kompýuteriň ýadynda ýer ýetmedi",
+	 "Komanda tanalmady",
+	 "Ulni uchin identifikator eyyam ulanyldy"},
 	{},																	// 5.Algoritmler
 	{},																	// 6.Global sanawlar
-	{},																	// 7.Sanawlar
+	{"Komandanyň çep identifikatory öň yglan edilipdi",		        	// 7.Semantika
+	 "Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
+	 "Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"},
 	{}																	// 8.Kompilyator we C translyator
 };
 
 /*
- * Kompilyator ishlande yalnyshlyk cykan wagty,
- * Haty chap edyar
+ * TPL'iň işlän wagty ýalňyşlyk duşanda, peýdaly maglumatlar çap edilýär.
  *
- * @part - Kompilyatoryn bolumi
- * @num  - yalnyshlygyn nomeri
- * @file - Yalnyshlygyn chykan fayly
- * @line - Yalnyshlygyn chykan setiri
- * @ch   - Yalnyshlyk chykanda, parserin saklanan harpy
+ * Funksiýanyň içindäki ulanylýan ülňiler:
+ * @part - TPL'iň bölümi
+ * @num  - Ýalňyşlygyň bölümiň içindäki nomeri
+ * @file - Ýalňyşlyk faýlda çykan bolsa, onuň ady
+ * @line - Ýalňyşlyk faýlda çykan bolsa, çykan setiri
+ * @ch   - Ýalňyşlyk çykan wagty, parseriň saklanan symwoly
 **/
 void print_err(int num)
 {
-	printf("\n\nYalnyshlyk yuze chykdy!\n");												// Yalnyshlyk hakda title
+	printf("\n\nÝalňyşlyk ýüze çykdy!\n");								// Yalnyshlyk hakda title
 	if (CUR_PART>=2 && CUR_PART<=7)
-	{	
-	    printf("Fayl: '%s', Setir: '%d' ", cur_parse_file_name, cur_parse_line_num);	// Source faylda yalnyshlygyn tapylan yeri, 
-		if (cur_parse_char!=-1)
-			printf(", Bashlayan harpy: '%c'\n", cur_parse_char);						// Bolup biljek Source faylda, 
-		printf("\n");																	// yalnyshlygyn tapylan yeri
-	}																					
-	
-	printf("(Yalnyshlygyn nomeri: %d.%d) %s! \n\n", CUR_PART, num, err_texts[CUR_PART][num]);					// Yalnyshlyk sozi
+	{
+	    printf("Faýl: '%s', Setir: '%d' ", CUR_FILE_NAME, CUR_LINE);	// Source faylda yalnyshlygyn tapylan yeri,
+		if (CUR_CHAR!=-1)
+			printf(", Harp: '%c'\n", CUR_CHAR);						    // Bolup biljek Source faylda,
+		printf("\n");													// yalnyshlygyn tapylan yeri
+	}
+
+	printf("#%d.%d %s! \n\n", CUR_PART, num, err_texts[CUR_PART][num]);	// Yalnyshlyk sozi
 
 	free_globs();
 

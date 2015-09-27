@@ -29,12 +29,6 @@ int algor_add_cmd(command cmd);
 // Global ulni komanda goshulyar
 int glob_vars_add_cmd(command cmd);
 
-// Her fayla tazeden ulanmaly bolany uchin,
-// bashlangych maglumatlary kop wagtlap oturtmeli bolyar.
-// Eger lokal ulni goshulmasa, onda lokal ulni bardygyny bilmek uchin bashlangych maglumatlary
-// ulanylyar.
-// Lokal ulniler global bolup, butin programma boyuncha mumkin bolup duryarlar.
-void init_loc_def_vars(void);
 
 int loc_vars_add_cmd(command cmd);
 
@@ -47,4 +41,8 @@ extern char loc_source_file[MAX_FILE_LEN];
 
 // Hazirki parsing edilen faylda global ulni yglan edileninin jogabyny gaytaryar
 int is_glob_def_var_in_cur();
+/*
+ * Ulninin ady boyuncha onun on yglan edilenmidigini barlayar.
+**/
+int is_ident_used(char *ident);
 #endif

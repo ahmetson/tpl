@@ -1,9 +1,9 @@
-/* Programma: TPL (Turkmen|turkic|testable programming language)
+/* Programma:  TPL (Turkmen|turkic|testable programming language)
 
-   Aftory:     Medet Atabayev[milayter@milayt.com],
-   Versiyesi:  0.0.1
+   Awtory:     Medet Atabayev[milayter@milayt.com],
+   Wersiýesi:  0.0.1
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -19,51 +19,43 @@
 #include "dev_debug.h"
 #include "error.h"
 
-// GLOBAL yglan edilen ulniler, butin programma boyuncha ulanylyar
-	// komandanyn sony diymegi anladyar
-char cmd_end = '.';
+// Global, komandanyň soňyny aňladýar
+char CMD_END = '.';
+// Ýasaljak programmanyň baş faýlynyň ady
+char MAIN_FILE_NAME[];
+// Parsing edilip duran faýlyň maglumatlary
+int             CUR_PART;
+char            CUR_FILE_NAME[];
+char            CUR_CHAR;
+unsigned int    CUR_LINE;
+// Hazirki yasalyp duran komanda
+command         cmd;
+// Parsing edilip duran faýldan emele geljek komandalar
+long            CUR_ALGOR_SIZE;		// Algoritmiň göwrümi
+int             CUR_ALGOR_ITEMS_NUM;	// Algoritmdaki komandalaryň sany
+command        *CUR_ALGOR;             // Algoritmiň poýnteri
+// Parsing edilip duran faýlda yglan edilen ülňiler
+long            LOCAL_VAR_DEFS_SIZE;
+int             LOCAL_VAR_DEFS_NUM;
+local_def_var  *LOCAL_VAR_DEFS;
 
-	// Programmanyn bash fayly
-char main_file_name[];
-
-	// Hazirki parsing edilyan faylyn maglumatlary
-char cur_parse_file_name[];	
-char cur_parse_char;
-unsigned int  cur_parse_line_num;
-
-	// Hazir TPL-in haysy bolumi kod bilen ishleyar
-int CUR_PART;
-
-	// Hazirki yasalyp duran komanda
-command cmd;
-
-	// Hazirki faylyn algoritmi
-long cur_file_algor_size;		// Yatdaky algoritmin gowrumi
-int cur_file_algor_cmds;		// Algoritmdaki komandalaryn sany
-command *cur_file_algor;
-
-	// Hazirki faylda yglan edilen ulnilerin sanawy
-long loc_def_vars_size;
-int loc_def_vars_num;
-local_def_var *loc_def_vars; 
-
-	// Butin programma bouyuncha yglan edilen global ulnilerin sanawy,
-	// Yglan edilen faylynyn ady bilen yazylyar.
-long glob_def_vars_size;
-int glob_def_vars_cmds;
-global_def_var *glob_def_vars;
+// Hemme kodly faýllardaky global yglan edilen ülňileriň sanawy.
+// Yglan edilen faýlynyň ady hem sanawa girizilýär.
+long            GLOB_VAR_DEFS_SIZE;
+int             GLOB_VAR_DEFS_NUM;
+global_def_var *GLOB_VAR_DEFS;
 
 
-/* 
+/*
  * Komandanyn ichindaki komandalaryn birlikleri kuchada yerleshmeli
  * Programmadan chykylanda, olary kuchadan boshatmaly
  * Shonun uchin olaryn hemmesinin adresleri yatda saklanylyar.
- * 
+ *
  * Global programma boyuncha yer boshadyan funksiya bu sanawdaky kuchadaky
  * Yerleri hem boshadyar
 **/
-command_item **inline_cmd_items;
-unsigned int   inline_cmds_num;
+command_item  **GLOB_SUBCMD_ITEMS_LIST;
+unsigned int    GLOB_SUBCMDS_NUM;
 
 
 char *tpl(int argc, const char **args)
@@ -73,72 +65,71 @@ char *tpl(int argc, const char **args)
 
 	// Inisializasiya
 	init();
-	
+
 	int i;
-	// Her fayl boyuncha parseri chagyrmaly
+	// Her faýl parserden geçmeli
 	for (i=1; i<argc; ++i)
 	{
 		//printf("Parsing etmeli: '%s'\n", args[i]);
-		
-		// Hazirki parsing edilyan fayl
-		strncpy(cur_parse_file_name, args[i], strlen(args[i])+1);
+		// Häzirki parsing edilmeli faýlyň ady
+		strncpy(CUR_FILE_NAME, args[i], strlen(args[i])+1);
 
 		read_source_file(args[i]);
-
 	}
-	
-	// Fayllar parsing edip bolanyndan son
-	
-	// Yasalmaly programmanyn bash fayly bolmaly
-	if (!strlen(main_file_name))
+
+    // Hemme faýllar parsing edilip bolundy.
+    // Ýasaljak programmanyň hemme faýllaryna degişli boljak işler edilmeli
+
+	// 1) Ýasalan programmanyň baş faýly tanalmaly
+	if (!strlen(MAIN_FILE_NAME))
 	{
 		print_err(CODE0_NOT_FOUND_MAIN_FILE);
 	}
-	//debug_glob_def_vars(glob_def_vars);
+
+	// PROGRAMMADAN ÇYKMALY
 	free_globs();
-	
+
 	printf("OK!\n");
 }
 
+
+/*
+ * Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar
+**/
 void free_globs(void)
 {
-	// Global ulnileri yatdan boshadyas
-	if (glob_def_vars_size)
-		free(glob_def_vars);
-	// Komandanyn ichindaki komandalaram kuchada yer eyeleyarler
-	if (inline_cmds_num)
+	// Global yglan edilen ülňiler boşadylýar.
+	if (GLOB_VAR_DEFS_SIZE) free(GLOB_VAR_DEFS);
+
+    // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
+	if (GLOB_SUBCMDS_NUM)
 	{
 		int i;
-		for (i=0; i<inline_cmds_num; ++i)
+		for (i=0; i<GLOB_SUBCMDS_NUM; ++i)
 		{
-			// Ichki komandalaryn yerleri boshadylyar.
-			free(inline_cmd_items[i]);
+			// Her komandanyň birlikleri üçin aýratyn ýer eýelenýär
+			free(GLOB_SUBCMD_ITEMS_LIST[i]);
 		}
-		// Ichki komandalar uchin berlen yerin ozi boshadylyar.
-		free(inline_cmd_items);
+		free(GLOB_SUBCMD_ITEMS_LIST);
 	}
+
+	// Diňe parsing edilýän wagty ulanylýan ülpileriň ýerleri boşadylýar
 	free_locals();
 }
 
-// Lokal, dine hazirki fayla degishli maglumatlar uchin berlen yat boshadylyar
+
+/*
+ * Diňe parsing edilip duran wagty ulanylýan ýerler boşadylýar.
+**/
 void free_locals(void)
 {
-	// Lokal maglumatlar pozulyar
-	if (cur_file_algor_size)
-	{
-		cur_file_algor_size = 0;
-		free(cur_file_algor);
-	}
-	// Lokal yglan edilen ulniler pozulyar
-	if (loc_def_vars_num)
-	{
-		init_loc_def_vars();
-		free(loc_def_vars);
-	}
-	// Eger komanda-da token bar bolsa
-	if (cmd.items_num)
-	{
-		free(cmd.items);
-	}
+	// Parsing edilýän faýlyň komandalarynyň sanawy boşadylýar
+	if (CUR_ALGOR_SIZE &&     !(CUR_ALGOR_SIZE = CUR_ALGOR_ITEMS_NUM = 0))     free(CUR_ALGOR);
 
+	// Parsing edilýän faýlda yglan edilen ülňileriň sanawy boşadylýar
+	if (LOCAL_VAR_DEFS_NUM && !(LOCAL_VAR_DEFS_SIZE = LOCAL_VAR_DEFS_NUM = 0)) free(LOCAL_VAR_DEFS);
+
+	// Komandanyň içindäki birlikler ýatda emeli usulda goýulýar.
+	// Indi, olaryň alýan ýerleri boşadylýar.
+	if (cmd.items_num)                                                      free(cmd.items);
 }

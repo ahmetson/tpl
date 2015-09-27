@@ -16,7 +16,7 @@ char *get_cmd_class(int cmd_class_num);
 char *get_cmd_class_type(int cmd_class_num, int cmd_type_num);
 
 
-void debug_glob_def_vars(global_def_var *g);
+void debug_GLOB_VAR_DEFS(global_def_var *g);
 
-void debug_loc_def_vars(local_def_var *l);
+void debug_LOCAL_VAR_DEFS(local_def_var *l);
 #endif

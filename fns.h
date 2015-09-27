@@ -7,8 +7,6 @@ void strstrchcat(char *to, char *from, char c);
 // Checks first occurance of substring in string started from offset
 int strstr_by_offset(const char *string, const char*sub, unsigned int offset);
 
-// Soze soz bilen harpy goshyar
-void strcat_ch2(char *to, char *from, char c);
 
 // SISTEMA BILEN ISHLEYAN ULNILER
 // Taze papka yasayar
@@ -22,7 +20,7 @@ int sys_rmdir(char *folder_name);
  * Berlen sozun bolmaly uzynlygyndaky,
  * ichindaki hemme harplaryn deregine \0 bilen dolduryar.
  *
- * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa, 
+ * Eger-de bolmaly uzynlygy tanalmasy, yagny argument -1 bolsa,
  * ol strlen() funksiyasy arkaly tanalyar.
  *   Shonda dine sozde birinji \0 dushyancha hemme harplaryn deregine \0 goyular
 **/

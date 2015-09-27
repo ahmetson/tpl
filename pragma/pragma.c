@@ -39,32 +39,32 @@ void init_pragma(pragma *prag)
 /*
  * Pragmany tanayan we jogabyny gaytaryan funksiya
  * Eger pragma tanalsa we gutaran bolsa, onda getirilen pragma gutaryldy diyilip goyulyar.
- * 
+ *
  * Gaytaryar:
- *  Pragmanyn saygarylanynyn statusy   
+ *  Pragmanyn saygarylanynyn statusy
 **/
 int recognise_pragma(pragma *prag)
 {
 	int i, answer;
-	
+
 	// Pragma atlary minimum 2 s=harpdan ybarat bolmaly, bir harp we bir san
 	if (strlen(prag->name)>=PRAGMA_MIN_LEN)
 	{
 		// Pragmanyn sony san bolup, galan yerinde san bolmaly dal
 		int prag_name_last_char = strlen(prag->name)-1;
-		
+
 		for (i=0; i<prag_name_last_char; ++i)
 		{
 			if (isdigit(prag->name[i]))
 				return 0;
 		}
 	}
-	
+
 	// Pragmamy, sanaw boyuncha barlanyar
 	for (i=0; i<PRAGMAS_NUM; ++i )
 	{
 		answer = strstr_by_offset(pragmas[i], prag->name, 0);
-		
+
 		// Tapyldy we gutarnykly
 		if (answer==0)
 		{
@@ -77,7 +77,7 @@ int recognise_pragma(pragma *prag)
 			return 1;
 		}
 	}
-	
+
 	// Hich hili pragma komandalaryn gornushine degishli dal
 	return 0;
 }
@@ -106,9 +106,9 @@ void act_pragma_main_file(pragma *prag)
 	int prev_part = CUR_PART;
 	CUR_PART = 0;
 	//printf("Fayl chagyryldy\n");
-	if (strlen(main_file_name)<1)
+	if (strlen(MAIN_FILE_NAME)<1)
 	{
-		strncpy(main_file_name, cur_parse_file_name, strlen(cur_parse_file_name)+1);
+		strncpy(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
 	}
 	else
 	{
