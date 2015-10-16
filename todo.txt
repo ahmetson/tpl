@@ -1,3 +1,5 @@
+// MAIN funksiya bolan fayla, galan ahli fayllaryn bash funksiyalary chagyrylyar we olaryn atlary inklud edilyar
+
 // cmd_types command_type diyen struct tipine gora yasalyar. Onda iki 3 sany tip ulni bolyar: tipin gornushi, nomeri we komanda shu tipde gutaranmy ya yoklugy.
 
 // Komanda struct tipine potential cmd_types, we cmd_types_num ulnisini goymaly.

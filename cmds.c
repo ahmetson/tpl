@@ -494,13 +494,15 @@ int work_with_cmd()
 		print_err(CODE4_CANT_IDENT_CMD);
 	}
 
-	//printf("Komanda showly saygaryldy\n");
+
+
 	if (!add_to_def_var_list(&cmd)) // Komanda ulnini yglan etme dal eken
     {
 		// Komandany algoritme goshulyar
 		algor_add_cmd(cmd);
-		//printf("Komanda algoritme goshuldy\n");
 	}
+
+
 	CUR_PART = prev_part;
 	return 1;
 }
@@ -521,7 +523,9 @@ int add_to_def_var_list(command *cmd)
 	{
 		// Komandany global funksiyalara goshjak bolyas
 		if (!glob_vars_add_cmd(*cmd))
+        {
             print_err(CODE4_VARS_IDENT_USED);
+        }
 	}
 	else if (is_def_var_cmd(cmd))
 	{

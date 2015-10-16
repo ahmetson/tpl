@@ -8,26 +8,50 @@
 #include "tpl.h"
 #include "algor.h"
 #include "translator_to_c.h"
+#include "error.h"
 #include "dev_debug.h"
 
-int algor_add_cmd(command cmd)
+int algor_add_cmd(command add_cmd)
 {
     // komanda dogrylygy barlanyar
-    check_semantics(&cmd);
-	/*
-	int size = sizeof(cmd);
-	if (cmd.tokens_num>0)
-		size += (cmd.tokens_num * sizeof(token));*/
+    check_semantics(&add_cmd);
 
-	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-	long new_CUR_ALGOR_SIZE = CUR_ALGOR_SIZE+sizeof(cmd);
-	//printf("%d new size\n", new_CUR_ALGOR_SIZE);
-	CUR_ALGOR = realloc(CUR_ALGOR, new_CUR_ALGOR_SIZE);
+    GLOB_SUBCMDS_NUM++;
+	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
+    if (GLOB_SUBCMD_ITEMS_LIST==NULL)
+    {
+        //printf("Ichki komandalar uchin yer taplymady\n");
+        print_err(CODE4_CANT_IDENT_CMD);
+    }
+    else
+    {
+        long size = cmd.items_num * sizeof(command_item);
+        GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = malloc(size);
 
-	CUR_ALGOR[CUR_ALGOR_ITEMS_NUM++] = cmd;
+            // Ichki komanda uchin yere, birlikler gechirilyar.
+        int i=0;
+        for (i=0; i<add_cmd.items_num; ++i)
+        {
+            GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = add_cmd.items[i];
+        }
+        add_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
 
-	CUR_ALGOR_SIZE = new_CUR_ALGOR_SIZE;
+        /*
+        int size = sizeof(cmd);
+        if (cmd.tokens_num>0)
+            size += (cmd.tokens_num * sizeof(token));*/
+        // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
+        long new_CUR_ALGOR_SIZE = CUR_ALGOR_SIZE+sizeof(add_cmd);
+        if (CUR_ALGOR_SIZE)
+            CUR_ALGOR = realloc(CUR_ALGOR, new_CUR_ALGOR_SIZE);
+        else
+            CUR_ALGOR = malloc(new_CUR_ALGOR_SIZE);
 
+        // TODO: komandanyn kopiyasyny goymaly.
+        CUR_ALGOR[CUR_ALGOR_ITEMS_NUM++] = add_cmd;
+
+        CUR_ALGOR_SIZE = new_CUR_ALGOR_SIZE;
+    }
 	return 1;
 }
 
@@ -45,6 +69,7 @@ int glob_vars_add_cmd(command cmd)
 	// Identifikator eyyam yglan edilen eken.
 	if (is_ident_used(tok_name))
         return 0;
+
 	/*
 	int size = sizeof(cmd);
 	if (cmd.tokens_num>0)
@@ -68,13 +93,14 @@ int glob_vars_add_cmd(command cmd)
 
 
 	// Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-	long new_size = GLOB_VAR_DEFS_SIZE+sizeof(new_def);
+	GLOB_VAR_DEFS_SIZE += sizeof(new_def);
 	//printf("%d new size\n", new_CUR_ALGOR_SIZE);
-	GLOB_VAR_DEFS = realloc(GLOB_VAR_DEFS, new_size);
+	if (GLOB_VAR_DEFS_NUM)
+        GLOB_VAR_DEFS = realloc(GLOB_VAR_DEFS, GLOB_VAR_DEFS_SIZE);
+    else
+        GLOB_VAR_DEFS = malloc(GLOB_VAR_DEFS_SIZE);
 
 	GLOB_VAR_DEFS[GLOB_VAR_DEFS_NUM++] = new_def;
-
-	GLOB_VAR_DEFS_SIZE = new_size;
 
 	return 1;
 
@@ -140,7 +166,24 @@ int is_glob_def_var_in_cur()
 
 
 /*
- * Ulninin ady boyuncha onun on yglan edilenmidigini barlayar.
+ * Ülňiniň ady boýunça onuň global ülňileriň arasynda yglan edilendigini barlaýar
+**/
+int is_ident_glob_used(char *ident)
+{
+    // Global yglan edilen ulnilerin arasynda barlanyar
+    int i, len;
+    for (i=0; i<GLOB_VAR_DEFS_NUM; ++i)
+    {
+        len = (strlen(ident)<strlen(GLOB_VAR_DEFS[i].tok_name))?strlen(GLOB_VAR_DEFS[i].tok_name):strlen(ident);
+        if (strncmp(GLOB_VAR_DEFS[i].tok_name, ident, len)==0)
+            return 1;
+    }
+
+    return 0;
+}
+
+/*
+ * Ulninin ady boyuncha onun on yglan edilendigini barlayar.
 **/
 int is_ident_used(char *ident)
 {
@@ -149,18 +192,10 @@ int is_ident_used(char *ident)
     for (i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
     {
         len = (strlen(ident)<strlen(LOCAL_VAR_DEFS[i].tok_name))?strlen(LOCAL_VAR_DEFS[i].tok_name):strlen(ident);
-        if (!strncmp(LOCAL_VAR_DEFS[i].tok_name, ident, len))
+        if (strncmp(LOCAL_VAR_DEFS[i].tok_name, ident, len)==0)
             return 1;
     }
 
     // Global yglan edilen ulnilerin arasynda barlanyar
-    for (i=0; i<GLOB_VAR_DEFS_NUM; ++i)
-    {
-        len = (strlen(ident)<strlen(GLOB_VAR_DEFS[i].tok_name))?strlen(GLOB_VAR_DEFS[i].tok_name):strlen(ident);
-        if (!strncmp(GLOB_VAR_DEFS[i].tok_name, ident, len))
-            return 1;
-    }
-
-    // Identifikator on ulanylanok eken
-    return 0;
+    return is_ident_glob_used(ident);
 }

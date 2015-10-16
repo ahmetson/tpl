@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1443104076 source:d:\c_source\tpl\algor.c
+1443415964 source:d:\c_source\tpl\algor.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -12,11 +12,11 @@
 	"algor.h"
 	"cmds.h"
 
-1443104076 d:\c_source\tpl\algor.h
+1443330740 d:\c_source\tpl\algor.h
 	"cmds.h"
 	"tokens.h"
 
-1443090271 d:\c_source\tpl\cmds.h
+1443338093 d:\c_source\tpl\cmds.h
 	"tokens.h"
 
 1443108095 d:\c_source\tpl\tokens.h
@@ -37,7 +37,7 @@
 
 1443107564 d:\c_source\tpl\token\token_structs.h
 
-1442804912 d:\c_source\tpl\translator_to_c.h
+1443415474 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
 
 1443103772 d:\c_source\tpl\dev_debug.h
@@ -45,7 +45,7 @@
 
 1443063435 source:d:\c_source\tpl\cmd\assign.c
 
-1443099726 source:d:\c_source\tpl\cmds.c
+1443416035 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -55,7 +55,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1443105599 d:\c_source\tpl\error.h
+1443336100 d:\c_source\tpl\error.h
 
 1443103772 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
@@ -66,21 +66,21 @@
 	"algor.h"
 	"dev_debug.h"
 
-1443105653 source:d:\c_source\tpl\error.c
+1443336122 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
 	"translator_to_c.h"
 	"error.h"
 
-1442949945 source:d:\c_source\tpl\fns.c
+1443332539 source:d:\c_source\tpl\fns.c
 	<stdio.h>
 	<string.h>
 	"tpl.h"
 	"tokens.h"
 	"fns.h"
 
-1442950051 d:\c_source\tpl\fns.h
+1443136610 d:\c_source\tpl\fns.h
 
 1443105428 source:d:\c_source\tpl\init_and_work_with_files.c
 	<stdlib.h>
@@ -101,7 +101,7 @@
 
 1440718598 source:d:\c_source\tpl\other.c
 
-1443100946 source:d:\c_source\tpl\pragma\pragma.c
+1443331905 source:d:\c_source\tpl\pragma\pragma.c
 	<stdio.h>
 	<string.h>
 	"pragma.h"
@@ -140,7 +140,7 @@
 
 1443108359 d:\c_source\tpl\token\token_word.h
 
-1443107204 source:d:\c_source\tpl\tokens.c
+1443339108 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -165,12 +165,34 @@
 	"dev_debug.h"
 	"error.h"
 
-1442559987 d:\c_source\tpl\init_and_work_with_files.h
+1443109375 d:\c_source\tpl\init_and_work_with_files.h
 
-1443103772 source:d:\c_source\tpl\translator_to_c.c
+1443415893 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"translator_to_c.h"
+
+1443416128 source:d:\c_source\tpl\parser.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"parser.h"
+	"tokens.h"
+	"pragma/pragma.h"
+	"algor.h"
+	"translator_to_c.h"
+	"error.h"
+
+1443338710 source:d:\c_source\tpl\semantic.c
+	<stdio.h>
+	"tpl.h"
+	"cmds.h"
+	"semantic.h"
+	"error.h"
+	"dev_debug.h"
+
+1443334522 d:\c_source\tpl\semantic.h
 

@@ -21,6 +21,9 @@ extern char *parts_names[];
 extern int CODE0_PRAGMA_ACT_NOT_IDENTIFIED;
 extern int CODE0_MAIN_FILE_ALREADY_CHOSED;
 extern int CODE0_NOT_FOUND_MAIN_FILE;
+extern int CODE0_IDENT_NOT_DEFINED;
+extern int CODE0_IDENT_CANT_ADD;
+extern int CODE0_INCLUDES_CANT_ADD;
 
 extern int CODE1_FILE_NOT_FOUND;
 extern int CODE1_FILE_CANT_OPEN;
@@ -38,9 +41,9 @@ extern int CODE4_CANT_ADD_TOKEN;
 extern int CODE4_CANT_IDENT_CMD;
 extern int CODE4_VARS_IDENT_USED;
 
-extern int CODE7_LEFT_IDENT_DEFINED;
-extern int CODE7_LEFT_IDENT_NOT_DEFINED;
-extern int CODE7_RIGHT_IDENT_NOT_DEFINED;
+//extern int CODE7_LEFT_IDENT_DEFINED;
+//extern int CODE7_LEFT_IDENT_NOT_DEFINED;
+//extern int CODE7_RIGHT_IDENT_NOT_DEFINED;
 
 /* Yalnyshlyklaryn tekstleri */
 extern char *err_texts[][10];

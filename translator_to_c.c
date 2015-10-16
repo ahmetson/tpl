@@ -53,6 +53,7 @@ int prepare_c_source(FILE *f, char *h_source)
 	fputs(line1, f);
 	free(line1);
 
+    fputs("//.\n", f);
 	fputs("\n\n", f);
 
 	return 1;
@@ -167,7 +168,16 @@ int prepare_main_func(FILE *f)
 // Esasy funksiyanyn sonyny taynlayar
 int finishize_main_func(FILE *f)
 {
-	fputs("\treturn 1;\n", f);
+	fputs("\t//, bashga programmanyn bash bolegi gutardy \n\n\n\treturn 1;\n", f);
+	fputs("}\n\n", f);
+
+	return 1;
+}
+
+
+// Esasy funksiyanyn sonyny taynlayar
+int finishize_void_func(FILE *f)
+{
 	fputs("}\n\n", f);
 
 	return 1;
@@ -231,7 +241,7 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 	}
 	else
 	{
-		fputs("// Dine hazirki faylyn ichinde ulanylyp bolynyan ulniler\n", f);
+		fputs("\t// Dine hazirki faylyn ichinde ulanylyp bolynyan ulniler\n", f);
 
 		int i, type_num;
 		long line_size = 100, line_len = 0;
@@ -241,7 +251,7 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			type_num = LOCAL_VAR_DEFS[i].tok_type;
 
 			char *line = malloc(line_size);
-			strncpy(line, "static ", strlen("static ")+1);
+			strncpy(line, "\t", strlen("\t")+1);
 
 			// Ulninin tipi goshulyar
 			if (line_len+strlen(def_type_list[type_num].value)>= line_size)
@@ -264,7 +274,7 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
 			fputs(line, f);
-			line_len = 100;
+			fputs("\n\n", f);
 
 			free(line);
 		}
@@ -283,6 +293,7 @@ int work_with_translator(char main_file)
 
 	remove_dirnames(f_name);
 	remove_ext(f_name, ".tepl");
+    add_to_file_list_name(f_name);
 
 	// TODO. Eger faylyn ady fayllaryn sanawynda eyyam bar bolsa
 	//		Onda yalnyshlyk chykarylyar.
@@ -305,6 +316,9 @@ int work_with_translator(char main_file)
 	FILE *c_source = fopen(c_path, "w");
 	FILE *h_source = fopen(h_path, "w");
 
+	add_to_file_list_h_source(h_path);
+	add_to_file_list_c_source(c_path);
+
 	// Faylyn ichine maglumat yazylyar:
 	//printf("%s-%s-\n\n", CUR_FILE_NAME);
 	//printf("%s\n", f_name);
@@ -319,7 +333,7 @@ int work_with_translator(char main_file)
 		c_trans_source_add_glob_def_var(c_source);
 	}
 
-	// Bash fayl bolsa, bash fayla degishli maglumatlar salynyar
+	// Baş faýl bolsa, ýasalmaly sahypa main funksiýa ýazylmaly
 	if (strlen(MAIN_FILE_NAME)==strlen(CUR_FILE_NAME) &&
 	    !strncmp(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(MAIN_FILE_NAME)))
 	{
@@ -327,17 +341,224 @@ int work_with_translator(char main_file)
 		// Bash sahypada esasy funksiya achylyar.
 		prepare_main_func(c_source);
 	}
+	else
+    {
+        main_file = 0;
+
+        // Baş faýla ýazmaly funksiýanyň prototipi yglan edilen faýl goşulýar
+        strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][0], f_name, strlen(f_name)+1);
+
+        // Faýlyň adyndan funksiýanyň ady ýazylýar.
+        remove_ext(f_name, ".h");
+        //printf("Faýlyň ady:%s\n", f_name);
+
+        // Baş funksiýanyň prototipi
+        c_trans_write_file_fn_prototype(h_source, f_name);
+        // Baş funksiýanyň açylýan ýeri, kodly faýlda ýazylýar
+        c_trans_write_file_fn_open(c_source, f_name);
+
+        // Baş faýla ýazmaly funksiýanyň prototipi.
+        char *fn_prototype = c_trans_get_file_fn_prototype(f_name, fn_prototype);
+        strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][1], fn_prototype, strlen(fn_prototype)+1);
+        MAIN_FILE_INCLUDES_NUM++;
+        MAIN_FILE_INCLUDES = realloc(MAIN_FILE_INCLUDES, MAIN_FILE_INCLUDES_NUM*(sizeof(*MAIN_FILE_INCLUDES)));
+
+    }
 
 	// Lokal yglan edilen funksiyalar
 	c_trans_source_add_loc_def_var(c_source, main_file);
 
-	if (main_file)
-		finishize_main_func(c_source);
+    // Algoritm goshulmaly
+    c_trans_source_add_algor(c_source, main_file);
+    //c_trans_source_assign(c_source, &CUR_ALGOR[0]);
+
+    // Funksiýany soylaýar
+    if (main_file)
+        finishize_main_func(c_source);
+    else
+        finishize_void_func(c_source);
 
 	finishize_h_source(h_source);
 
 	// Fayllar yapylyar
 	fclose(c_source);
 	fclose(h_source);
+}
 
+
+/*
+ * Baglanma komandasynyň c kodyny ýasaýan ýeri
+**/
+int c_trans_source_assign(FILE *f, command *cmd)
+{
+
+    // Çepe baglanma:
+    if (cmd->cmd_type==LEFT_ASSIGN_TOK_NUM)
+    {
+        long size = 33;
+        char *line = malloc(size);
+
+        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
+        strncpy(line, "\t", strlen("\t")+1);
+
+        // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
+        // Eger birinji ülňi identifikator bolsa, özi alynýar.
+        if (cmd->items[0].type==CMD_ITEM && cmd->items[0].cmd.cmd_class==DEF_VAR_CLASS_NUM)
+        {
+            char *lvalue = cmd->items[0].cmd.items[cmd->items[0].cmd.items_num-1].tok.potentional_types[0].value;
+            strncat(line,lvalue,strlen(lvalue));
+        }
+        else if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.potentional_types[0].type_class==IDENT_TYPE_CLASS)
+        {
+            char *lvalue = cmd->items[0].tok.potentional_types[0].value;
+            strncat(line,lvalue,strlen(lvalue));
+        }
+
+        // baglanma ülňiniň c dili üçin warianty goýulýar
+        char *assign_c = " = ";
+        if (size<strlen(assign_c)+strlen(line))
+        {
+            size += strlen(assign_c);
+            line = realloc(line, size);
+        }
+        strncat(line,assign_c,strlen(assign_c));
+
+
+        // üçünji ülňi maglumat.
+        // Üçünji birlik identifikator bolsa, özüni geçirmeli.
+        if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==IDENT_TYPE_CLASS)
+        {
+            char *rvalue = cmd->items[2].tok.potentional_types[0].value;
+            if (size<strlen(rvalue)+strlen(line))
+            {
+                size += strlen(rvalue);
+                line = realloc(line, size);
+            }
+            strncat(line,rvalue,strlen(rvalue));
+        }
+
+
+        // Üç birligi birikdirip täze setir ýasalýar.
+        // Setire üç birlik we komandany gutaryjy çatylýar.
+        // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
+        char *cmd_end = "; \n";
+        if (size<strlen(cmd_end)+strlen(line))
+        {
+            size += strlen(cmd_end);
+            line = realloc(line, size);
+        }
+        strncat(line,cmd_end,strlen(cmd_end));
+
+        fputs(line, f);
+        //printf ("Komanda %s, %d\n",line, strlen(line));
+
+        free(line);
+        return 1;
+    }
+    return 0;
+}
+
+
+/* Baş däl faýllaryň içinde ulanylýan funksiýanyň, headerdäki prototipini ýazýar
+ *
+ * @f_h - header faýl
+ * @f_h - funksiýanyň ady
+**/
+int c_trans_write_file_fn_prototype(FILE *f_h, char *fn_name)
+{
+    // void _fn_name_tepl();
+    long size = 32;
+    char *line = malloc(size);
+
+    // bashy
+    char *start = "void _";
+    strncpy(line, start, strlen(start)+1);
+
+    // ortak
+    if (strlen(line)+strlen(fn_name)>size)
+    {
+        size += strlen(fn_name)+1;
+    }
+    strncat(line, fn_name, strlen(fn_name));
+
+    // sony
+    char *end = "_tepl(); \n";
+    if (strlen(line)+strlen(end)>size)
+    {
+        size += strlen(end)+1;
+    }
+    strncat(line, end, strlen(end));
+
+    fputs(line, f_h);
+
+    free(line);
+
+    return 1;
+}
+
+
+int c_trans_write_file_fn_open(FILE *f_h, char *fn_name)
+{
+    // void _fn_name_tepl();
+    long size = 32;
+    char *line = malloc(size);
+
+    // bashy
+    char *start = "void _";
+    strncpy(line, start, strlen(start)+1);
+
+    // ortak
+    if (strlen(line)+strlen(fn_name)>size)
+    {
+        size += strlen(fn_name)+1;
+    }
+    strncat(line, fn_name, strlen(fn_name));
+
+    // sony
+    char *end = "_tepl(){ \n";
+    if (strlen(line)+strlen(end)>size)
+    {
+        size += strlen(end)+1;
+    }
+    strncat(line, end, strlen(end));
+
+    fputs(line, f_h);
+
+    free(line);
+
+    return 1;
+}
+
+
+// Faýlyň içine algoritmi goşýar.
+int c_trans_source_add_algor(FILE *f)
+{
+    int i;
+    for (i=0; i<CUR_ALGOR_ITEMS_NUM; ++i)
+    {
+        c_trans_source_assign(f, &CUR_ALGOR[i]);
+    }
+
+    fputs("\n\n", f);
+
+    return 1;
+}
+
+
+// Faýlyň funksiýasynyň prototipini gaýtarýar
+char *c_trans_get_file_fn_prototype(char *fn_name, char *line)
+{
+    char *start = "_";
+
+    strncpy(line, start, strlen(start)+1);
+
+    // ortasy
+    strncat(line, fn_name, strlen(fn_name));
+    //
+
+    // sony
+    char *end = "_tepl();";
+    strncat(line, end, strlen(end));
+
+    return line;
 }

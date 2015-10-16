@@ -82,10 +82,20 @@ int parser(FILE *source)
 				}
 				else if (c==CMD_END)
 				{
-					// Komanda bilen ishleyan bolume gechilyar
-					work_with_cmd();
+                        //printf("Komanda gutardy ++++++++++++++++++++++++++++++++++++++++=\n");
+                        //debug_cmd(&cmd);
+
+                        // Komandany algoritme goshulyar
+                        work_with_cmd();
+                        //if (CUR_ALGOR_ITEMS_NUM)
+                        //{printf("KOMANDA BILEN ISHLENILENDEN SON-------------------------------\n");
+                        //debug_cmd(&CUR_ALGOR[CUR_ALGOR_ITEMS_NUM-1]);
+                       // printf("WE========================================\n");
+                        //}// Komanda bilen ishleyan bolume gechilyar
+
 					//debug_cmd(&cmd);
 					init_cmd(&cmd, 1);
+
 					init_token(&tok);
 				}
 				else
@@ -118,7 +128,7 @@ int parser(FILE *source)
 				{
 					//printf("Onki pragma: '%s', gutarylanmy: %d\n", prev_prag.name, prev_prag.is_compl);
 					act_pragma(&prev_prag);
-
+                    //printf("Hawan");
 					init_pragma(&prag);
 					init_pragma(&prev_prag);
 				}
@@ -142,14 +152,14 @@ int parser(FILE *source)
 		}
 	}
 	// Eger token bar bolsa, diymek komanda salynmandyr
+
 	//debug_token(&tok);
 	//printf("After end of parsing\n");
 	if (tok.potentional_types_num || cmd.items_num)  print_err(CODE2_REMAIN_TOKEN);
 
-	// TRANSLATOR TO C
-	// Algoritmleri fayla yazylyar
+	// TRANSLATOR TO C: algoritmi faýla ýazýar
 	work_with_translator('1');
 	free_locals();
-
 	CUR_PART = prev_part;
+
 }
