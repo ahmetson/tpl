@@ -5,6 +5,7 @@
 		<Option title="tpl" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="tpl\;translator_to_c\;" />
 		<Build>
 			<Target title="default">
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
@@ -49,9 +50,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="init_and_work_with_files.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="init_and_work_with_files.h">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.c">
@@ -133,12 +131,40 @@
 		<Unit filename="tpl.h">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="tpl/files.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl/files.h" />
+		<Unit filename="tpl/glob.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl/glob.h" />
+		<Unit filename="tpl/init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl/init.h" />
+		<Unit filename="tpl/main_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tpl/main_file.h" />
 		<Unit filename="translator_to_c.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="translator_to_c.h">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="translator_to_c/attach_glob_vars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translator_to_c/attach_glob_vars.h" />
+		<Unit filename="translator_to_c/files.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translator_to_c/files.h" />
+		<Unit filename="work_with_source.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="work_with_source.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

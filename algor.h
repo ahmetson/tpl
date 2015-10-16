@@ -11,7 +11,7 @@
 #include "tokens.h"
 
 typedef struct{
-	char file_name[MAX_FILE_LEN];		// Haysy faylda ulni yglan edilipdir
+	char file_name[MAX_FILE_LEN];		// Ülňi haýsy faýla degişli
 	char tok_name[MAX_TOKEN_LEN];		// Ulninin ady
 	int tok_class;						// Ulninin gornushi
 	int tok_type;
@@ -41,6 +41,8 @@ extern char loc_source_file[MAX_FILE_LEN];
 
 // Hazirki parsing edilen faylda global ulni yglan edileninin jogabyny gaytaryar
 int is_glob_def_var_in_cur();
+
+int is_ident_glob_used(char *ident);
 /*
  * Ulninin ady boyuncha onun on yglan edilenmidigini barlayar.
 **/

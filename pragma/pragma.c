@@ -93,6 +93,7 @@ void act_pragma(pragma *prag)
 		if (strncmp(act_pragma_items[i].name, prag->name, strlen(prag->name))==0)
 		{
 			act_pragma_items[i].act(prag);
+			//printf("ss");
 			CUR_PART = prev_part;
 			return;
 		}
@@ -108,7 +109,9 @@ void act_pragma_main_file(pragma *prag)
 	//printf("Fayl chagyryldy\n");
 	if (strlen(MAIN_FILE_NAME)<1)
 	{
+	    //printf("Salam");
 		strncpy(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
+        //printf("we");
 	}
 	else
 	{

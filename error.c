@@ -25,6 +25,9 @@ char *parts_names[] = {
 int CODE0_PRAGMA_ACT_NOT_IDENTIFIED = 0;
 int CODE0_MAIN_FILE_ALREADY_CHOSED  = 1;
 int CODE0_NOT_FOUND_MAIN_FILE       = 2;
+int CODE0_IDENT_NOT_DEFINED         = 3;
+int CODE0_IDENT_CANT_ADD            = 4;
+int CODE0_INCLUDES_CANT_ADD         = 5;
 
 int CODE1_FILE_NOT_FOUND = 0;
 int CODE1_FILE_CANT_OPEN = 1;
@@ -42,33 +45,38 @@ int CODE4_CANT_ADD_TOKEN = 1;
 int CODE4_CANT_IDENT_CMD = 2;
 int CODE4_VARS_IDENT_USED= 3;
 
-int CODE7_LEFT_IDENT_DEFINED = 0;
-int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
-int CODE7_RIGHT_IDENT_NOT_DEFINED = 2;
+//int CODE7_IDENT_NOT_DEFINED = 0;
+//int CODE7_LEFT_IDENT_DEFINED = 0;
+//int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
+//int CODE7_RIGHT_IDENT_NOT_DEFINED = 2;
 
 /* Ýalňyşlyklaryň tekstleri */
 char *err_texts[][10] = {
-	{"Kompilyatora niyetlenen komandanyn achyp bolmady",				// 0.Ulgam
-	 "Eyyam bash fayl oturdildi",
+	{"TPL'e niýetlenen komandany açyp bolmady",     				// 0.Ulgam
+	 "Eýýäm baş faýl ötürdildi",
 	 "Ýazyljak programmanyň baş faýly tanalmady.\n \
-Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
+Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
+     "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli",
+     "Ülňi üçin faýly tapyp bolmady",
+     "C translýatorynda faýllary birikdirip bolmady"},
 	{"Kodly faýl gelmedi",											// 1.File we inisializasiya
 	 "Kodly faýly açmak başartmady"},
-	{"Şeýle symboldan harp başlanok",										// 2.Harplar (parsing)
+	{"Şeýle symboldan harp başlanok",								// 2.Harplar (parsing)
 	 "Pragma dolylygyna ýazylmady",
 	 "Pragma tanalmady",
 	 "Komandany gutarýan token ýetenok",
 	 "Token gaty uzyn"},
 	{"Mundan öňki token tanalmandy (ýa gutarylmandy)"},									// 3.Tokenler
-	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",						// 4.Komandalar
+	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",				// 4.Komandalar
 	 "Kompýuteriň ýadynda ýer ýetmedi",
 	 "Komanda tanalmady",
-	 "Ulni uchin identifikator eyyam ulanyldy"},
+	 "Ülňi üçin identifikator eýýäm ulanyldy"},
 	{},																	// 5.Algoritmler
 	{},																	// 6.Global sanawlar
-	{"Komandanyň çep identifikatory öň yglan edilipdi",		        	// 7.Semantika
-	 "Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
-	 "Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"},
+	{//"Komandanyň çep identifikatory öň yglan edilipdi",		        	// 7.Semantika
+	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
+	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
+	 },
 	{}																	// 8.Kompilyator we C translyator
 };
 
