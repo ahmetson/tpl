@@ -8,7 +8,7 @@
 
 #include "attach_glob_vars.h"
 #include "files.h"
-#include "../tpl/glob.h"
+#include "../main/glob.h"
 
 
 /**
@@ -19,7 +19,7 @@ int is_unknown_var_glob_def()
     int i;
     for(i=0; i<UNKNOWN_USED_VARS_NUM; ++i)
     {
-        if (!is_ident_glob_used(UNKNOWN_USED_VARS[i].tok_name))
+        if (!is_ident_used(UNKNOWN_USED_VARS[i].ident, -1))
             return 0;
     }
 
@@ -78,13 +78,13 @@ int identificate_unknown_vars_as_glob_vars()
     {
         for(j=0; j<UNKNOWN_USED_VARS_NUM; ++j)
         {
-            //printf("%s faylda, %s ulanyldy\n", UNKNOWN_USED_VARS[i].file_name, UNKNOWN_USED_VARS[i].tok_name);
+            //printf("%s faylda, %s ulanyldy\n", UNKNOWN_USED_VARS[i].file_name, UNKNOWN_USED_VARS[i].ident);
             len = strlen(UNKNOWN_USED_VARS[j].file_name)>strlen(used_glob_vars_files[i].file_name)?
                 strlen(UNKNOWN_USED_VARS[j].file_name):strlen(used_glob_vars_files[i].file_name);
             if (strncmp(UNKNOWN_USED_VARS[j].file_name, used_glob_vars_files[i].file_name, len)!=0)
                 continue;
 
-            char *f = get_header_source_by_source(get_used_glob_file_name(UNKNOWN_USED_VARS[j].tok_name));
+            char *f = get_header_source_by_source(get_used_glob_file_name(UNKNOWN_USED_VARS[j].ident));
 
             //printf("%s headeri goshmaly %d-%d\n", f, UNKNOWN_USED_VARS_NUM, file_num);
 
@@ -114,16 +114,15 @@ int identificate_unknown_vars_as_glob_vars()
     // Fayla yazmaly
     for(i=0; i<used_glob_vars_num; ++i)
     {
-        printf("Fayly achmaly:%s\n", get_c_source_by_source(used_glob_vars_files[i].file_name));
         FILE *s = fopen(get_c_source_by_source(used_glob_vars_files[i].file_name), "r+");
 
         add_includes_to_source(s, used_glob_vars_files[i].included_files, used_glob_vars_files[i].included_files_num);
 
-        for (j=0; j<used_glob_vars_files[i].included_files_num; ++j)
+        /*for (j=0; j<used_glob_vars_files[i].included_files_num; ++j)
         {
             printf("'%s' fayla '%s' fayly goshmaly\n", used_glob_vars_files[i].file_name,
                    used_glob_vars_files[i].included_files[j]);
-        }
+        }*/
 
         fclose(s);
     }

@@ -7,7 +7,7 @@
 
 #include "files.h"
 #include "../fns.h"
-#include "../tpl/glob.h"
+#include "../main/glob.h"
 
 
 /**
@@ -18,11 +18,13 @@
 char *get_used_glob_file_name(char *ident)
 {
     int i, len;
-    for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
+    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
     {
-        len = (strlen(ident)<strlen(GLOB_VAR_DEFS[i].tok_name))?strlen(GLOB_VAR_DEFS[i].tok_name):strlen(ident);
-        if (strncmp(GLOB_VAR_DEFS[i].tok_name, ident, len)==0)
-            return GLOB_VAR_DEFS[i].file_name;
+        if (USER_VAR_DEFS[i].ns!=GLOB)
+            continue;
+        len = (strlen(ident)<strlen(USER_VAR_DEFS[i].ident))?strlen(USER_VAR_DEFS[i].ident):strlen(ident);
+        if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
+            return USER_VAR_DEFS[i].file_name;
     }
     return "";
 }

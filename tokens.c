@@ -17,7 +17,8 @@ is_token_item tok_types[] = {
 	   {is_token_def_type},
 	   {is_token_def_glob},
 	   {is_token_ident},
-	   {is_token_var_left_assign}
+	   {is_token_var_left_assign},
+	   {is_token_int_const_data}
 };
 
 
@@ -109,7 +110,7 @@ int finishize_token(token *tok)
 }
 
 
-/*
+/**
  * Tokeniň içinde ulanyp boljak maglumat bardygyny barlaýar
 **/
 int is_token_empty(token *tok)
@@ -118,7 +119,7 @@ int is_token_empty(token *tok)
 }
 
 
-/*
+/**
  * Tokeni komanda geçirýär.
  * Şowly goşulansoň, komandany tanajak bolýar
 **/
@@ -177,6 +178,7 @@ int move_to_cmd(token *tok, char *tok_string)
 				command new_cmd;
 				new_cmd = cmd;
 				new_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
+
 				init_cmd(&cmd, 0);
 				cmd.items_num = 2;
 
@@ -205,6 +207,7 @@ int move_to_cmd(token *tok, char *tok_string)
 
 					// Täze token öňki tokenlerden emele gelen komanda bilen täze komandany emele getirmedi
 					if (!parse_cmd(&cmd))  print_err(CODE4_CANT_IDENT_CMD);
+
 				}
 			}
 		}

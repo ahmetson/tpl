@@ -5,16 +5,27 @@
 #define TOKEN_STRUCTS_H
 
 #define MAXLEN 255
+#define CONST_TOKEN_TYPES_NUM 5
 
 #define MAX_VAR_LEN 32
 
+typedef struct{
+    char type;              // 1 - defined type, 2 - user type
+    char *user_type;
+    int  def_type_num;
+    int  def_type_class;
+}required_token_type;
+
 // Token tipi
 typedef struct{
-	int  type_num;	 		// ¹ of type
-	char need_value;	// token must contain value
-	char value[MAXLEN];
-	char is_compl;		// Is token completed
-	int type_class;
+	int                     type_num;
+	int                     type_class;
+	char                    need_value;	        // token must contain value
+	char                    value[MAXLEN];
+	char                    tok_value_type;     // Default - char*
+	char                    is_compl;		    // Is token completed
+	char                    type_must_check;
+	required_token_type     req_type;
 }token_type;
 
 // Token uchin
@@ -27,6 +38,8 @@ typedef struct{
 	char value[MAXLEN];
 	int is_compl;
 	int type_class;
+    int  required_type_num;
+	int  required_type_class;
 }token;
 
 // Her tokenin tipi uchin funksiyalar

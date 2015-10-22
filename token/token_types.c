@@ -1,14 +1,14 @@
-/*
+/**
  * Tokenlerin tiplerinin bilen bagly ahli maglumatlar.
  * Eyyam bolup biljek tiplerin hemmesi yglan edilen son doredilmeli
 **/
-
 #include <stdio.h>
 #include <string.h>
 
-#include "def_types.h"
-#include "glob.h"
-#include "assign.h"
+#include "token_types/assign.h"
+#include "token_types/glob.h"
+#include "token_types/def_types.h"
+#include "token_types/const_data.h"
 #include "keywords.h"
 #include "token_types.h"
 
@@ -19,17 +19,19 @@ const int TOKEN_TYPES_NUM = CONST_TOKEN_TYPES_NUM;
 const int TOKEN_TYPE_MAX_LEN = CONST_TOKEN_TYPE_MAX_LEN;
 
 // Nache sany token tip bar bolsa, shonchada klas bar
-const int DEF_TYPE_TYPE_CLASS 	 = 1;
-const int GLOB_TYPE_CLASS 		 = 2;
-const int IDENT_TYPE_CLASS       = 3;
-const int ASSIGN_TYPE_CLASS		 = 4;
+const int TOK_CLASS_DEF_TYPE 	 = 1;
+const int TOK_CLASS_GLOB 		 = 2;
+const int TOK_CLASS_IDENT        = 3;
+const int TOK_CLASS_ASSIGN		 = 4;
+const int TOK_CLASS_CONST_DATA   = 5;
 
 // Used for debugging
 char *type_classes[] = {
 	"def_type",
 	"glob",
 	"ident",
-	"assign"
+	"assign",
+	"const_data"
 };
 
 
@@ -40,34 +42,35 @@ int is_token_def_type(token *tok, char *tok_val)
 	/*Go through array of possible types*/
 	int i, answer, found = 0;
 	token_type tok_type;
-	
+
 	for(i=0; i<DEF_TYPES_NUM; i++)
-	{ 
+	{
 
 		answer = strstr_by_offset(def_type_list[i].tk_name, tok_val, 0);
 		if (answer>=0)
 		{
 			tok_type.type_num = i;							// Number of token type
-			tok_type.type_class = DEF_TYPE_TYPE_CLASS;
+			tok_type.type_class = TOK_CLASS_DEF_TYPE;
 			tok_type.need_value = 0;
 			tok_type.is_compl = (answer==0) ? 1 : 0;
+			tok_type.type_must_check = 0;
 			tok->is_compl = (answer==0) ? 1 : 0;
 
 			add_potentional_token_type(tok, tok_type);
-			
+
 			// Tokene gornush girizilen son chagyrylmaly
 			if (tok_type.is_compl==1)
-				tok->type_class = DEF_TYPE_TYPE_CLASS;
+				tok->type_class = TOK_CLASS_DEF_TYPE;
 
 			// DEBUG
 			//printf("BARLAG: %s; %s; %d; %d; %d;\n", def_type_list[i].tk_name, tok->token_class, tok->potentional_types[0].num, tok->potentional_types_num,
 			//		tok->potentional_types[0].is_compl
 			//);
-			
+
 			found = 1;
 		}
 	}
-	
+
 	return found;
 }
 
@@ -80,17 +83,18 @@ int is_token_def_glob(token *tok, char *tok_val)
 	if (answer>=0)
 	{
 		tok_type.type_num = 0;							// Number of token type
-		tok_type.type_class = GLOB_TYPE_CLASS;
+		tok_type.type_class = TOK_CLASS_GLOB;
 		tok_type.need_value = 0;
 		tok_type.is_compl = (answer==0) ? 1 : 0;
-		tok->is_compl = (answer==0) ? 1 : 0;	
+		tok_type.type_must_check = 0;
+		tok->is_compl = (answer==0) ? 1 : 0;
 
 		add_potentional_token_type(tok, tok_type);
-		
+
 		// Tokene gornush girizilen son chagyrylmaly
 		if (tok_type.is_compl==1)
-			tok->type_class = GLOB_TYPE_CLASS;
-	
+			tok->type_class = TOK_CLASS_GLOB;
+
 		return 1;
 	}
 	return 0;
@@ -100,12 +104,12 @@ int is_token_ident(token *tok, char *tok_val)
 {
 	token_type tok_type;
 	//printf("Identifikator barlagy: %s\n", tok_val->val);
-	
+
 	// Identifikatorlar birinji harpy harp bolmaly
 	if (!isalpha(tok_val[0]))
 		return 0;
 	//printf("Identifikator harpdan bashlayar\n");
-	
+
 	int i;
 	// Identifikator achar sozi bolup bilenok
 	for(i=0; i<MAX_KEYWORDS_NUM; i++)
@@ -113,13 +117,13 @@ int is_token_ident(token *tok, char *tok_val)
 		if (strlen(keywords[i])!=strlen(tok_val))
 			continue;
 		//len = (strlen(keywords[i])>strlen(tok_val->val)) ? strlen(keywords[i]) : strlen(tok_val->val);
-		
+
 		//printf("For %s, Result of comparing: %0d\n", tok_val->val, strncmp(tok_val->val, keywords[i], strlen(keywords[i])));
 		if (strncmp(tok_val, keywords[i], strlen(keywords[i]) )==0 )
 			return 0;
 	}
 	//printf("Identifikator achar sozi dal\n");
-	
+
 	// Identifikator harplardan, sanlardan we '_' belgiden durmaly
 	for(i=0; i<strlen(tok_val); i++)
 	{
@@ -127,25 +131,26 @@ int is_token_ident(token *tok, char *tok_val)
 			return 0;
 	}
 	//printf("Identifikator harpdan, sandan we '_' belgiden duryar\n");
-	
+
 	// This is - identifikator
 	tok_type.type_num = 0;							// Number of token type
-	
+
 	tok_type.need_value = 1;
-	tok_type.type_class = IDENT_TYPE_CLASS;
+	tok_type.type_class = TOK_CLASS_IDENT;
 	strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
 	tok_type.is_compl = 1;
+	tok_type.type_must_check = 0;
 	tok->is_compl = 1;
-	
+
 	//debug_token(tok);
 	//printf("Tokenin bolup biljek tipleri: <%s>\n", tok->potentional_types[0].value);
-	
+
 	add_potentional_token_type(tok, tok_type);
 	//printf("Tokenin tipi goshuldymy: %0d\n", );
 
 	// Tokene gornush girizilen son chagyrylmaly
 	if (tok_type.is_compl==1)
-		tok->type_class = IDENT_TYPE_CLASS;
+		tok->type_class = TOK_CLASS_IDENT;
 
 	return 1;
 }
@@ -160,18 +165,45 @@ int is_token_var_left_assign(token *tok, char *tok_val)
 	if (answer>=0)
 	{
 		tok_type.type_num = LEFT_ASSIGN_TOK_NUM;	// Number of token type
-		tok_type.type_class = ASSIGN_TYPE_CLASS;
+		tok_type.type_class = TOK_CLASS_ASSIGN;
 		tok_type.need_value = 0;
 		tok_type.is_compl = (answer==0) ? 1 : 0;
-		tok->is_compl = (answer==0) ? 1 : 0;	
+		tok_type.type_must_check = 0;
+		tok->is_compl = (answer==0) ? 1 : 0;
 
 		add_potentional_token_type(tok, tok_type);
-		
+
 		// Tokene gornush girizilen son chagyrylmaly
 		if (tok_type.is_compl==1)
-			tok->type_class = ASSIGN_TYPE_CLASS;
-	
+			tok->type_class = TOK_CLASS_ASSIGN;
+
 		return 1;
 	}
 	return 0;
+}
+
+
+int is_token_int_const_data(token *tok, char *tok_val)
+{
+    int i;
+    for (i=0; i<strlen(tok_val); ++i)
+    {
+        if (!isdigit(tok_val[i]))
+            return 0;
+    }
+
+    token_type tok_type;
+    tok_type.type_num = INT_CONST_DATA_TOK_NUM;	// Number of token type
+    tok_type.type_class = TOK_CLASS_CONST_DATA;
+    tok_type.need_value = 1;
+    strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
+    tok_type.is_compl = 1;
+    tok_type.type_must_check = 0;
+
+    tok->is_compl     = 1;
+    tok->type_class   = TOK_CLASS_CONST_DATA;
+
+	add_potentional_token_type(tok, tok_type);
+
+    return 1;
 }

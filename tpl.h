@@ -12,9 +12,9 @@
 
 
 
-#include "tpl/glob.h"
-#include "tpl/init.h"
-#include "tpl/main_file.h"
+#include "main/glob.h"
+#include "main/init.h"
+#include "main/main_file.h"
 #include "translator_to_c/files.h"
 #include "translator_to_c/attach_glob_vars.h"
 

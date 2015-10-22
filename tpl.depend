@@ -1,51 +1,79 @@
 # depslib dependency file v1.0
-1443415964 source:d:\c_source\tpl\algor.c
+1445197781 source:/media/milayter/Medet/c_source/tpl/algor.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"algor.h"
 	"translator_to_c.h"
+	"error.h"
 	"dev_debug.h"
 
-1443103754 d:\c_source\tpl\tpl.h
+1445370452 /media/milayter/Medet/c_source/tpl/tpl.h
+	<stdio.h>
 	"algor.h"
 	"cmds.h"
+	"main/glob.h"
+	"main/init.h"
+	"main/main_file.h"
+	"translator_to_c/files.h"
+	"translator_to_c/attach_glob_vars.h"
 
-1443330740 d:\c_source\tpl\algor.h
+1443680208 /media/milayter/Medet/c_source/tpl/algor.h
 	"cmds.h"
 	"tokens.h"
 
-1443338093 d:\c_source\tpl\cmds.h
+1443338093 /media/milayter/Medet/c_source/tpl/cmds.h
 	"tokens.h"
 
-1443108095 d:\c_source\tpl\tokens.h
-	"token/def_types.h"
-	"token/glob.h"
-	"token/assign.h"
+1445179579 /media/milayter/Medet/c_source/tpl/tokens.h
+	"token/token_types/def_types.h"
+	"token/token_types/glob.h"
+	"token/token_types/assign.h"
+	"token/token_types/const_data.h"
 	"token/token_types.h"
 	"token/token_structs.h"
 
-1441561883 d:\c_source\tpl\token\def_types.h
+1441561883 /media/milayter/Medet/c_source/tpl/token/token_types/def_types.h
 
-1441562328 d:\c_source\tpl\token\glob.h
+1441562328 /media/milayter/Medet/c_source/tpl/token/token_types/glob.h
 
-1443061997 d:\c_source\tpl\token\assign.h
+1443061997 /media/milayter/Medet/c_source/tpl/token/token_types/assign.h
 
-1443081688 d:\c_source\tpl\token\token_types.h
+1445180854 /media/milayter/Medet/c_source/tpl/token/token_types/const_data.h
+
+1445178620 /media/milayter/Medet/c_source/tpl/token/token_types.h
 	"token_structs.h"
 
-1443107564 d:\c_source\tpl\token\token_structs.h
+1445183852 /media/milayter/Medet/c_source/tpl/token/token_structs.h
 
-1443415474 d:\c_source\tpl\translator_to_c.h
+1445197664 /media/milayter/Medet/c_source/tpl/main/glob.h
+	"files.h"
+	"../cmds.h"
+	"../algor.h"
+
+1444816612 /media/milayter/Medet/c_source/tpl/main/files.h
+
+1444815126 /media/milayter/Medet/c_source/tpl/main/init.h
+
+1444810267 /media/milayter/Medet/c_source/tpl/main/main_file.h
+
+1444812863 /media/milayter/Medet/c_source/tpl/translator_to_c/files.h
 	<stdio.h>
 
-1443103772 d:\c_source\tpl\dev_debug.h
+1444814410 /media/milayter/Medet/c_source/tpl/translator_to_c/attach_glob_vars.h
+
+1444366145 /media/milayter/Medet/c_source/tpl/translator_to_c.h
+	<stdio.h>
+
+1445185808 /media/milayter/Medet/c_source/tpl/error.h
+
+1445183196 /media/milayter/Medet/c_source/tpl/dev_debug.h
 	"algor.h"
 
-1443063435 source:d:\c_source\tpl\cmd\assign.c
+1443063435 source:/media/milayter/Medet/c_source/tpl/cmd/assign.c
 
-1443416035 source:d:\c_source\tpl\cmds.c
+1445198609 source:/media/milayter/Medet/c_source/tpl/cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -55,9 +83,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1443336100 d:\c_source\tpl\error.h
-
-1443103772 source:d:\c_source\tpl\dev_debug.c
+1445184746 source:/media/milayter/Medet/c_source/tpl/dev_debug.c
 	<stdio.h>
 	<string.h>
 	"tpl.h"
@@ -66,7 +92,282 @@
 	"algor.h"
 	"dev_debug.h"
 
-1443336122 source:d:\c_source\tpl\error.c
+1445185919 source:/media/milayter/Medet/c_source/tpl/error.c
+	<stdio.h>
+	<stdlib.h>
+	"tpl.h"
+	"translator_to_c.h"
+	"error.h"
+
+1443332539 source:/media/milayter/Medet/c_source/tpl/fns.c
+	<stdio.h>
+	<string.h>
+	"tpl.h"
+	"tokens.h"
+	"fns.h"
+
+1443136610 /media/milayter/Medet/c_source/tpl/fns.h
+
+1443100452 source:/media/milayter/Medet/c_source/tpl/main.c
+	<stdlib.h>
+	"tpl.h"
+
+1444816822 source:/media/milayter/Medet/c_source/tpl/main/files.c
+	<stdlib.h>
+	<string.h>
+	"files.h"
+	"glob.h"
+
+1445197750 source:/media/milayter/Medet/c_source/tpl/main/glob.c
+	<stdio.h>
+	<stdlib.h>
+	"glob.h"
+	"main_file.h"
+
+1445193301 source:/media/milayter/Medet/c_source/tpl/main/init.c
+	<stdlib.h>
+	<string.h>
+	"init.h"
+	"glob.h"
+	"main_file.h"
+	"../error.h"
+	"../fns.h"
+	"../translator_to_c.h"
+
+1444812081 source:/media/milayter/Medet/c_source/tpl/main/main_file.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"../tpl.h"
+	"main_file.h"
+
+1440718598 source:/media/milayter/Medet/c_source/tpl/other.c
+
+1445197691 source:/media/milayter/Medet/c_source/tpl/parser.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"parser.h"
+	"tokens.h"
+	"pragma/pragma.h"
+	"algor.h"
+	"translator_to_c.h"
+	"error.h"
+
+1441366754 /media/milayter/Medet/c_source/tpl/parser.h
+
+1441998616 /media/milayter/Medet/c_source/tpl/pragma/pragma.h
+
+1443673065 source:/media/milayter/Medet/c_source/tpl/pragma/pragma.c
+	<stdio.h>
+	<string.h>
+	"pragma.h"
+	"../tpl.h"
+	"../error.h"
+
+1445197854 source:/media/milayter/Medet/c_source/tpl/semantic.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"cmds.h"
+	"semantic.h"
+	"error.h"
+	"dev_debug.h"
+
+1445193012 /media/milayter/Medet/c_source/tpl/semantic.h
+
+1441566491 source:/media/milayter/Medet/c_source/tpl/token/keywords.c
+	"keywords.h"
+
+1441566452 /media/milayter/Medet/c_source/tpl/token/keywords.h
+
+1445184343 source:/media/milayter/Medet/c_source/tpl/token/token_types.c
+	<stdio.h>
+	<string.h>
+	"token_types/assign.h"
+	"token_types/glob.h"
+	"token_types/def_types.h"
+	"token_types/const_data.h"
+	"keywords.h"
+	"token_types.h"
+
+1445177848 source:/media/milayter/Medet/c_source/tpl/token/token_types/assign.c
+	"assign.h"
+
+1445180630 source:/media/milayter/Medet/c_source/tpl/token/token_types/const_data.c
+	"const_data.h"
+
+1442467579 source:/media/milayter/Medet/c_source/tpl/token/token_types/def_types.c
+	"def_types.h"
+
+1441562339 source:/media/milayter/Medet/c_source/tpl/token/token_types/glob.c
+	"glob.h"
+
+1443108329 source:/media/milayter/Medet/c_source/tpl/token/token_word.c
+	<string.h>
+	"token_word.h"
+	"../fns.h"
+
+1443108359 /media/milayter/Medet/c_source/tpl/token/token_word.h
+
+1445198620 source:/media/milayter/Medet/c_source/tpl/tokens.c
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	"tpl.h"
+	"tokens.h"
+	"token/token_structs.h"
+	"dev_debug.h"
+	"error.h"
+
+1445370414 source:/media/milayter/Medet/c_source/tpl/tpl.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<string.h>
+	"tpl.h"
+	"main/init.h"
+	"work_with_source.h"
+	"dev_debug.h"
+	"error.h"
+
+1444815939 /media/milayter/Medet/c_source/tpl/work_with_source.h
+
+1445177847 source:/media/milayter/Medet/c_source/tpl/translator_to_c.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"translator_to_c.h"
+
+1445370465 source:/media/milayter/Medet/c_source/tpl/translator_to_c/attach_glob_vars.c
+	<stdlib.h>
+	<string.h>
+	"attach_glob_vars.h"
+	"files.h"
+	"../main/glob.h"
+
+1445370469 source:/media/milayter/Medet/c_source/tpl/translator_to_c/files.c
+	<stdlib.h>
+	<string.h>
+	"files.h"
+	"../fns.h"
+	"../main/glob.h"
+
+1445370473 source:/media/milayter/Medet/c_source/tpl/work_with_source.c
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	"tpl.h"
+	"main/glob.h"
+	"cmds.h"
+	"parser.h"
+	"algor.h"
+	"translator_to_c.h"
+	"error.h"
+
+1445482731 source:d:\c_source\tpl\algor.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"algor.h"
+	"translator_to_c.h"
+	"error.h"
+	"dev_debug.h"
+
+1445370452 d:\c_source\tpl\tpl.h
+	<stdio.h>
+	"algor.h"
+	"cmds.h"
+	"main/glob.h"
+	"main/init.h"
+	"main/main_file.h"
+	"translator_to_c/files.h"
+	"translator_to_c/attach_glob_vars.h"
+
+1445473942 d:\c_source\tpl\algor.h
+	"cmds.h"
+	"tokens.h"
+
+1445470558 d:\c_source\tpl\cmds.h
+	"tokens.h"
+
+1445179579 d:\c_source\tpl\tokens.h
+	"token/token_types/def_types.h"
+	"token/token_types/glob.h"
+	"token/token_types/assign.h"
+	"token/token_types/const_data.h"
+	"token/token_types.h"
+	"token/token_structs.h"
+
+1441561883 d:\c_source\tpl\token\token_types\def_types.h
+
+1441562328 d:\c_source\tpl\token\token_types\glob.h
+
+1443061997 d:\c_source\tpl\token\token_types\assign.h
+
+1445483559 d:\c_source\tpl\token\token_types\const_data.h
+	"../token_structs.h"
+
+1445483627 d:\c_source\tpl\token\token_types.h
+	"token_structs.h"
+
+1445483643 d:\c_source\tpl\token\token_structs.h
+
+1445473000 d:\c_source\tpl\main\glob.h
+	"files.h"
+	"../cmds.h"
+	"../algor.h"
+
+1444816612 d:\c_source\tpl\main\files.h
+
+1444815126 d:\c_source\tpl\main\init.h
+
+1444810267 d:\c_source\tpl\main\main_file.h
+
+1444812863 d:\c_source\tpl\translator_to_c\files.h
+	<stdio.h>
+
+1444814410 d:\c_source\tpl\translator_to_c\attach_glob_vars.h
+
+1444366145 d:\c_source\tpl\translator_to_c.h
+	<stdio.h>
+
+1445434725 d:\c_source\tpl\error.h
+
+1445473436 d:\c_source\tpl\dev_debug.h
+	"algor.h"
+
+1445470648 source:d:\c_source\tpl\cmd\assign.c
+	"../main/glob.h"
+	"../error.h"
+	"assign.h"
+
+1445470731 source:d:\c_source\tpl\cmds.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"cmds.h"
+	"token/token_types.h"
+	"cmd/assign.h"
+	"cmd/def_var.h"
+	"dev_debug.h"
+	"error.h"
+
+1445473521 source:d:\c_source\tpl\dev_debug.c
+	<stdio.h>
+	<string.h>
+	"tpl.h"
+	"tokens.h"
+	"cmds.h"
+	"algor.h"
+	"dev_debug.h"
+
+1445434717 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
@@ -82,99 +383,42 @@
 
 1443136610 d:\c_source\tpl\fns.h
 
-1443105428 source:d:\c_source\tpl\init_and_work_with_files.c
-	<stdlib.h>
-	<string.h>
-	<stdio.h>
-	"tpl.h"
-	"cmds.h"
-	"parser.h"
-	"algor.h"
-	"translator_to_c.h"
-	"error.h"
-
-1441366754 d:\c_source\tpl\parser.h
-
 1443100452 source:d:\c_source\tpl\main.c
 	<stdlib.h>
 	"tpl.h"
 
+1444816822 source:d:\c_source\tpl\main\files.c
+	<stdlib.h>
+	<string.h>
+	"files.h"
+	"glob.h"
+
+1445482456 source:d:\c_source\tpl\main\glob.c
+	<stdio.h>
+	<stdlib.h>
+	"glob.h"
+	"main_file.h"
+
+1445471292 source:d:\c_source\tpl\main\init.c
+	<stdlib.h>
+	<string.h>
+	"init.h"
+	"glob.h"
+	"main_file.h"
+	"../error.h"
+	"../fns.h"
+	"../translator_to_c.h"
+
+1444812081 source:d:\c_source\tpl\main\main_file.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"../tpl.h"
+	"main_file.h"
+
 1440718598 source:d:\c_source\tpl\other.c
 
-1443331905 source:d:\c_source\tpl\pragma\pragma.c
-	<stdio.h>
-	<string.h>
-	"pragma.h"
-	"../tpl.h"
-	"../error.h"
-
-1441998616 d:\c_source\tpl\pragma\pragma.h
-
-1443062215 source:d:\c_source\tpl\token\assign.c
-	"assign.h"
-
-1442467579 source:d:\c_source\tpl\token\def_types.c
-	"def_types.h"
-
-1441562339 source:d:\c_source\tpl\token\glob.c
-	"glob.h"
-
-1441566491 source:d:\c_source\tpl\token\keywords.c
-	"keywords.h"
-
-1441566452 d:\c_source\tpl\token\keywords.h
-
-1443081692 source:d:\c_source\tpl\token\token_types.c
-	<stdio.h>
-	<string.h>
-	"def_types.h"
-	"glob.h"
-	"assign.h"
-	"keywords.h"
-	"token_types.h"
-
-1443108329 source:d:\c_source\tpl\token\token_word.c
-	<string.h>
-	"token_word.h"
-	"../fns.h"
-
-1443108359 d:\c_source\tpl\token\token_word.h
-
-1443339108 source:d:\c_source\tpl\tokens.c
-	<stdio.h>
-	<string.h>
-	<stdlib.h>
-	"tpl.h"
-	"tokens.h"
-	"token/token_structs.h"
-	"dev_debug.h"
-	"error.h"
-
-1443104113 source:d:\c_source\tpl\tpl.c
-	<stdio.h>
-	<stdlib.h>
-	<ctype.h>
-	<string.h>
-	"tpl.h"
-	"init_and_work_with_files.h"
-	"tokens.h"
-	"cmds.h"
-	"algor.h"
-	"translator_to_c.h"
-	"fns.h"
-	"dev_debug.h"
-	"error.h"
-
-1443109375 d:\c_source\tpl\init_and_work_with_files.h
-
-1443415893 source:d:\c_source\tpl\translator_to_c.c
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	"tpl.h"
-	"translator_to_c.h"
-
-1443416128 source:d:\c_source\tpl\parser.c
+1445473576 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -186,13 +430,138 @@
 	"translator_to_c.h"
 	"error.h"
 
-1443338710 source:d:\c_source\tpl\semantic.c
+1441366754 d:\c_source\tpl\parser.h
+
+1441998616 d:\c_source\tpl\pragma\pragma.h
+
+1443673065 source:d:\c_source\tpl\pragma\pragma.c
 	<stdio.h>
+	<string.h>
+	"pragma.h"
+	"../tpl.h"
+	"../error.h"
+
+1445482675 source:d:\c_source\tpl\semantic.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
 	"tpl.h"
 	"cmds.h"
 	"semantic.h"
 	"error.h"
 	"dev_debug.h"
 
-1443334522 d:\c_source\tpl\semantic.h
+1445193012 d:\c_source\tpl\semantic.h
+
+1441566491 source:d:\c_source\tpl\token\keywords.c
+	"keywords.h"
+
+1441566452 d:\c_source\tpl\token\keywords.h
+
+1445184343 source:d:\c_source\tpl\token\token_types.c
+	<stdio.h>
+	<string.h>
+	"token_types/assign.h"
+	"token_types/glob.h"
+	"token_types/def_types.h"
+	"token_types/const_data.h"
+	"keywords.h"
+	"token_types.h"
+
+1445177848 source:d:\c_source\tpl\token\token_types\assign.c
+	"assign.h"
+
+1445483667 source:d:\c_source\tpl\token\token_types\const_data.c
+	"const_data.h"
+	"../token_types.h"
+
+1445435943 source:d:\c_source\tpl\token\token_types\def_types.c
+	"def_types.h"
+
+1441562339 source:d:\c_source\tpl\token\token_types\glob.c
+	"glob.h"
+
+1443108329 source:d:\c_source\tpl\token\token_word.c
+	<string.h>
+	"token_word.h"
+	"../fns.h"
+
+1443108359 d:\c_source\tpl\token\token_word.h
+
+1445198620 source:d:\c_source\tpl\tokens.c
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	"tpl.h"
+	"tokens.h"
+	"token/token_structs.h"
+	"dev_debug.h"
+	"error.h"
+
+1445482754 source:d:\c_source\tpl\tpl.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<string.h>
+	"tpl.h"
+	"main/init.h"
+	"work_with_source.h"
+	"dev_debug.h"
+	"error.h"
+
+1444815939 d:\c_source\tpl\work_with_source.h
+
+1445473828 source:d:\c_source\tpl\translator_to_c.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tpl.h"
+	"translator_to_c.h"
+
+1445482609 source:d:\c_source\tpl\translator_to_c\attach_glob_vars.c
+	<stdlib.h>
+	<string.h>
+	"attach_glob_vars.h"
+	"files.h"
+	"../main/glob.h"
+
+1445473894 source:d:\c_source\tpl\translator_to_c\files.c
+	<stdlib.h>
+	<string.h>
+	"files.h"
+	"../fns.h"
+	"../main/glob.h"
+
+1445433458 source:d:\c_source\tpl\work_with_source.c
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	"tpl.h"
+	"main/glob.h"
+	"cmds.h"
+	"parser.h"
+	"algor.h"
+	"translator_to_c.h"
+	"error.h"
+
+1445482430 source:d:\c_source\tpl\semantic\compare_token_types.c
+	<stdio.h>
+	<string.h>
+	"../main/glob.h"
+	"compare_token_types.h"
+	"../error.h"
+	"../dev_debug.h"
+
+1445480246 d:\c_source\tpl\semantic\compare_token_types.h
+
+1445470614 d:\c_source\tpl\cmd\assign.h
+	"../cmds.h"
+
+1445470753 d:\c_source\tpl\cmd\def_var.h
+	"../cmds.h"
+
+1445472650 source:d:\c_source\tpl\cmd\def_var.c
+	"../main/glob.h"
+	"../error.h"
+	"def_var.h"
 

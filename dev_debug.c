@@ -67,13 +67,17 @@ void debug_token_type(token_type *tok_type)
 	char *complete = (tok_type->is_compl) ? "Complete" : "Not complete";
 	char *type_class = get_type_class(tok_type->type_class);
 
-	if (tok_type->type_class==DEF_TYPE_TYPE_CLASS)
+	if (tok_type->type_class==TOK_CLASS_DEF_TYPE)
 		strncpy(type, def_type_list[tok_type->type_num].tk_name, strlen(def_type_list[tok_type->type_num].tk_name)+1);
-	else if (tok_type->type_class==ASSIGN_TYPE_CLASS)
+	else if (tok_type->type_class==TOK_CLASS_ASSIGN)
 	{
 		strncpy(type, ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1], strlen(ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1])+1);
 	}
-	else
+	else if (tok_type->type_class==TOK_CLASS_CONST_DATA)
+    {
+        strncpy(type, CONST_DATA_TOK_NUM_WORDS[tok_type->type_num-1], strlen(CONST_DATA_TOK_NUM_WORDS[tok_type->type_num-1])+1);
+    }
+    else
 		strncpy(type, "", strlen("")+1);
 
 
@@ -83,10 +87,14 @@ void debug_token_type(token_type *tok_type)
 	if (tok_type->need_value==0)
 		printf("\tValue doesn't required\n");
 	else
-		printf("\tValue: '%s'\n", tok_type->value);
+		printf("\tValue: '%s'\n", get_tok_type_value(tok_type));
 	printf("\n\n");
 }
 
+char *get_tok_type_value(token_type *tok_type)
+{
+    return tok_type->value;
+};
 
 char *get_type_class(int type_class_num)
 {
@@ -112,54 +120,48 @@ char *get_cmd_class_type(int cmd_class_num, int cmd_type_num)
 	return "Komandanyn tipi nabelli";
 }
 
-void debug_GLOB_VAR_DEFS(global_def_var *g)
+void debug_GLOB_VAR_DEFS()
 {
-	printf("\tGLOBAL YGLAN EDILEN ULNILER----\n");
-	if (GLOB_VAR_DEFS_NUM<1)
-	{
-		printf("\n\tGlobal ulniler yglan edilmandir\n");
-	}
-	else
-	{
-		printf("\n");
-		int i;
-		for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
-		{
-			char *type_class = get_type_class(g[i].tok_class);
+	printf("\tGLOBAL YGLAN EDILEN ÜLŇILER------------------\n");
 
-			const char *type       = def_type_list[ g[i].tok_type ].tk_name;
-			printf("\t%d. %s faylda, (%s) %s %s\n", i+1,
-				g[i].file_name,
-				type_class,
-				type,
-				g[i].tok_name);
-		}
-	}
+    printf("\n");
+    int i;
+    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+    {
+        if (USER_VAR_DEFS[i].ns!=GLOB)
+            continue;
+        char *type_class = get_type_class(USER_VAR_DEFS[i].tok_class);
+
+        const char *type       = def_type_list[ USER_VAR_DEFS[i].tok_type ].tk_name;
+        printf("\t%d. %s faýlda, (%s) %s %s\n", i+1,
+            USER_VAR_DEFS[i].file_name,
+            type_class,
+            type,
+            USER_VAR_DEFS[i].ident);
+    }
 	printf("\n\n\n");
 }
 
-void debug_LOCAL_VAR_DEFS(local_def_var *l)
-{
-	printf("\tLOKAL YGLAN EDILEN ULNILER----\n");
-	if (LOCAL_VAR_DEFS_NUM<1)
-	{
-		printf("\n\tFaylda ulniler yglan edilmandir\n");
-	}
-	else
-	{
-		printf("\n");
-		int i;
-		for(i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
-		{
-			char *type_class = get_type_class(l[i].tok_class);
 
-			const char *type       = def_type_list[ l[i].tok_type ].tk_name;
-			printf("\t%d. %s faylda, (%s) %s %s\n", i+1,
-				CUR_FILE_NAME,
-				type_class,
-				type,
-				l[i].tok_name);
-		}
-	}
+void debug_LOCAL_VAR_DEFS()
+{
+	printf("\tLOKAL YGLAN EDILEN ÜLŇILER------------------\n");
+
+	printf("\n");
+    int i;
+    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+    {
+        if (USER_VAR_DEFS[i].ns!=LOCAL)
+            continue;
+        char *type_class = get_type_class(USER_VAR_DEFS[i].tok_class);
+
+        const char *type       = def_type_list[ USER_VAR_DEFS[i].tok_type ].tk_name;
+        printf("\t%d. %s faýlda, (%s) %s %s\n", i+1,
+            CUR_FILE_NAME,
+            type_class,
+            type,
+            USER_VAR_DEFS[i].ident);
+    }
+
 	printf("\n\n\n");
 }
