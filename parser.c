@@ -37,8 +37,6 @@ int parser(FILE *source)
 	token tok;      init_token(&tok);
 	token new_tok;  init_token(&new_tok);
 
-	LOCAL_VAR_DEFS = malloc(LOCAL_VAR_DEFS_SIZE);
-
 	// Parseriň Pragma modynda, pragmalary saýgarmak üçin
 	pragma prev_prag; init_pragma(&prev_prag);
 	pragma prag;	  init_pragma(&prag);
@@ -64,6 +62,7 @@ int parser(FILE *source)
 				if (!is_token_empty(&tok))
 				{
 					move_to_cmd(&tok, prev_tok_string);
+
 				}
 				//printf("Eger onki token bosh bolmasa, komanda gechirilyar\n");
 

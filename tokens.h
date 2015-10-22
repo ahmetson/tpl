@@ -2,9 +2,10 @@
 #define TOKENS_H
 
 // TOKEN TIPLER: defined types, global, assign
-#include "token/def_types.h"
-#include "token/glob.h"
-#include "token/assign.h"
+#include "token/token_types/def_types.h"
+#include "token/token_types/glob.h"
+#include "token/token_types/assign.h"
+#include "token/token_types/const_data.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"
 // Tokenler bilen ulanylýan çylşyrymly, emeli tipleriň yglan edilmeleri

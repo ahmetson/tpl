@@ -70,12 +70,14 @@ int c_trans_header_add_glob_def_var(FILE *f)
 
 	fputs("// Global yglan edilen ulniler.\n", f);
 
-	for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
+	for(i=0; i<USER_VAR_DEFS_NUM; ++i)
 	{
-		if (strlen(GLOB_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
-			!strncmp(GLOB_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
+	    if (USER_VAR_DEFS[i].ns!=GLOB)
+            continue;
+		if (strlen(USER_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
+			!strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
 		{
-			type_num = GLOB_VAR_DEFS[i].tok_type;
+			type_num = USER_VAR_DEFS[i].tok_type;
 
 			char *line = malloc(line_size);
 			line_len = strlen("extern ")+1;
@@ -92,12 +94,12 @@ int c_trans_header_add_glob_def_var(FILE *f)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(GLOB_VAR_DEFS[i].tok_name)>= line_size)
+			if (line_len+strlen(USER_VAR_DEFS[i].ident)>= line_size)
 			{
-				line_len += strlen(GLOB_VAR_DEFS[i].tok_name)+100;
+				line_len += strlen(USER_VAR_DEFS[i].ident)+100;
 				line = realloc(line, line_len);
 			}
-			strncat(line, GLOB_VAR_DEFS[i].tok_name, strlen(GLOB_VAR_DEFS[i].tok_name));
+			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
 			// Komanda gutardy
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
@@ -122,12 +124,14 @@ int c_trans_source_add_glob_def_var(FILE *f)
 
 	fputs("// Global yglan edilen ulniler.\n", f);
 
-	for(i=0; i<GLOB_VAR_DEFS_NUM; ++i)
+	for(i=0; i<USER_VAR_DEFS_NUM; ++i)
 	{
-		if (strlen(GLOB_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
-			!strncmp(GLOB_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
+	    if (USER_VAR_DEFS[i].ns!=GLOB)
+            continue;
+		if (strlen(USER_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
+			!strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
 		{
-			type_num = GLOB_VAR_DEFS[i].tok_type;
+			type_num = USER_VAR_DEFS[i].tok_type;
 
 			char *line = malloc(line_size);
 			// Ulninin tipi
@@ -137,12 +141,12 @@ int c_trans_source_add_glob_def_var(FILE *f)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(GLOB_VAR_DEFS[i].tok_name)>= line_size)
+			if (line_len+strlen(USER_VAR_DEFS[i].ident)>= line_size)
 			{
-				line_len += strlen(GLOB_VAR_DEFS[i].tok_name)+100;
+				line_len += strlen(USER_VAR_DEFS[i].ident)+100;
 				line = realloc(line, line_len);
 			}
-			strncat(line, GLOB_VAR_DEFS[i].tok_name, strlen(GLOB_VAR_DEFS[i].tok_name));
+			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
 			// Komanda gutardy
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
@@ -203,9 +207,11 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 		int i, type_num;
 		long line_size = 100, line_len = 0;
 
-		for(i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
+		for(i=0; i<USER_VAR_DEFS_NUM; ++i)
 		{
-			type_num = LOCAL_VAR_DEFS[i].tok_type;
+		    if (USER_VAR_DEFS[i].ns!=LOCAL)
+                continue;
+			type_num = USER_VAR_DEFS[i].tok_type;
 
 			char *line = malloc(line_size);
 			strncpy(line, "\t", strlen("\t")+1);
@@ -221,12 +227,12 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(LOCAL_VAR_DEFS[i].tok_name)>= line_size)
+			if (line_len+strlen(USER_VAR_DEFS[i].ident)>= line_size)
 			{
-				line_len += strlen(LOCAL_VAR_DEFS[i].tok_name)+100;
+				line_len += strlen(USER_VAR_DEFS[i].ident)+100;
 				line = realloc(line, line_len);
 			}
-			strncat(line, LOCAL_VAR_DEFS[i].tok_name, strlen(LOCAL_VAR_DEFS[i].tok_name));
+			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
 			// Komanda gutardy
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
@@ -246,9 +252,9 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 		int i, type_num;
 		long line_size = 100, line_len = 0;
 
-		for(i=0; i<LOCAL_VAR_DEFS_NUM; ++i)
+		for(i=0; i<USER_VAR_DEFS_NUM; ++i)
 		{
-			type_num = LOCAL_VAR_DEFS[i].tok_type;
+			type_num = USER_VAR_DEFS[i].tok_type;
 
 			char *line = malloc(line_size);
 			strncpy(line, "\t", strlen("\t")+1);
@@ -264,12 +270,12 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(LOCAL_VAR_DEFS[i].tok_name)>= line_size)
+			if (line_len+strlen(USER_VAR_DEFS[i].ident)>= line_size)
 			{
-				line_len += strlen(LOCAL_VAR_DEFS[i].tok_name)+100;
+				line_len += strlen(USER_VAR_DEFS[i].ident)+100;
 				line = realloc(line, line_len);
 			}
-			strncat(line, LOCAL_VAR_DEFS[i].tok_name, strlen(LOCAL_VAR_DEFS[i].tok_name));
+			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
 			// Komanda gutardy
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
@@ -323,10 +329,11 @@ int work_with_translator(char main_file)
 	//printf("%s-%s-\n\n", CUR_FILE_NAME);
 	//printf("%s\n", f_name);
 
+    // Ýasaljak faýllaryň başy
 	prepare_h_source(h_source, f_name);
 	prepare_c_source(c_source, strncat(f_name, ".h", strlen(".h")));
 
-	if (GLOB_VAR_DEFS_NUM && is_glob_def_var_in_cur())
+	if (is_glob_def_var_in_cur())
 	{
 		//printf("Global ulni yglan edilipdir\n");
 		c_trans_header_add_glob_def_var(h_source);
@@ -391,7 +398,6 @@ int work_with_translator(char main_file)
 **/
 int c_trans_source_assign(FILE *f, command *cmd)
 {
-
     // Çepe baglanma:
     if (cmd->cmd_type==LEFT_ASSIGN_TOK_NUM)
     {
@@ -408,7 +414,7 @@ int c_trans_source_assign(FILE *f, command *cmd)
             char *lvalue = cmd->items[0].cmd.items[cmd->items[0].cmd.items_num-1].tok.potentional_types[0].value;
             strncat(line,lvalue,strlen(lvalue));
         }
-        else if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.potentional_types[0].type_class==IDENT_TYPE_CLASS)
+        else if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
         {
             char *lvalue = cmd->items[0].tok.potentional_types[0].value;
             strncat(line,lvalue,strlen(lvalue));
@@ -426,7 +432,7 @@ int c_trans_source_assign(FILE *f, command *cmd)
 
         // üçünji ülňi maglumat.
         // Üçünji birlik identifikator bolsa, özüni geçirmeli.
-        if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==IDENT_TYPE_CLASS)
+        if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
         {
             char *rvalue = cmd->items[2].tok.potentional_types[0].value;
             if (size<strlen(rvalue)+strlen(line))
@@ -436,7 +442,17 @@ int c_trans_source_assign(FILE *f, command *cmd)
             }
             strncat(line,rvalue,strlen(rvalue));
         }
-
+        // Üçünji birlik, konstanta maglumat bolsa, onda gerekli funksiýa arkaly maglumat içine salynýar.
+        else if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA)
+        {
+            char *rvalue = get_const_data_string(&cmd->items[2].tok);
+            if (size<strlen(rvalue)+strlen(line))
+            {
+                size += strlen(rvalue);
+                line = realloc(line, size);
+            }
+            strncat(line,rvalue,strlen(rvalue));
+        }
 
         // Üç birligi birikdirip täze setir ýasalýar.
         // Setire üç birlik we komandany gutaryjy çatylýar.
@@ -531,7 +547,7 @@ int c_trans_write_file_fn_open(FILE *f_h, char *fn_name)
 
 
 // Faýlyň içine algoritmi goşýar.
-int c_trans_source_add_algor(FILE *f)
+int c_trans_source_add_algor(FILE *f, int main_file)
 {
     int i;
     for (i=0; i<CUR_ALGOR_ITEMS_NUM; ++i)

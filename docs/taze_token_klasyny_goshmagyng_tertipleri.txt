@@ -1,0 +1,32 @@
+﻿1) token/token_types.h Setir:16
+Eger täze token tipi goşulmaly bolsa
+CONST_TOKEN_TYPES_NUM yene bir sana ulaldylyar
+
+2) token/token_types.h    Setir:23
+Täze token tipiniň klasynyň nomeri üçin Konstanta yglan edilýär.
+
+3) token/token_types.h    Setir:21
+Täze token tipiniň klasynyň nomeri üçin Konstanta ýasalýar.
+
+4) token/token_types papkada
+Täze token tipiniň faýllary ýasalýar ([täze_token_klasy].c we [täze_token_klasy].h).
+
+6) tokens.h               Setir: #include preporcessor komandalaryn bolyan yerine
+   token/token_types.c    Setir: #include preporcessor komandalaryn bolyan yerine
+Täze token tipiniň 'header' faýly #include preporcessor komandasy arkaly goşulýar.
+Token_types.c ichine goshulmagynyn sebabi, faylyn ichindaki maglumat bilen, tokeni tanayan funksiya ishlemeli.
+
+///////////BOLDY, INDI TOKEN TIPI GIRIZILEN////////////////////
+
+TOKEN TIPINI DEBAGLAÝAN FUNKSIÝALARYŇ SAÝGARMAGY.
+
+1) token/token_types.c           SETIR: 29
+char *type_classes[] diyen sanawa taze goshulan token tipinin ady goshulyar.
+Bu sanaw debag edilende, tokeniň tipine derek soz ulanmak uchin doredilen.
+
+
+///////////BOLDY, INDO TOKEN GORNUSHIN KLASY DEBUG EDILENDE GORKEZILYAR/////////
+
+ŞU KLASA DEGIŞLI, TOKEN TIPINI DÜZMELI.
+
+

@@ -5,7 +5,6 @@
 		<Option title="tpl" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="tpl\;translator_to_c\;" />
 		<Build>
 			<Target title="default">
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
@@ -49,12 +48,25 @@
 		<Unit filename="fns.h">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="init_and_work_with_files.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="main/files.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/files.h" />
+		<Unit filename="main/glob.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/glob.h" />
+		<Unit filename="main/init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/init.h" />
+		<Unit filename="main/main_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/main_file.h" />
 		<Unit filename="other.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -74,34 +86,17 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="semantic.h" />
-		<Unit filename="token/assign.c">
+		<Unit filename="semantic/compare_token_types.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="token/assign.h">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="semantic/compare_token_types.h" />
 		<Unit filename="token/assign.o">
 			<Option link="0" />
-		</Unit>
-		<Unit filename="token/def_types.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="token/def_types.h">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="token/glob.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="token/glob.h">
-			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/keywords.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/keywords.h">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="token/token.h">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/token_structs.h">
@@ -113,6 +108,22 @@
 		<Unit filename="token/token_types.h">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="token/token_types/assign.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/assign.h" />
+		<Unit filename="token/token_types/const_data.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/const_data.h" />
+		<Unit filename="token/token_types/def_types.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/def_types.h" />
+		<Unit filename="token/token_types/glob.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/glob.h" />
 		<Unit filename="token/token_word.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -131,22 +142,6 @@
 		<Unit filename="tpl.h">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="tpl/files.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="tpl/files.h" />
-		<Unit filename="tpl/glob.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="tpl/glob.h" />
-		<Unit filename="tpl/init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="tpl/init.h" />
-		<Unit filename="tpl/main_file.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="tpl/main_file.h" />
 		<Unit filename="translator_to_c.c">
 			<Option compilerVar="CC" />
 		</Unit>

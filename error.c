@@ -22,29 +22,31 @@ char *parts_names[] = {
 };
 
 /* Yalnyshlykly tekstlerin nomerleri */
-int CODE0_PRAGMA_ACT_NOT_IDENTIFIED = 0;
-int CODE0_MAIN_FILE_ALREADY_CHOSED  = 1;
-int CODE0_NOT_FOUND_MAIN_FILE       = 2;
-int CODE0_IDENT_NOT_DEFINED         = 3;
-int CODE0_IDENT_CANT_ADD            = 4;
-int CODE0_INCLUDES_CANT_ADD         = 5;
+int CODE0_PRAGMA_ACT_NOT_IDENTIFIED     = 0;
+int CODE0_MAIN_FILE_ALREADY_CHOSED      = 1;
+int CODE0_NOT_FOUND_MAIN_FILE           = 2;
+int CODE0_IDENT_NOT_DEFINED             = 3;
+int CODE0_IDENT_CANT_ADD                = 4;
+int CODE0_INCLUDES_CANT_ADD             = 5;
 
-int CODE1_FILE_NOT_FOUND = 0;
-int CODE1_FILE_CANT_OPEN = 1;
+int CODE1_FILE_NOT_FOUND                = 0;
+int CODE1_FILE_CANT_OPEN                = 1;
 
-int CODE2_UNKNOWN_TOKENS_CHAR = 0;
-int CODE2_PRAGMA_NOT_END = 1;
-int CODE2_PRAGMA_NOT_IDENT = 2;
-int CODE2_REMAIN_TOKEN = 3;
-int CODE2_TOKEN_TOO_BIG = 4;
+int CODE2_UNKNOWN_TOKENS_CHAR           = 0;
+int CODE2_PRAGMA_NOT_END                = 1;
+int CODE2_PRAGMA_NOT_IDENT              = 2;
+int CODE2_REMAIN_TOKEN                  = 3;
+int CODE2_TOKEN_TOO_BIG                 = 4;
 
-int CODE3_PREV_TOK_INCORRECT = 0;
+int CODE3_PREV_TOK_INCORRECT            = 0;
 
-int CODE4_CMD_HASNT_FIRST_TOKEN = 0;
-int CODE4_CANT_ADD_TOKEN = 1;
-int CODE4_CANT_IDENT_CMD = 2;
-int CODE4_VARS_IDENT_USED= 3;
+int CODE4_CMD_HASNT_FIRST_TOKEN         = 0;
+int CODE4_CANT_ADD_TOKEN                = 1;
+int CODE4_CANT_IDENT_CMD                = 2;
+int CODE4_VARS_IDENT_USED               = 3;
+int CODE4_TOK_TYPES_NOT_MATCH           = 4;
 
+int CODE7_TYPES_NOT_MATCH_RIGHT_DATA    = 0;
 //int CODE7_IDENT_NOT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
@@ -70,10 +72,12 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
 	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",				// 4.Komandalar
 	 "Kompýuteriň ýadynda ýer ýetmedi",
 	 "Komanda tanalmady",
-	 "Ülňi üçin identifikator eýýäm ulanyldy"},
-	{},																	// 5.Algoritmler
-	{},																	// 6.Global sanawlar
-	{//"Komandanyň çep identifikatory öň yglan edilipdi",		        	// 7.Semantika
+	 "Ülňi üçin identifikator eýýäm ulanyldy",
+	 "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
+	{},																	        // 5.Algoritmler
+	{},																	        // 6.Global sanawlar
+	{"Komandanyň sag tarapky token tipi çep tarapdaky birlige gabat gelenok",    // 7.Semantika
+	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
 	 },

@@ -32,6 +32,8 @@ struct command{
 	unsigned int items_num;
 	int cmd_type;
 	int cmd_class;
+	int value_class;
+	int value_type;
 	int is_compl;
 	int ns;
 };
@@ -84,25 +86,19 @@ extern command_item_recog cmd_first_items_classes[];
 
 int parse_cmd(command *cmd);
 
-int is_cmd_def_var(command *cmd);
-int is_cmd_assign(command  *cmd);
+
 
 int is_tok_in_list(cmd_token *list_tok, token *tok);
 
-int def_var_cmd_mod(command *cmd, token *tok, int tok_num);//command *cmd, token *tok, int tok_num);
-int assign_cmd_mod(command *cmd, int tok_num);
+//command *cmd, token *tok, int tok_num);
+
 
 int add_to_cmd(command *cmd, token *tok);
 
-// Komandanyn gornushinin global ulnidini yglan etmedigini barlayar
-int is_glob_def_var_cmd(command *cmd);
 
-// Komandanyn gornushinin ulni yglan etmedigini barlayar
-int is_def_var_cmd(command *cmd);
 
 // Komandalar bilen ishleyan bolum
 int work_with_cmd();
 
-// Komanda ulni yglan etme bolsa, ulni yglan etmelerin sanawyna goshyar
-int add_to_def_var_list(command *cmd);
+
 #endif

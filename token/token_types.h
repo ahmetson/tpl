@@ -13,19 +13,20 @@
 **/
 
 // token types number, doks/token_goshmak_tertipleri
-#define CONST_TOKEN_TYPES_NUM 4
+#define CONST_TOKEN_TYPES_NUM 5
 extern const int TOKEN_TYPES_NUM;
 
 // The longest type 'ident' has 6 characters.
 #define CONST_TOKEN_TYPE_MAX_LEN 6
 extern const int TOKEN_TYPE_MAX_LEN;
 
-extern const int DEF_TYPE_TYPE_CLASS;
-extern const int GLOB_TYPE_CLASS;
-extern const int IDENT_TYPE_CLASS;
-extern const int ASSIGN_TYPE_CLASS;
+extern const int TOK_CLASS_DEF_TYPE;
+extern const int TOK_CLASS_GLOB;
+extern const int TOK_CLASS_IDENT;
+extern const int TOK_CLASS_ASSIGN;
+extern const int TOK_CLASS_CONST_DATA;
 
-// Debug uchin
+// Debug üçin
 extern char *type_classes[];
 
 // Funksiyalar token uchin strukturalary talap edyaler
@@ -36,4 +37,5 @@ int is_token_def_type(token *tok, char *token_val);
 int is_token_def_glob(token *tok, char *token_val);
 int is_token_ident(token *tok, char *token_val);
 int is_token_var_left_assign(token *tok, char *token_val);
+int is_token_int_const_data(token *tok, char *token_val);
 #endif

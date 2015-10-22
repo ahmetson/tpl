@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "tpl.h"
-#include "tpl/glob.h"
+#include "main/glob.h"
 #include "cmds.h"
 #include "parser.h"
 #include "algor.h"
