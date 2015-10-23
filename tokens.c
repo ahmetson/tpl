@@ -68,12 +68,12 @@ int recognize_token(token *tok, char *val)
 		return 0;
 	}
 
-	//debug_token(tok);
 	//printf("Token Recognized\t(Inputted text:%s)\n", val);
 	return 1;
 }
 
-/*
+
+/**
  * Tokenin bolup biljek tipini tokene goşýar.
  * Tokeniň bolup biljek tipleri ýene köpelýär
  * TODO: Eger tokenin eyyam goshuljak gornushinin klasynda gornushi bar bolsa,
@@ -87,6 +87,45 @@ int add_potentional_token_type(token *tok, token_type tok_type)
 }
 
 
+/**
+ * Tokenin bolup biljek tipini tokene goşýar.
+ * Tokeniň bolup biljek tipleri ýene köpelýär
+ * TODO: Eger tokenin eyyam goshuljak gornushinin klasynda gornushi bar bolsa,
+ * we taze gornush gutarylan bolsa, onda onki gornush tazelenyar.
+ *
+**/
+int delete_potentional_token_type(token *tok, int type_class, int type_num)
+{
+    int i, j, moveto, potentional_types_num = tok->potentional_types_num;
+    for (i=0; i<tok->potentional_types_num; ++i)
+    {
+        if (tok->potentional_types[i].type_class==type_class &&
+            tok->potentional_types[i].type_num  ==type_num)
+        {
+            potentional_types_num--;
+            // Eger pozulan tipden soň, ýene token tipleri bar bolsa,
+            // olary öňe süýşirmeli
+            if (i<tok->potentional_types_num-1)
+            {
+                moveto = 1;
+            }
+        }
+        if (moveto)
+        {
+            for(j=i; j<tok->potentional_types_num; ++j)
+            {
+                if (j+1<tok->potentional_types_num)
+                    tok->potentional_types[j] = tok->potentional_types[j+1];
+            }
+            moveto = 0;
+        }
+    }
+
+    tok->potentional_types_num = potentional_types_num;
+
+	return 1;
+}
+
 /*
  * Tokeniň içinden, komanda-da gerek bolmajak maglumatlary pozýar.
 **/
@@ -98,7 +137,7 @@ int finishize_token(token *tok)
 	// dine bir bolup biljek tip goyulyar,
 	// in sonky goylan fayl, onki goyulanlary yapyar
 	int i;
-	for (i=tok->potentional_types_num-1;i>0; i--)
+	for (i=tok->potentional_types_num-1;i>=0; --i)
 	{
 		if (tok->potentional_types[i].is_compl==0)
 			continue;
@@ -140,6 +179,13 @@ int move_to_cmd(token *tok, char *tok_string)
     }
     // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
 	finishize_token(tok);
+
+	if (tok->is_compl==0)
+    {
+        CUR_PART = 2;
+        print_err(CODE2_PREV_TOKEN_INCORRECT);
+    }
+
     //printf("Token komanda goshulmana tayynlandy\n");
 
 	if (!add_to_cmd(&cmd, tok))  print_err(CODE4_CANT_ADD_TOKEN);

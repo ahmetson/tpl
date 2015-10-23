@@ -72,6 +72,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main/main_file.h" />
+		<Unit filename="main/tpl_esc_keys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/tpl_esc_keys.h" />
 		<Unit filename="other.c">
 			<Option compilerVar="CC" />
 		</Unit>
