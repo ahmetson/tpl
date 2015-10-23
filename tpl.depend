@@ -315,7 +315,7 @@
 1445611993 d:\c_source\tpl\token\token_types.h
 	"token_structs.h"
 
-1445611882 d:\c_source\tpl\token\token_structs.h
+1445639989 d:\c_source\tpl\token\token_structs.h
 
 1445568619 d:\c_source\tpl\main\glob.h
 	"files.h"
@@ -336,7 +336,7 @@
 1444366145 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
 
-1445533218 d:\c_source\tpl\error.h
+1445624618 d:\c_source\tpl\error.h
 
 1445473436 d:\c_source\tpl\dev_debug.h
 	"algor.h"
@@ -367,7 +367,7 @@
 	"algor.h"
 	"dev_debug.h"
 
-1445533282 source:d:\c_source\tpl\error.c
+1445624604 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
@@ -418,7 +418,7 @@
 
 1440718598 source:d:\c_source\tpl\other.c
 
-1445611106 source:d:\c_source\tpl\parser.c
+1445637729 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -458,7 +458,7 @@
 
 1441566452 d:\c_source\tpl\token\keywords.h
 
-1445615196 source:d:\c_source\tpl\token\token_types.c
+1445638739 source:d:\c_source\tpl\token\token_types.c
 	<stdio.h>
 	<string.h>
 	"token_types/assign.h"
@@ -467,6 +467,7 @@
 	"token_types/const_data.h"
 	"keywords.h"
 	"token_types.h"
+	"../main/tpl_esc_keys.h"
 
 1445177848 source:d:\c_source\tpl\token\token_types\assign.c
 	"assign.h"
@@ -488,7 +489,7 @@
 
 1443108359 d:\c_source\tpl\token\token_word.h
 
-1445615406 source:d:\c_source\tpl\tokens.c
+1445638481 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -560,8 +561,14 @@
 1445470753 d:\c_source\tpl\cmd\def_var.h
 	"../cmds.h"
 
-1445570271 source:d:\c_source\tpl\cmd\def_var.c
+1445621544 source:d:\c_source\tpl\cmd\def_var.c
 	"../main/glob.h"
 	"../error.h"
 	"def_var.h"
+
+1445639437 source:d:\c_source\tpl\main\tpl_esc_keys.c
+	<string.h>
+	"tpl_esc_keys.h"
+
+1445637089 d:\c_source\tpl\main\tpl_esc_keys.h
 

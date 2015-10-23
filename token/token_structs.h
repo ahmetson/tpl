@@ -9,12 +9,6 @@
 
 #define MAX_VAR_LEN 32
 
-typedef struct{
-    char type;              // 1 - defined type, 2 - user type
-    char *user_type;
-    int  def_type_num;
-    int  def_type_class;
-}required_token_type;
 
 // Token tipi
 typedef struct{
@@ -25,7 +19,6 @@ typedef struct{
 	char                    tok_value_type;     // Default - char*
 	char                    is_compl;		    // Is token completed
 	char                    type_must_check;
-	required_token_type     req_type;
 }token_type;
 
 // Token uchin

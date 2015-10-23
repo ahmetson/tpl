@@ -11,6 +11,7 @@
 #include "token_types/const_data.h"
 #include "keywords.h"
 #include "token_types.h"
+#include "../main/tpl_esc_keys.h"
 
 // 3 sany tokenlerin tipleri bar
 const int TOKEN_TYPES_NUM = CONST_TOKEN_TYPES_NUM;
@@ -246,46 +247,40 @@ int is_token_float_const_data(token *tok, char *tok_val)
 }
 
 
-int is_token_char_const_data    (token *tok, char *tok_val)
+int is_token_char_const_data(token *tok, char *tok_val)
 {
 
     int len = strlen(tok_val), complete=0;
-    // TODO  strlen(tok_val)>3 komandany
-    // TPL_ESC_KEY_MAX_LEN + 2 (açar we ýapar) komandasy bilen calyşmaly
-    if (len>3 || tok_val[0]!='\'' )
+
+    if (len>(TPL_ESC_KEY_MAX_LEN+2) || tok_val[0]!='\'' )
         return 0;
 
-    // Eger ýörite belginiň başyny aňladýan harp bolup, harpdan soňam başga harp bar bolsa,
-    // is_tpl_ESC_key() atly funksiýa arkaly ýörite belgileriň arasynda barlanýar.
-    // Eger şeýle ýörite belgi bar bolsa, tpl_to_c_ESC_key(char *s) atly funksiýa arkaly,
-    // ýörite belgi ýasaljak koddaky harp ekwiwalentligi bilen çalyşylmaly
-    /*
-    çhar ESC_key = 0;
+    char ESC_key = 0;
     int  ESC_key_len = 0;
-    if (tok_val[1]==TPL_ESC_KEY && ;en!=3)
+    if (tok_val[1]==TPL_ESC_KEY_OPENER && len>2)
     {
         ESC_key=1;
-        if (is_tpl_ESCK_key(tok_val[2]))
+        if (!is_tpl_ESC_key(tok_val[2], 1))
         {
-            ESC_key_len = tpl_ESC_key_to_c_ESC_key(tok_val);
-        }
-        else
-        {
-            // Tokeniň içinde ESC belgi bolmasa, token maksimum 4 belgiden ybarat bolmaly.
+            // Tokeniň içinde ESC belgi bolmasa, token maksimum 3 belgiden ybarat bolmaly.
+            //delete_potentional_token_type(tok, TOK_CLASS_CONST_DATA, CHAR_CONST_DATA_TOK_NUM);
             return 0;
         }
-    }*/
+    }
 
-    // Minimum şu maglumatyň ybarat bolup bilýän harplary: 3 sany
-    // Soňky harp durnak bolmasa, onda bu harp däl.
-    // len==3 aslynda
-    // // Token maglumatyn ichinde ESC belgi uygtedileni sebapli, uzynlyga tazeden hasaplanmaly
-    // (ESC_key && (ESC_key_len+2)==strlen(tok_val)) || len==3 diyen komanda owrulmeli.
-    // Sebabi, ESC belgi bar bolsa onun uzynlygy birnache harpdan ybarat bolup bilyar
-    if (len==3)
+    if ((ESC_key && strlen(tok_val)>4) || (!ESC_key && len>3))
     {
-        if (tok_val[len-1]=='\'')
+        return 0;
+    }
+
+    // Token maglumatyn ichinde ESC belgi uygtedileni sebapli, uzynlyga tazeden hasaplanmaly
+    if ((ESC_key && len==4) || (!ESC_key && len==3))
+    {
+        if (tok_val[strlen(tok_val)-1]=='\'')
+        {
+            tpl_ESC_key_to_c_ESC_key(tok_val);
             complete = 1;
+        }
         else
             return 0;
     }

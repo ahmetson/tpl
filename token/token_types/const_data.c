@@ -1,6 +1,7 @@
 /**
  * Konstanta maglumatlar, dört sany.
 **/
+#include <string.h>
 #include "const_data.h"
 #include "../token_types.h"
 
@@ -67,7 +68,15 @@ void set_def_type_alias_const_data(int *left_class, int *left_type)
 char *get_const_data_string(token *tok)
 {
     if (tok->potentional_types[0].type_num==INT_CONST_DATA_TOK_NUM ||
-        tok->potentional_types[0].type_num==FLOAT_CONST_DATA_TOK_NUM ||
-        tok->potentional_types[0].type_num==CHAR_CONST_DATA_TOK_NUM)
+        tok->potentional_types[0].type_num==FLOAT_CONST_DATA_TOK_NUM)
         return tok->potentional_types[0].value;
+    else if (tok->potentional_types[0].type_num==CHAR_CONST_DATA_TOK_NUM)
+    {
+        if (tok->potentional_types[0].value[1]=='\\')
+        {
+            char *backslash = "'\\\\'";
+            return backslash;
+        }
+        return tok->potentional_types[0].value;
+    }
 }

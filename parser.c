@@ -61,10 +61,8 @@ int parser(FILE *source)
 				// 1. Onki token bar
 				if (!is_token_empty(&tok))
 				{
-					move_to_cmd(&tok, prev_tok_string);
-
+				    move_to_cmd(&tok, prev_tok_string);
 				}
-				//printf("Eger onki token bosh bolmasa, komanda gechirilyar\n");
 
 				// 2. Pragma modyna geçmeli
 				if (c==PRAGMA_START_CHAR && (mode = PRAGMA_MODE)+1)  continue;
@@ -81,16 +79,7 @@ int parser(FILE *source)
 				}
 				else if (c==CMD_END)
 				{
-                        //printf("Komanda gutardy ++++++++++++++++++++++++++++++++++++++++=\n");
-                        //debug_cmd(&cmd);
-
-                        // Komandany algoritme goshulyar
-                        work_with_cmd();
-                        //if (CUR_ALGOR_ITEMS_NUM)
-                        //{printf("KOMANDA BILEN ISHLENILENDEN SON-------------------------------\n");
-                        //debug_cmd(&CUR_ALGOR[CUR_ALGOR_ITEMS_NUM-1]);
-                       // printf("WE========================================\n");
-                        //}// Komanda bilen ishleyan bolume gechilyar
+                    work_with_cmd();
 
 					//debug_cmd(&cmd);
 					init_cmd(&cmd, 1);
