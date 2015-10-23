@@ -13,7 +13,6 @@
 **/
 
 // token types number, doks/token_goshmak_tertipleri
-#define CONST_TOKEN_TYPES_NUM 5
 extern const int TOKEN_TYPES_NUM;
 
 // The longest type 'ident' has 6 characters.
@@ -33,9 +32,11 @@ extern char *type_classes[];
 #include "token_structs.h"
 
 // tokenleri tanayan funksiyalar
-int is_token_def_type(token *tok, char *token_val);
-int is_token_def_glob(token *tok, char *token_val);
-int is_token_ident(token *tok, char *token_val);
-int is_token_var_left_assign(token *tok, char *token_val);
-int is_token_int_const_data(token *tok, char *token_val);
+int is_token_def_type           (token *tok, char *tok_val);
+int is_token_def_glob           (token *tok, char *tok_val);
+int is_token_ident              (token *tok, char *tok_val);
+int is_token_var_left_assign    (token *tok, char *tok_val);
+int is_token_int_const_data     (token *tok, char *tok_val);
+int is_token_float_const_data   (token *tok, char *tok_val);
+int is_token_char_const_data    (token *tok, char *tok_val);
 #endif

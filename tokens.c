@@ -18,7 +18,9 @@ is_token_item tok_types[] = {
 	   {is_token_def_glob},
 	   {is_token_ident},
 	   {is_token_var_left_assign},
-	   {is_token_int_const_data}
+	   {is_token_float_const_data},
+	   {is_token_int_const_data},
+	   {is_token_char_const_data}
 };
 
 
@@ -132,8 +134,10 @@ int move_to_cmd(token *tok, char *tok_string)
 	if (cmd.items_num!=0 &&
        (cmd.items[cmd.items_num-1].type==TOKEN_ITEM && cmd.items[cmd.items_num-1].tok.is_compl==0 ||
         cmd.items[cmd.items_num-1].type==CMD_ITEM   && cmd.items[cmd.items_num-1].cmd.is_compl==0))
-                                 print_err(CODE3_PREV_TOK_INCORRECT);
-
+    {
+        CUR_PART = 3;
+        print_err(CODE3_PREV_TOK_INCORRECT);
+    }
     // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
 	finishize_token(tok);
     //printf("Token komanda goshulmana tayynlandy\n");

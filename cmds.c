@@ -165,6 +165,7 @@ int add_to_cmd(command *cmd, token *tok)
 // Komandalar bilen ishleyan bolum
 int work_with_cmd()
 {
+
 	// Hazir TPL-in fayly komandalar bilen ishleyan boluminde
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
@@ -183,6 +184,7 @@ int work_with_cmd()
 
 	CUR_PART = prev_part;
 	return 1;
+
 }
 
 

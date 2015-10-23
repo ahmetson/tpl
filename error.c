@@ -70,7 +70,7 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
 	 "Pragma tanalmady",
 	 "Komandany gutarýan token ýetenok",
 	 "Token gaty uzyn"},
-	{"Mundan öňki token tanalmandy (ýa gutarylmandy)"},									// 3.Tokenler
+	{"Nädogry komanda birligi gabat gelindi"},              							// 3.Tokenler
 	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",				// 4.Komandalar
 	 "Kompýuteriň ýadynda ýer ýetmedi",
 	 "Komanda tanalmady",

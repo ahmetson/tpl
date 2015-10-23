@@ -309,13 +309,13 @@
 
 1443061997 d:\c_source\tpl\token\token_types\assign.h
 
-1445483559 d:\c_source\tpl\token\token_types\const_data.h
+1445613759 d:\c_source\tpl\token\token_types\const_data.h
 	"../token_structs.h"
 
-1445483627 d:\c_source\tpl\token\token_types.h
+1445611993 d:\c_source\tpl\token\token_types.h
 	"token_structs.h"
 
-1445483643 d:\c_source\tpl\token\token_structs.h
+1445611882 d:\c_source\tpl\token\token_structs.h
 
 1445568619 d:\c_source\tpl\main\glob.h
 	"files.h"
@@ -346,7 +346,7 @@
 	"../error.h"
 	"assign.h"
 
-1445569876 source:d:\c_source\tpl\cmds.c
+1445611047 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -418,7 +418,7 @@
 
 1440718598 source:d:\c_source\tpl\other.c
 
-1445473576 source:d:\c_source\tpl\parser.c
+1445611106 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -458,7 +458,7 @@
 
 1441566452 d:\c_source\tpl\token\keywords.h
 
-1445184343 source:d:\c_source\tpl\token\token_types.c
+1445615196 source:d:\c_source\tpl\token\token_types.c
 	<stdio.h>
 	<string.h>
 	"token_types/assign.h"
@@ -471,7 +471,7 @@
 1445177848 source:d:\c_source\tpl\token\token_types\assign.c
 	"assign.h"
 
-1445483667 source:d:\c_source\tpl\token\token_types\const_data.c
+1445613576 source:d:\c_source\tpl\token\token_types\const_data.c
 	"const_data.h"
 	"../token_types.h"
 
@@ -488,7 +488,7 @@
 
 1443108359 d:\c_source\tpl\token\token_word.h
 
-1445568882 source:d:\c_source\tpl\tokens.c
+1445615406 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -498,7 +498,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1445533294 source:d:\c_source\tpl\tpl.c
+1445610950 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -511,7 +511,7 @@
 
 1444815939 d:\c_source\tpl\work_with_source.h
 
-1445540944 source:d:\c_source\tpl\translator_to_c.c
+1445611564 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -544,7 +544,7 @@
 	"translator_to_c.h"
 	"error.h"
 
-1445566285 source:d:\c_source\tpl\semantic\compare_token_types.c
+1445570243 source:d:\c_source\tpl\semantic\compare_token_types.c
 	<stdio.h>
 	<string.h>
 	"../main/glob.h"
@@ -560,7 +560,7 @@
 1445470753 d:\c_source\tpl\cmd\def_var.h
 	"../cmds.h"
 
-1445570015 source:d:\c_source\tpl\cmd\def_var.c
+1445570271 source:d:\c_source\tpl\cmd\def_var.c
 	"../main/glob.h"
 	"../error.h"
 	"def_var.h"

@@ -96,6 +96,7 @@ int parser(FILE *source)
 					init_cmd(&cmd, 1);
 
 					init_token(&tok);
+
 				}
 				else
 				{
