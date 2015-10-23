@@ -10,7 +10,7 @@ CONST_TOKEN_TYPES_NUM yene bir sana ulaldylyar
 3) token/token_types.h    Setir:23
 Täze token tipiniň klasynyň nomeri üçin Konstanta yglan edilýär.
 
-4) token/token_types.h    Setir:21
+4) token/token_types.c    Setir:21
 Täze token tipiniň klasynyň nomeri üçin Konstanta ýasalýar.
 
 5) token/token_types papkada

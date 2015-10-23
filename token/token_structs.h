@@ -5,7 +5,7 @@
 #define TOKEN_STRUCTS_H
 
 #define MAXLEN 255
-#define CONST_TOKEN_TYPES_NUM 5
+#define CONST_TOKEN_TYPES_NUM 7
 
 #define MAX_VAR_LEN 32
 
