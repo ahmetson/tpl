@@ -15,8 +15,6 @@ int is_cmd_def_var(command *cmd)
 	if (cmd->items_num>DEF_VAR_MAX_TOKENS || !cmd->items_num)
 	{
 		// Komandany saygaryp bolmady
-		cmd->cmd_class=0;
-		cmd->cmd_type=0;
 		return 0;
 	}
 
@@ -49,11 +47,10 @@ int is_cmd_def_var(command *cmd)
 		return 0;
 	}
 
-
 	// Eger birinji umumylygy anladyan token bolsa onda ikinji token maglumat
 	// 	tipi bolup bilyar
 	// Yada identifikator bolup bilyar
-	if (cmd->items_num>=1)
+	if (cmd->items_num>1)
 	{
 		if ( cmd->items[1].type==TOKEN_ITEM &&
 		cmd->items[1].tok.type_class==next)
@@ -72,7 +69,7 @@ int is_cmd_def_var(command *cmd)
 
 	// Eger birinji umumylygy anladyan token bolmasa,
 	//	identifikator bolup bilyar.
-	if (cmd->items_num>=2)
+	if (cmd->items_num>2)
 	{
 		if(next>0 && cmd->items[2].type==TOKEN_ITEM &&
 		next==cmd->items[2].tok.type_class)
@@ -81,8 +78,6 @@ int is_cmd_def_var(command *cmd)
 		}
 		else
 		{
-			//cmd->cmd_class=0;
-			//cmd->cmd_type=0;
 			return 0;
 		}
 	}
@@ -161,7 +156,7 @@ int is_glob_def_var_cmd(command *cmd)
 // Komandanyn gornushinin ulni yglan etmedigini barlayar
 int is_def_var_cmd(command *cmd)
 {
-	if (cmd->cmd_class==DEF_VAR_CLASS_NUM && cmd->cmd_type==DEF_VAR_TYPE_NUM)
+	if (cmd->cmd_class==CMD_CLASS_DEF_VAR && cmd->cmd_type==DEF_VAR_TYPE_NUM)
 		return 1;
 	return 0;
 }

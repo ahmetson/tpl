@@ -37,15 +37,12 @@
 **/
 int is_cmd_assign(command *cmd)
 {
+
 	if (cmd->items_num>ASSIGN_MAX_ITEMS || !cmd->items_num)
 	{
-		// Komandany saygaryp bolmady
-		cmd->cmd_class=0;
-		cmd->cmd_type=0;
 		return 0;
 	}
 
-	//printf("Birinji birlik barlanmaly\n");
 	int next_item_class=-1, next_item_type=-1;
 	// Birinji token ya ulni yglan etmek bolmaly ya identifikator.
 	if (cmd->items[0].type==TOKEN_ITEM &&
@@ -55,7 +52,7 @@ int is_cmd_assign(command *cmd)
 		next_item_class=TOK_CLASS_ASSIGN;
 	}
 	else if (cmd->items[0].type==CMD_ITEM &&
-		cmd->items[0].cmd.cmd_class==DEF_VAR_CLASS_NUM)
+		cmd->items[0].cmd.cmd_class==CMD_CLASS_DEF_VAR)
 	{
 		assign_cmd_mod(cmd, 0);
 		next_item_class=TOK_CLASS_ASSIGN;
@@ -73,21 +70,12 @@ int is_cmd_assign(command *cmd)
     }
     else
     {
-		//debug_cmd(cmd);
-		//printf("Birinji bolum, tokeninki dal\n");
-		// Komandany saygaryp bolmady
-		//printf("Umumy ulni bolmaly");
-		// Komandany saygaryp bolmady
-		//cmd->cmd_class=0;
-		//cmd->cmd_type=0;
 		return 0;
 	}
-	//debug_cmd(cmd);
-	//printf("Birinji birlik tanaldy\n");
 
 	// Ikinji birlik, eger birinji ulni yglan edilme bolsa,
 	// Baglanmanyn chepe gidyan token gornushi bolmaly, yogsa ikisem bolyar
-	if(cmd->items_num>=1)
+	if(cmd->items_num>1)
 	{
 		if (next_item_class>0 &&
 			cmd->items[1].type==TOKEN_ITEM &&
@@ -96,11 +84,6 @@ int is_cmd_assign(command *cmd)
 			// Token dine chepe tarap baglanma bolmaly
 			if (next_item_type>0 && !cmd->items[1].tok.potentional_types[0].type_num==next_item_type)
 			{
-				//printf("Token chepe tarap bakyan dal\n");
-				// Komandany saygaryp bolmady
-				//cmd->cmd_class = 0;
-				//cmd->cmd_type = 0;
-				//printf("Umumy ulni bolmaly");
 				return 0;
 			}
 			assign_cmd_mod(cmd, 1);
@@ -108,21 +91,12 @@ int is_cmd_assign(command *cmd)
 		}
 		else
 		{
-			//printf("Ikinji tapgyrda-da tanalmady\n");
-			// Komandany saygaryp bolmady
-			//printf("Umumy ulni bolmaly");
-			// Komandany saygaryp bolmady
-			//cmd->cmd_class=0;
-			//cmd->cmd_type=0;
 			return 0;
-			//debug_cmd(cmd);
 		}
 	}
-	//debug_cmd(cmd);
-	//printf("Ikinji bolum tanaldy");
 
 	// Uchunji token identifikator bolmaly.
-	if (cmd->items_num>=2)
+	if (cmd->items_num>2)
 	{
 	    if(cmd->items[2].type==TOKEN_ITEM &&
 		   cmd->items[2].tok.type_class==TOK_CLASS_IDENT ||
@@ -130,19 +104,13 @@ int is_cmd_assign(command *cmd)
            cmd->items[2].tok.type_class==TOK_CLASS_CONST_DATA)
 		{
 			assign_cmd_mod(cmd, 2);
-
-			// Tokeniň görnüşi barlanmaly.
-
-		//printf("Uchunji birlik identifikator eken\n");
 		}
 		else
 		{
-		// Komandany saygaryp bolmady
-		//cmd->cmd_class=0;
-		//cmd->cmd_type=0;
-			return 0;
+            return 0;
 		}
 	}
+
 	return 1;
 }
 
@@ -158,7 +126,7 @@ int assign_cmd_mod(command *cmd, int tok_num)
 	// Birinji birlik
 	if (tok_num==0)
 	{
-		cmd->cmd_class = ASSIGN_CLASS_NUM;
+		cmd->cmd_class = CMD_CLASS_ASSIGN;
 		cmd->is_compl = 0;
 
 		// Eger birlik global ulni yglan etme bolsa
@@ -172,7 +140,7 @@ int assign_cmd_mod(command *cmd, int tok_num)
 	else if (tok_num==1)
 	{
 		cmd->cmd_type = cmd->items[1].tok.potentional_types[0].type_num;
-		cmd->cmd_class = ASSIGN_CLASS_NUM;
+		cmd->cmd_class = CMD_CLASS_ASSIGN;
 
 		cmd->is_compl = 0;
 
@@ -180,22 +148,18 @@ int assign_cmd_mod(command *cmd, int tok_num)
 	}
 	else if (tok_num==2)
 	{
-		cmd->cmd_class = ASSIGN_CLASS_NUM;
-
+		cmd->cmd_class = CMD_CLASS_ASSIGN;
 		cmd->is_compl = 1;
 
-		// Semantika barlanýar
-		/** TODO
-		 * Eger baglanmaly tokeniň görnüşi konstanta maglumat bolmasa,
-		 * Mysal üçin: san, drob, harp ýa harp düzümi bolmasa.
-		 * Onda tokeniň görnüşi barlanmaly (token.token_type.type_must_check = 1)
-		**/
-
-
+        // Semantikalary, parsingden soň barlanmagy üçin, sanawa goşulýar,
+        // Nähili sanawa goşulmagy, komandanyň birliklerine görä saýgarylýar.
+        // Ýa çepki näbelli we sagky belli tipli,
+        // Ýa sagky nabelli we çepki belli tipli (TODO),
+        // Ýa ikisi hem näbelli tipli
+        // bolup bilýän sanawlara goşulýar.
 		if (cmd->items[tok_num].type==TOKEN_ITEM &&
             cmd->items[tok_num].tok.type_class==TOK_CLASS_CONST_DATA)
         {
-            //printf();
             if (!add_global_right_data_item(cmd))
             {
                 // Hazir TPL-in fayly komandalar bilen ishleyan boluminde
@@ -207,17 +171,15 @@ int assign_cmd_mod(command *cmd, int tok_num)
         else if (cmd->items[tok_num].type==TOKEN_ITEM &&
             cmd->items[tok_num].tok.type_class==TOK_CLASS_IDENT)
         {
-            // TODO
-            /*if (!add_global_compare_both_ident_item(cmd))
+            if (!add_global_both_ident_item(cmd))
             {
                 // Hazir TPL-in fayly komandalar bilen ishleyan boluminde
                 int prev_part = CUR_PART;
                 CUR_PART = 4;
                 print_err(CODE4_TOK_TYPES_NOT_MATCH);
-            }*/
+            }
         }
         // TODO, eger birinji birlik maglumat bolup ikinjisi identifikator bolsa.
-
 
 		return 1;
 	}

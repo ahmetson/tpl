@@ -20,7 +20,6 @@ int algor_add_cmd(command add_cmd)
 	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
-        //printf("Ichki komandalar uchin yer taplymady\n");
         print_err(CODE4_CANT_IDENT_CMD);
     }
     else

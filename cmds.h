@@ -16,8 +16,8 @@ extern const int CMD_ITEM;
 extern const int DEF_VAR_MAX_TOKENS;
 extern const int ASSIGN_MAX_ITEMS;
 
-extern int DEF_VAR_CLASS_NUM;
-extern int ASSIGN_CLASS_NUM;
+extern int CMD_CLASS_DEF_VAR;
+extern int CMD_CLASS_ASSIGN;
 
 extern int GLOB;
 extern int LOCAL;
@@ -36,6 +36,7 @@ struct command{
 	int value_type;
 	int is_compl;
 	int ns;
+	char inf_file_name[];
 };
 
 struct command_item{

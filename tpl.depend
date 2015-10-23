@@ -268,7 +268,7 @@
 	"translator_to_c.h"
 	"error.h"
 
-1445482731 source:d:\c_source\tpl\algor.c
+1445567543 source:d:\c_source\tpl\algor.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -292,7 +292,7 @@
 	"cmds.h"
 	"tokens.h"
 
-1445470558 d:\c_source\tpl\cmds.h
+1445565851 d:\c_source\tpl\cmds.h
 	"tokens.h"
 
 1445179579 d:\c_source\tpl\tokens.h
@@ -317,7 +317,7 @@
 
 1445483643 d:\c_source\tpl\token\token_structs.h
 
-1445473000 d:\c_source\tpl\main\glob.h
+1445568619 d:\c_source\tpl\main\glob.h
 	"files.h"
 	"../cmds.h"
 	"../algor.h"
@@ -336,17 +336,17 @@
 1444366145 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
 
-1445434725 d:\c_source\tpl\error.h
+1445533218 d:\c_source\tpl\error.h
 
 1445473436 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1445470648 source:d:\c_source\tpl\cmd\assign.c
+1445570119 source:d:\c_source\tpl\cmd\assign.c
 	"../main/glob.h"
 	"../error.h"
 	"assign.h"
 
-1445470731 source:d:\c_source\tpl\cmds.c
+1445569876 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -367,7 +367,7 @@
 	"algor.h"
 	"dev_debug.h"
 
-1445434717 source:d:\c_source\tpl\error.c
+1445533282 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
@@ -393,13 +393,13 @@
 	"files.h"
 	"glob.h"
 
-1445482456 source:d:\c_source\tpl\main\glob.c
+1445568598 source:d:\c_source\tpl\main\glob.c
 	<stdio.h>
 	<stdlib.h>
 	"glob.h"
 	"main_file.h"
 
-1445471292 source:d:\c_source\tpl\main\init.c
+1445540992 source:d:\c_source\tpl\main\init.c
 	<stdlib.h>
 	<string.h>
 	"init.h"
@@ -441,7 +441,7 @@
 	"../tpl.h"
 	"../error.h"
 
-1445482675 source:d:\c_source\tpl\semantic.c
+1445541001 source:d:\c_source\tpl\semantic.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -451,7 +451,7 @@
 	"error.h"
 	"dev_debug.h"
 
-1445193012 d:\c_source\tpl\semantic.h
+1445532903 d:\c_source\tpl\semantic.h
 
 1441566491 source:d:\c_source\tpl\token\keywords.c
 	"keywords.h"
@@ -488,7 +488,7 @@
 
 1443108359 d:\c_source\tpl\token\token_word.h
 
-1445198620 source:d:\c_source\tpl\tokens.c
+1445568882 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -498,7 +498,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1445482754 source:d:\c_source\tpl\tpl.c
+1445533294 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -511,14 +511,14 @@
 
 1444815939 d:\c_source\tpl\work_with_source.h
 
-1445473828 source:d:\c_source\tpl\translator_to_c.c
+1445540944 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"translator_to_c.h"
 
-1445482609 source:d:\c_source\tpl\translator_to_c\attach_glob_vars.c
+1445483492 source:d:\c_source\tpl\translator_to_c\attach_glob_vars.c
 	<stdlib.h>
 	<string.h>
 	"attach_glob_vars.h"
@@ -544,7 +544,7 @@
 	"translator_to_c.h"
 	"error.h"
 
-1445482430 source:d:\c_source\tpl\semantic\compare_token_types.c
+1445566285 source:d:\c_source\tpl\semantic\compare_token_types.c
 	<stdio.h>
 	<string.h>
 	"../main/glob.h"
@@ -552,7 +552,7 @@
 	"../error.h"
 	"../dev_debug.h"
 
-1445480246 d:\c_source\tpl\semantic\compare_token_types.h
+1445566021 d:\c_source\tpl\semantic\compare_token_types.h
 
 1445470614 d:\c_source\tpl\cmd\assign.h
 	"../cmds.h"
@@ -560,7 +560,7 @@
 1445470753 d:\c_source\tpl\cmd\def_var.h
 	"../cmds.h"
 
-1445472650 source:d:\c_source\tpl\cmd\def_var.c
+1445570015 source:d:\c_source\tpl\cmd\def_var.c
 	"../main/glob.h"
 	"../error.h"
 	"def_var.h"

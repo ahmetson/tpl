@@ -46,7 +46,7 @@ int init()
 	cmd_first_items_classes[1].item_class= TOK_CLASS_GLOB;
 	cmd_first_items_classes[1].item_type = -1;
 	cmd_first_items_classes[2].type=       CMD_ITEM;
-	cmd_first_items_classes[2].item_class= ASSIGN_CLASS_NUM;
+	cmd_first_items_classes[2].item_class= CMD_CLASS_ASSIGN;
 	cmd_first_items_classes[2].item_type = LEFT_ASSIGN_TOK_NUM;
 	cmd_first_items_classes[3].type=       TOKEN_ITEM;
 	cmd_first_items_classes[3].item_class= TOK_CLASS_IDENT;
