@@ -14,7 +14,7 @@
 int check_semantics(command *cmd)
 {
     // Komandanyn gornushi boyuncha, shol gornush boyuncha semantikany barlayan funksiya chagyrylyar
-    if (cmd->cmd_class==ASSIGN_CLASS_NUM)
+    if (cmd->cmd_class==CMD_CLASS_ASSIGN)
         return semantic_cmd_assign(cmd);
     return 0;
 }
@@ -126,6 +126,31 @@ int add_global_right_data_item(command *cmd)
     item->right     = cmd->items[cmd->items_num-1].tok.potentional_types[0];
     strncpy(item->inf_file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
 
+
+    return 1;
+}
+
+
+int add_global_both_ident_item(command *cmd)
+{
+    long size = sizeof(both_ident_cmd_item) * (GLOB_BOTH_IDENT_CMDS_NUM+1);
+    if (!GLOB_BOTH_IDENT_CMDS_NUM++)
+    {
+        GLOB_BOTH_IDENT_CMDS_LIST = malloc(size);
+    }
+    else
+    {
+        GLOB_BOTH_IDENT_CMDS_LIST = realloc(GLOB_BOTH_IDENT_CMDS_LIST, size);
+    }
+
+    //debug_cmd(cmd);
+    both_ident_cmd_item *item = &GLOB_BOTH_IDENT_CMDS_LIST[GLOB_BOTH_IDENT_CMDS_NUM-1];
+    item->cmd_class = cmd->cmd_class;
+    item->cmd_type  = cmd->cmd_type;
+
+    item->left      = cmd->items[0];
+    item->right     = cmd->items[cmd->items_num-1];
+    strncpy(item->inf_file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
 
     return 1;
 }

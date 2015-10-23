@@ -21,9 +21,14 @@
 		<Unit filename="cmd/assign.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="cmd/assign.h" />
 		<Unit filename="cmd/assign.o">
 			<Option link="0" />
 		</Unit>
+		<Unit filename="cmd/def_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/def_var.h" />
 		<Unit filename="cmds.c">
 			<Option compilerVar="CC" />
 		</Unit>

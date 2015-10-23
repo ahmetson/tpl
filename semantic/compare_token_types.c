@@ -21,14 +21,48 @@ void compare_token_types_right_data()
         if(GLOB_RIGHT_DATA_CMDS_LIST[i].left.type==TOKEN_ITEM)
         {
             //debug_token(&GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok);
-            get_user_var_def_type(GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok.potentional_types[0].value, &left_class, &left_type,
+            get_user_var_def_value_type(GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok.potentional_types[0].value, &left_class, &left_type,
                                 GLOB_RIGHT_DATA_CMDS_LIST[i].inf_file_name);
             set_def_type_alias_const_data(&left_class, &left_type);
         }
         else
         {
-            left_class = GLOB_RIGHT_DATA_CMDS_LIST[i].left.cmd.cmd_class;
-            left_type  = GLOB_RIGHT_DATA_CMDS_LIST[i].left.cmd.cmd_type;
+            get_cmd_value_type(&GLOB_RIGHT_DATA_CMDS_LIST[i].left.cmd, &left_class, &left_type);
+            set_def_type_alias_const_data(&left_class, &left_type);
+        }
+
+        // Sag tarap
+        right_class = GLOB_RIGHT_DATA_CMDS_LIST[i].right.type_class;
+        right_type  = GLOB_RIGHT_DATA_CMDS_LIST[i].right.type_num;
+
+        // Deňeşdirme
+        if ( !(right_class==left_class && right_type==left_type) )
+        {
+            CUR_PART = 7;
+            print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA);
+        }
+    }
+}
+
+
+// Çep tarapy konstanta maglumat we sag tarapy komanda birligi bolan
+// komandalaryň bir token tipdedigi barlanýar
+/*void compare_token_types_left_data()
+{
+    int i, left_class, left_type, right_class, right_type;
+    for(i=0; i<GLOB_RIGHT_DATA_CMDS_NUM; ++i)
+    {
+        // Çep tarap
+        if(GLOB_RIGHT_DATA_CMDS_LIST[i].left.type==TOKEN_ITEM)
+        {
+            //debug_token(&GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok);
+            get_user_var_def_value_type(GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok.potentional_types[0].value, &left_class, &left_type,
+                                GLOB_RIGHT_DATA_CMDS_LIST[i].inf_file_name);
+            set_def_type_alias_const_data(&left_class, &left_type);
+        }
+        else
+        {
+            get_cmd_value_type(&GLOB_RIGHT_DATA_CMDS_LIST[i].left.cmd, &left_class, &left_type);
             set_def_type_alias_const_data(&left_class, &left_type);
         }
 
@@ -44,10 +78,55 @@ void compare_token_types_right_data()
             print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA);
         }
     }
+}*/
+
+
+// Iki tarapy hem komanda birligi bolan
+// komandalaryň birlikleriniň bir token tipdedigi barlanýar
+void compare_token_types_both_ident()
+{
+
+    int i, left_class, left_type, right_class, right_type;
+    for(i=0; i<GLOB_BOTH_IDENT_CMDS_NUM; ++i)
+    {
+        // Çep tarap
+        if(GLOB_BOTH_IDENT_CMDS_LIST[i].left.type==TOKEN_ITEM)
+        {
+            //
+            get_user_var_def_value_type(GLOB_BOTH_IDENT_CMDS_LIST[i].left.tok.potentional_types[0].value, &left_class, &left_type,
+                                GLOB_BOTH_IDENT_CMDS_LIST[i].inf_file_name);
+            set_def_type_alias_const_data(&left_class, &left_type);
+        }
+        else
+        {
+            get_cmd_value_type(&GLOB_BOTH_IDENT_CMDS_LIST[i].left.cmd, &left_class, &left_type);
+            set_def_type_alias_const_data(&left_class, &left_type);
+        }
+
+        // Sag tarap
+        if(GLOB_BOTH_IDENT_CMDS_LIST[i].right.type==TOKEN_ITEM)
+        {
+            get_user_var_def_value_type(GLOB_BOTH_IDENT_CMDS_LIST[i].right.tok.potentional_types[0].value, &right_class, &right_type,
+                                GLOB_BOTH_IDENT_CMDS_LIST[i].inf_file_name);
+            set_def_type_alias_const_data(&right_class, &right_type);
+        }
+        else
+        {
+            get_cmd_value_type(&GLOB_BOTH_IDENT_CMDS_LIST[i].right.cmd, &right_class, &right_type);
+            set_def_type_alias_const_data(&right_class, &right_type);
+        }
+
+        // Deňeşdirme
+        if ( !(right_class==left_class && right_type==left_type) )
+        {
+            CUR_PART = 7;
+            print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT);
+        }
+    }
 }
 
 
-int get_user_var_def_type(char *ident, int *type_class, int *type_num, char *file_name)
+int get_user_var_def_value_type(char *ident, int *type_class, int *type_num, char *file_name)
 {
     int i, len, flen;
     for (i=0; i<USER_VAR_DEFS_NUM; ++i)
@@ -56,8 +135,6 @@ int get_user_var_def_type(char *ident, int *type_class, int *type_num, char *fil
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
         if (USER_VAR_DEFS[i].ns==LOCAL)
         {
-
-
             flen = strlen(file_name)>strlen(USER_VAR_DEFS[i].file_name)?
                 strlen(file_name):
                 strlen(USER_VAR_DEFS[i].file_name);
@@ -84,6 +161,27 @@ int get_user_var_def_type(char *ident, int *type_class, int *type_num, char *fil
             }
         }
     }
+    return 0;
+}
+
+
+// Komandanyň görnüşini tanaýar
+int get_cmd_value_type(command *cmd, int *type_class, int *type_num)
+{
+    int i, len, flen, item_pos = 0;
+    // Yglan etmek komandanyň identifikatorynyň
+    if (is_def_var_cmd(cmd))
+    {
+        if (is_glob_def_var_cmd(cmd))
+        {
+            item_pos = 1;
+        }
+
+        *type_class = cmd->items[item_pos].tok.potentional_types[0].type_class;
+        *type_num   = cmd->items[item_pos].tok.potentional_types[0].type_num;
+        return 1;
+    }
+
     return 0;
 }
 

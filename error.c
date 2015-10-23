@@ -47,6 +47,8 @@ int CODE4_VARS_IDENT_USED               = 3;
 int CODE4_TOK_TYPES_NOT_MATCH           = 4;
 
 int CODE7_TYPES_NOT_MATCH_RIGHT_DATA    = 0;
+int CODE7_TYPES_NOT_MATCH_LEFT_DATA     = 1;
+int CODE7_TYPES_NOT_MATCH_BOTH_IDENT    = 2;
 //int CODE7_IDENT_NOT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
@@ -76,7 +78,9 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
 	 "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
 	{},																	        // 5.Algoritmler
 	{},																	        // 6.Global sanawlar
-	{"Komandanyň sag tarapky token tipi çep tarapdaky birlige gabat gelenok",    // 7.Semantika
+	{"Komandanyň sag tarapky token tipi çep tarapdaky maglumata gabat gelenok",   // 7.Semantika
+      "Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok",
+      "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"

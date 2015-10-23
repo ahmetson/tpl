@@ -36,6 +36,15 @@ char *tpl(int argc, const char **args)
     {
         compare_token_types_right_data();
     }
+    if (GLOB_BOTH_IDENT_CMDS_NUM)
+    {
+        compare_token_types_both_ident();
+    }
+    /*if (GLOB_LEFT_DATA_CMDS_NUM)
+    {
+        compare_token_types_left_data();
+    }*/
+
 
     // Iki tarapy hem ulni bolan
 

@@ -21,6 +21,21 @@ typedef struct{
     int cmd_type;
 }right_data_cmd_item;
 
+typedef struct{
+    char inf_char;                          // Komandanyň birinji harpy.
+    int  inf_char_pos;                      // Komandanyň birinji harpynyň setir boýunça nomeri
+    int  inf_line;                          // Komandanyň faýldaky setiriniň nomeri
+    char inf_file_name[CONST_MAX_FILE_LEN]; // Komandanyň duşýan faýly
+
+    command_item left;                      // Komandanyň çepki maglumat birligi
+    command_item right;                     // Komandanyň sagky maglumat birliginiň görnüşi
+
+    int cmd_class;
+    int cmd_type;
+}both_ident_cmd_item;
+
+extern int              TEST;
+
 extern char            CMD_END;
 
 extern char            CUR_FILE_NAME[CONST_MAX_FILE_LEN];
@@ -55,6 +70,11 @@ extern unsigned int    GLOB_SUBCMDS_NUM;
 // barlamak üçin, şeýle komandalaryň sanawy.
 right_data_cmd_item    *GLOB_RIGHT_DATA_CMDS_LIST;
 unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
+
+// Identifikator bolan ülňileriň tipleri, tä parserläp gutarylýança
+// näbelli bolýar
+both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
+unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 
 extern file_item *FILES;
 

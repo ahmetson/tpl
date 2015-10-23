@@ -409,7 +409,7 @@ int c_trans_source_assign(FILE *f, command *cmd)
 
         // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
         // Eger birinji ülňi identifikator bolsa, özi alynýar.
-        if (cmd->items[0].type==CMD_ITEM && cmd->items[0].cmd.cmd_class==DEF_VAR_CLASS_NUM)
+        if (cmd->items[0].type==CMD_ITEM && cmd->items[0].cmd.cmd_class==CMD_CLASS_DEF_VAR)
         {
             char *lvalue = cmd->items[0].cmd.items[cmd->items[0].cmd.items_num-1].tok.potentional_types[0].value;
             strncat(line,lvalue,strlen(lvalue));

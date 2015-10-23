@@ -9,6 +9,7 @@
 #include "glob.h"
 #include "main_file.h"
 
+int TEST = 0;
 
 // Global, komandanyň soňyny aňladýar
 char CMD_END = '.';
@@ -59,6 +60,10 @@ unsigned int    GLOB_SUBCMDS_NUM;
 right_data_cmd_item    *GLOB_RIGHT_DATA_CMDS_LIST;
 unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
 
+// Identifikator bolan ülňileriň tipleri, tä parserläp gutarylýança
+// näbelli bolýar
+both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
+unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 
 /**
  * Ýasaljak programmadaky faýllaryň sanawy
@@ -75,6 +80,10 @@ void free_globs(void)
     if (GLOB_RIGHT_DATA_CMDS_NUM)
     {
         free(GLOB_RIGHT_DATA_CMDS_LIST);
+    }
+    if (GLOB_BOTH_IDENT_CMDS_NUM)
+    {
+        free(GLOB_BOTH_IDENT_CMDS_LIST);
     }
 
 	// Global yglan edilen ülňiler boşadylýar.

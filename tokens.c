@@ -143,10 +143,13 @@ int move_to_cmd(token *tok, char *tok_string)
 	//printf("komanda barlanmana gechmeli\n");
 	if (!parse_cmd(&cmd))
 	{
-		//printf("Komanda saygarylmady\n");
 		cmd.items_num--;
 		if (!cmd.items_num || !parse_cmd(&cmd))
+        {
+            cmd.items_num++;
+            //debug_cmd(&cmd);
 			print_err(CODE4_CANT_IDENT_CMD);
+        }
 		else
 		{
 		    // Eger ulni yglan etme bolsa, onda ichki komandany ulni yglan etmelerin ichine gechirmeli

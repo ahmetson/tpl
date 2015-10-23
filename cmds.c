@@ -24,10 +24,10 @@ const int ASSIGN_MAX_ITEMS = 3;
 
 // Komandalaryn sanawy
 int CMDS_TYPES_NUM = 2;
-#define CONST_DEF_VAR_CLASS_NUM 1
-int DEF_VAR_CLASS_NUM = 1;
-#define CONST_ASSIGN_CLASS_NUM 2
-int ASSIGN_CLASS_NUM = 2;
+#define CONST_CMD_CLASS_DEF_VAR 1
+int CMD_CLASS_DEF_VAR = 1;
+#define CONST_CMD_CLASS_ASSIGN 2
+int CMD_CLASS_ASSIGN = 2;
 #define ASSGNI_LEFT_TYPE_NUM 1
 #define ASSIGN_RIGHT_TYPE_NUM 2
 
@@ -111,21 +111,16 @@ int recognize_cmd(command *cmd)
 **/
 int parse_cmd(command *cmd)
 {
-	int i;
+	int i, res;
 	for (i=0; i<CMDS_TYPES_NUM; i++)
 	{
-		cmd_types[i].is_cmd(cmd);
+		if (cmd_types[i].is_cmd(cmd))
+            return 1;
 	}
 
-	// Komanda saygarylmandyr
-	if (cmd->cmd_class==0 && cmd->cmd_type==0)
-	{
-		//printf("Debug! Komanda tanalmady\n");
-		//debug_cmd(cmd);
-		return 0;												// Token tanalmady
-	}
+
 	//printf("Debug! Komanda tanaldy\n");
-	return 1;
+	return 0;
 }
 
 
@@ -189,7 +184,5 @@ int work_with_cmd()
 	CUR_PART = prev_part;
 	return 1;
 }
-
-
 
 
