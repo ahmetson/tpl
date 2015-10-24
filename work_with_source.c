@@ -34,6 +34,7 @@ void work_with_sources(int argc, const char **args)
 
 		work_with_source(args[i]);
 	}
+
 }
 
 

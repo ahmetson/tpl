@@ -109,9 +109,7 @@ void act_pragma_main_file(pragma *prag)
 	//printf("Fayl chagyryldy\n");
 	if (strlen(MAIN_FILE_NAME)<1)
 	{
-	    //printf("Salam");
 		strncpy(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
-        //printf("we");
 	}
 	else
 	{

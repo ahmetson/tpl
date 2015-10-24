@@ -32,22 +32,30 @@ void init_token(token *tok)
 
 	int i; token_type tok_type;
 
-	if (tok->potentional_types_num>=1 && tok->potentional_types_num<=TOKEN_TYPES_NUM)
-		for(i=0; i<(tok->potentional_types_num); i++)
+	if (tok->potentional_types_num>=1 && tok->potentional_types_num<=TOKEN_TYPES_NUM-1)
+	{
+	    for(i=0; i<(tok->potentional_types_num); i++)
 		{
-			tok->potentional_types[i] = tok_type;
+		    //tok->potentional_types[i].string_value = NULL;
+		    tok->potentional_types[i] = tok_type;
+			//
 		}
-	tok->potentional_types_num = 0;								// Number of recognized types for token
+    }
+
+    tok->potentional_types_num = 0;								// Number of recognized types for token
 	//char source_file[MAXLEN];									// source file of token
 	tok->type_class = 0;
 	tok->value[0] = '\0';
 	tok->is_compl = 0;
+
 }
 
 
 void empty_token(token *tok)
 {
+
 	init_token(tok);
+
 }
 
 
@@ -58,7 +66,8 @@ void empty_token(token *tok)
 int recognize_token(token *tok, char *val)
 {
 	int i;
-	for (i=0; i<TOKEN_TYPES_NUM; ++i) tok_types[i].is_token(tok, val);
+	// Harpl tokeni hasaplananok.
+	for (i=0; i<TOKEN_TYPES_NUM-1; ++i) tok_types[i].is_token(tok, val);
 
 
 	// Token not recognized
@@ -164,7 +173,7 @@ int is_token_empty(token *tok)
  * Tokeni komanda geçirýär.
  * Şowly goşulansoň, komandany tanajak bolýar
 **/
-int move_to_cmd(token *tok, char *tok_string)
+int move_to_cmd(token *tok)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
@@ -177,6 +186,7 @@ int move_to_cmd(token *tok, char *tok_string)
         CUR_PART = 3;
         print_err(CODE3_PREV_TOK_INCORRECT);
     }
+
     // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
 	finishize_token(tok);
 
@@ -268,7 +278,6 @@ int move_to_cmd(token *tok, char *tok_string)
 
     // Token komanda goşulany üçin, indi bu ülňiler gerek däl
 	empty_token(tok);
-	empty_string(tok_string, strlen(tok_string));
 
 	CUR_PART = prev_part;
 	return 1;

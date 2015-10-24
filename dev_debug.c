@@ -93,6 +93,10 @@ void debug_token_type(token_type *tok_type)
 
 char *get_tok_type_value(token_type *tok_type)
 {
+    if (tok_type->type_class==TOK_CLASS_CONST_DATA && tok_type->type_num==STRING_CONST_DATA_TOK_NUM)
+    {
+        return *tok_type->string_value;
+    }
     return tok_type->value;
 };
 

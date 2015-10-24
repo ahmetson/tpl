@@ -65,6 +65,10 @@ unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
 both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
 unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 
+// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
+char                  **GLOB_STRINGS;
+unsigned long           GLOB_STRINGS_NUM;
+
 /**
  * Ýasaljak programmadaky faýllaryň sanawy
 **/
@@ -94,10 +98,11 @@ void free_globs(void)
     if (UNKNOWN_USED_VARS_NUM)
         free(UNKNOWN_USED_VARS);
 
+    int i;
     // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
 	if (GLOB_SUBCMDS_NUM)
 	{
-        int i;
+
 		for (i=0; i<GLOB_SUBCMDS_NUM; ++i)
 		{
 			// Her komandanyň birlikleri üçin aýratyn ýer eýelenýär
@@ -106,6 +111,17 @@ void free_globs(void)
 
 		free(GLOB_SUBCMD_ITEMS_LIST);
 	}
+
+    // Ýasaljak kodda ulanyljak harpl tokenleriň maglumatlarynyň sanawy
+	if (GLOB_STRINGS_NUM)
+    {
+        for (i=0; i<GLOB_STRINGS_NUM; ++i)
+		{
+		    if (GLOB_STRINGS[i]!=NULL)
+			free(GLOB_STRINGS[i]);
+		}
+		free(GLOB_STRINGS);
+    }
 
 	// Baş faýla salmaly faýllar bilen funksiýalaryň sanawy
 	free(MAIN_FILE_INCLUDES);

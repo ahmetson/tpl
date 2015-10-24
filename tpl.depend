@@ -295,7 +295,7 @@
 1445565851 d:\c_source\tpl\cmds.h
 	"tokens.h"
 
-1445179579 d:\c_source\tpl\tokens.h
+1445713965 d:\c_source\tpl\tokens.h
 	"token/token_types/def_types.h"
 	"token/token_types/glob.h"
 	"token/token_types/assign.h"
@@ -309,15 +309,15 @@
 
 1443061997 d:\c_source\tpl\token\token_types\assign.h
 
-1445613759 d:\c_source\tpl\token\token_types\const_data.h
+1445703816 d:\c_source\tpl\token\token_types\const_data.h
 	"../token_structs.h"
 
-1445611993 d:\c_source\tpl\token\token_types.h
+1445711226 d:\c_source\tpl\token\token_types.h
 	"token_structs.h"
 
-1445639989 d:\c_source\tpl\token\token_structs.h
+1445729957 d:\c_source\tpl\token\token_structs.h
 
-1445568619 d:\c_source\tpl\main\glob.h
+1445706368 d:\c_source\tpl\main\glob.h
 	"files.h"
 	"../cmds.h"
 	"../algor.h"
@@ -336,7 +336,7 @@
 1444366145 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
 
-1445624618 d:\c_source\tpl\error.h
+1445713732 d:\c_source\tpl\error.h
 
 1445473436 d:\c_source\tpl\dev_debug.h
 	"algor.h"
@@ -346,7 +346,7 @@
 	"../error.h"
 	"assign.h"
 
-1445611047 source:d:\c_source\tpl\cmds.c
+1445714483 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -358,7 +358,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1445473521 source:d:\c_source\tpl\dev_debug.c
+1445729973 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
 	<string.h>
 	"tpl.h"
@@ -367,7 +367,7 @@
 	"algor.h"
 	"dev_debug.h"
 
-1445624604 source:d:\c_source\tpl\error.c
+1445713776 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
@@ -393,13 +393,13 @@
 	"files.h"
 	"glob.h"
 
-1445568598 source:d:\c_source\tpl\main\glob.c
+1445727590 source:d:\c_source\tpl\main\glob.c
 	<stdio.h>
 	<stdlib.h>
 	"glob.h"
 	"main_file.h"
 
-1445540992 source:d:\c_source\tpl\main\init.c
+1445706879 source:d:\c_source\tpl\main\init.c
 	<stdlib.h>
 	<string.h>
 	"init.h"
@@ -418,13 +418,14 @@
 
 1440718598 source:d:\c_source\tpl\other.c
 
-1445637729 source:d:\c_source\tpl\parser.c
+1445730286 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"parser.h"
 	"tokens.h"
+	"token/harpl.h"
 	"pragma/pragma.h"
 	"algor.h"
 	"translator_to_c.h"
@@ -434,7 +435,7 @@
 
 1441998616 d:\c_source\tpl\pragma\pragma.h
 
-1443673065 source:d:\c_source\tpl\pragma\pragma.c
+1445727618 source:d:\c_source\tpl\pragma\pragma.c
 	<stdio.h>
 	<string.h>
 	"pragma.h"
@@ -458,7 +459,7 @@
 
 1441566452 d:\c_source\tpl\token\keywords.h
 
-1445638739 source:d:\c_source\tpl\token\token_types.c
+1445711240 source:d:\c_source\tpl\token\token_types.c
 	<stdio.h>
 	<string.h>
 	"token_types/assign.h"
@@ -472,8 +473,10 @@
 1445177848 source:d:\c_source\tpl\token\token_types\assign.c
 	"assign.h"
 
-1445613576 source:d:\c_source\tpl\token\token_types\const_data.c
+1445730160 source:d:\c_source\tpl\token\token_types\const_data.c
+	<string.h>
 	"const_data.h"
+	"../../main/glob.h"
 	"../token_types.h"
 
 1445435943 source:d:\c_source\tpl\token\token_types\def_types.c
@@ -489,7 +492,7 @@
 
 1443108359 d:\c_source\tpl\token\token_word.h
 
-1445638481 source:d:\c_source\tpl\tokens.c
+1445728512 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -499,7 +502,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1445610950 source:d:\c_source\tpl\tpl.c
+1445726948 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -512,7 +515,7 @@
 
 1444815939 d:\c_source\tpl\work_with_source.h
 
-1445611564 source:d:\c_source\tpl\translator_to_c.c
+1445730104 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -533,7 +536,7 @@
 	"../fns.h"
 	"../main/glob.h"
 
-1445433458 source:d:\c_source\tpl\work_with_source.c
+1445726993 source:d:\c_source\tpl\work_with_source.c
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
@@ -566,9 +569,19 @@
 	"../error.h"
 	"def_var.h"
 
-1445639437 source:d:\c_source\tpl\main\tpl_esc_keys.c
+1445706247 source:d:\c_source\tpl\main\tpl_esc_keys.c
 	<string.h>
 	"tpl_esc_keys.h"
 
 1445637089 d:\c_source\tpl\main\tpl_esc_keys.h
+
+1445730238 source:d:\c_source\tpl\token\harpl.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"../main/glob.h"
+	"../main/tpl_esc_keys.h"
+	"harpl.h"
+
+1445711474 d:\c_source\tpl\token\harpl.h
 
