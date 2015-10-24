@@ -111,6 +111,7 @@ int recognize_cmd(command *cmd)
 **/
 int parse_cmd(command *cmd)
 {
+
 	int i, res;
 	for (i=0; i<CMDS_TYPES_NUM; i++)
 	{

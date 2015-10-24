@@ -345,6 +345,7 @@ int work_with_translator(char main_file)
 	    !strncmp(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(MAIN_FILE_NAME)))
 	{
 		main_file = 1;
+
 		// Bash sahypada esasy funksiya achylyar.
 		prepare_main_func(c_source);
 	}
@@ -446,6 +447,7 @@ int c_trans_source_assign(FILE *f, command *cmd)
         else if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA)
         {
             char *rvalue = get_const_data_string(&cmd->items[2].tok);
+
             if (size<strlen(rvalue)+strlen(line))
             {
                 size += strlen(rvalue);

@@ -1,0 +1,12 @@
+﻿ASSIGN
+  ASSIGN TO LEFT (<-)
+	1: 
+		a) DEF_TYPE kommandasy,
+	   	b) IDENT    tokeni
+	2:	
+		a) ASSIGN klas, TO LEFT token tipi
+	3:
+		a) CONST DATA (1-nji birligiň tipi bilen gabat gelmeli)
+			i)   SAN
+			ii)  DROB
+			iii) HARP

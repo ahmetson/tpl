@@ -5,7 +5,7 @@
 #define TOKEN_STRUCTS_H
 
 #define MAXLEN 255
-#define CONST_TOKEN_TYPES_NUM 7
+#define CONST_TOKEN_TYPES_NUM 8
 
 #define MAX_VAR_LEN 32
 
@@ -19,6 +19,7 @@ typedef struct{
 	char                    tok_value_type;     // Default - char*
 	char                    is_compl;		    // Is token completed
 	char                    type_must_check;
+	char                   **string_value;
 }token_type;
 
 // Token uchin

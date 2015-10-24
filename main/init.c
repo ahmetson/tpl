@@ -70,6 +70,10 @@ int init()
     // barlamak üçin
     GLOB_RIGHT_DATA_CMDS_NUM = 0;
 
+    // Ýasaljak programma-da ulanylýan harpl tokenleriň sanawy
+    GLOB_STRINGS_NUM = 0;
+    GLOB_STRINGS     = NULL;
+
 	// Fayllar
 	CUR_FILE_NUM = 0;
 

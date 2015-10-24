@@ -102,6 +102,10 @@
 		<Unit filename="token/assign.o">
 			<Option link="0" />
 		</Unit>
+		<Unit filename="token/harpl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/harpl.h" />
 		<Unit filename="token/keywords.c">
 			<Option compilerVar="CC" />
 		</Unit>

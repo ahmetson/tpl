@@ -39,4 +39,5 @@ int is_token_var_left_assign    (token *tok, char *tok_val);
 int is_token_int_const_data     (token *tok, char *tok_val);
 int is_token_float_const_data   (token *tok, char *tok_val);
 int is_token_char_const_data    (token *tok, char *tok_val);
+
 #endif

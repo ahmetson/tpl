@@ -1,0 +1,11 @@
+﻿GLOBAL ÜLŇILER FAÝL DEREJESINDE YGLAN EDILEN LOKAL ÜLŇILER ARKALY ÝAPYLANOK.
+Kodly faýl derejesinde lokal yglan edilen ülňiler, programma boýunça global yglan edilen ülňileriň atlary bilen gabat gelmeli däl.
+
+Meselem: P programmanyň A kodly faýlynda G global ülňi yglan edilse, onda A kodly faýlda ýa P programmanyň B kodly faýlynda G atly başga hiç hili identifikator yglan edilip bolanok.
+===.
+
+
+MAKSIMUM ÝÖNEKEÝ (SKOBKA, KOMANDA, GOŞA DYRNAGA ALYNMADYK) TOKENIŇ UZYNLYGY 255 YBARAT BOLUP BILÝÄR.
+Meselem: T san tipli token '123' diýen sany saklaýar. Bu sanyň uzynlygy 3 harp. Eger diýen söz bolsa 'keyword' tokeni bolup 4 dörtden ybarat.
+
+Eger tokeniň uzynlygy 255 harpdan uly bolsa, onda TPL'iň özüni nähili alyp barjakdygy näbelli.

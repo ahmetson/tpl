@@ -6,42 +6,6 @@
 			<Cursor1 position="148" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main\tpl_esc_keys.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="147" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="token\token_structs.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="436" topLine="6" />
-		</Cursor>
-	</File>
-	<File name="main\tpl_esc_keys.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2151" topLine="60" />
-		</Cursor>
-	</File>
-	<File name="token\token_types.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7415" topLine="192" />
-		</Cursor>
-		<Folding>
-			<Collapse line="84" />
-			<Collapse line="160" />
-			<Collapse line="187" />
-			<Collapse line="213" />
-		</Folding>
-	</File>
-	<File name="fns.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1462" topLine="51" />
-		</Cursor>
-	</File>
-	<File name="token\token_types.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="864" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="cmd\assign.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="64" topLine="0" />
@@ -59,43 +23,42 @@
 	</File>
 	<File name="token\token_types\const_data.c" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1927" topLine="65" />
+			<Cursor1 position="2692" topLine="81" />
 		</Cursor>
 	</File>
 	<File name="cmd\assign.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="174" topLine="0" />
+			<Cursor1 position="2895" topLine="172" />
 		</Cursor>
-		<Folding>
-			<Collapse line="38" />
-			<Collapse line="78" />
-			<Collapse line="99" />
-			<Collapse line="124" />
-		</Folding>
 	</File>
 	<File name="token\token_types\const_data.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="473" topLine="5" />
+			<Cursor1 position="547" topLine="14" />
 		</Cursor>
 	</File>
 	<File name="error.c" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2585" topLine="58" />
+			<Cursor1 position="4379" topLine="103" />
 		</Cursor>
 	</File>
 	<File name="token\token_types\def_types.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="325" topLine="0" />
+			<Cursor1 position="208" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="error.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1079" topLine="26" />
+			<Cursor1 position="1114" topLine="26" />
 		</Cursor>
 	</File>
 	<File name="token\token_types\def_types.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="206" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="token\harpl.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="343" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="cmd\def_var.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -108,9 +71,14 @@
 			<Cursor1 position="122" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="token\harpl.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2921" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="cmds.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3255" topLine="156" />
+			<Cursor1 position="2256" topLine="106" />
 		</Cursor>
 	</File>
 	<File name="dev_debug.h" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -125,7 +93,7 @@
 	</File>
 	<File name="main\glob.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="251" topLine="0" />
+			<Cursor1 position="3471" topLine="111" />
 		</Cursor>
 	</File>
 	<File name="token\token_word.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -135,7 +103,7 @@
 	</File>
 	<File name="tokens.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3377" topLine="122" />
+			<Cursor1 position="923" topLine="270" />
 		</Cursor>
 	</File>
 	<File name="cmd\def_var.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -143,29 +111,39 @@
 			<Cursor1 position="4031" topLine="171" />
 		</Cursor>
 	</File>
+	<File name="main\tpl_esc_keys.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2277" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="tokens.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1004" topLine="7" />
+			<Cursor1 position="1288" topLine="10" />
 		</Cursor>
 	</File>
 	<File name="main\glob.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1432" topLine="30" />
+			<Cursor1 position="2825" topLine="74" />
+		</Cursor>
+	</File>
+	<File name="main\tpl_esc_keys.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="174" topLine="1" />
 		</Cursor>
 	</File>
 	<File name="tpl.c" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="565" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="other.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="426" topLine="20" />
+			<Cursor1 position="564" topLine="12" />
 		</Cursor>
 	</File>
 	<File name="main\init.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1351" topLine="66" />
+			<Cursor1 position="2293" topLine="65" />
+		</Cursor>
+	</File>
+	<File name="other.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="455" topLine="20" />
 		</Cursor>
 	</File>
 	<File name="tpl.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -173,23 +151,27 @@
 			<Cursor1 position="97" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="parser.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2359" topLine="79" />
-		</Cursor>
-	</File>
 	<File name="dev_debug.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="895" topLine="21" />
+			<Cursor1 position="895" topLine="120" />
 		</Cursor>
+		<Folding>
+			<Collapse line="103" />
+			<Collapse line="111" />
+		</Folding>
+	</File>
+	<File name="parser.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2792" topLine="186" />
+		</Cursor>
+		<Folding>
+			<Collapse line="117" />
+		</Folding>
 	</File>
 	<File name="translator_to_c.c" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="12570" topLine="438" />
+			<Cursor1 position="12646" topLine="463" />
 		</Cursor>
-		<Folding>
-			<Collapse line="565" />
-		</Folding>
 	</File>
 	<File name="cmds.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
@@ -201,14 +183,14 @@
 			<Cursor1 position="1080" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="pragma\pragma.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2119" topLine="3" />
-		</Cursor>
-	</File>
 	<File name="fns.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="870" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="pragma\pragma.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2416" topLine="91" />
 		</Cursor>
 	</File>
 	<File name="translator_to_c\attach_glob_vars.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -221,6 +203,11 @@
 			<Cursor1 position="335" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="algor.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="503" topLine="128" />
+		</Cursor>
+	</File>
 	<File name="semantic.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="430" topLine="15" />
@@ -229,24 +216,19 @@
 			<Collapse line="14" />
 		</Folding>
 	</File>
-	<File name="algor.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="503" topLine="128" />
-		</Cursor>
-	</File>
 	<File name="translator_to_c\files.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3699" topLine="143" />
 		</Cursor>
 	</File>
-	<File name="semantic.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="242" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="algor.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="848" topLine="26" />
+		</Cursor>
+	</File>
+	<File name="semantic.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="242" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="translator_to_c\files.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -264,12 +246,32 @@
 	</File>
 	<File name="work_with_source.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="131" topLine="44" />
+			<Cursor1 position="1224" topLine="44" />
 		</Cursor>
 	</File>
 	<File name="semantic\compare_token_types.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="486" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="token\token_structs.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="646" topLine="16" />
+		</Cursor>
+	</File>
+	<File name="token\token_types.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7320" topLine="281" />
+		</Cursor>
+	</File>
+	<File name="fns.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1462" topLine="51" />
+		</Cursor>
+	</File>
+	<File name="token\token_types.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="724" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

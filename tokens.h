@@ -22,6 +22,6 @@ int  is_token_empty(token *tok);                                    // 3) boşdy
 int recognize_token(token *tok, char *val);                         // 1)tanalýar,
 int add_potentional_token_type(token *tok, token_type tok_type);    // 2)içine bolup biljek tipleri goshulyar
 int finishize_token(token *tok);                                    // 3)komanda salmana taýynlanýar
-int move_to_cmd(token *tok, char *tok_word);                        // 4)Komanda salynýar
+int move_to_cmd(token *tok);                                        // 4)Komanda salynýar
 
 #endif

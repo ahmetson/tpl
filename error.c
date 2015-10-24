@@ -38,6 +38,7 @@ int CODE2_PRAGMA_NOT_IDENT              = 2;
 int CODE2_REMAIN_TOKEN                  = 3;
 int CODE2_TOKEN_TOO_BIG                 = 4;
 int CODE2_PREV_TOKEN_INCORRECT          = 5;
+int CODE2_STRING_IS_WRONG               = 6;
 
 int CODE3_PREV_TOK_INCORRECT            = 0;
 
@@ -71,7 +72,8 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
 	 "Pragma tanalmady",
 	 "Komandany gutarýan token ýetenok",
 	 "Token gaty uzyn",
-	 "Token gutarylmady"},
+	 "Token gutarylmady",
+	 "Söz tokeninde ýalňyşlyk tapyldy"},
 	{"Nädogry komanda birligi gabat gelindi"},              							// 3.Tokenler
 	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",				// 4.Komandalar
 	 "Kompýuteriň ýadynda ýer ýetmedi",

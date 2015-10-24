@@ -76,6 +76,12 @@ unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
 both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
 unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 
+
+// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
+char                  **GLOB_STRINGS;
+unsigned long           GLOB_STRINGS_NUM;
+
+
 extern file_item *FILES;
 
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
