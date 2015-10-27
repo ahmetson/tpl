@@ -163,9 +163,8 @@ int assign_cmd_mod(command *cmd, int tok_num)
             if (!add_global_right_data_item(cmd))
             {
                 // Hazir TPL-in fayly komandalar bilen ishleyan boluminde
-                int prev_part = CUR_PART;
                 CUR_PART = 4;
-                print_err(CODE4_TOK_TYPES_NOT_MATCH);
+                print_err(CODE4_TOK_TYPES_NOT_MATCH, (token*)inf_get_last_token(cmd));
             }
         }
         else if (cmd->items[tok_num].type==TOKEN_ITEM &&
@@ -174,9 +173,8 @@ int assign_cmd_mod(command *cmd, int tok_num)
             if (!add_global_both_ident_item(cmd))
             {
                 // Hazir TPL-in fayly komandalar bilen ishleyan boluminde
-                int prev_part = CUR_PART;
                 CUR_PART = 4;
-                print_err(CODE4_TOK_TYPES_NOT_MATCH);
+                print_err(CODE4_TOK_TYPES_NOT_MATCH, (token*)inf_get_last_token(cmd));
             }
         }
         // TODO, eger birinji birlik maglumat bolup ikinjisi identifikator bolsa.

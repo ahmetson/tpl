@@ -29,7 +29,10 @@ int add_to_file_list_file()
     // Ýer berildi. Indi
     // Ýere täze faýl üçin bölüm açylmaly
     file_item f;
+    f.num = CUR_FILE_NUM-1;
     FILES[CUR_FILE_NUM-1] = f;
+
+    inf_add_source_code_last_file();
 
     return 1;
 }

@@ -48,6 +48,10 @@ void init_token(token *tok)
 	tok->value[0] = '\0';
 	tok->is_compl = 0;
 
+    tok->inf_char =
+    tok->inf_char_num =
+    tok->inf_file_num =
+    tok->inf_line_num = -1;
 }
 
 
@@ -68,7 +72,6 @@ int recognize_token(token *tok, char *val)
 	int i;
 	// Harpl tokeni hasaplananok.
 	for (i=0; i<TOKEN_TYPES_NUM-1; ++i) tok_types[i].is_token(tok, val);
-
 
 	// Token not recognized
 	if (tok->potentional_types_num==0)
@@ -184,7 +187,7 @@ int move_to_cmd(token *tok)
         cmd.items[cmd.items_num-1].type==CMD_ITEM   && cmd.items[cmd.items_num-1].cmd.is_compl==0))
     {
         CUR_PART = 3;
-        print_err(CODE3_PREV_TOK_INCORRECT);
+        print_err(CODE3_PREV_TOK_INCORRECT, tok);
     }
 
     // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
@@ -193,12 +196,12 @@ int move_to_cmd(token *tok)
 	if (tok->is_compl==0)
     {
         CUR_PART = 2;
-        print_err(CODE2_PREV_TOKEN_INCORRECT);
+        print_err(CODE2_PREV_TOKEN_INCORRECT, tok);
     }
 
     //printf("Token komanda goshulmana tayynlandy\n");
 
-	if (!add_to_cmd(&cmd, tok))  print_err(CODE4_CANT_ADD_TOKEN);
+	if (!add_to_cmd(&cmd, tok))  print_err(CODE4_CANT_ADD_TOKEN, tok);
 
 	//printf("komanda barlanmana gechmeli\n");
 	if (!parse_cmd(&cmd))
@@ -208,7 +211,7 @@ int move_to_cmd(token *tok)
         {
             cmd.items_num++;
             //debug_cmd(&cmd);
-			print_err(CODE4_CANT_IDENT_CMD);
+			print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
         }
 		else
 		{
@@ -221,7 +224,8 @@ int move_to_cmd(token *tok)
 			if (GLOB_SUBCMD_ITEMS_LIST==NULL)
 			{
 				//printf("Ichki komandalar uchin yer taplymady\n");
-				print_err(CODE4_CANT_IDENT_CMD);
+				token *t=(token *)inf_get_last_token(&cmd);
+				print_err(CODE4_CANT_IDENT_CMD, t);
 			}
 			else
 			{
@@ -249,7 +253,7 @@ int move_to_cmd(token *tok)
 				if (tmp==NULL)
 				{
 					//printf("Komanda ichki komandany goshmak uchin yer tapylmady\n");
-					print_err(CODE4_CANT_IDENT_CMD);
+					print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 				}
 				else
 				{
@@ -269,7 +273,8 @@ int move_to_cmd(token *tok)
 					cmd.items[1] = cmd_tok_item;
 
 					// Täze token öňki tokenlerden emele gelen komanda bilen täze komandany emele getirmedi
-					if (!parse_cmd(&cmd))  print_err(CODE4_CANT_IDENT_CMD);
+					if (!parse_cmd(&cmd))
+                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 
 				}
 			}

@@ -39,7 +39,10 @@ void compare_token_types_right_data()
         if ( !(right_class==left_class && right_type==left_type) )
         {
             CUR_PART = 7;
-            print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA);
+            if (GLOB_RIGHT_DATA_CMDS_LIST[i].left.type==CMD_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, (token*)inf_get_last_token(&GLOB_RIGHT_DATA_CMDS_LIST[i].left.cmd));
+            else
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, &GLOB_RIGHT_DATA_CMDS_LIST[i].left.tok);
         }
     }
 }
@@ -75,7 +78,10 @@ void compare_token_types_right_data()
         if ( !(right_class==left_class && right_type==left_type) )
         {
             CUR_PART = 7;
-            print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA);
+            if (GLOB_RIGHT_DATA_CMDS_LIST[i].left.type==CMD_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, inf_get_last_token(&GLOB_RIGHT_DATA_CMDS_LIST[i].cmd));
+            else
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, &GLOB_RIGHT_DATA_CMDS_LIST[i].tok);
         }
     }
 }*/
@@ -120,7 +126,10 @@ void compare_token_types_both_ident()
         if ( !(right_class==left_class && right_type==left_type) )
         {
             CUR_PART = 7;
-            print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT);
+            if (GLOB_BOTH_IDENT_CMDS_LIST[i].left.type==CMD_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, (token *)inf_get_last_token(&GLOB_BOTH_IDENT_CMDS_LIST[i].left.cmd));
+            else
+                print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, (token *)&GLOB_BOTH_IDENT_CMDS_LIST[i].left.tok);
         }
     }
 }
@@ -151,7 +160,6 @@ int get_user_var_def_value_type(char *ident, int *type_class, int *type_num, cha
         }
         else
         {
-
             len = strlen(ident)>strlen(USER_VAR_DEFS[i].ident)?strlen(ident):strlen(USER_VAR_DEFS[i].ident);
             if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
             {

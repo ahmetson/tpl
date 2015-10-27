@@ -14,8 +14,18 @@
  * 7 - semantika (algoritm boyuncha gechip, funksiyalaryn we ulnilerin yglan edilishlerini barlamak)
  * 8 - C translyatory
 **/
-extern char *parts_names[];
+typedef struct {
+    int tpl_part;       // Ýalňyşlyk TPL'iň niresinde peýda boldy?
+    int err_code;       // Ýalňyşlygyň kody
+    char file_num;
+    char line_num;
+    char start_char;
+    char char_num;
+    char code_line;      // Koddaky ýalňyşlygyň duşan ýerini görkezmelimi
+    char *msg;          // Ulanyja düşnükli ýalňyşlygyň teksti
+}error_item;
 
+extern char *parts_names[];
 
 /* Yalnyshlykly tekstlerin nomerleri */
 extern int CODE0_PRAGMA_ACT_NOT_IDENTIFIED;
@@ -52,7 +62,7 @@ extern int CODE7_TYPES_NOT_MATCH_BOTH_IDENT;
 //extern int CODE7_RIGHT_IDENT_NOT_DEFINED;
 
 /* Yalnyshlyklaryn tekstleri */
-extern char *err_texts[][10];
+extern error_item err_items[];
 /*
  * Kompilyator ishlande yalnyshlyk cykan wagty,
  * Haty chap edyar
@@ -63,6 +73,7 @@ extern char *err_texts[][10];
  * @line - Yalnyshlygyn chykan setiri
  * @ch   - Yalnyshlyk chykanda, parserin saklanan harpy
 **/
-void print_err(int num);
+void print_err(int num, token *tok);
+error_item *get_err_inf(int num);
 
 #endif

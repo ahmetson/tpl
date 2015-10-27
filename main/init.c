@@ -23,7 +23,7 @@ int source_codes_exist(int argn)
 		return 1;
 
 	CUR_PART = 1;
-	print_err(CODE1_FILE_NOT_FOUND);
+	print_err(CODE1_FILE_NOT_FOUND, &inf_tok);
 }
 
 /**
@@ -38,6 +38,7 @@ int init()
 	strncpy(CUR_FILE_NAME, "", strlen("")+1);
 	CUR_LINE = 0;
 	CUR_CHAR = -1;
+	CUR_CHAR_POS = 0;
 
 	cmd_first_items_classes[0].type		 = TOKEN_ITEM;
 	cmd_first_items_classes[0].item_class= TOK_CLASS_DEF_TYPE;
@@ -81,7 +82,9 @@ int init()
     MAIN_FILE_INCLUDES_NUM = 1;
     MAIN_FILE_INCLUDES = malloc(sizeof(*MAIN_FILE_INCLUDES));
 
+    init_token(&inf_tok);
 
+    GLOB_SOURCE_CODES = NULL;
 
 	// C dilinin kody uchin papkany tayynlayar
 	sys_mkdir(C_SOURCE_FOLDER, 1);

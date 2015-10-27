@@ -13,6 +13,7 @@ typedef struct{
     char h_source[CONST_MAX_FILE_LEN];         // Faýlyň Ç dilindäki kodynyň headeri nirede ýerleşýär
     char c_source[CONST_MAX_FILE_LEN];         // Faýlyň Ç dilindäki kody nirede ýerleşýär
     char name    [CONST_MAX_FILE_LEN];         // Faýlyň ady, öňündäki papkalary we faýl ekstensiesi hasap edilmesiz
+    int  num;
 }file_item;
 
 int add_to_file_list_file();

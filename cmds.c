@@ -174,7 +174,7 @@ int work_with_cmd()
 	// Komanda saygarylyp showly gutardy
 	if (!recognize_cmd(&cmd))
 	{
-		print_err(CODE4_CANT_IDENT_CMD);
+		print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 	}
 
 	if (!add_to_def_var_list(&cmd)) // Komanda ulnini yglan etme dal eken

@@ -50,7 +50,7 @@ int work_with_source(const char *parse_file_name)
 	if (source==NULL)
 	{
 		CUR_PART = 1;
-		print_err(CODE1_FILE_CANT_OPEN);
+		print_err(CODE1_FILE_CANT_OPEN, &inf_tok);
 	}
 
 	// 2-nji TPL-in bolumine gechildi

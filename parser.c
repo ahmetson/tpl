@@ -24,7 +24,7 @@ int parser(FILE *source)
 	char main_file=0;
 
     // tok_num - parsing edilip durka, komanda goshmaly tokenin nomerini ýatda saklamana gerek
-	int c, i, tok_num = 0;
+	int c, i, tok_num = 0, c_pos=0, line=0, tmp_c, tmp_c_pos, tmp_line, tmp_file;
 
 	// Modalar: parsering name kody yzarlayanlygyny barlayar
 	// Ulni, kodda has dushnikli bolar yaly ulanylyar.
@@ -49,10 +49,15 @@ int parser(FILE *source)
 	//printf("Parsinge başlandy\n");
 	while((c=fgetc(source))!=EOF)
 	{
+	    if (c=='\n')
+            inf_next_line(&c_pos, &line);
+        else
+            inf_next_char(c, &c_pos, &line);
+
 		if (mode==PARSER_DEFAULT_MODE)
 		{
 			// tokenin sozi 32 harpdan duryp bilyar
-			if (strlen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN) print_err(CODE2_TOKEN_TOO_BIG);
+			if (strlen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN) print_err(CODE2_TOKEN_TOO_BIG, &tok);
 
 			// Öňki harplar täze harp bilen birleşdirilýär
 			strstrchcat(new_tok_string, prev_tok_string, c);
@@ -62,6 +67,7 @@ int parser(FILE *source)
 			    //printf("Öňki harplar täze harp bilen tokeni emele getirenok.\n");
 				empty_token(&new_tok);
 				empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
+
 				// 1. Onki token bar
 				if (!is_token_empty(&tok))
 				{
@@ -79,8 +85,26 @@ int parser(FILE *source)
 				set_token_word_value(new_tok_string, c);
 				if (recognize_token(&new_tok, new_tok_string))	// 0 = O
 				{
+				    inf_add_to_token(&new_tok, c, c_pos, line);
+                    tmp_c = new_tok.inf_char_num>0 ? new_tok.inf_char : -1;
+                    tmp_c_pos = new_tok.inf_char_num>0 ? new_tok.inf_char_num : -1;
+                    tmp_line = new_tok.inf_char_num>0 ? new_tok.inf_line_num : -1;
+                    tmp_file = new_tok.inf_char_num>0 ? new_tok.inf_file_num : -1;
+
 					tok = new_tok;
+
 					empty_token(&new_tok);
+					// Tokene maglumatlary goýmaly
+                    if (tmp_c_pos<1)
+                        inf_add_to_token(&new_tok, c, c_pos, line);
+                    else
+                    {
+                        new_tok.inf_char = tmp_c;
+                        new_tok.inf_char_num = tmp_c_pos;
+                        new_tok.inf_line_num = tmp_line;
+                        new_tok.inf_file_num = tmp_file;
+                    }
+
 				}
 				else if (c==HARPL_OPENER)
                 {
@@ -100,22 +124,40 @@ int parser(FILE *source)
 				else
 				{
 					//printf("harp: %c", c);
-					print_err(CODE2_UNKNOWN_TOKENS_CHAR);
+					print_err(CODE2_UNKNOWN_TOKENS_CHAR, &new_tok);
 				}
+
 			}
 			else
 			{
-				//printf("Token tanaldy\n");
+			    inf_add_to_token(&new_tok, c, c_pos, line);
+			    tmp_c = new_tok.inf_char_num>0 ? new_tok.inf_char : -1;
+			    tmp_c_pos = new_tok.inf_char_num>0 ? new_tok.inf_char_num : -1;
+			    tmp_line = new_tok.inf_char_num>0 ? new_tok.inf_line_num : -1;
+			    tmp_file = new_tok.inf_char_num>0 ? new_tok.inf_file_num : -1;
+
 				empty_string(prev_tok_string, CONST_MAX_TOKEN_LEN);
 				strncpy(prev_tok_string, new_tok_string, strlen(new_tok_string)+1);
 
 				empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
 				tok = new_tok;
 				init_token(&new_tok);
+				// Tokene maglumatlary goýmaly
+                if (tmp_c_pos<1)
+                    inf_add_to_token(&new_tok, c, c_pos, line);
+                else
+                {
+                    new_tok.inf_char = tmp_c;
+                    new_tok.inf_char_num = tmp_c_pos;
+                    new_tok.inf_line_num = tmp_line;
+                    new_tok.inf_file_num = tmp_file;
+                }
+                //debug_token(&new_tok);
 			}
 		}
 		else if (mode==PRAGMA_MODE)
 		{
+		    inf_add_to_token(&inf_tok, c, c_pos, line);
 			//printf("Pragma moda gechildi. Indi parser pragmalary saygarmana chalshar.\n");
 			strstrchcat(prag.name, prev_prag.name, c);
 
@@ -135,13 +177,13 @@ int parser(FILE *source)
 				if (c==PRAGMA_END_CHAR)
 				{
 				    // Pragma tanalmady.
-					if (strlen(prev_prag.name))  print_err(CODE2_PRAGMA_NOT_END);
+					if (strlen(prev_prag.name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
 
 					mode = PARSER_DEFAULT_MODE;
 					continue;
 				}
 				else if (isspace(c))  continue;
-				else print_err(CODE2_PRAGMA_NOT_IDENT);
+				else print_err(CODE2_PRAGMA_NOT_IDENT, &inf_tok);
 			}
 			else
 			{
@@ -163,6 +205,7 @@ int parser(FILE *source)
             // Taze token yasalvar
 
             init_token(&string_tok);
+            inf_add_to_token(&string_tok, c, c_pos, line);
             string_tok.is_compl = 0;
             string_tok.type_class = TOK_CLASS_CONST_DATA;
 
@@ -186,7 +229,7 @@ int parser(FILE *source)
             if (!is_token_string_const_data(&string_tok))
             {
                 // Nadogry diyip hat chykarmaly
-                print_err(CODE2_STRING_IS_WRONG);
+                print_err(CODE2_STRING_IS_WRONG, &string_tok);
             }
             else if (string_tok.potentional_types[0].is_compl==1)
             {
@@ -211,7 +254,7 @@ int parser(FILE *source)
             if (!is_token_string_const_data(&string_tok))
             {
                 // Nadogry diyip hat chykarmaly
-                print_err(CODE2_STRING_IS_WRONG);
+                print_err(CODE2_STRING_IS_WRONG, &string_tok);
             }
             else if (string_tok.potentional_types[0].is_compl==1)
             {
@@ -225,7 +268,7 @@ int parser(FILE *source)
 	}
 	// Eger token bar bolsa, diymek komanda salynmandyr
 
-	if (tok.potentional_types_num || cmd.items_num)  print_err(CODE2_REMAIN_TOKEN);
+	if (tok.potentional_types_num || cmd.items_num)  print_err(CODE2_REMAIN_TOKEN, &string_tok);
 
 	// TRANSLATOR TO C: algoritmi faýla ýazýar
 	work_with_translator('1');

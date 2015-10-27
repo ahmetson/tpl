@@ -20,7 +20,7 @@ int algor_add_cmd(command add_cmd)
 	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
-        print_err(CODE4_CANT_IDENT_CMD);
+        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&add_cmd));
     }
     else
     {
@@ -65,12 +65,20 @@ int add_user_var_def_item(command cmd)
 	// Identifikator eyyam yglan edilen eken.
 	if (is_ident_used(tok_name, cmd.ns))
         return 0;
-
+char file_name[MAX_FILE_LEN];		// Ülňi haýsy faýla degişli
+	int  line;
+	int  start_char_position;
+	char start_char;
+	char ident[MAX_TOKEN_LEN];		    // Ülňiniň ady
+	int  tok_class;						// Ülňiniň tipi
+	int  tok_type;
+	int  ns;
 	var_def_item new_def = {
 		"",
-		0,
-		0,
-		'0',
+		cmd.items[ident_tok_pos-1].tok.inf_file_num,
+		cmd.items[ident_tok_pos-1].tok.inf_line_num,
+		cmd.items[ident_tok_pos-1].tok.inf_char_num,
+		cmd.items[ident_tok_pos-1].tok.inf_char,
 		"",
 		cmd.items[ident_tok_pos-1].tok.potentional_types[0].type_class,
 		cmd.items[ident_tok_pos-1].tok.potentional_types[0].type_num,
