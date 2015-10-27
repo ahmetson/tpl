@@ -36,10 +36,7 @@ char *tpl(int argc, const char **args)
     {
         compare_token_types_right_data();
     }
-    if (GLOB_BOTH_IDENT_CMDS_NUM)
-    {
-        compare_token_types_both_ident();
-    }
+
     /*if (GLOB_LEFT_DATA_CMDS_NUM)
     {
         compare_token_types_left_data();
@@ -53,7 +50,7 @@ char *tpl(int argc, const char **args)
 	// Ýasalan programmanyň baş faýly tanalmaly
 	if (!strlen(MAIN_FILE_NAME))
 	{
-		print_err(CODE0_NOT_FOUND_MAIN_FILE);
+		print_err(CODE0_NOT_FOUND_MAIN_FILE, &inf_tok);
 	}
 
 
@@ -62,11 +59,16 @@ char *tpl(int argc, const char **args)
     if(UNKNOWN_USED_VARS_NUM)                           // Ýasaljak programmada näbelli ulanylýan ülňiler bar.
     {
         if (!is_unknown_var_glob_def())                 // Näbelli ülňileriň arasynda başga
-            print_err(CODE0_IDENT_NOT_DEFINED);         // ýasaljak kodlarda yglan edilen global ülňi bar
+            print_err(CODE0_IDENT_NOT_DEFINED, &inf_tok);         // ýasaljak kodlarda yglan edilen global ülňi bar
 
         if (!identificate_unknown_vars_as_glob_vars())  // Ulanylan global ülňiler tanalar ýaly
-            print_err(CODE0_IDENT_CANT_ADD);            // Ýasaljak koda, ulanylan ülňileriň yglan edilen faýllary ýazylmaly
+            print_err(CODE0_IDENT_CANT_ADD, &inf_tok);            // Ýasaljak koda, ulanylan ülňileriň yglan edilen faýllary ýazylmaly
                                                         // Muny C dili talap edýär (#include "glob.h").
+    }
+
+    if (GLOB_BOTH_IDENT_CMDS_NUM)
+    {
+        compare_token_types_both_ident();
     }
 
     // Eger ýasaljak programma birnäçe ýasalan kodlarda algoritmlerden düzülen bolsa,
@@ -77,7 +79,7 @@ char *tpl(int argc, const char **args)
     if (MAIN_FILE_INCLUDES_NUM-1)
     {
         if (!add_addtn_file_fns())
-            print_err(CODE0_INCLUDES_CANT_ADD);
+            print_err(CODE0_INCLUDES_CANT_ADD, &inf_tok);
     }
 
 	// TPL PROGRAMMADAN ÇYKMALY

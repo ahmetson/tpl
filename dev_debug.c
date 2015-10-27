@@ -49,6 +49,8 @@ void debug_token(token *tok)
 
 	// Print results
 	printf("\n  INFO ABOUT TOKEN===================\n");
+	printf("File: '%s'; Line: %d; Char: %c, position is: %d\n", FILES[tok->inf_file_num].source, tok->inf_line_num,
+        tok->inf_char==-1 ? '?' : tok->inf_char, tok->inf_char_num);
 	printf("  '%s', '%s' token, in '%s' class\n", ns, complete, type_class);
 	printf("  Can be in %d types\n\n", tok->potentional_types_num);
 	if (tok->potentional_types_num>0)

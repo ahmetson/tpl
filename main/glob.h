@@ -41,12 +41,14 @@ extern char            CMD_END;
 extern char            CUR_FILE_NAME[CONST_MAX_FILE_LEN];
 extern int             CUR_FILE_NUM;
 extern char            CUR_CHAR;
+extern int             CUR_CHAR_POS;
 extern unsigned int    CUR_LINE;
 extern int             CUR_PART;
 
 
 // Häzirki ýasalyp duran komanda
 extern command cmd;
+extern token   inf_tok;
 
 // Ýasaljak faýl boýunça yglan edilen ülňileriň sanawy.
 extern int             USER_VAR_DEFS_NUM;
@@ -81,6 +83,11 @@ unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 char                  **GLOB_STRINGS;
 unsigned long           GLOB_STRINGS_NUM;
 
+
+/**
+ * Programmadaky kodlaryň setirleri.
+**/
+extern char          ***GLOB_SOURCE_CODES;
 
 extern file_item *FILES;
 

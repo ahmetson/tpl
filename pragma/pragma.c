@@ -87,6 +87,7 @@ void act_pragma(pragma *prag)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 0;
+
 	int i, len_to_cmp;
 	for (i=0; i<PRAGMAS_NUM; ++i)
 	{
@@ -98,7 +99,7 @@ void act_pragma(pragma *prag)
 			return;
 		}
 	}
-	print_err(CODE0_PRAGMA_ACT_NOT_IDENTIFIED);
+	print_err(CODE0_PRAGMA_ACT_NOT_IDENTIFIED, &inf_tok);
 }
 
 
@@ -113,7 +114,7 @@ void act_pragma_main_file(pragma *prag)
 	}
 	else
 	{
-		print_err(CODE0_MAIN_FILE_ALREADY_CHOSED);
+		print_err(CODE0_MAIN_FILE_ALREADY_CHOSED, &inf_tok);
 	}
 
 	CUR_PART = prev_part;

@@ -20,7 +20,13 @@ int is_unknown_var_glob_def()
     for(i=0; i<UNKNOWN_USED_VARS_NUM; ++i)
     {
         if (!is_ident_used(UNKNOWN_USED_VARS[i].ident, -1))
+        {
+            inf_tok.inf_char = UNKNOWN_USED_VARS[i].start_char;
+            inf_tok.inf_char_num = UNKNOWN_USED_VARS[i].start_char_position;
+            inf_tok.inf_line_num = UNKNOWN_USED_VARS[i].line;
+            inf_tok.inf_file_num = UNKNOWN_USED_VARS[i].file_num;
             return 0;
+        }
     }
 
     // Ülňi hiç yglan edilmändir.

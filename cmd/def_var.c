@@ -181,7 +181,7 @@ int add_to_def_var_list(command *cmd)
     if (!add_user_var_def_item(*cmd))
     {
         CUR_PART = 4;
-        print_err(CODE4_VARS_IDENT_USED);
+        print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
     }
 
     return 1;

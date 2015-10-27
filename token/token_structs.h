@@ -32,8 +32,12 @@ typedef struct{
 	char value[MAXLEN];
 	int is_compl;
 	int type_class;
-    int  required_type_num;
-	int  required_type_class;
+    int required_type_num;
+	int required_type_class;
+	int inf_line_num;
+	int inf_file_num;
+	int inf_char_num;
+	char inf_char;
 }token;
 
 // Her tokenin tipi uchin funksiyalar

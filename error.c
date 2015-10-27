@@ -8,6 +8,17 @@
 #include "translator_to_c.h"															// Yalnyshlykly faylyn we setirin adresleri
 #include "error.h"
 
+#define NO 0
+#define YES
+#define NO_FILE 0
+#define YES_FILE 1
+#define NO_LINE 0
+#define YES_LINE 1
+#define NO_CHAR 0
+#define YES_CHAR 1
+#define NO_CMD 0
+#define YES_CMD 1
+
 /* TPL şu bölümlerden durýar.*/
 char *parts_names[] = {
 "0. TPL ulgamy",
@@ -57,39 +68,68 @@ int CODE7_TYPES_NOT_MATCH_BOTH_IDENT    = 2;
 //int CODE7_RIGHT_IDENT_NOT_DEFINED = 2;
 
 /* Ýalňyşlyklaryň tekstleri */
-char *err_texts[][10] = {
-	{"TPL'e niýetlenen komandany açyp bolmady",     				// 0.Ulgam
-	 "Eýýäm baş faýl ötürdildi",
-	 "Ýazyljak programmanyň baş faýly tanalmady.\n \
-Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
-     "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli",
-     "Ülňi üçin faýly tapyp bolmady",
-     "C translýatorynda faýllary birikdirip bolmady"},
-	{"Kodly faýl gelmedi",											// 1.File we inisializasiya
-	 "Kodly faýly açmak başartmady"},
-	{"Şeýle symboldan harp başlanok",								// 2.Harplar (parsing)
-	 "Pragma dolylygyna ýazylmady",
-	 "Pragma tanalmady",
-	 "Komandany gutarýan token ýetenok",
-	 "Token gaty uzyn",
-	 "Token gutarylmady",
-	 "Söz tokeninde ýalňyşlyk tapyldy"},
-	{"Nädogry komanda birligi gabat gelindi"},              							// 3.Tokenler
-	{"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok",				// 4.Komandalar
-	 "Kompýuteriň ýadynda ýer ýetmedi",
-	 "Komanda tanalmady",
-	 "Ülňi üçin identifikator eýýäm ulanyldy",
-	 "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
-	{},																	        // 5.Algoritmler
-	{},																	        // 6.Global sanawlar
-	{"Komandanyň sag tarapky token tipi çep tarapdaky maglumata gabat gelenok",   // 7.Semantika
-      "Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok",
-      "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"
+error_item err_items[] = {
+    // 0. ULGAM ********************************************************
+    {0, 0, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        "TPL'e niýetlenen komandany açyp bolmady"},
+    {0, 1, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        "Eýýäm baş faýl ötürdildi"},
+    {0, 2, NO_FILE, 0, 0, 0, NO_CMD,
+        "Ýazyljak programmanyň baş faýly tanalmady.\n \
+Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
+    {0, 3, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli"},
+    {0, 4, NO_FILE, 0, 0, 0, NO_CMD,
+        "Ülňi üçin faýly tapyp bolmady"},
+    {0, 5, NO_FILE, 0, 0, 0, NO_CMD,
+        "C translýatorynda faýllary birikdirip bolmady"},
+    // 1. FAÝL ******************************************************
+    {1, 0, NO_FILE, 0, 0, 0, NO_CMD,
+        "Kodly faýl gelmedi"},
+    {1, 1, YES_FILE, 0, 0, 0, NO_CMD,
+        "Kodly faýly açmak başartmady"},
+    // 2. HARPLAR (PARSER) ******************************************************
+    {2, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Şeýle symboldan harp başlanok"},
+    {2, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Pragma dolylygyna ýazylmady"},
+    {2, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Pragma tanalmady"},
+    {2, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Komandany gutarýan token ýetenok"},
+    {2, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Token gaty uzyn"},
+    {2, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Token gutarylmady"},
+    {2, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Söz tokeninde ýalňyşlyk tapyldy"},
+    // 3. TOKENLER ******************************************************
+    {3, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Nädogry komanda birligi gabat gelindi"},
+    // 4. KOMANDALAR ******************************************************
+    {4, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok"},
+    {4, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Kompýuteriň ýadynda ýer ýetmedi"},
+    {4, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Komanda tanalmady"},
+    {4, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Ülňi üçin identifikator eýýäm ulanyldy"},
+    {4, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
+    // 5. Algoritmler ******************************************************
+	// 6. Global sanawlar ******************************************************
+	// 7. Semantika ******************************************************
+    {7, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Komandanyň sag tarapky token tipi çep tarapdaky maglumata gabat gelenok"},   // 7.Semantika
+    {7, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok"},
+    {7, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
-	 },
-	{}																	// 8.Kompilyator we C translyator
+    // 8. C transleýtor
 };
 
 /*
@@ -102,18 +142,32 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň",
  * @line - Ýalňyşlyk faýlda çykan bolsa, çykan setiri
  * @ch   - Ýalňyşlyk çykan wagty, parseriň saklanan symwoly
 **/
-void print_err(int num)
+void print_err(int num, token *tok)
 {
-	printf("\n\nÝalňyşlyk ýüze çykdy!\n");								// Yalnyshlyk hakda title
-	if (CUR_PART>=2 && CUR_PART<=7)
+	printf("\n\nÝALŇYŞLYK #%d.%d\n", CUR_PART, num);								// Yalnyshlyk hakda title
+	error_item *err = get_err_inf(num);
+	if (err->file_num || err->line_num || err->char_num)
+	//if (CUR_PART>=2 && CUR_PART<=7)
 	{
-	    printf("Faýl: '%s', Setir: '%d' ", CUR_FILE_NAME, CUR_LINE);	// Source faylda yalnyshlygyn tapylan yeri,
-		if (CUR_CHAR!=-1)
-			printf(", Harp: '%c'\n", CUR_CHAR);						    // Bolup biljek Source faylda,
+        if (err->file_num)
+            printf("Faýl: '%s'; ", (tok->inf_file_num!=-1)?
+                   FILES[tok->inf_file_num].source : CUR_FILE_NAME);	// Source faylda yalnyshlygyn tapylan yeri,
+		if (err->line_num)
+        {
+            printf("Setir: %d; ", tok->inf_line_num>-1?tok->inf_line_num:CUR_LINE);
+        }
+        if (err->char_num)
+            printf("Harp: '%c'; Setirdäki orny: %d", (tok->inf_char_num>0)?tok->inf_char:CUR_CHAR,
+                                                     (tok->inf_char_num)>0?tok->inf_char_num: CUR_CHAR_POS);
 		printf("\n");													// yalnyshlygyn tapylan yeri
 	}
-
-	printf("#%d.%d %s! \n\n", CUR_PART, num, err_texts[CUR_PART][num]);	// Yalnyshlyk sozi
+	if (err->code_line)
+    {
+        printf("\t\n\n");
+        printf("\t%s... şu ýerräkde\n");
+        printf("\t\n\n");
+    }
+	printf("%s\n\n", err->msg);	// Yalnyshlyk sozi
 
 	free_globs();
 
@@ -122,3 +176,20 @@ void print_err(int num)
 	exit(num);
 }
 
+
+
+/**
+ * Ýüze çykan ýalňyşlyk kody boýunça, ýalňyşlyk üçin gerekli maglumatlary yzyna gaýtarýar
+**/
+error_item *get_err_inf(int num)
+{
+    int i, j, items;
+    items = sizeof(err_items)/sizeof(err_items[0]);
+    for (i=0; i<items; ++i)
+    {
+        //printf("HAZIR: %d, SHU WAGT: %d, BARLANYAR:%d, JEMI: %d\n", i, CUR_PART, err_items[i].tpl_part, items);
+        if (err_items[i].tpl_part==CUR_PART && err_items[i].err_code==num)
+            return &err_items[i];
+    }
+    return err_items;
+}

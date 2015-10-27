@@ -64,6 +64,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main/glob.h" />
+		<Unit filename="main/inf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/inf.h" />
 		<Unit filename="main/init.c">
 			<Option compilerVar="CC" />
 		</Unit>

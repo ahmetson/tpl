@@ -76,9 +76,10 @@ int add_global_used_var(token *tok, char *tok_name)
 {
     var_def_item new_def = {
 		"",
-		0,
-		0,
-		'0',
+		tok->inf_file_num,
+		tok->inf_line_num,
+		tok->inf_char_num,
+		tok->inf_char,
 		"",
 		tok->potentional_types[0].type_class,
 		tok->potentional_types[0].type_num,

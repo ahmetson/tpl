@@ -16,12 +16,14 @@ char CMD_END = '.';
 
 // Hazirki yasalyp duran komanda
 command         cmd;
+token           inf_tok;
 
 // Parsing edilip duran faýlyň maglumatlary
 int             CUR_PART;
 char            CUR_FILE_NAME[];
 int             CUR_FILE_NUM;               // Programma-da häzirki faýl näçinji orunda gelýär.
 char            CUR_CHAR;
+int             CUR_CHAR_POS;
 unsigned int    CUR_LINE;
 
 // Parsing edilip duran faýldan emele geljek komandalar
@@ -51,6 +53,12 @@ var_def_item   *UNKNOWN_USED_VARS;
 **/
 command_item  **GLOB_SUBCMD_ITEMS_LIST;
 unsigned int    GLOB_SUBCMDS_NUM;
+
+
+/**
+ * Programmadaky kodlaryň setirleri.
+**/
+char ***GLOB_SOURCE_CODES;
 
 
 /**
@@ -128,7 +136,18 @@ void free_globs(void)
 
     // Faýllaryň sanawy hem arassalanýar
     if (CUR_FILE_NUM)
+    {
+        int j;
+        for(i=0; i<CUR_FILE_NUM; ++i)
+        {
+            if (GLOB_SOURCE_CODES[i]!=NULL)
+            {
+                free(GLOB_SOURCE_CODES[i]);
+            }
+            free(GLOB_SOURCE_CODES);
+        }
         free(FILES);
+    }
 
 	// Diňe parsing edilýän wagty ulanylýan ülpileriň ýerleri boşadylýar
 	free_locals();

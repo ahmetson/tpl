@@ -12,6 +12,7 @@
 
 typedef struct{
 	char file_name[MAX_FILE_LEN];		// Ülňi haýsy faýla degişli
+	int  file_num;		                // Ülňi haýsy faýla degişli
 	int  line;
 	int  start_char_position;
 	char start_char;
