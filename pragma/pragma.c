@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../parser.h"
 #include "pragma.h"
 #include "../tpl.h"
 #include "../error.h"
@@ -13,10 +14,10 @@
 #define PRAGMA_MIN_LEN 2
 
 // Pragmalaryn sany
-const int PRAGMAS_NUM = 1;
+int PRAGMAS_NUM = 1;
 
-const char PRAGMA_START_CHAR = '#';
-const char PRAGMA_END_CHAR   = '\n';
+char PRAGMA_START_CHAR = '#';
+char PRAGMA_END_CHAR   = '\n';
 
 char PRAGMA_MODE = 1;
 
@@ -36,7 +37,52 @@ void init_pragma(pragma *prag)
 	strncpy(prag->name, "\0", strlen("\0")+1);
 }
 
-/*
+
+/**
+ * Pragma bilen işleýän parseriň bölümi
+**/
+int work_with_pragma(pragma *prag, pragma *prev_prag, char *mode, char c, int c_pos, int line)
+{
+    if (c==PRAGMA_END_CHAR)
+    {
+        // Pragma tanalmady.
+        if (strlen(prev_prag->name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
+
+        *mode = PARSER_DEFAULT_MODE;
+        return 2;
+    }
+    else if (isspace(c))
+        return 2;
+    else
+    {
+        //printf("Pragma moda gechildi. Indi parser pragmalary saygarmana chalshar.\n");
+        strstrchcat(prag->name, prev_prag->name, c);
+
+        if (!recognise_pragma(prag))
+        {
+            // Pragma bilen işlenilip durka ýalňyşlyk çyksa, nireden çykanyny bilmek üçin.
+            inf_add_to_token(&inf_tok, c, c_pos, line);
+            //printf("pragma tanalmady\n");
+            print_err(CODE2_PRAGMA_NOT_IDENT, &inf_tok);
+        }
+        else
+        {
+            //printf("pragma tanaldy, pragma '%s', gutarylanmy: %d\n", prag->name, prag->is_compl);
+            *prev_prag = *prag;
+            if (prev_prag->is_compl)
+            {
+                //printf("Onki pragma: '%s', gutarylanmy: %d\n", prev_prag->name, prev_prag->is_compl);
+                act_pragma(prev_prag);
+
+                init_pragma(prag);
+                init_pragma(prev_prag);
+            }
+        }
+    }
+    return 1;
+}
+
+/**
  * Pragmany tanayan we jogabyny gaytaryan funksiya
  * Eger pragma tanalsa we gutaran bolsa, onda getirilen pragma gutaryldy diyilip goyulyar.
  *

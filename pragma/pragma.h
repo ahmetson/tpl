@@ -21,12 +21,12 @@ typedef struct{
 }act_pragma_item;
 
 // Pragmalaryn sany
-extern const int PRAGMAS_NUM;
+extern int PRAGMAS_NUM;
 
 // Pragmalar name harpdan bashlayar
-extern const char PRAGMA_START_CHAR;
+extern char PRAGMA_START_CHAR;
 // Pragmalar name harpdan gutaryar
-extern const char PRAGMA_END_CHAR;
+extern char PRAGMA_END_CHAR;
 
 // Pragma saygaryan parser boluminin kody
 extern char PRAGMA_MODE;
@@ -34,7 +34,8 @@ extern char PRAGMA_MODE;
 // Programmanyn tanayan we ishleyan pragmalarynyn sanawy
 extern char *pragmas[];
 
-// FFFFFFuuuuuuuuunnnnnnnnnkkkkkkkkkksssssssssiiiiiiiiiiyyyyyyyyyaaaaaaaallllllaaaaaaarrrrrrr
+// Parserde pragma bilen işleýän bölüm
+int work_with_pragma(pragma *prag, pragma *prev_pragma, char *mode, char c, int c_pos, int line);
 
 // Pragmany ulanmana tayynlayar.
 void init_pragma(pragma *prag);

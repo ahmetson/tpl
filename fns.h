@@ -2,7 +2,7 @@
 #define FNS_H
 
 // Concatinate string with char and put them to @to
-void strstrchcat(char *to, char *from, char c);
+int strstrchcat(char *to, char *from, char c);
 
 // Checks first occurance of substring in string started from offset
 int strstr_by_offset(const char *string, const char*sub, unsigned int offset);

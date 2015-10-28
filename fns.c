@@ -20,12 +20,14 @@ Additonal functions
  * @from_len  - number of characters of first string
  * @to_len    - number of characters of final string
 **/
-void strstrchcat(char *to, char *from, char c)
+int strstrchcat(char *to, char *from, char c)
 {
     strncpy(to, from, strlen(from)+1);
 
 	to[strlen(to)+1] = '\0';	        		// Sonky \0 bire suyshirilyar
 	to[strlen(to)] = c;
+
+	return 1;
 }
 
 /* Checks first occurance of substring in string started from offset

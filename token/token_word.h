@@ -4,6 +4,6 @@
 #ifndef TOKEN_WORD_H
 #define TOKEN_WORD_H
 
-void set_token_word_value(char *tok_word, char c);
+int set_token_word_value(char *tok_word, char c);
 
 #endif

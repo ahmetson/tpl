@@ -7,8 +7,86 @@
 #include "../main/glob.h"
 #include "../main/tpl_esc_keys.h"
 #include "harpl.h"
+#include "../parser.h"
+#include "../error.h"
 
 char HARPL_OPENER = '"';
+
+/**
+ * Parserde harplar bilen işleýän bölüm
+**/
+int work_with_string(token *string_tok, char *mode, char c)
+{
+    // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
+    add_char_to_last_string(c);
+
+    if (!is_token_string_const_data(string_tok))
+    {
+        // Nadogry diyip hat chykarmaly
+        print_err(CODE2_STRING_IS_WRONG, string_tok);
+    }
+    else if (string_tok->potentional_types[0].is_compl==1)
+    {
+        // Adaty moda gechilyar.
+        move_to_cmd(string_tok);
+        init_token(string_tok);
+
+        *mode = PARSER_DEFAULT_MODE;
+    }
+    return 1;
+}
+
+/**
+ * Harplar global ülňide bolýany üçin, başda taýynlamaly bolýar
+**/
+int prepare_to_work_with_string(token *string_tok, char *mode, char c, int c_pos, int line)
+{
+    increment_string_tokens();
+
+    // Taze token yasalvar
+    init_token(string_tok);
+    inf_add_to_token(string_tok, c, c_pos, line);
+
+    string_tok->is_compl = 0;
+    string_tok->type_class = TOK_CLASS_CONST_DATA;
+
+    token_type tok_type;
+    tok_type.is_compl = 0;
+    tok_type.need_value = 1;
+    tok_type.type_class = TOK_CLASS_CONST_DATA;
+    tok_type.type_num = STRING_CONST_DATA_TOK_NUM;
+    tok_type.string_value = &GLOB_STRINGS[GLOB_STRINGS_NUM-1];
+
+    add_potentional_token_type(string_tok, tok_type);
+    // Token inisializasiya edilip bolan son,
+    // token tipi we klasy, gutarylany gutarylmadyk diyip goyulyar.
+    // tokenin maglumaty diyip bolsa, soz maglumata in sonky soz sanynyn adresi baglanyar
+
+    // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
+    add_char_to_last_string(HARPL_OPENER);
+    add_char_to_last_string(c);
+
+    // eger-de token sozlem tokeni yaly tanalmasa,
+    if (!is_token_string_const_data(string_tok))
+    {
+        // Nadogry diyip hat chykarmaly
+        print_err(CODE2_STRING_IS_WRONG, string_tok);
+    }
+    else if (string_tok->potentional_types[0].is_compl==1)
+    {
+        // Komanda salmaly
+        move_to_cmd(string_tok);
+        empty_token(string_tok);
+
+        *mode = PARSER_DEFAULT_MODE;
+    }
+    else
+    {
+        // Soz moduna bashlasanam bolyar
+        *mode = STRING_MODE;
+    }
+    return 1;
+}
 
 /**
  * Ýasaljak programma-da ulanylýan sözleriň sanawy ýene bire köpeldilýär.

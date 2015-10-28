@@ -24,4 +24,6 @@ int add_potentional_token_type(token *tok, token_type tok_type);    // 2)içine 
 int finishize_token(token *tok);                                    // 3)komanda salmana taýynlanýar
 int move_to_cmd(token *tok);                                        // 4)Komanda salynýar
 
+int work_with_token(token *tok, char *tok_string);
+
 #endif
