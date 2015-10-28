@@ -196,6 +196,7 @@ int move_to_cmd(token *tok)
 	if (tok->is_compl==0)
     {
         CUR_PART = 2;
+
         print_err(CODE2_PREV_TOKEN_INCORRECT, tok);
     }
 
@@ -281,12 +282,23 @@ int move_to_cmd(token *tok)
 		}
 	}
 
-    // Token komanda goşulany üçin, indi bu ülňiler gerek däl
-	empty_token(tok);
-
 	CUR_PART = prev_part;
 	return 1;
 }
 
+/**
+ * Token gutaran soň, komanda geçirilmeli.
+**/
+int work_with_token(token *tok, char *tok_string)
+{
+// 1. Onki token bar
+    if (!is_token_empty(tok))
+    {
+        move_to_cmd(tok);
 
-
+        empty_token(tok);
+        empty_string(tok_string, strlen(tok_string));
+        return 1;
+    }
+    return 0;
+}

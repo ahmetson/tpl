@@ -268,7 +268,7 @@
 	"translator_to_c.h"
 	"error.h"
 
-1445928989 source:d:\c_source\tpl\algor.c
+1446001389 source:d:\c_source\tpl\algor.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -295,7 +295,7 @@
 1445565851 d:\c_source\tpl\cmds.h
 	"tokens.h"
 
-1445713965 d:\c_source\tpl\tokens.h
+1446000947 d:\c_source\tpl\tokens.h
 	"token/token_types/def_types.h"
 	"token/token_types/glob.h"
 	"token/token_types/assign.h"
@@ -346,7 +346,7 @@
 	"../error.h"
 	"assign.h"
 
-1445927447 source:d:\c_source\tpl\cmds.c
+1446001478 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -374,14 +374,14 @@
 	"translator_to_c.h"
 	"error.h"
 
-1443332539 source:d:\c_source\tpl\fns.c
+1445972783 source:d:\c_source\tpl\fns.c
 	<stdio.h>
 	<string.h>
 	"tpl.h"
 	"tokens.h"
 	"fns.h"
 
-1443136610 d:\c_source\tpl\fns.h
+1445989898 d:\c_source\tpl\fns.h
 
 1443100452 source:d:\c_source\tpl\main.c
 	<stdlib.h>
@@ -418,7 +418,7 @@
 
 1440718598 source:d:\c_source\tpl\other.c
 
-1445933598 source:d:\c_source\tpl\parser.c
+1446003485 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -431,13 +431,14 @@
 	"translator_to_c.h"
 	"error.h"
 
-1441366754 d:\c_source\tpl\parser.h
+1446002294 d:\c_source\tpl\parser.h
 
-1441998616 d:\c_source\tpl\pragma\pragma.h
+1446002344 d:\c_source\tpl\pragma\pragma.h
 
-1445928103 source:d:\c_source\tpl\pragma\pragma.c
+1446002916 source:d:\c_source\tpl\pragma\pragma.c
 	<stdio.h>
 	<string.h>
+	"../parser.h"
 	"pragma.h"
 	"../tpl.h"
 	"../error.h"
@@ -485,14 +486,14 @@
 1441562339 source:d:\c_source\tpl\token\token_types\glob.c
 	"glob.h"
 
-1443108329 source:d:\c_source\tpl\token\token_word.c
+1445989687 source:d:\c_source\tpl\token\token_word.c
 	<string.h>
 	"token_word.h"
 	"../fns.h"
 
-1443108359 d:\c_source\tpl\token\token_word.h
+1445989691 d:\c_source\tpl\token\token_word.h
 
-1445927464 source:d:\c_source\tpl\tokens.c
+1446001097 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -583,9 +584,9 @@
 	"../main/tpl_esc_keys.h"
 	"harpl.h"
 
-1445711474 d:\c_source\tpl\token\harpl.h
+1446003582 d:\c_source\tpl\token\harpl.h
 
-1445933112 source:d:\c_source\tpl\main\inf.c
+1445933610 source:d:\c_source\tpl\main\inf.c
 	<stdlib.h>
 	"glob.h"
 	"inf.h"

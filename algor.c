@@ -13,6 +13,7 @@
 
 int algor_add_cmd(command add_cmd)
 {
+
     // komanda dogrylygy barlanyar
     check_semantics(&add_cmd);
 
