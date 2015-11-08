@@ -17,5 +17,6 @@ int is_def_var_cmd(command *cmd);
 
 // Komanda ulni yglan etme bolsa, ulni yglan etmelerin sanawyna goshyar
 int add_to_def_var_list(command *cmd);
+int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type);
 
 #endif // CMD_DEF_VAR_H

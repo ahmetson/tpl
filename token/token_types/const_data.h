@@ -22,10 +22,21 @@ extern int STRING_CONST_DATA_TOK_NUM;
 // Debag üçin
 extern char *CONST_DATA_TOK_NUM_WORDS[4];
 
-void set_def_type_alias_const_data(int *left_class, int *left_type);
+int set_def_type_alias_const_data(int *left_class, int *left_type);
 
 
 // TRANSLATOR TO C
 char *get_const_data_string(token *tok);
+
+int get_tok_type_const_data_int_val_type(token *tok, int *tok_class, int *tok_type);
+int get_tok_type_const_data_float_val_type(token *tok, int *tok_class, int *tok_type);
+int get_tok_type_const_data_char_val_type(token *tok, int *tok_class, int *tok_type);
+int get_tok_type_const_data_string_val_type(token *tok, int *tok_class, int *tok_type);
+
+
+void tok_int_c_code(token *tok, char **l, int *llen);
+void tok_float_c_code(token *tok, char **l, int *llen);
+void tok_char_c_code(token *tok, char **l, int *llen);
+void tok_string_c_code(token *tok, char **l, int *llen);
 
 #endif // TOKEN_TOKEN_TYPES_CONST_DATA_H

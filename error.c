@@ -7,6 +7,7 @@
 #include "tpl.h"
 #include "translator_to_c.h"															// Yalnyshlykly faylyn we setirin adresleri
 #include "error.h"
+#include "fns.h"
 
 #define NO 0
 #define YES
@@ -62,6 +63,11 @@ int CODE4_TOK_TYPES_NOT_MATCH           = 4;
 int CODE7_TYPES_NOT_MATCH_RIGHT_DATA    = 0;
 int CODE7_TYPES_NOT_MATCH_LEFT_DATA     = 1;
 int CODE7_TYPES_NOT_MATCH_BOTH_IDENT    = 2;
+int CODE7_FN_ARG_TYPES_NOT_MATCH        = 3;
+int CODE7_FN_ARG_NUMES_NOT_MATCH        = 4;
+int CODE7_UNKNOWN_FNS_CALLED            = 5;
+int CODE7_UNKNOWN_DATA_USED             = 6;
+int CODE7_A_TO_B_B_TO_A                 = 7;
 //int CODE7_IDENT_NOT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_DEFINED = 0;
 //int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
@@ -78,7 +84,7 @@ error_item err_items[] = {
         "Ýazyljak programmanyň baş faýly tanalmady.\n \
 Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {0, 3, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli"},
+        "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli. \nBaşga faýllarda yglan edilen bolsa umumy bolmaly"},
     {0, 4, NO_FILE, 0, 0, 0, NO_CMD,
         "Ülňi üçin faýly tapyp bolmady"},
     {0, 5, NO_FILE, 0, 0, 0, NO_CMD,
@@ -125,7 +131,17 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok"},
     {7, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"}
+        "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"},
+    {7, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Funksiýanyň argumentleriniň tipi funksiýanyň talap edýän tiplerini gabat gelenok"},
+    {7, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Funksiýanyň argumentleriniň sany funksiýanyň talap edýän argument sanyna gabat gelenok"},
+    {7, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Näbelli funksiýe çagyryldy"},
+    {7, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Näbelli maglumat ulanyldy"},
+    {7, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "'A'->'B', 'B'->'A' ýagdaýy boldy. TPL'de bu mümkin däl"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
@@ -161,12 +177,13 @@ void print_err(int num, token *tok)
                                                      (tok->inf_char_num)>0?tok->inf_char_num: CUR_CHAR_POS);
 		printf("\n");													// yalnyshlygyn tapylan yeri
 	}
+	/*
 	if (err->code_line)
     {
         printf("\t\n\n");
         printf("\t%s... şu ýerräkde\n");
         printf("\t\n\n");
-    }
+    }*/
 	printf("%s\n\n", err->msg);	// Yalnyshlyk sozi
 
 	free_globs();
@@ -183,7 +200,7 @@ void print_err(int num, token *tok)
 **/
 error_item *get_err_inf(int num)
 {
-    int i, j, items;
+    int i, items;
     items = sizeof(err_items)/sizeof(err_items[0]);
     for (i=0; i<items; ++i)
     {

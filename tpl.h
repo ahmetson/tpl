@@ -10,13 +10,12 @@
 #define CONST_MAX_FILE_LEN  255
 #define CONST_MAX_TOKEN_LEN 32
 
-
-
 #include "main/glob.h"
 #include "main/init.h"
 #include "main/main_file.h"
 #include "translator_to_c/files.h"
 #include "translator_to_c/attach_glob_vars.h"
 
+void tpl(int argc, const char **args);
 
 #endif

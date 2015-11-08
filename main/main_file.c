@@ -6,12 +6,14 @@
 #include <string.h>
 #include "../tpl.h"
 #include "main_file.h"
+#include "files.h"
+#include "../translator_to_c/includes.h"
 
 // Ýasaljak programmanyň baş faýlynyň ady
 char MAIN_FILE_NAME[];
 // Baş faýlda başga faýllaryň algoritmlerini saklaýan funksiýalaryň we faýllaryň sanawy
 int  MAIN_FILE_INCLUDES_NUM;
-char (*MAIN_FILE_INCLUDES)[2][265];
+char (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 
 
 /**
@@ -37,17 +39,6 @@ int add_addtn_file_fns()
 
 	while ((c=fgetc(s))!=EOF)
 	{
-	    // Birinji teswir zolagyna düşüldi, diýmek inkludler gutarypdyr: //.
-		if (prev_c=='/' && prev_c2=='/' && c=='.')
-		{
-			l[len-1] = '\0';
-			len--;
-			l[len-1] = '\0';
-			len--;
-
-			cmode = 1;      // Birinji teswir zolagyna geçmeli
-			continue;
-		}
 		// Ikinji teswir zolagyna düşüldi, diýmek baş blok gutarypdyr: //,
         if (prev_c=='/' && prev_c2=='/' && c==',')
 		{
@@ -58,20 +49,6 @@ int add_addtn_file_fns()
 
 			cmode = 3;      // Ikinji teswir zolagyna geçmeli
 			continue;
-		}
-
-        // BIRINJI TESWIR ZOLAGY
-		if (cmode==1)
-		{
-		    if (c=='\n')
-			{
-				cmode=2;    // Funksiýalaryň yglan edilen faýllaryny häzirki ýasalan koda inklud edýän bölüme geçilýär.
-				continue;
-			}
-			ct[c_len-1] = c;
-
-			c_len++;
-			ct = realloc(ct, c_len);
 		}
 		// IKINJI TESWIR ZOLAGY
 		else if (cmode==3)
@@ -109,11 +86,26 @@ int add_addtn_file_fns()
                 l = realloc(l, len);
             }
 
-            // Prototipler çagyrylýar
+            // Baş faýla inklud etmeli faýllaryň sanawy
+            file_incs *fi = NULL;
+            file_item *f = get_file_by_name(MAIN_FILE_NAME);
+            if ((f->num+1)>INCLUDES_NUM)
+            {
+                // 2.a)
+                fi = includes_add_new();
+            }
+            else
+            {
+                // 2.b)
+                fi = &INCLUDES[f->num];
+            }
+
+            // Prototipler baş faýlda çagyrylýar, olaryň yglan edilen faýly baş faýla inklud edilmeli faýllaryň
+            // sanawyna goşulýar
 		    for(i=0; i<MAIN_FILE_INCLUDES_NUM-1; ++i)
             {
                 //printf("Goshmaly:%s %d\n", included_files[i], files_num);
-                char putme[270];
+                char putme[MAX_FILE_LEN+20];
                 strncpy(putme, "\t", strlen("\t")+1);
                 strncat(putme, MAIN_FILE_INCLUDES[i][1], strlen(MAIN_FILE_INCLUDES[i][1]));
                 strncat(putme, " \n", strlen(" \n"));
@@ -125,45 +117,20 @@ int add_addtn_file_fns()
                     len++;
                     l = realloc(l, len);
                 }
+
+                // 3)
+                char var_def_f[MAX_FILE_LEN] = {0};
+                strncpy(var_def_f, "\"", strlen("\"")+1);
+                strncat(var_def_f, MAIN_FILE_INCLUDES[i][0], strlen(MAIN_FILE_INCLUDES[i][0]));
+                strncat(var_def_f, "\"", strlen("\""));
+                //printf("%s\n", var_def_f);
+
+                includes_file_add_include(fi, var_def_f);
             }
 
 			cmode = 0;
 
         }
-        // Funksiýalaryň yglan edilen faýllaryny häzirki ýasalan koda inklud edýän bölüme geçilýär.
-        else    // çmode - 2
-		{
-            // Fayllar goshulyar
-		    for(i=0; i<MAIN_FILE_INCLUDES_NUM-1; ++i)
-            {
-                //printf("Goshmaly:%s %d\n", included_files[i], files_num);
-                char putme[270];
-                strncpy(putme, "#include \"", strlen("#include \"")+1);
-                strncat(putme, MAIN_FILE_INCLUDES[i][0], strlen(MAIN_FILE_INCLUDES[i][0]));
-                strncat(putme, "\" \n", strlen("\" \n"));
-
-                for(j=0; j<strlen(putme); ++j)
-                {
-                    l[len-1] = putme[j];
-
-                    len++;
-                    l = realloc(l, len);
-                }
-            }
-
-            // Header goşmalary gutarandygy bellenilýär.
-            char *end_of_headers = "//.\n\n";
-            for(i=0; i<strlen(end_of_headers); ++i)
-            {
-
-               l[len-1] = end_of_headers[i];
-
-                len++;
-                l = realloc(l, len);
-            }
-
-			cmode = 0;
-		}
 	}
 	l[len-1] = '\0';
 	fseek(s, 0, SEEK_SET);

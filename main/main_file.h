@@ -5,11 +5,16 @@
 #ifndef TPL_MAIN_FILE_H
 #define TPL_MAIN_FILE_H
 
-#define CONST_MAX_FILE_LEN 255
+#ifndef MAX_FILE_LEN
+#define MAX_FILE_LEN 255
+#endif // MAX_FILE_LEN
+#ifndef MAX_INCLUDE_LEN
+#define MAX_INCLUDE_LEN MAX_FILE_LEN+10
+#endif // MAX_INCLUDE_LEN
 
-extern char            MAIN_FILE_NAME[CONST_MAX_FILE_LEN];
+extern char            MAIN_FILE_NAME[MAX_FILE_LEN];
 extern int             MAIN_FILE_INCLUDES_NUM;
-extern char            (*MAIN_FILE_INCLUDES)[2][265];
+extern char            (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 
 /**
  * Baş ýasaljak kodyň soňuna, başga ýasaljak kodlaryň algoritmlerini çagyrjak funksiýalar goýulýar.

@@ -5,10 +5,16 @@
  * 	   1) Chepindaki ulna baglanma
  *     2) Sagyndaky ulna baglanma
 **/
+#include <stdlib.h>
+#include <string.h>
 
 #include "../main/glob.h"
 #include "../error.h"
+#include "def_var.h"
 #include "assign.h"
+#include "../semantic.h"
+#include "../cmds.h"
+#include "../main/inf.h"
 
 /**
  * Chepindaki ulna baglanma
@@ -98,12 +104,12 @@ int is_cmd_assign(command *cmd)
 	// Uchunji token identifikator bolmaly.
 	if (cmd->items_num>2)
 	{
-	    if(cmd->items[2].type==TOKEN_ITEM &&
-		   cmd->items[2].tok.type_class==TOK_CLASS_IDENT ||
-		   cmd->items[2].type==TOKEN_ITEM &&
-           cmd->items[2].tok.type_class==TOK_CLASS_CONST_DATA)
+	    if((cmd->items[2].type==TOKEN_ITEM &&
+		   cmd->items[2].tok.type_class==TOK_CLASS_IDENT) ||
+		   (cmd->items[2].type==TOKEN_ITEM &&
+           cmd->items[2].tok.type_class==TOK_CLASS_CONST_DATA))
 		{
-			assign_cmd_mod(cmd, 2);
+		    assign_cmd_mod(cmd, 2);
 		}
 		else
 		{
@@ -139,7 +145,7 @@ int assign_cmd_mod(command *cmd, int tok_num)
 	}
 	else if (tok_num==1)
 	{
-		cmd->cmd_type = cmd->items[1].tok.potentional_types[0].type_num;
+		cmd->cmd_type = cmd->items[1].tok.potentional_types[0].type_num-1;
 		cmd->cmd_class = CMD_CLASS_ASSIGN;
 
 		cmd->is_compl = 0;
@@ -184,4 +190,141 @@ int assign_cmd_mod(command *cmd, int tok_num)
 	return 0;
 }
 
+/** Baglama komandasynyň semantikasy
+**/
+int semantic_cmd_assign(command *cmd)
+{
+    int prev_part = CUR_PART;
+    CUR_PART = 7;
+    // KOMANDANYN CHEPE BAGLANMA GORNUSHI UCHIN
+    if (cmd->items[1].tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
+    {
+        //printf("Chepe baglanyan komandanyn semantikasy barlanmaly\n");
+
+        // BIRINJI BIRLIK BARLANYAR
+        //      ulninin yglan etme bolsa                      - identifikator hokman goshulandyr shonun uchin barlananok
+        //      eyyam ygaln edilen ulnin identifikatory bolsa - identifikator hokman on bir yerde yglan edilmeli
+        if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.type_class==TOK_CLASS_IDENT)
+        {
+            //debug_cmd(cmd);
+            //debug_GLOB_VAR_DEFS(GLOB_VAR_DEFS);
+            //debug_LOCAL_VAR_DEFS(LOCAL_VAR_DEFS);
+            token *item = &cmd->items[0].tok; // Gysgaltmak uchin ulanlyar
+
+            if (!is_ident_used(item, 0))
+            {
+                unknown_used_var_add(item, item->potentional_types[0].value);
+                //print_err(CODE7_LEFT_IDENT_NOT_DEFINED);
+            }
+        }
+
+
+        // IKINJI BIRLIGIN BARLANMASY
+        //      eyyam yglan edilen ulnin identifikatory bolsa - identifikator hokman on bir yerde yglan edilmeli
+        if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.type_class==TOK_CLASS_IDENT)
+        {
+            //debug_cmd(cmd);
+            //debug_GLOB_VAR_DEFS(GLOB_VAR_DEFS);
+            //debug_LOCAL_VAR_DEFS(LOCAL_VAR_DEFS);
+            token *item = &cmd->items[2].tok; // Gysgaltmak uchin ulanlyar
+
+            // A->B, B->A yagdayy bolmaz yaly
+            //compare_idents_add_new(cmd->items[0].tok.potentional_types[0].value, *item);
+
+            if (!is_ident_used(item, 0))
+            {
+                int i;
+                for(i=0; i<USER_VAR_DEFS_NUM; i++)
+                {
+                    printf("%s = %s\n", item->potentional_types[0].value, USER_VAR_DEFS[i].ident);
+                }
+                unknown_used_var_add(item, item->potentional_types[0].value);
+                //print_err(CODE7_LEFT_IDENT_NOT_DEFINED);
+            }
+        }
+    }
+    // KOMANDANYN CHEPE BAGLANMA GORNUSHI UCHIN
+
+    CUR_PART = prev_part;
+    return 1;
+}
+
+
+
+
+/** Faýla degişli kody C koda ýazýar
+**/
+void cmd_assign_c_code(command *cmd, char **l, int *llen)
+{
+    // Çepe baglanma:
+    if (cmd->items[1].tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
+    {
+        *llen += strlen("\t")+1;
+        *l = realloc(*l, *llen);
+
+        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
+        strncpy(*l, "\t", strlen("\t")+1);
+
+        // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
+        // Eger birinji ülňi identifikator bolsa, özi alynýar.
+        if (cmd->items[0].type==CMD_ITEM && cmd->items[0].cmd.cmd_class==CMD_CLASS_DEF_VAR)
+        {
+            char *lvalue = cmd->items[0].cmd.items[cmd->items[0].cmd.items_num-1].tok.potentional_types[0].value;
+
+            *llen += strlen(lvalue);
+            *l = realloc(*l, *llen);
+
+            strncat(*l,lvalue,strlen(lvalue));
+        }
+        else if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+        {
+            char *lvalue = cmd->items[0].tok.potentional_types[0].value;
+
+            *llen += strlen(lvalue);
+            *l = realloc(*l, *llen);
+
+            strncat(*l,lvalue,strlen(lvalue));
+        }
+
+        // baglanma ülňiniň c dili üçin warianty goýulýar
+        char *assign_c = " = ";
+
+        *llen += strlen(assign_c);
+        *l = realloc(*l, *llen);
+
+        strncat(*l,assign_c,strlen(assign_c));
+
+        // üçünji ülňi maglumat.
+        // Üçünji birlik identifikator bolsa, özüni geçirmeli.
+        if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+        {
+            char *rvalue = cmd->items[2].tok.potentional_types[0].value;
+
+            *llen += strlen(rvalue);
+            *l = realloc(*l, *llen);
+
+            strncat(*l,rvalue,strlen(rvalue));
+        }
+        // Üçünji birlik, konstanta maglumat bolsa, onda gerekli funksiýa arkaly maglumat içine salynýar.
+        else if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA)
+        {
+            char *rvalue = get_const_data_string(&cmd->items[2].tok);
+
+            *llen += strlen(rvalue);
+            *l = realloc(*l, *llen);
+
+            strncat(*l,rvalue,strlen(rvalue));
+        }
+
+        // Üç birligi birikdirip täze setir ýasalýar.
+        // Setire üç birlik we komandany gutaryjy çatylýar.
+        // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
+        char *cmd_end = "; \n";
+
+        *llen += strlen(cmd_end);
+        *l = realloc(*l, *llen);
+
+        strncat(*l,cmd_end,strlen(cmd_end));
+    }
+}
 

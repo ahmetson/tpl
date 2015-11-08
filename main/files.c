@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "files.h"
+#include "inf.h"
 #include "glob.h"
 
 /**
@@ -61,7 +62,7 @@ int add_to_file_list_name(char *name)
 /**
  * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Headeriniň salgysy.
 **/
-add_to_file_list_h_source(char *source)
+int add_to_file_list_h_source(char *source)
 {
     strncpy(FILES[CUR_FILE_NUM-1].h_source, source, strlen(source)+1);
     return 1;
@@ -71,8 +72,24 @@ add_to_file_list_h_source(char *source)
 /**
  * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Kodynyň salgysy.
 **/
-add_to_file_list_c_source(char *source)
+int add_to_file_list_c_source(char *source)
 {
     strncpy(FILES[CUR_FILE_NUM-1].c_source, source, strlen(source)+1);
     return 1;
+}
+
+
+/** Faýlyň ady boýunça ähli maglumatlynyň adresini gaýtarýar
+ *
+**/
+file_item *get_file_by_name(char *name)
+{
+    int i, len;
+    for(i=0; i<CUR_FILE_NUM; ++i)
+    {
+        len = strlen(FILES[i].name)>strlen(name)?strlen(FILES[i].name):strlen(name);
+        if (strncmp(FILES[i].name, name, len)==0)
+            return &FILES[i];
+    }
+    return &FILES[0];
 }

@@ -4,6 +4,7 @@
 **/
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "token_types/assign.h"
 #include "token_types/glob.h"
@@ -12,14 +13,14 @@
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
-
-// 3 sany tokenlerin tipleri bar
-const int TOKEN_TYPES_NUM = CONST_TOKEN_TYPES_NUM;
+#include "../fns.h"
+#include "../tokens.h"
 
 // In uly token 'ident' - 6 harpdan ybarat
-const int TOKEN_TYPE_MAX_LEN = CONST_TOKEN_TYPE_MAX_LEN;
 
 // Nache sany token tip bar bolsa, shonchada klas bar
+const int TOK_CLASS_UNDEFINED    = -1;
+const int TOK_CLASS_UNKNOWN      = 0;
 const int TOK_CLASS_DEF_TYPE 	 = 1;
 const int TOK_CLASS_GLOB 		 = 2;
 const int TOK_CLASS_IDENT        = 3;
@@ -28,6 +29,7 @@ const int TOK_CLASS_CONST_DATA   = 5;
 
 // Used for debugging
 char *type_classes[] = {
+    "unknown",
 	"def_type",
 	"glob",
 	"ident",
@@ -36,17 +38,15 @@ char *type_classes[] = {
 };
 
 
-// tokenleri tanayan funksiyalar
+// san, drob, harp we harpl
 int is_token_def_type(token *tok, char *tok_val)
 {
-	//printf("Called is_token_tip\nReturned 1");
 	/*Go through array of possible types*/
 	int i, answer, found = 0;
 	token_type tok_type;
 
 	for(i=0; i<DEF_TYPES_NUM; i++)
 	{
-
 		answer = strstr_by_offset(def_type_list[i].tk_name, tok_val, 0);
 		if (answer>=0)
 		{
@@ -55,6 +55,7 @@ int is_token_def_type(token *tok, char *tok_val)
 			tok_type.need_value = 0;
 			tok_type.is_compl = (answer==0) ? 1 : 0;
 			tok_type.type_must_check = 0;
+			tok_type.parenthesis = 1;
 			tok->is_compl = (answer==0) ? 1 : 0;
 
 			add_potentional_token_type(tok, tok_type);
@@ -62,19 +63,13 @@ int is_token_def_type(token *tok, char *tok_val)
 			// Tokene gornush girizilen son chagyrylmaly
 			if (tok_type.is_compl==1)
 				tok->type_class = TOK_CLASS_DEF_TYPE;
-
-			// DEBUG
-			//printf("BARLAG: %s; %s; %d; %d; %d;\n", def_type_list[i].tk_name, tok->token_class, tok->potentional_types[0].num, tok->potentional_types_num,
-			//		tok->potentional_types[0].is_compl
-			//);
-
 			found = 1;
 		}
 	}
 
 	return found;
 }
-
+// umumy
 int is_token_def_glob(token *tok, char *tok_val)
 {
 	int answer;
@@ -88,6 +83,7 @@ int is_token_def_glob(token *tok, char *tok_val)
 		tok_type.need_value = 0;
 		tok_type.is_compl = (answer==0) ? 1 : 0;
 		tok_type.type_must_check = 0;
+        tok_type.parenthesis = 0;
 		tok->is_compl = (answer==0) ? 1 : 0;
 
 		add_potentional_token_type(tok, tok_type);
@@ -100,7 +96,6 @@ int is_token_def_glob(token *tok, char *tok_val)
 	}
 	return 0;
 }
-
 int is_token_ident(token *tok, char *tok_val)
 {
 	token_type tok_type;
@@ -138,10 +133,10 @@ int is_token_ident(token *tok, char *tok_val)
 
 	tok_type.need_value = 1;
 	tok_type.type_class = TOK_CLASS_IDENT;
+	tok_type.parenthesis = 1;
 	strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
 	tok_type.is_compl = 1;
 	tok_type.type_must_check = 0;
-	tok->is_compl = 1;
 
 	//debug_token(tok);
 	//printf("Tokenin bolup biljek tipleri: <%s>\n", tok->potentional_types[0].value);
@@ -155,8 +150,7 @@ int is_token_ident(token *tok, char *tok_val)
 
 	return 1;
 }
-
-
+// <-
 int is_token_var_left_assign(token *tok, char *tok_val)
 {
 	int answer;
@@ -170,6 +164,7 @@ int is_token_var_left_assign(token *tok, char *tok_val)
 		tok_type.need_value = 0;
 		tok_type.is_compl = (answer==0) ? 1 : 0;
 		tok_type.type_must_check = 0;
+		tok_type.parenthesis = 0;
 		tok->is_compl = (answer==0) ? 1 : 0;
 
 		add_potentional_token_type(tok, tok_type);
@@ -182,8 +177,6 @@ int is_token_var_left_assign(token *tok, char *tok_val)
 	}
 	return 0;
 }
-
-
 int is_token_int_const_data(token *tok, char *tok_val)
 {
     int i;
@@ -197,6 +190,7 @@ int is_token_int_const_data(token *tok, char *tok_val)
     tok_type.type_num = INT_CONST_DATA_TOK_NUM;	// Number of token type
     tok_type.type_class = TOK_CLASS_CONST_DATA;
     tok_type.need_value = 1;
+    tok_type.parenthesis = 1;
     strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
     tok_type.is_compl = 1;
     tok_type.type_must_check = 0;
@@ -208,8 +202,6 @@ int is_token_int_const_data(token *tok, char *tok_val)
 
     return 1;
 }
-
-
 int is_token_float_const_data(token *tok, char *tok_val)
 {
     int i, dot=0;
@@ -234,6 +226,7 @@ int is_token_float_const_data(token *tok, char *tok_val)
     tok_type.type_num   = FLOAT_CONST_DATA_TOK_NUM;	// Number of token type
     tok_type.type_class = TOK_CLASS_CONST_DATA;
     tok_type.need_value = 1;
+    tok_type.parenthesis = 1;
     strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
     tok_type.is_compl = 1;
     tok_type.type_must_check = 0;
@@ -245,18 +238,14 @@ int is_token_float_const_data(token *tok, char *tok_val)
 
     return 1;
 }
-
-
 int is_token_char_const_data(token *tok, char *tok_val)
 {
-
     int len = strlen(tok_val), complete=0;
 
     if (len>(TPL_ESC_KEY_MAX_LEN+2) || tok_val[0]!='\'' )
         return 0;
 
     char ESC_key = 0;
-    int  ESC_key_len = 0;
     if (tok_val[1]==TPL_ESC_KEY_OPENER && len>2)
     {
         ESC_key=1;
@@ -289,6 +278,7 @@ int is_token_char_const_data(token *tok, char *tok_val)
     tok_type.type_num   = CHAR_CONST_DATA_TOK_NUM;	// Number of token type
     tok_type.type_class = TOK_CLASS_CONST_DATA;
     tok_type.need_value = 1;
+    tok_type.parenthesis = 1;
     strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
     tok_type.is_compl = complete;
     tok_type.type_must_check = 0;

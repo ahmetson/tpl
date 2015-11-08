@@ -2,6 +2,7 @@
 Additonal functions
 */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "tpl.h"
@@ -149,4 +150,14 @@ char *empty_string(char *f, int len)
 		f[i] = '\0';
 	}
 	return f;
+}
+
+
+
+void return_last_char(FILE *f)
+{
+    fpos_t pos;
+    fgetpos(f, &pos);
+    pos--;
+    fsetpos(f, &pos);
 }

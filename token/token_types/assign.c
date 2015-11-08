@@ -9,6 +9,8 @@
 	  LEFT  : <-
 	  RIGHT : ->
 **/
+#include <stdlib.h>
+#include <string.h>
 
 #include "assign.h"
 
@@ -26,6 +28,13 @@ char *ASSIGN_TOK_NUM_WORDS[2] = {
 	"to_left <-",
 	"to_right ->"
 };
+
+void tok_assign_c_code(token *tok, char **l, int *llen)
+{
+    *llen += strlen("=");
+    *l = realloc(*l, *llen);
+    strncat(*l, "=", strlen("="));
+}
 
 
 

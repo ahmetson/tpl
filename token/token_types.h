@@ -5,20 +5,20 @@
 #ifndef TOKEN_TYPES_H
 #define TOKEN_TYPES_H
 
-/* token TYPES
+#include "token_types/ident.h"
 
+/** token TYPES
+
+ * nabelli (class num: 0)
  * tip (class num:1)
  * glob (class num: 2)
  * ident (class num: 3)
+ * assign (class num: 4)
+ * const_data (class num: 5)
 **/
 
-// token types number, doks/token_goshmak_tertipleri
-extern const int TOKEN_TYPES_NUM;
-
-// The longest type 'ident' has 6 characters.
-#define CONST_TOKEN_TYPE_MAX_LEN 6
-extern const int TOKEN_TYPE_MAX_LEN;
-
+extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
+extern const int TOK_CLASS_UNKNOWN;     // Tokeniň klasy näbelli
 extern const int TOK_CLASS_DEF_TYPE;
 extern const int TOK_CLASS_GLOB;
 extern const int TOK_CLASS_IDENT;

@@ -2,6 +2,7 @@
  * Konstanta maglumatlar, dört sany.
 **/
 #include <string.h>
+#include <stdlib.h>
 #include "const_data.h"
 #include "../../main/glob.h"
 #include "../token_types.h"
@@ -23,7 +24,7 @@ char *CONST_DATA_TOK_NUM_WORDS[4] = {
  *
  *  Bu token tipi sanlar bilen işleýän komandalarda ulanylyp bilinýär.
 **/
-int INT_CONST_DATA_TOK_NUM = 1;
+int INT_CONST_DATA_TOK_NUM = 0;
 
 
 /**
@@ -31,7 +32,7 @@ int INT_CONST_DATA_TOK_NUM = 1;
  *
  *  Bu token tipi droblar bilen işleýän komandalarda ulanylyp bilinýär.
 **/
-int FLOAT_CONST_DATA_TOK_NUM = 2;
+int FLOAT_CONST_DATA_TOK_NUM = 1;
 char FLOAT_CONST_DATA_SEPARATOR = '_';              // Sanlary bölüji
 char FLOAT_CONST_DATA_C_CODE_SEPARATOR = '.';       // Ýasaljak kodda sanlary bölüji
 
@@ -41,7 +42,7 @@ char FLOAT_CONST_DATA_C_CODE_SEPARATOR = '.';       // Ýasaljak kodda sanlary b
  *  Bu token tipi harplar bilen işleýän komandalarda ulanylyp bilinýär.
  *  Deňdir belgisi indiki harpyň ýörite manyny berýändigini aňladýar
 **/
-int CHAR_CONST_DATA_TOK_NUM = 3;
+int CHAR_CONST_DATA_TOK_NUM = 2;
 
 /**
  *  4-nji konstanta maglumat tipi - harplar.
@@ -49,12 +50,12 @@ int CHAR_CONST_DATA_TOK_NUM = 3;
  *  Bu token tipi harplar bilen işleýän komandalarda ulanylyp bilinýär.
  *  Deňdir belgisi indiki harpyň ýörite manyny berýändigini aňladýar
 **/
-int STRING_CONST_DATA_TOK_NUM = 4;
+int STRING_CONST_DATA_TOK_NUM = 3;
 
 /**
  * Umumy token tiplerine degişli
 **/
-void set_def_type_alias_const_data(int *left_class, int *left_type)
+int set_def_type_alias_const_data(int *left_class, int *left_type)
 {
     if (*left_class==TOK_CLASS_DEF_TYPE)
     {
@@ -74,6 +75,7 @@ void set_def_type_alias_const_data(int *left_class, int *left_type)
         *left_class = 0;
         *left_type=0;   // Natanysh
     }
+    return 1;
 }
 
 
@@ -95,4 +97,60 @@ char *get_const_data_string(token *tok)
     {
         return *tok->potentional_types[0].string_value;
     }
+    return "";
+}
+
+
+int get_tok_type_const_data_int_val_type(token *tok, int *tok_class, int *tok_type)
+{
+    *tok_class = TOK_CLASS_CONST_DATA;
+    *tok_type  = INT_CONST_DATA_TOK_NUM;
+    return 1;
+}
+
+int get_tok_type_const_data_float_val_type(token *tok, int *tok_class, int *tok_type)
+{
+    *tok_class = TOK_CLASS_CONST_DATA;
+    *tok_type  = FLOAT_CONST_DATA_TOK_NUM;
+    return 1;
+}
+
+int get_tok_type_const_data_char_val_type(token *tok, int *tok_class, int *tok_type)
+{
+    *tok_class = TOK_CLASS_CONST_DATA;
+    *tok_type  = CHAR_CONST_DATA_TOK_NUM;
+    return 1;
+}
+
+int get_tok_type_const_data_string_val_type(token *tok, int *tok_class, int *tok_type)
+{
+    *tok_class = TOK_CLASS_CONST_DATA;
+    *tok_type  = STRING_CONST_DATA_TOK_NUM;
+    return 1;
+}
+
+
+void tok_int_c_code(token *tok, char **l, int *llen)
+{
+    *llen += strlen(tok->potentional_types[0].value);
+    *l = realloc(*l, *llen);
+    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+}
+void tok_float_c_code(token *tok, char **l, int *llen)
+{
+    *llen += strlen(tok->potentional_types[0].value);
+    *l = realloc(*l, *llen);
+    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+}
+void tok_char_c_code(token *tok, char **l, int *llen)
+{
+    *llen += strlen(tok->potentional_types[0].value);
+   *l = realloc(*l, *llen);
+    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+}
+void tok_string_c_code(token *tok, char **l, int *llen)
+{
+    *llen += strlen(*tok->potentional_types[0].string_value);
+    *l = realloc(*l, *llen);
+    strncat(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value));
 }

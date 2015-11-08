@@ -40,5 +40,5 @@ int is_glob_def_var_in_cur();
 /*
  * Ulninin ady boyuncha onun on yglan edilenmidigini barlayar.
 **/
-int is_ident_used(char *ident, int ns);
+int is_ident_used(token *t, char only_glob);
 #endif

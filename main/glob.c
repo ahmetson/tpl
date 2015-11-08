@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "glob.h"
+#include "..\fns\fn.h"
 #include "main_file.h"
 
 int TEST = 0;
@@ -42,6 +43,22 @@ long            UNKNOWN_USED_VARS_SIZE;
 int             UNKNOWN_USED_VARS_NUM;
 var_def_item   *UNKNOWN_USED_VARS;
 
+// Programmada çagyrylan näbelli funksiýalar
+int             UNKNOWN_CALLED_FNS_NUM;
+command        *UNKNOWN_CALLED_FNS;
+
+unknown_token  *UNKNOWN_TOKENS;
+int             UNKNOWN_TOKENS_NUM;
+
+unknown_cmd    *UNKNOWN_CMDS;
+int             UNKNOWN_CMDS_NUM;
+
+unknown_paren  *UNKNOWN_PARENS;
+int             UNKNOWN_PARENS_NUM;
+
+
+/*compare_ident  *COMPARE_IDENTS;
+int             COMPARE_IDENTS_NUM;*/
 
 /**
  * Komandanyn ichindaki komandalaryn birlikleri kuchada yerleshmeli
@@ -80,7 +97,28 @@ unsigned long           GLOB_STRINGS_NUM;
 /**
  * Ýasaljak programmadaky faýllaryň sanawy
 **/
-file_item *FILES;
+file_item           *FILES;
+
+/** Kodlarda ulanylýan skobkalarda (parenthesis), näçe sany element boljagy näbelli.
+    Şonuň üçin olar kuça-da (heap) ýerleşdirilýär.
+**/
+parenthesis_elem   **GLOB_PARENTHS;
+int                  GLOB_PARENTHS_NUM;
+
+/** Programmadaky goldanylýan funksiýalar
+**/
+func                *FUNCS;
+int                  FUNCS_NUM;
+
+/** Programmadaky goldanylýan funksiýalaryň argumentleri
+**/
+func_arg           **FUNC_ARGS;
+int                  FUNC_ARGS_NUM; // Goşulan argumentleriň sanawy
+
+/// Goşmaly faýllaryň sanawy
+file_incs           *INCLUDES;
+int                  INCLUDES_NUM;
+
 
 
 /**
@@ -88,6 +126,39 @@ file_item *FILES;
 **/
 void free_globs(void)
 {
+    int i;
+
+    if (UNKNOWN_TOKENS_NUM)
+    {
+        free(UNKNOWN_TOKENS);
+    }
+    if (UNKNOWN_CMDS_NUM)
+    {
+        free(UNKNOWN_CMDS);
+    }
+    if (UNKNOWN_PARENS_NUM)
+    {
+        free(UNKNOWN_PARENS);
+    }
+
+    if(UNKNOWN_CALLED_FNS_NUM)
+    {
+        free(UNKNOWN_CALLED_FNS);
+    }
+
+    if (GLOB_PARENTHS_NUM)
+    {
+        for (i=0; i<GLOB_PARENTHS_NUM; ++i)
+		{
+			// Her komandanyň birlikleri üçin aýratyn ýer eýelenýär
+			if (GLOB_PARENTHS[i]!= NULL)
+                free(GLOB_PARENTHS[i]);
+		}
+
+        free(GLOB_PARENTHS);
+
+    }
+
 
     if (GLOB_RIGHT_DATA_CMDS_NUM)
     {
@@ -106,7 +177,7 @@ void free_globs(void)
     if (UNKNOWN_USED_VARS_NUM)
         free(UNKNOWN_USED_VARS);
 
-    int i;
+
     // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
 	if (GLOB_SUBCMDS_NUM)
 	{
@@ -137,7 +208,6 @@ void free_globs(void)
     // Faýllaryň sanawy hem arassalanýar
     if (CUR_FILE_NUM)
     {
-        int j;
         for(i=0; i<CUR_FILE_NUM; ++i)
         {
             if (GLOB_SOURCE_CODES[i]!=NULL)
@@ -148,6 +218,29 @@ void free_globs(void)
         }
         free(FILES);
     }
+
+    if(FUNCS_NUM)
+    {
+        free(FUNCS);
+        for(i=0; i<FUNC_ARGS_NUM; ++i)
+        {
+            free(FUNC_ARGS[i]);
+        }
+        free(FUNC_ARGS);
+    }
+
+    if (INCLUDES_NUM)
+    {
+        for(i=0; i<INCLUDES_NUM; ++i)
+        {
+            if (INCLUDES[i].num)
+                free(INCLUDES[i].inc);
+        }
+        free(INCLUDES);
+    }
+
+    /*if (COMPARE_IDENTS_NUM)
+        free(COMPARE_IDENTS);*/
 
 	// Diňe parsing edilýän wagty ulanylýan ülpileriň ýerleri boşadylýar
 	free_locals();
@@ -164,11 +257,14 @@ void free_locals(void)
     {
         CUR_ALGOR_SIZE = CUR_ALGOR_ITEMS_NUM = 0;
         free(CUR_ALGOR);
+        CUR_ALGOR = NULL;
 	}
 
 	// Komandanyň içindäki birlikler ýatda emeli usulda goýulýar.
 	// Indi, olaryň alýan ýerleri boşadylýar.
 	if (cmd.items_num)
+    {
         free(cmd.items);
-
+        cmd.items = NULL;
+    }
 }

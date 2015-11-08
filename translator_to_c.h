@@ -25,12 +25,10 @@ int prepare_main_func(FILE *f);
 int finishize_main_func(FILE *f);
 int finishize_void_func(FILE *f);
 
+int c_trans_source_add_algor(FILE *f, int main_file);
+
 // Lokal faylyn algoritmlerini yasayar
 int work_with_translator(char main_file);
-
-//
-int c_trans_source_assign(FILE *f, command *cmd);
-
 
 int c_trans_write_file_fn_prototype(FILE *f_h, char *fn_name);
 int c_trans_write_file_fn_open(FILE *f_h, char *fn_name);

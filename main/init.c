@@ -10,6 +10,7 @@
 #include "../error.h"
 #include "../fns.h"
 #include "../translator_to_c.h"
+#include "../fns/3rdparty/std.h"
 
 
 /**
@@ -21,9 +22,9 @@ int source_codes_exist(int argn)
 {
 	if (argn>1)
 		return 1;
-
 	CUR_PART = 1;
 	print_err(CODE1_FILE_NOT_FOUND, &inf_tok);
+    return 0;
 }
 
 /**
@@ -40,18 +41,6 @@ int init()
 	CUR_CHAR = -1;
 	CUR_CHAR_POS = 0;
 
-	cmd_first_items_classes[0].type		 = TOKEN_ITEM;
-	cmd_first_items_classes[0].item_class= TOK_CLASS_DEF_TYPE;
-	cmd_first_items_classes[0].item_type = -1;
-	cmd_first_items_classes[1].type=       TOKEN_ITEM;
-	cmd_first_items_classes[1].item_class= TOK_CLASS_GLOB;
-	cmd_first_items_classes[1].item_type = -1;
-	cmd_first_items_classes[2].type=       CMD_ITEM;
-	cmd_first_items_classes[2].item_class= CMD_CLASS_ASSIGN;
-	cmd_first_items_classes[2].item_type = LEFT_ASSIGN_TOK_NUM;
-	cmd_first_items_classes[3].type=       TOKEN_ITEM;
-	cmd_first_items_classes[3].item_class= TOK_CLASS_IDENT;
-	cmd_first_items_classes[3].item_type = -1;
 	init_cmd(&cmd, 0);
 
 	// Algoritmler uchin
@@ -82,9 +71,38 @@ int init()
     MAIN_FILE_INCLUDES_NUM = 1;
     MAIN_FILE_INCLUDES = malloc(sizeof(*MAIN_FILE_INCLUDES));
 
+    // C translator, ýasaljak kodlarda inklud edilmeli faýl atlary
+    INCLUDES = NULL;
+    INCLUDES_NUM = 0;
+
     init_token(&inf_tok);
 
     GLOB_SOURCE_CODES = NULL;
+
+    GLOB_PARENTHS     = NULL;
+    GLOB_PARENTHS_NUM = 0;
+
+    USER_VAR_DEFS_NUM = 0;
+    USER_VAR_DEFS = NULL;
+
+    FUNCS = NULL;
+    FUNCS_NUM = 0;
+    FUNC_ARGS = NULL;
+    FUNC_ARGS_NUM = 0;
+
+    UNKNOWN_CALLED_FNS_NUM = 0;
+    UNKNOWN_CALLED_FNS = NULL;
+
+    UNKNOWN_TOKENS_NUM = UNKNOWN_PARENS_NUM = UNKNOWN_CMDS_NUM = 0;
+    UNKNOWN_TOKENS = NULL;
+    UNKNOWN_PARENS = NULL;
+    UNKNOWN_CMDS = NULL;
+    // Standard lib'däki faňksiýeler goşulýar
+    add_std_funs();
+
+    // A->B, B->A yagday bolmaz yaly
+    //COMPARE_IDENTS = NULL;
+    //COMPARE_IDENTS_NUM = 0;
 
 	// C dilinin kody uchin papkany tayynlayar
 	sys_mkdir(C_SOURCE_FOLDER, 1);

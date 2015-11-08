@@ -8,6 +8,7 @@
 #include "tokens.h"
 #include "cmds.h"
 #include "algor.h"
+#include "paren/types.h"
 #include "dev_debug.h"
 
 void debug_cmd(command *cmd)
@@ -29,10 +30,12 @@ void debug_cmd(command *cmd)
 		//printf("  potentional types: %d", tok->potentional_types_num);
 		for(i=0; i<cmd->items_num; i++)
 		{
-			if (cmd->items[i].type==1)
+			if (cmd->items[i].type==TOKEN_ITEM)
 				debug_token(&cmd->items[i].tok);
-			else if(cmd->items[i].type==2)
+			else if(cmd->items[i].type==CMD_ITEM)
 				debug_cmd(&cmd->items[i].cmd);
+            else if(cmd->items[i].type==PAREN_ITEM)
+                debug_paren(&cmd->items[i].paren);
 		}
 	}
 	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -105,7 +108,7 @@ char *get_tok_type_value(token_type *tok_type)
 char *get_type_class(int type_class_num)
 {
 	if (type_class_num>0)
-		return type_classes[type_class_num-1];
+		return type_classes[type_class_num];
 
 	return "Tipin klasy nabelli";
 }
@@ -170,4 +173,38 @@ void debug_LOCAL_VAR_DEFS()
     }
 
 	printf("\n\n\n");
+}
+
+
+
+void debug_paren(parenthesis *paren)
+{
+	char *paren_type  = get_paren_type(paren->type);
+
+	printf("\nINFO ABOUT PARENTHESIS++++++++++++++++++++++++++\n");
+	printf("'%s' parenthesis\n", paren_type);
+	printf("Has %d items\n\n", paren->elems_num);
+	if (paren->elems_num>0)
+	{
+		int i;
+		printf("Items are:\n");
+		//printf("  potentional types: %d", tok->potentional_types_num);
+		for(i=0; i<paren->elems_num; i++)
+		{
+			if (paren->elems[i].type==TOKEN_ITEM)
+				debug_token(&paren->elems[i].tok);
+			else if(paren->elems[i].type==CMD_ITEM)
+				debug_cmd(&paren->elems[i].cmd);
+            else if(paren->elems[i].type==PAREN_ITEM)
+                debug_paren(&paren->elems[i].paren);
+		}
+	}
+	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
+
+}
+
+
+char *get_paren_type(int paren_type)
+{
+    return PAREN_TYPES_WORDS[paren_type];
 }
