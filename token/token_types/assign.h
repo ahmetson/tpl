@@ -3,6 +3,7 @@
 **/
 #ifndef ASSIGN_H
 #define ASSIGN_H
+#include "../token_structs.h"
 
 
 // Ulna maglumat yglan etmeli bolan komanda-da ikinji token bolup durmaly.
@@ -16,4 +17,6 @@ extern int   RIGHT_ASSIGN_TOK_NUM;
 
 // DEBUG UCHIN
 char *ASSIGN_TOK_NUM_WORDS[2];
+
+void tok_assign_c_code(token *tok, char **l, int *llen);
 #endif

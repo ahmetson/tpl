@@ -2,10 +2,11 @@
  * Ülňini yglan edýän komanda.
 **/
 #include "../main/glob.h"
+#include "../main/inf.h"
 #include "../error.h"
 #include "def_var.h"
 
-int DEF_VAR_TYPE_NUM = 1;
+int DEF_VAR_TYPE_NUM = 0;
 
 /**
  * Ülňi yglan etmek komandany saýgarýar
@@ -95,8 +96,8 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 		// Komandanyn in sonky tokeni bolmaly
 		if (tok_num==cmd->items_num-1)
 		{
-			cmd->cmd_class = 1;
-			cmd->cmd_type = 1;
+			cmd->cmd_class = CMD_CLASS_DEF_VAR;
+			cmd->cmd_type = DEF_VAR_TYPE_NUM;
 
 			cmd->is_compl = 1;
 
@@ -107,7 +108,6 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 
 			return 1;
 		}
-		return 0;
 	}
 	else if (tok->type_class==TOK_CLASS_DEF_TYPE)
 	{
@@ -118,29 +118,28 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 			 tok_num==1) ||
 			 tok_num==0)
 		{
-			cmd->cmd_class = 1;
-			cmd->cmd_type = 1;
+			cmd->cmd_class = CMD_CLASS_DEF_VAR;
+			cmd->cmd_type = DEF_VAR_TYPE_NUM;
 			cmd->value_class = tok->potentional_types[0].type_class;
 			cmd->value_type  = tok->potentional_types[0].type_num;
 
 			return 1;
 		}
-		return 0;
 	}
 	else if (tok->type_class==TOK_CLASS_GLOB)
 	{
 		// Komandanyn birinji tokeni bolmaly
 		if (tok_num==0)
 		{
-			cmd->cmd_class = 1;
-			cmd->cmd_type = 1;
+			cmd->cmd_class = CMD_CLASS_DEF_VAR;
+			cmd->cmd_type = DEF_VAR_TYPE_NUM;
 
 			cmd->ns = 0;
 
 			return 1;
 		}
-		return 0;
 	}
+	return 0;
 }
 
 
@@ -167,13 +166,10 @@ int is_def_var_cmd(command *cmd)
 **/
 int add_to_def_var_list(command *cmd)
 {
-    // Hazir TPL-in fayly komandalar bilen ishleyan boluminde
-
-
-	//printf("Komanda showly saygaryldy\n");
+    //printf("Komanda showly saygaryldy\n");
 	if (!is_def_var_cmd(cmd))
 	{
-	     // Ulni yglan etme komanda dal
+        // Ulni yglan etme komanda dal
         return 0;
 	}
 
@@ -183,6 +179,20 @@ int add_to_def_var_list(command *cmd)
         CUR_PART = 4;
         print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
     }
+
+    return 1;
+}
+
+
+
+/** Komandanyň gaýtarýan maglumatynyň tipini berýän funksiýa:
+    Iň soňky tokeniň maglumaty
+**/
+int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type)
+{
+    int ident_prev = cmd->items_num-1;
+    *return_class = cmd->items[ident_prev-1].tok.potentional_types[0].type_class;
+    *return_type  = cmd->items[ident_prev-1].tok.potentional_types[0].type_num;
 
     return 1;
 }

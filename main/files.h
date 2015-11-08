@@ -22,4 +22,6 @@ int add_to_file_list_name(char *name);
 int add_to_file_list_h_source(char *source);
 int add_to_file_list_c_source(char *source);
 
+file_item *get_file_by_name(char *name);
+
 #endif // TPL_FILES_H

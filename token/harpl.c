@@ -6,6 +6,7 @@
 #include <string.h>
 #include "../main/glob.h"
 #include "../main/tpl_esc_keys.h"
+#include "../main/inf.h"
 #include "harpl.h"
 #include "../parser.h"
 #include "../error.h"
@@ -15,37 +16,45 @@ char HARPL_OPENER = '"';
 /**
  * Parserde harplar bilen işleýän bölüm
 **/
-int work_with_string(token *string_tok, char *mode, char c)
+token parse_string(FILE *s)
 {
-    // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
-    add_char_to_last_string(c);
+    token string_tok;
 
-    if (!is_token_string_const_data(string_tok))
-    {
-        // Nadogry diyip hat chykarmaly
-        print_err(CODE2_STRING_IS_WRONG, string_tok);
-    }
-    else if (string_tok->potentional_types[0].is_compl==1)
-    {
-        // Adaty moda gechilyar.
-        move_to_cmd(string_tok);
-        init_token(string_tok);
+    string_prepare(&string_tok);
 
-        *mode = PARSER_DEFAULT_MODE;
+    while ((CUR_CHAR=fgetc(s))!=EOF)
+    {
+        update_inf();
+        add_char_to_last_string(CUR_CHAR);
+
+        if (!is_token_string_const_data(&string_tok))
+        {
+            // Nadogry diyip hat chykarmaly
+            print_err(CODE2_STRING_IS_WRONG, &string_tok);
+        }
+        else if (string_tok.potentional_types[0].is_compl==1)
+        {
+            //debug_token(&string_tok);
+            return string_tok;
+        }
     }
-    return 1;
+    //if (!work_with_token(&tok, &prev_tok_string))
+    //    print_err();
+
+    return string_tok;
+    // TODO : eger string token gutarylmadyk bolsa yalnyshlyk chykarylyar.
 }
 
 /**
  * Harplar global ülňide bolýany üçin, başda taýynlamaly bolýar
 **/
-int prepare_to_work_with_string(token *string_tok, char *mode, char c, int c_pos, int line)
+void string_prepare(token *string_tok)
 {
     increment_string_tokens();
 
     // Taze token yasalvar
     init_token(string_tok);
-    inf_add_to_token(string_tok, c, c_pos, line);
+    inf_add_to_token(string_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
 
     string_tok->is_compl = 0;
     string_tok->type_class = TOK_CLASS_CONST_DATA;
@@ -55,6 +64,7 @@ int prepare_to_work_with_string(token *string_tok, char *mode, char c, int c_pos
     tok_type.need_value = 1;
     tok_type.type_class = TOK_CLASS_CONST_DATA;
     tok_type.type_num = STRING_CONST_DATA_TOK_NUM;
+    tok_type.parenthesis = 1;
     tok_type.string_value = &GLOB_STRINGS[GLOB_STRINGS_NUM-1];
 
     add_potentional_token_type(string_tok, tok_type);
@@ -64,7 +74,6 @@ int prepare_to_work_with_string(token *string_tok, char *mode, char c, int c_pos
 
     // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
     add_char_to_last_string(HARPL_OPENER);
-    add_char_to_last_string(c);
 
     // eger-de token sozlem tokeni yaly tanalmasa,
     if (!is_token_string_const_data(string_tok))
@@ -72,20 +81,6 @@ int prepare_to_work_with_string(token *string_tok, char *mode, char c, int c_pos
         // Nadogry diyip hat chykarmaly
         print_err(CODE2_STRING_IS_WRONG, string_tok);
     }
-    else if (string_tok->potentional_types[0].is_compl==1)
-    {
-        // Komanda salmaly
-        move_to_cmd(string_tok);
-        empty_token(string_tok);
-
-        *mode = PARSER_DEFAULT_MODE;
-    }
-    else
-    {
-        // Soz moduna bashlasanam bolyar
-        *mode = STRING_MODE;
-    }
-    return 1;
 }
 
 /**
@@ -99,7 +94,10 @@ int increment_string_tokens()
     size = sizeof(*GLOB_STRINGS)*GLOB_STRINGS_NUM;
     GLOB_STRINGS = realloc(GLOB_STRINGS, size);
 
-    if (GLOB_STRINGS==NULL) return 0;
+    if (GLOB_STRINGS==NULL)
+    {
+        return 0;
+    }
     GLOB_STRINGS[GLOB_STRINGS_NUM-1] = NULL;
     return 1;
 }
@@ -111,10 +109,11 @@ int increment_string_tokens()
 int add_char_to_last_string(char c)
 {
     int last = GLOB_STRINGS_NUM-1;
-    size_t size = 2;
+    long size = 2;
     if (GLOB_STRINGS[last]!=NULL)
+    {
         size += strlen(GLOB_STRINGS[last]);
-
+    }
     GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
     if (GLOB_STRINGS[last]==NULL)
         printf("Soz uchin yer yasap bolmady\n");
@@ -131,12 +130,12 @@ int add_char_to_last_string(char c)
 int change_last_string(char *new_val)
 {
     int last = GLOB_STRINGS_NUM-1;
-    size_t size = strlen(new_val);
+    long size = strlen(new_val);
 
-    char **tmp = realloc(GLOB_STRINGS, size);
+    char *tmp = realloc(GLOB_STRINGS[last], size);
     if (tmp!=NULL)
     {
-        GLOB_STRINGS = tmp;
+        GLOB_STRINGS[last] = tmp;
     }
 
     strncpy(GLOB_STRINGS[last], new_val, strlen(new_val)+1);
@@ -154,22 +153,19 @@ int is_token_string_const_data(token *tok)
           tok->potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM))
         return 0;
 
-    int len = strlen(tok_val), complete=0;
+    int len = strlen(tok_val);
 
     // Barlamak nämä gerek, diňe Goşa dyrnak bar.
     if (len==1)
         return 1;
 
-    char ESC_key = 0;
-    int  ESC_key_len = 0;
-    char DOT_key = 0;
+    char escape_quote = 0;
     for (i=1; i<len; ++i)
     {
         // ESC belgini açardan soň, azyndan iki sany harp bolmaly
         // a) ESC belginiň nyşany, b) sözlemi gutaryjy
         if (tok_val[i]==TPL_ESC_KEY_OPENER && (i+1)<len)
         {
-            ESC_key=1;
             if (!is_tpl_ESC_key(tok_val[i+1], 0))
             {
                 // Tokeniň içinde ESC belgi bolmasa, token maksimum 3 belgiden ybarat bolmaly.
@@ -178,17 +174,18 @@ int is_token_string_const_data(token *tok)
             }
             else if (tok_val[i+1]=='"' && i+1==len-1)
             {
-                DOT_key = 1;
+                escape_quote = 1;
             }
         }
     }
 
-    if (tok_val[strlen(tok_val)-1]=='"' && !DOT_key)
+    if (tok_val[strlen(tok_val)-1]=='"' && !escape_quote)
     {
         tpl_ESC_key_to_c_ESC_key(tok_val);
         change_last_string(tok_val);
 
         tok->potentional_types[0].is_compl = 1;
+        tok->is_compl = 1;
     }
 
     return 1;

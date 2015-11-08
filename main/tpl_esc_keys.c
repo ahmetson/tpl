@@ -25,8 +25,8 @@ int is_tpl_ESC_key(char ESC_key, char type)
 {
     // Harplaryň arasynda dyrnagy we
     // goşa dyrnagy harp ýaly ulansoň bolýar
-    if (type==1 && ESC_key=='"' ||
-        type==0 && ESC_key=='\'')
+    if ((type==1 && ESC_key=='"') ||
+        (type==0 && ESC_key=='\''))
         return 0;
 
     int i;

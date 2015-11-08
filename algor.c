@@ -8,12 +8,14 @@
 #include "tpl.h"
 #include "algor.h"
 #include "translator_to_c.h"
+#include "semantic.h"
 #include "error.h"
 #include "dev_debug.h"
+#include "main/inf.h"
+#include "cmd/def_var.h"
 
 int algor_add_cmd(command add_cmd)
 {
-
     // komanda dogrylygy barlanyar
     check_semantics(&add_cmd);
 
@@ -43,16 +45,14 @@ int algor_add_cmd(command add_cmd)
         if (cmd.tokens_num>0)
             size += (cmd.tokens_num * sizeof(token));*/
         // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-        long new_CUR_ALGOR_SIZE = CUR_ALGOR_SIZE+sizeof(add_cmd);
+        CUR_ALGOR_SIZE += sizeof(*CUR_ALGOR);
         if (CUR_ALGOR_SIZE)
-            CUR_ALGOR = realloc(CUR_ALGOR, new_CUR_ALGOR_SIZE);
+            CUR_ALGOR = realloc(CUR_ALGOR, CUR_ALGOR_SIZE);
         else
-            CUR_ALGOR = malloc(new_CUR_ALGOR_SIZE);
+            CUR_ALGOR = malloc(CUR_ALGOR_SIZE);
 
         // TODO: komandanyn kopiyasyny goymaly.
         CUR_ALGOR[CUR_ALGOR_ITEMS_NUM++] = add_cmd;
-
-        CUR_ALGOR_SIZE = new_CUR_ALGOR_SIZE;
     }
 	return 1;
 }
@@ -64,16 +64,9 @@ int add_user_var_def_item(command cmd)
     char *tok_name = cmd.items[ident_tok_pos].tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
-	if (is_ident_used(tok_name, cmd.ns))
+	if (is_ident_used(&cmd.items[ident_tok_pos].tok, 0))
         return 0;
-char file_name[MAX_FILE_LEN];		// Ülňi haýsy faýla degişli
-	int  line;
-	int  start_char_position;
-	char start_char;
-	char ident[MAX_TOKEN_LEN];		    // Ülňiniň ady
-	int  tok_class;						// Ülňiniň tipi
-	int  tok_type;
-	int  ns;
+
 	var_def_item new_def = {
 		"",
 		cmd.items[ident_tok_pos-1].tok.inf_file_num,
@@ -89,15 +82,12 @@ char file_name[MAX_FILE_LEN];		// Ülňi haýsy faýla degişli
 	strncpy(new_def.ident, tok_name, strlen(tok_name)+1);
 
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-	long size = sizeof(new_def) * (USER_VAR_DEFS_NUM+1);
+    ++USER_VAR_DEFS_NUM;
 
-	if (USER_VAR_DEFS_NUM)
-        USER_VAR_DEFS = realloc(USER_VAR_DEFS, size);
-    else
-        USER_VAR_DEFS = malloc(size);
+	long size = sizeof(*USER_VAR_DEFS) * (USER_VAR_DEFS_NUM);
+    USER_VAR_DEFS = realloc(USER_VAR_DEFS, size);
 
-	USER_VAR_DEFS[USER_VAR_DEFS_NUM++] = new_def;
-
+	USER_VAR_DEFS[USER_VAR_DEFS_NUM-1] = new_def;
 	return 1;
 }
 
@@ -124,31 +114,39 @@ int is_glob_def_var_in_cur()
 /*
  * Ulninin ady boyuncha onun on yglan edilendigini barlayar.
 **/
-int is_ident_used(char *ident, int ns)
+int is_ident_used(token *t, char only_glob)
 {
     int i, len;
+    char *f = FILES[t->inf_file_num].source;
+    char *ident = t->potentional_types[0].value;
     // Lokal yglan edilen ulnilerin arasynda barlanyar
+
     for (i=0; i<USER_VAR_DEFS_NUM; ++i)
     {
-        if (ns==USER_VAR_DEFS[i].ns && ns==LOCAL)
+        //printf("%d: check <%s> that defined <%s>\n, current <%s> defined in <%s>\n", USER_VAR_DEFS_NUM, ident, f, USER_VAR_DEFS[i].ident, USER_VAR_DEFS[i].file_name);
+        // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
+        if (USER_VAR_DEFS[i].ns==LOCAL)
         {
-            len = (strlen(ident)<strlen(USER_VAR_DEFS[i].ident))?strlen(USER_VAR_DEFS[i].ident):strlen(ident);
-            // Lokal yglan edilen ülňileriň atlary deň bolmaly
-            if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
+            if (only_glob)
+                continue;
+            len = strlen(f)>strlen(USER_VAR_DEFS[i].file_name)?strlen(f):strlen(USER_VAR_DEFS[i].file_name);
+            if (strncmp(USER_VAR_DEFS[i].file_name, f, len)==0)
             {
-                len = (strlen(ident)<strlen(USER_VAR_DEFS[i].ident))?strlen(USER_VAR_DEFS[i].ident):strlen(ident);
-                // Ülňi atlary deň bolmaly
+                len = strlen(ident)>strlen(USER_VAR_DEFS[i].ident)?strlen(ident):strlen(USER_VAR_DEFS[i].ident);
                 if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
+                {
                     return 1;
+                }
             }
         }
         else
         {
-            len = (strlen(ident)<strlen(USER_VAR_DEFS[i].ident))?strlen(USER_VAR_DEFS[i].ident):strlen(ident);
+            len = strlen(ident)>strlen(USER_VAR_DEFS[i].ident)?strlen(ident):strlen(USER_VAR_DEFS[i].ident);
             if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
+            {
                 return 1;
+            }
         }
     }
-
     return 0;
 }

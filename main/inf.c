@@ -43,28 +43,18 @@ void inf_add_to_token(token *tok, char c, int c_pos, int line)
 /**
  * Indiki setire geçdi
 **/
-int inf_next_line(int *c_pos, int *line)
+void inf_next_line()
 {
-    *c_pos=0;
-    (*line)++;
-
     CUR_CHAR_POS = 0;
-    CUR_LINE = *line;
-
-    return 1;
+    CUR_LINE++;
 }
 
 /**
  * Indiki setire geçdi
 **/
-int inf_next_char(char c, int *c_pos, int *line)
+void inf_next_char()
 {
-    (*c_pos)++;
-
-    CUR_CHAR = c;
-    CUR_CHAR_POS = *c_pos;
-
-    return 1;
+    CUR_CHAR_POS++;
 }
 
 
@@ -74,7 +64,16 @@ token *inf_get_last_token(command *cmd)
     {
         if(cmd->items[cmd->items_num-1].type==CMD_ITEM)
             return inf_get_last_token(&cmd->items[cmd->items_num-1].cmd);
-        return &cmd->items[cmd->items_num-1].tok;
+        return &(cmd->items[cmd->items_num-1].tok);
     }
     return &inf_tok;
+}
+
+
+void update_inf()
+{
+    if (CUR_CHAR=='\n')
+        inf_next_line();
+    else
+        inf_next_char();
 }

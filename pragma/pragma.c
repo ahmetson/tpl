@@ -4,11 +4,14 @@
 **/
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../parser.h"
 #include "pragma.h"
 #include "../tpl.h"
 #include "../error.h"
+#include "../main/inf.h"
+#include "../fns.h"
 
 #define PRAGMA_MAIN_FILE "b1"
 #define PRAGMA_MIN_LEN 2
@@ -41,45 +44,54 @@ void init_pragma(pragma *prag)
 /**
  * Pragma bilen işleýän parseriň bölümi
 **/
-int work_with_pragma(pragma *prag, pragma *prev_prag, char *mode, char c, int c_pos, int line)
+void parse_pragma(FILE *s)
 {
-    if (c==PRAGMA_END_CHAR)
-    {
-        // Pragma tanalmady.
-        if (strlen(prev_prag->name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
+    // Parseriň Pragma modynda, pragmalary saýgarmak üçin
+	pragma prev_prag; init_pragma(&prev_prag);
+	pragma prag;	  init_pragma(&prag);
 
-        *mode = PARSER_DEFAULT_MODE;
-        return 2;
-    }
-    else if (isspace(c))
-        return 2;
-    else
+    while ((CUR_CHAR=fgetc(s))!=EOF)
     {
-        //printf("Pragma moda gechildi. Indi parser pragmalary saygarmana chalshar.\n");
-        strstrchcat(prag->name, prev_prag->name, c);
+        update_inf();
 
-        if (!recognise_pragma(prag))
+        if (CUR_CHAR==PRAGMA_END_CHAR)
         {
-            // Pragma bilen işlenilip durka ýalňyşlyk çyksa, nireden çykanyny bilmek üçin.
-            inf_add_to_token(&inf_tok, c, c_pos, line);
-            //printf("pragma tanalmady\n");
-            print_err(CODE2_PRAGMA_NOT_IDENT, &inf_tok);
+            // Pragma tanalmady.
+            if (strlen(prev_prag.name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
+            return_last_char(s);
+            return;
         }
+        else if (isspace(CUR_CHAR))
+            continue;
         else
         {
-            //printf("pragma tanaldy, pragma '%s', gutarylanmy: %d\n", prag->name, prag->is_compl);
-            *prev_prag = *prag;
-            if (prev_prag->is_compl)
-            {
-                //printf("Onki pragma: '%s', gutarylanmy: %d\n", prev_prag->name, prev_prag->is_compl);
-                act_pragma(prev_prag);
+            //printf("Pragma moda gechildi. Indi parser pragmalary saygarmana chalshar.\n");
+            strstrchcat(prag.name, prev_prag.name, CUR_CHAR);
 
-                init_pragma(prag);
-                init_pragma(prev_prag);
+            if (!recognise_pragma(&prag))
+            {
+                // Pragma bilen işlenilip durka ýalňyşlyk çyksa, nireden çykanyny bilmek üçin.
+                inf_add_to_token(&inf_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
+                //printf("pragma tanalmady\n");
+                print_err(CODE2_PRAGMA_NOT_IDENT, &inf_tok);
+            }
+            else
+            {
+                //printf("pragma tanaldy, pragma '%s', gutarylanmy: %d\n", prag->name, prag->is_compl);
+                prev_prag = prag;
+                if (prev_prag.is_compl)
+                {
+                    //printf("Onki pragma: '%s', gutarylanmy: %d\n", prev_prag->name, prev_prag->is_compl);
+                    act_pragma(&prev_prag);
+
+                    init_pragma(&prag);
+                    init_pragma(&prev_prag);
+                }
             }
         }
     }
-    return 1;
+    // TODO : pragma gutardy emma tanalmady
+    //print_err();
 }
 
 /**
@@ -134,7 +146,7 @@ void act_pragma(pragma *prag)
 	int prev_part = CUR_PART;
 	CUR_PART = 0;
 
-	int i, len_to_cmp;
+	int i;
 	for (i=0; i<PRAGMAS_NUM; ++i)
 	{
 		if (strncmp(act_pragma_items[i].name, prag->name, strlen(prag->name))==0)

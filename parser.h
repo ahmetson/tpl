@@ -4,7 +4,8 @@
 extern char PARSER_DEFAULT_MODE;
 extern char STRING_PREPARE_MODE;
 extern char STRING_MODE;
+extern char PARENTHESIS_MODE;
 
-int parser(FILE *source);
+int parse(FILE *source);
 
 #endif

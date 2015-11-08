@@ -1,5 +1,6 @@
 #ifndef FNS_H
 #define FNS_H
+#include <stdio.h>
 
 // Concatinate string with char and put them to @to
 int strstrchcat(char *to, char *from, char c);
@@ -29,5 +30,6 @@ char *empty_string(char *f, int len);
 char *remove_dirnames(char *f);
 char *remove_ext(char *f, char *e);
 
+void return_last_char(FILE *f);
 
 #endif

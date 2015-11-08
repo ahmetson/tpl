@@ -2,7 +2,7 @@
  * Programma dilde belli bolan sada tipler we olara degishli maglumatlar
 **/
 #ifndef DEF_TYPES_H
-#define DEf_TYPES_H
+#define DEF_TYPES_H
 
 // Sada tiplerin in uzynyn bolup biljeginin uzynlygy
 #define DEF_TYPES_LEN 7
@@ -10,6 +10,7 @@
 typedef struct{
 	const char tk_name[DEF_TYPES_LEN];
 	const char value[DEF_TYPES_LEN];
+	const char init_val[DEF_TYPES_LEN];
 }def_type;
 
 // Programmada belli bolan tiplerin sany

@@ -9,8 +9,13 @@
 #include "tpl.h"
 #include "tokens.h"
 #include "token/token_structs.h"
+#include "token/token_types.h"
+#include "main/inf.h"
+#include "cmd/def_var.h"
+#include "fns.h"
 #include "dev_debug.h"
 #include "error.h"
+
 
 // Sozüň tokendigini bilmek üçin, şu sanawdan geçäýmeli
 is_token_item tok_types[] = {
@@ -24,6 +29,30 @@ is_token_item tok_types[] = {
 };
 
 
+// Tokeniň klasy we tipi boýunça tokeniň gaýtarmaly maglumatynyň tipini berýän funksiýa çagyrýan sanaw
+int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *tok_class, int *tok_num) =
+{
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // Nabelli
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // tip (class num:1)
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // glob
+    {get_tok_type_ident_ident_val_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ident
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // assign
+    {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type}  // const_data
+};
+
+
+// Tokeniň klasy we tipi boýunça tokeniň gaýtarmaly maglumatynyň tipini berýän funksiýa çagyrýan sanaw
+void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char **l, int *llen) =
+{
+    {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // Nabelli
+    {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // tip (class num:1)
+    {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // glob
+    {tok_ident_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // ident
+    {tok_assign_c_code,tok_assign_c_code, tok_assign_c_code, tok_assign_c_code}, // assign
+    {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code}  // const_data
+};
+
+
 // 'Default' maglumatlar goýulýar.
 // Token ýasalan soň, hökman şu funksiýany çagyryp 'default' maglumatlar goýulmaly
 void init_token(token *tok)
@@ -32,7 +61,7 @@ void init_token(token *tok)
 
 	int i; token_type tok_type;
 
-	if (tok->potentional_types_num>=1 && tok->potentional_types_num<=TOKEN_TYPES_NUM-1)
+	if (tok->potentional_types_num>=1 && tok->potentional_types_num<=TOKEN_TYPES_NUM)
 	{
 	    for(i=0; i<(tok->potentional_types_num); i++)
 		{
@@ -47,6 +76,7 @@ void init_token(token *tok)
 	tok->type_class = 0;
 	tok->value[0] = '\0';
 	tok->is_compl = 0;
+	tok->parenthesis = 0;
 
     tok->inf_char =
     tok->inf_char_num =
@@ -63,15 +93,15 @@ void empty_token(token *tok)
 }
 
 
-/*
+/**
  * Sözüň token bolup biljegini barlaýar.
  * Eger token bolup bilýän bolsa, @tok ülňä ýasalan tokeni baglaýar
 **/
 int recognize_token(token *tok, char *val)
 {
 	int i;
-	// Harpl tokeni hasaplananok.
-	for (i=0; i<TOKEN_TYPES_NUM-1; ++i) tok_types[i].is_token(tok, val);
+
+	for (i=0; i<TOKEN_TYPES_NUM; ++i) tok_types[i].is_token(tok, val);
 
 	// Token not recognized
 	if (tok->potentional_types_num==0)
@@ -81,6 +111,7 @@ int recognize_token(token *tok, char *val)
 	}
 
 	//printf("Token Recognized\t(Inputted text:%s)\n", val);
+	inf_add_to_token(tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
 	return 1;
 }
 
@@ -138,7 +169,7 @@ int delete_potentional_token_type(token *tok, int type_class, int type_num)
 	return 1;
 }
 
-/*
+/**
  * Tokeniň içinden, komanda-da gerek bolmajak maglumatlary pozýar.
 **/
 int finishize_token(token *tok)
@@ -176,48 +207,45 @@ int is_token_empty(token *tok)
  * Tokeni komanda geçirýär.
  * Şowly goşulansoň, komandany tanajak bolýar
 **/
-int move_to_cmd(token *tok)
+int cmd_add_tok(token tok, command *cmd)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
 
 	// Komandanyň öňki birligi gutarylan bolmaly
-	if (cmd.items_num!=0 &&
-       (cmd.items[cmd.items_num-1].type==TOKEN_ITEM && cmd.items[cmd.items_num-1].tok.is_compl==0 ||
-        cmd.items[cmd.items_num-1].type==CMD_ITEM   && cmd.items[cmd.items_num-1].cmd.is_compl==0))
+	if (cmd->items_num!=0 &&
+       ((cmd->items[cmd->items_num-1].type==TOKEN_ITEM && cmd->items[cmd->items_num-1].tok.is_compl==0) ||
+        (cmd->items[cmd->items_num-1].type==CMD_ITEM   && cmd->items[cmd->items_num-1].cmd.is_compl==0)))
     {
         CUR_PART = 3;
-        print_err(CODE3_PREV_TOK_INCORRECT, tok);
+        print_err(CODE3_PREV_TOK_INCORRECT, &tok);
     }
 
-    // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
-	finishize_token(tok);
-
-	if (tok->is_compl==0)
+	if (tok.is_compl==0)
     {
         CUR_PART = 2;
-
-        print_err(CODE2_PREV_TOKEN_INCORRECT, tok);
+        print_err(CODE2_PREV_TOKEN_INCORRECT, &tok);
     }
 
-    //printf("Token komanda goshulmana tayynlandy\n");
 
-	if (!add_to_cmd(&cmd, tok))  print_err(CODE4_CANT_ADD_TOKEN, tok);
+    //printf("Token komanda goshulmana tayynlandy\n");
+    parenthesis p;
+	if (!add_to_cmd(cmd, TOKEN_ITEM, tok, p, *cmd))  print_err(CODE4_CANT_ADD_TOKEN, &tok);
+
 
 	//printf("komanda barlanmana gechmeli\n");
-	if (!parse_cmd(&cmd))
+	if (!parse_cmd(cmd))
 	{
-		cmd.items_num--;
-		if (!cmd.items_num || !parse_cmd(&cmd))
+		cmd->items_num--;
+		if (!cmd->items_num || !parse_cmd(cmd))
         {
-            cmd.items_num++;
-            //debug_cmd(&cmd);
-			print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
+            cmd->items_num++;
+			print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
         }
 		else
 		{
 		    // Eger ulni yglan etme bolsa, onda ichki komandany ulni yglan etmelerin ichine gechirmeli
-		    add_to_def_var_list(&cmd);
+		    add_to_def_var_list(cmd);
 
 			// Ichki komandalaryn sanyny kopeltmeli
 			GLOB_SUBCMDS_NUM++;
@@ -225,58 +253,59 @@ int move_to_cmd(token *tok)
 			if (GLOB_SUBCMD_ITEMS_LIST==NULL)
 			{
 				//printf("Ichki komandalar uchin yer taplymady\n");
-				token *t=(token *)inf_get_last_token(&cmd);
-				print_err(CODE4_CANT_IDENT_CMD, t);
+				print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
 			}
 			else
 			{
 				//printf("Ichki komandalar uchin yer bar\n");
 
 				// Ichki komanda uchin yer.
-				long size = cmd.items_num * sizeof(command_item);
+				long size = cmd->items_num * sizeof(command_item);
 				GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = malloc(size);
 
 				// Ichki komanda uchin yere, birlikler gechirilyar.
 				int i=0;
-				for (i=0; i<cmd.items_num; ++i)
+				for (i=0; i<cmd->items_num; ++i)
 				{
-					GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = cmd.items[i];
+					GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = cmd->items[i];
 				}
 
 				command new_cmd;
-				new_cmd = cmd;
+				new_cmd = *cmd;
 				new_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
 
-				init_cmd(&cmd, 0);
-				cmd.items_num = 2;
+				init_cmd(cmd, 0);
+				cmd->items_num = 2;
 
-				command_item *tmp = realloc(cmd.items, cmd.items_num*sizeof(command_item));
+				command_item *tmp = realloc(cmd->items, cmd->items_num*sizeof(command_item));
 				if (tmp==NULL)
 				{
 					//printf("Komanda ichki komandany goshmak uchin yer tapylmady\n");
-					print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
+					print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
 				}
 				else
 				{
 					//printf("Komanda ichki komandany goshmak uchin yer bar\n");
-					cmd.items = tmp;
+					cmd->items = tmp;
 
 					// Komandanyň birinji birligi - Önki komanda goşulýar
 					command_item cmd_item = {};
 					cmd_item.type = 2;
 					cmd_item.cmd = new_cmd;
-					cmd.items[0] = cmd_item;
+					cmd->items[0] = cmd_item;
 
 					// Komandanyň ikinji birligi   - Täze token goşulýar
 					command_item cmd_tok_item;
 					cmd_tok_item.type = 1;
-					cmd_tok_item.tok = *tok;
-					cmd.items[1] = cmd_tok_item;
+					cmd_tok_item.tok = tok;
+					cmd->items[1] = cmd_tok_item;
 
 					// Täze token öňki tokenlerden emele gelen komanda bilen täze komandany emele getirmedi
-					if (!parse_cmd(&cmd))
-                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
-
+					if (!parse_cmd(cmd))
+                    {
+                        //debug_cmd(cmd);
+                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                    }
 				}
 			}
 		}
@@ -289,16 +318,101 @@ int move_to_cmd(token *tok)
 /**
  * Token gutaran soň, komanda geçirilmeli.
 **/
-int work_with_token(token *tok, char *tok_string)
+int work_with_token(token *tok, command *cmd)
 {
 // 1. Onki token bar
-    if (!is_token_empty(tok))
+    if (!is_token_empty(tok) && tok->is_compl)
     {
-        move_to_cmd(tok);
-
-        empty_token(tok);
-        empty_string(tok_string, strlen(tok_string));
+        cmd_add_tok(*tok, cmd);
         return 1;
     }
     return 0;
+}
+
+
+token parse_token(FILE *s)
+{
+    // Adaty parseriň modynda, tokenleri saýgarmak üçin.
+	char prev_tok_string[CONST_MAX_TOKEN_LEN] = {0};
+	char new_tok_string [CONST_MAX_TOKEN_LEN] = {0};
+	// Bular bolsa, tokenler saýgarylanda, ýatda saklamak üçin
+	token tok;      init_token(&tok);
+	token new_tok;  init_token(&new_tok);
+
+    return_last_char(s);
+
+    while((CUR_CHAR=fgetc(s))!=EOF)
+	{
+	    // Maglumatlar üçin
+	    update_inf();
+
+        if (strlen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN)
+                print_err(CODE2_TOKEN_TOO_BIG, &tok);
+
+        // Häzirki harp öňki tokeniň yzy bolsa
+        if ( strstrchcat(new_tok_string, prev_tok_string, CUR_CHAR) &&
+            !recognize_token(&new_tok, new_tok_string))
+        {
+            return_last_char(s);
+            // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
+            //debug_token(&tok);
+            finishize_token(&tok);
+
+            return tok;
+        }
+        else
+        {
+            empty_string(prev_tok_string, CONST_MAX_TOKEN_LEN);
+            strncpy(prev_tok_string, new_tok_string, strlen(new_tok_string)+1);
+
+            empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
+            tok = new_tok;
+            init_token(&new_tok);
+                // Tokene maglumatlary goýmaly
+            inf_add_to_token(&new_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
+
+        }
+    }
+    //if (!work_with_token(&tok, &prev_tok_string))
+    //    print_err();
+    finishize_token(&tok);
+
+    return tok;
+}
+
+int empty_tok_return_type(token *tok, int *tok_class, int *tok_num)
+{
+    *tok_class = TOK_CLASS_UNDEFINED;
+    return 0;
+}
+
+
+/** Nätanyş ulanylan tokenlere goşulýar
+
+    \tok - ulanylan token
+    \cmdClass - gabat gelen komandanyň klasy
+    \cmdType - gabat gelen komandanyň tipi
+    \arg - komanda-da, şu tokeniň deregine garaşylan maglumat tipi
+**/
+void unknown_tok_add(token *tok, int cmd_class, int cmd_type, int waited_class, int waited_type)
+{
+    unknown_token unk_tok;
+    unk_tok.tok = tok;
+    unk_tok.cmd_class = cmd_class;
+    unk_tok.cmd_type = cmd_class;
+    unk_tok.waited_class = waited_class;
+    unk_tok.waited_type = waited_type;
+
+    ++UNKNOWN_TOKENS_NUM;
+
+    long size;
+    size = sizeof(unk_tok)*UNKNOWN_TOKENS_NUM;
+    UNKNOWN_TOKENS = realloc(UNKNOWN_TOKENS, size);
+
+    UNKNOWN_TOKENS[UNKNOWN_TOKENS_NUM-1] = unk_tok;
+}
+
+void empty_tok_c_code(token *tok, char **l, int *llen)
+{
+    return;
 }

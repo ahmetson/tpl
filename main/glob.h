@@ -7,6 +7,9 @@
 #include "files.h"
 #include "../cmds.h"
 #include "../algor.h"
+#include "../parenthesis.h"
+#include "../fns/fn.h"
+#include "../semantic.h"
 
 typedef struct{
     char inf_char;                          // Komandanyň birinji harpy.
@@ -34,6 +37,16 @@ typedef struct{
     int cmd_type;
 }both_ident_cmd_item;
 
+typedef struct {
+    int                 num;        // Elementleriň sany
+    parenthesis_elem    *elem;       // Element
+}parenthesis_elems;
+
+typedef struct{
+    char  (*inc)[MAX_FILE_LEN];
+    int    num;
+}file_incs;
+
 extern int              TEST;
 
 extern char            CMD_END;
@@ -58,6 +71,17 @@ extern long            UNKNOWN_USED_VARS_SIZE;
 extern int             UNKNOWN_USED_VARS_NUM;
 extern var_def_item   *UNKNOWN_USED_VARS;
 
+extern int             UNKNOWN_CALLED_FNS_NUM;
+extern command        *UNKNOWN_CALLED_FNS;
+
+extern unknown_token  *UNKNOWN_TOKENS;
+extern int             UNKNOWN_TOKENS_NUM;
+
+extern unknown_cmd    *UNKNOWN_CMDS;
+extern int             UNKNOWN_CMDS_NUM;
+
+extern unknown_paren  *UNKNOWN_PARENS;
+extern int             UNKNOWN_PARENS_NUM;
 
 extern command        *CUR_ALGOR;
 extern long            CUR_ALGOR_SIZE;
@@ -70,18 +94,25 @@ extern unsigned int    GLOB_SUBCMDS_NUM;
 
 // Iki sany maglumat birliklerden we ikinji birligi konstanta maglumat bolan komandany
 // barlamak üçin, şeýle komandalaryň sanawy.
-right_data_cmd_item    *GLOB_RIGHT_DATA_CMDS_LIST;
-unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
+extern right_data_cmd_item    *GLOB_RIGHT_DATA_CMDS_LIST;
+extern unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
 
 // Identifikator bolan ülňileriň tipleri, tä parserläp gutarylýança
 // näbelli bolýar
-both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
-unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
+extern both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
+extern unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
 
 
 // Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
-char                  **GLOB_STRINGS;
-unsigned long           GLOB_STRINGS_NUM;
+extern char                  **GLOB_STRINGS;
+extern unsigned long           GLOB_STRINGS_NUM;
+
+
+/** Kodlarda ulanylýan skobkalarda (parenthesis), näçe sany element boljagy näbelli.
+    Şonuň üçin olar kuça-da (heap) ýerleşdirilýär.
+**/
+extern parenthesis_elem      **GLOB_PARENTHS;
+extern int                     GLOB_PARENTHS_NUM;
 
 
 /**
@@ -89,7 +120,25 @@ unsigned long           GLOB_STRINGS_NUM;
 **/
 extern char          ***GLOB_SOURCE_CODES;
 
-extern file_item *FILES;
+extern file_item           *FILES;
+
+/** Programmadaky goldanylýan funksiýalar
+**/
+extern func                *FUNCS;
+extern int                  FUNCS_NUM;
+
+/** Programmadaky goldanylýan funksiýalaryň argumentleri
+**/
+extern func_arg           **FUNC_ARGS;
+extern int                  FUNC_ARGS_NUM;
+
+/// Goşmaly faýllaryň sanawy
+extern file_incs           *INCLUDES;
+extern int                  INCLUDES_NUM;
+
+/// 'A' identifikatoryň 'B', we 'B' identifikatoryň 'A' baglanmagyny saklaýar
+/*extern compare_ident       *COMPARE_IDENTS;
+extern int                  COMPARE_IDENTS_NUM;*/
 
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);

@@ -8,10 +8,10 @@ const int DEF_TYPES_NUM = 4;
 
 // tiplering atlarynyn spisogy
 def_type def_type_list[] = {
-	{"harp", "char"},
-	{"san", "int"},
-	{"drob", "double"},
-	{"harpl", "char *"}
+	{"harp", "char", "'\\0'"},
+	{"san", "int", "-1"},
+	{"drob", "double", "-1"},
+	{"harpl", "char *", "\"\""}
 };
 
 

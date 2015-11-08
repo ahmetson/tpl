@@ -35,7 +35,7 @@ extern char PRAGMA_MODE;
 extern char *pragmas[];
 
 // Parserde pragma bilen işleýän bölüm
-int work_with_pragma(pragma *prag, pragma *prev_pragma, char *mode, char c, int c_pos, int line);
+void parse_pragma(FILE *s);
 
 // Pragmany ulanmana tayynlayar.
 void init_pragma(pragma *prag);

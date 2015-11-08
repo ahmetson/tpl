@@ -9,6 +9,9 @@ void debug_token(token *tok);
 
 void debug_token_type(token_type *tok_type);
 
+void debug_paren(parenthesis *paren);
+char *get_paren_type(int paren_type);
+
 char *get_type_class(int type_class_num);
 char *get_tok_type_value(token_type *tok_type);
 

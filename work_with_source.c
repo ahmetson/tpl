@@ -11,6 +11,8 @@
 #include "parser.h"
 #include "algor.h"
 #include "translator_to_c.h"
+#include "work_with_source.h"
+#include "translator_to_c/includes.h"
 #include "error.h"
 
 
@@ -30,6 +32,7 @@ void work_with_sources(int argc, const char **args)
 		// Häzirki parserlenýän kodly faýlyň ady
 		add_to_file_list_file();                // Ýasalmaly programmadanyň faýllarynyň sanawyna,
 		add_to_file_list_source(args[i]);       // häzirki kodly faýl goşulýar
+		includes_add_new();
         strncpy(CUR_FILE_NAME, args[i], strlen(args[i])+1);
 
 		work_with_source(args[i]);
@@ -54,9 +57,10 @@ int work_with_source(const char *parse_file_name)
 	}
 
 	// 2-nji TPL-in bolumine gechildi
-	parser(source);
+	parse(source);
 
 	fclose(source);
+	return 1;
 }
 
 
