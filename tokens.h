@@ -7,6 +7,7 @@
 #include "token/token_types/glob.h"
 #include "token/token_types/assign.h"
 #include "token/token_types/const_data.h"
+#include "token/token_types/arif.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"
@@ -37,4 +38,6 @@ void unknown_tok_add(token *tok, int cmd_class, int cmd_type, int waited_class, 
 
 void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char **l, int *llen);
 void empty_tok_c_code(token *tok, char **l, int *llen);
+
+token get_empty_tok();
 #endif

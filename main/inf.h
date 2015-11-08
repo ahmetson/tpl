@@ -14,6 +14,7 @@ void inf_next_line();
 void inf_next_char();
 
 token *inf_get_last_token(command *cmd);
+token *inf_get_parens_last_token(parenthesis *par);
 
 
 #endif // MAIN_INF_H

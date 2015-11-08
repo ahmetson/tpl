@@ -207,19 +207,10 @@ int is_token_empty(token *tok)
  * Tokeni komanda geçirýär.
  * Şowly goşulansoň, komandany tanajak bolýar
 **/
-int cmd_add_tok(token tok, command *cmd)
+/**int cmd_add_tok(token tok, command *cmd)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
-
-	// Komandanyň öňki birligi gutarylan bolmaly
-	if (cmd->items_num!=0 &&
-       ((cmd->items[cmd->items_num-1].type==TOKEN_ITEM && cmd->items[cmd->items_num-1].tok.is_compl==0) ||
-        (cmd->items[cmd->items_num-1].type==CMD_ITEM   && cmd->items[cmd->items_num-1].cmd.is_compl==0)))
-    {
-        CUR_PART = 3;
-        print_err(CODE3_PREV_TOK_INCORRECT, &tok);
-    }
 
 	if (tok.is_compl==0)
     {
@@ -227,93 +218,179 @@ int cmd_add_tok(token tok, command *cmd)
         print_err(CODE2_PREV_TOKEN_INCORRECT, &tok);
     }
 
+	// Komandanyň öňki birligi gutarylan bolmaly
+	if (cmd->items_num!=0 &&
+       ((cmd->items[cmd->items_num-1].type==TOKEN_ITEM && cmd->items[cmd->items_num-1].tok.is_compl==0) ||
+        (cmd->items[cmd->items_num-1].type==CMD_ITEM   && cmd->items[cmd->items_num-1].cmd.is_compl==0)))
+    {
+        int last = cmd->items_num-1;
 
-    //printf("Token komanda goshulmana tayynlandy\n");
-    parenthesis p;
-	if (!add_to_cmd(cmd, TOKEN_ITEM, tok, p, *cmd))  print_err(CODE4_CANT_ADD_TOKEN, &tok);
-
-
-	//printf("komanda barlanmana gechmeli\n");
-	if (!parse_cmd(cmd))
-	{
-		cmd->items_num--;
-		if (!cmd->items_num || !parse_cmd(cmd))
+        /// 1.a)
+        if (cmd->items[last].type==TOKEN_ITEM)
         {
-            cmd->items_num++;
-			print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-        }
-		else
-		{
-		    // Eger ulni yglan etme bolsa, onda ichki komandany ulni yglan etmelerin ichine gechirmeli
-		    add_to_def_var_list(cmd);
-
-			// Ichki komandalaryn sanyny kopeltmeli
+            // Ichki komandalaryn sanyny kopeltmeli
 			GLOB_SUBCMDS_NUM++;
-			GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
+			GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(*GLOB_SUBCMD_ITEMS_LIST)*GLOB_SUBCMDS_NUM);
 			if (GLOB_SUBCMD_ITEMS_LIST==NULL)
 			{
+			    printf("SALAM 11");
 				//printf("Ichki komandalar uchin yer taplymady\n");
 				print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
 			}
 			else
 			{
-				//printf("Ichki komandalar uchin yer bar\n");
+			    //printf("Ichki komandalar uchin yer bar\n");
+			    /// 1.a.I)
+                command new_subcmd;
+                new_subcmd.items_num = 2;
 
-				// Ichki komanda uchin yer.
-				long size = cmd->items_num * sizeof(command_item);
-				GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = malloc(size);
+			    long size = sizeof(**GLOB_SUBCMD_ITEMS_LIST)*2;
+			    GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = realloc(GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1], size);
+
+			    GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][0] = cmd->items[cmd->items_num-1];
+
+			    command_item ci;
+			    ci.type = cmd->items[cmd->items_num-1].type;
+			    ci.tok  = cmd->items[cmd->items_num-1].tok;
+			    GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][1] = ci;
+
+			    new_subcmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
 
 				// Ichki komanda uchin yere, birlikler gechirilyar.
-				int i=0;
-				for (i=0; i<cmd->items_num; ++i)
-				{
-					GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = cmd->items[i];
-				}
+				command_item last_c;
+				last_c.type = CMD_ITEM;
+				last_c.cmd  = new_subcmd;
+				cmd->items[last] = last_c;
 
-				command new_cmd;
-				new_cmd = *cmd;
-				new_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
+                /// 1.a.II)
+				if (!parse_cmd(cmd))
+                {
+                    /// 1.a.II.1)
+                    printf("SALAM 20");
+                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                }
+			}
+        }
+        /// 1.b)
+        else if(cmd->items[last].type==CMD_ITEM)
+        {
+            cmd->items[last].cmd.items_num++;
+            long size =cmd->items[last].cmd.items_num*(sizeof(*cmd->items[last].cmd.items));
+            cmd->items[last].cmd.items = realloc(cmd->items[last].cmd.items, size);
 
-				init_cmd(cmd, 0);
-				cmd->items_num = 2;
+            /// 1.b.I)
+            command_item ci;
+            ci.type = TOKEN_ITEM;
+            ci.tok  = tok;
+            cmd->items[last].cmd.items[cmd->items[last].cmd.items_num-1] = ci;
 
-				command_item *tmp = realloc(cmd->items, cmd->items_num*sizeof(command_item));
-				if (tmp==NULL)
-				{
-					//printf("Komanda ichki komandany goshmak uchin yer tapylmady\n");
-					print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-				}
-				else
-				{
-					//printf("Komanda ichki komandany goshmak uchin yer bar\n");
-					cmd->items = tmp;
+            /// 1.b.II)
+            if (!parse_cmd(&cmd->items[last].cmd))
+            {
+                 /// 1.b.II.a)
+                printf("SALAM 21");
+                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd->items[last].cmd));
+            }
+            else if (!parse_cmd(cmd))
+            {
+                 /// 1.b.II.a)
+                printf("SALAM 22");
+                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+            }
+        }
+    }
+    else
+    {
+        //printf("Token komanda goshulmana tayynlandy\n");
+        parenthesis p;
+        if (!add_to_cmd(cmd, TOKEN_ITEM, tok, p, *cmd))  print_err(CODE4_CANT_ADD_TOKEN, &tok);
 
-					// Komandanyň birinji birligi - Önki komanda goşulýar
-					command_item cmd_item = {};
-					cmd_item.type = 2;
-					cmd_item.cmd = new_cmd;
-					cmd->items[0] = cmd_item;
 
-					// Komandanyň ikinji birligi   - Täze token goşulýar
-					command_item cmd_tok_item;
-					cmd_tok_item.type = 1;
-					cmd_tok_item.tok = tok;
-					cmd->items[1] = cmd_tok_item;
+        //printf("komanda barlanmana gechmeli\n");
+        if (!parse_cmd(cmd))
+        {
+            cmd->items_num--;
+            if (!cmd->items_num || !parse_cmd(cmd))
+            {
+                cmd->items_num++;
+                printf("SALAM 10");
+                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+            }
+            else
+            {
+                // Eger ulni yglan etme bolsa, onda ichki komandany ulni yglan etmelerin ichine gechirmeli
+                add_to_def_var_list(cmd);
 
-					// Täze token öňki tokenlerden emele gelen komanda bilen täze komandany emele getirmedi
-					if (!parse_cmd(cmd))
+                // Ichki komandalaryn sanyny kopeltmeli
+                GLOB_SUBCMDS_NUM++;
+                GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
+                if (GLOB_SUBCMD_ITEMS_LIST==NULL)
+                {
+                    printf("SALAM 11");
+                    //printf("Ichki komandalar uchin yer taplymady\n");
+                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                }
+                else
+                {
+                    //printf("Ichki komandalar uchin yer bar\n");
+
+                    // Ichki komanda uchin yer.
+                    long size = cmd->items_num * sizeof(command_item);
+                    GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = malloc(size);
+
+                    // Ichki komanda uchin yere, birlikler gechirilyar.
+                    int i=0;
+                    for (i=0; i<cmd->items_num; ++i)
                     {
-                        //debug_cmd(cmd);
+                        GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = cmd->items[i];
+                    }
+
+                    command new_cmd;
+                    new_cmd = *cmd;
+                    new_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
+
+                    init_cmd(cmd, 0);
+                    cmd->items_num = 2;
+
+                    command_item *tmp = realloc(cmd->items, cmd->items_num*sizeof(command_item));
+                    if (tmp==NULL)
+                    {
+                        printf("SALAM 12");
+                        //printf("Komanda ichki komandany goshmak uchin yer tapylmady\n");
                         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                     }
-				}
-			}
-		}
-	}
+                    else
+                    {
+                        //printf("Komanda ichki komandany goshmak uchin yer bar\n");
+                        cmd->items = tmp;
 
+                        // Komandanyň birinji birligi - Önki komanda goşulýar
+                        command_item cmd_item = {};
+                        cmd_item.type = 2;
+                        cmd_item.cmd = new_cmd;
+                        cmd->items[0] = cmd_item;
+
+                        // Komandanyň ikinji birligi   - Täze token goşulýar
+                        command_item cmd_tok_item;
+                        cmd_tok_item.type = 1;
+                        cmd_tok_item.tok = tok;
+                        cmd->items[1] = cmd_tok_item;
+
+                        // Täze token öňki tokenlerden emele gelen komanda bilen täze komandany emele getirmedi
+                        if (!parse_cmd(cmd))
+                        {
+                            printf("SALAM 13");
+                            debug_cmd(cmd);
+                            print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                        }
+                    }
+                }
+            }
+        }
+    }
 	CUR_PART = prev_part;
 	return 1;
-}
+}*/
 
 /**
  * Token gutaran soň, komanda geçirilmeli.
@@ -323,7 +400,7 @@ int work_with_token(token *tok, command *cmd)
 // 1. Onki token bar
     if (!is_token_empty(tok) && tok->is_compl)
     {
-        cmd_add_tok(*tok, cmd);
+        cmd_add_item(cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), *tok);
         return 1;
     }
     return 0;
@@ -415,4 +492,12 @@ void unknown_tok_add(token *tok, int cmd_class, int cmd_type, int waited_class, 
 void empty_tok_c_code(token *tok, char **l, int *llen)
 {
     return;
+}
+
+
+token get_empty_tok()
+{
+    token t;
+    init_token(&t);
+    return t;
 }

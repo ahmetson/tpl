@@ -1,6 +1,4 @@
 #b1
 san b1.
 san b2.
-
-b1 <- b2.
-b2 <- b1.
+b2 <- ("SALAM", "SAGBOL")chap_et.

@@ -107,8 +107,7 @@ int add_to_cmd(command *cmd, int type, token tok, parenthesis paren, command sub
 // Komandalar bilen ishleyan bolum
 int work_with_cmd();
 
-int cmd_add_subcmd(command *cmd, command addcmd);
-int cmd_add_subparen(command *cmd, parenthesis paren);
+int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t);
 
 int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd_class, int *cmd_type);
 int empty_cmd_return_type(command *cmd, int *cmd_class, int *cmd_type);
@@ -121,4 +120,6 @@ void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l
 void empty_cmd_c_code(command *cmd, char **l, int *len);
 
 void unknown_cmd_add(command *cmd, int cmd_class, int cmd_type, int waited_class, int waited_type);
+
+command get_empty_cmd();
 #endif
