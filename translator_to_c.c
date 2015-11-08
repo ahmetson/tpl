@@ -517,6 +517,8 @@ int c_trans_source_add_algor(FILE *f, int main_file)
     for (i=0; i<CUR_ALGOR_ITEMS_NUM; ++i)
     {
         CMD_GET_C_CODE[CUR_ALGOR[i].cmd_class][CUR_ALGOR[i].cmd_type](&CUR_ALGOR[i], &l, &len);
+        //debug_cmd(&CUR_ALGOR[i]);
+        //printf("%s\n", l);
         fputs(l, f);
         if (l!=NULL)
         {

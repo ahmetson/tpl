@@ -37,9 +37,8 @@
 **/
 
 
-/**
- * Berlen komandanyň 'assign' komandasymy ýa däldigini barlýar.
- * Eger barlanýan komanda şowly tanalsa, onda komandanyň maglumatlary şuňa görä üýtgedilýär.
+/** Berlen komandanyň 'assign' komandasymy ýa däldigini barlýar.
+ *  Eger barlanýan komanda şowly tanalsa, onda komandanyň maglumatlary şuňa görä üýtgedilýär.
 **/
 int is_cmd_assign(command *cmd)
 {
@@ -48,7 +47,6 @@ int is_cmd_assign(command *cmd)
 	{
 		return 0;
 	}
-
 	int next_item_class=-1, next_item_type=-1;
 	// Birinji token ya ulni yglan etmek bolmaly ya identifikator.
 	if (cmd->items[0].type==TOKEN_ITEM &&
@@ -104,10 +102,15 @@ int is_cmd_assign(command *cmd)
 	// Uchunji token identifikator bolmaly.
 	if (cmd->items_num>2)
 	{
+	    int ret_class = -1, ret_type = -1;
 	    if((cmd->items[2].type==TOKEN_ITEM &&
-		   cmd->items[2].tok.type_class==TOK_CLASS_IDENT) ||
-		   (cmd->items[2].type==TOKEN_ITEM &&
-           cmd->items[2].tok.type_class==TOK_CLASS_CONST_DATA))
+		   TOK_RETURN_TYPE[cmd->items[2].tok.potentional_types[0].type_class][cmd->items[2].tok.potentional_types[0].type_num]
+		   (&cmd->items[2].tok, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED) ||
+		   (cmd->items[2].type==CMD_ITEM &&
+           CMD_RETURN_TYPE[cmd->items[2].cmd.cmd_class][cmd->items[2].cmd.cmd_type](&cmd->items[2].cmd,&ret_class, &ret_type) &&
+        ret_class!=TOK_CLASS_UNDEFINED) ||
+           (cmd->items[2].type==PAREN_ITEM &&
+            PAREN_RETURN_TYPE[cmd->items[2].paren.type](&cmd->items[2].paren, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED))
 		{
 		    assign_cmd_mod(cmd, 2);
 		}
@@ -233,11 +236,11 @@ int semantic_cmd_assign(command *cmd)
 
             if (!is_ident_used(item, 0))
             {
-                int i;
+                /*int i;
                 for(i=0; i<USER_VAR_DEFS_NUM; i++)
                 {
                     printf("%s = %s\n", item->potentional_types[0].value, USER_VAR_DEFS[i].ident);
-                }
+                }*/
                 unknown_used_var_add(item, item->potentional_types[0].value);
                 //print_err(CODE7_LEFT_IDENT_NOT_DEFINED);
             }
@@ -259,11 +262,15 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
     // Çepe baglanma:
     if (cmd->items[1].tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
     {
-        *llen += strlen("\t")+1;
-        *l = realloc(*l, *llen);
+        if (!(*llen))
+        {
+            // Çepe baglanma:
+            *llen += strlen("\t")+1;
+            *l = realloc(*l, *llen);
 
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*l, "\t", strlen("\t")+1);
+            // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
+            strncpy(*l, "\t", strlen("\t")+1);
+        }
 
         // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
         // Eger birinji ülňi identifikator bolsa, özi alynýar.
@@ -315,7 +322,10 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
 
             strncat(*l,rvalue,strlen(rvalue));
         }
-
+        else if (cmd->items[2].type==CMD_ITEM)
+        {
+            CMD_GET_C_CODE[cmd->items[2].cmd.cmd_class][cmd->items[2].cmd.cmd_type](&cmd->items[2].cmd, l, llen);
+        }
         // Üç birligi birikdirip täze setir ýasalýar.
         // Setire üç birlik we komandany gutaryjy çatylýar.
         // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.

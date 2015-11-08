@@ -23,6 +23,7 @@ int algor_add_cmd(command add_cmd)
 	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
+        printf("SALAM 1");
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&add_cmd));
     }
     else

@@ -43,7 +43,7 @@ int parse(FILE *source)
         else if (CUR_CHAR==PARENTHESIS_OPEN)
         {
             parenthesis par = parse_paren(source);
-            cmd_add_subparen(&cmd, par);
+            cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
         }
         else if (isspace(CUR_CHAR))
         {

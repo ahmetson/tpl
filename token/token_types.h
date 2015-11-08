@@ -24,6 +24,7 @@ extern const int TOK_CLASS_GLOB;
 extern const int TOK_CLASS_IDENT;
 extern const int TOK_CLASS_ASSIGN;
 extern const int TOK_CLASS_CONST_DATA;
+extern const int TOK_CLASS_ARIF;
 
 // Debug üçin
 extern char *type_classes[];

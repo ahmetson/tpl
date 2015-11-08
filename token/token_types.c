@@ -10,6 +10,7 @@
 #include "token_types/glob.h"
 #include "token_types/def_types.h"
 #include "token_types/const_data.h"
+#include "token_types/arif.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -26,6 +27,7 @@ const int TOK_CLASS_GLOB 		 = 2;
 const int TOK_CLASS_IDENT        = 3;
 const int TOK_CLASS_ASSIGN		 = 4;
 const int TOK_CLASS_CONST_DATA   = 5;
+const int TOK_CLASS_ARIF         = 6;
 
 // Used for debugging
 char *type_classes[] = {
@@ -34,7 +36,8 @@ char *type_classes[] = {
 	"glob",
 	"ident",
 	"assign",
-	"const_data"
+	"const_data",
+	"arifmetika"
 };
 
 
