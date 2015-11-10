@@ -241,6 +241,10 @@
 			<Option compilerVar="CC" />
 			<Option target="default" />
 		</Unit>
+		<Unit filename="token/token_types/arif.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/arif.h" />
 		<Unit filename="token/token_types/assign.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

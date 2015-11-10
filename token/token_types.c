@@ -183,7 +183,14 @@ int is_token_var_left_assign(token *tok, char *tok_val)
 int is_token_int_const_data(token *tok, char *tok_val)
 {
     int i;
-    for (i=0; i<strlen(tok_val); ++i)
+    // Birinji harp san, - bolup bilýär.
+    if (!isdigit(tok_val[0]) && tok_val[0]!=CHAR_MINUS)
+    {
+        return 0;
+
+    }
+
+    for (i=1; i<strlen(tok_val); ++i)
     {
         if (!isdigit(tok_val[i]))
             return 0;
@@ -208,7 +215,11 @@ int is_token_int_const_data(token *tok, char *tok_val)
 int is_token_float_const_data(token *tok, char *tok_val)
 {
     int i, dot=0;
-    for (i=0; i<strlen(tok_val); ++i)
+
+    if (!isdigit(tok_val[0]) || tok_val[0]!='-' || tok_val[0]!=FLOAT_CONST_DATA_SEPARATOR)
+        return 0;
+
+    for (i=1; i<strlen(tok_val); ++i)
     {
         if (!isdigit(tok_val[i]))
         {
