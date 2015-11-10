@@ -24,6 +24,7 @@ char *CONST_DATA_TOK_NUM_WORDS[4] = {
  *
  *  Bu token tipi sanlar bilen işleýän komandalarda ulanylyp bilinýär.
 **/
+char CHAR_MINUS = '-';
 int INT_CONST_DATA_TOK_NUM = 0;
 
 
@@ -42,6 +43,7 @@ char FLOAT_CONST_DATA_C_CODE_SEPARATOR = '.';       // Ýasaljak kodda sanlary b
  *  Bu token tipi harplar bilen işleýän komandalarda ulanylyp bilinýär.
  *  Deňdir belgisi indiki harpyň ýörite manyny berýändigini aňladýar
 **/
+char CHAR_CONST_DATA_OPENER = '\'';
 int CHAR_CONST_DATA_TOK_NUM = 2;
 
 /**

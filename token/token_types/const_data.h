@@ -6,6 +6,7 @@
 #include "../token_structs.h"
 
 // 1-nji konstanta maglumat tipi - san.
+extern char CHAR_MINUS;
 extern int INT_CONST_DATA_TOK_NUM;
 
 // 2-nji konstanta maglumat tipi - drob.
@@ -15,6 +16,7 @@ extern char FLOAT_CONST_DATA_C_CODE_SEPARATOR;
 
 // 3-nji konstanta maglumat tipi - harp
 extern int CHAR_CONST_DATA_TOK_NUM;
+extern char CHAR_CONST_DATA_OPENER;
 
 // 4-nji konstanta maglumat tipi - harplar
 extern int STRING_CONST_DATA_TOK_NUM;

@@ -10,6 +10,7 @@
 #include "token/harpl.h"
 #include "main/glob.h"
 #include "main/inf.h"
+#include "error.h"
 
 char PARENTHESIS_OPEN = '(';
 char PARENTHESIS_CLOSE= ')';
@@ -41,6 +42,10 @@ parenthesis parse_paren(FILE *s)
     while ((CUR_CHAR=fgetc(s))!=EOF)
     {
         update_inf();
+
+        if(!is_valid_char())
+            print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
+
         /* Bolmady. Parser ishlanok */
         if (isspace(CUR_CHAR))
             continue;

@@ -430,6 +430,13 @@ token parse_token(FILE *s)
         if ( strstrchcat(new_tok_string, prev_tok_string, CUR_CHAR) &&
             !recognize_token(&new_tok, new_tok_string))
         {
+            /** DÜZETMELI #1: Eger programmirleme diliniň goldamaýan harpy bolsa, programma onuň bilen näme etmelidigini bilenok.
+                              Şonuň üçinem harp tanaýan parserler boýunça barlap ömürlik aýlaw edip durýar.
+
+                ++ Islendik parser çagyrylmazdan öň:
+                1) Eger is_valid_char() diýen funksiýa arkaly, harpyň başga parserleriň başydygy barlanmagy şowly bolsa
+                    a) "Nätanyş harp duşdy, token beýle harplardan başlanok" diýip ýalňyş ugradylýar.
+            **/
             return_last_char(s);
             // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
             //debug_token(&tok);

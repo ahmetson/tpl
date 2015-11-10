@@ -35,6 +35,9 @@ int parse(FILE *source)
 	    // Maglumatlar üçin
 	    update_inf();
 
+	    if(!is_valid_char())
+            print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
+
         // 2. Pragma modyna geçmeli
         if(CUR_CHAR==PRAGMA_START_CHAR)
         {
@@ -87,4 +90,19 @@ int parse(FILE *source)
     CUR_LINE = 1;
     CUR_CHAR_POS = 1;
     return 1;
+}
+
+
+/** TPL programma diliniň goldaýan harpymy ýa däldigini barlaýar **/
+int is_valid_char()
+{
+    return (isspace(CUR_CHAR) ||                        // boshluk
+        isalnum(CUR_CHAR) ||                        // harp we san
+        CUR_CHAR==CMD_END ||                        // .
+        CUR_CHAR==PRAGMA_START_CHAR ||              // #
+        CUR_CHAR==PARENTHESIS_OPEN ||               // (
+        CUR_CHAR==HARPL_OPENER ||                   // "
+        CUR_CHAR==LEFT_ASSIGN_TOKEN_VALUE[0] ||     // <
+        CUR_CHAR==CHAR_CONST_DATA_OPENER ||         // '
+        CUR_CHAR==CHAR_MINUS);                      // -
 }
