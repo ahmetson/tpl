@@ -10,35 +10,32 @@
 #include "fn_call.h"
 #include "../error.h"
 
+/// Iki sany tipleri bolýar
+int CMD_ARIF_LOW_PRIOR_TYPE  = 0;   // +, -
+int CMD_ARIF_HIGH_PRIOR_TYPE = 1;   // *, :
+
 int is_cmd_arif(command *cmd)
 {
     /** Birinji element ýa drob ýa san gaýtarýan maglumat bolmaly.
-        Eger element ülňiniň identifikatory bolup, olam intäk näbelli bolsa, onda semantikda, ülňiniň identifikatoryny barlamaly sanawa
-        goşulýar.
-        Eger element funksiýa çagyrylyşy bolup, funksiýa-da näbelli bolsa, onda semantika, funksiýanyň gaýtarýan tipini barlamaly diýen
-        sanawa goşulýar.
+        Ikinji element haýsy-da bolsa bir operator bolmaly: +, -, *, :.
+        Üçünji element ýa drob ýa san gaýtarýan maglumat bolmaly.
     **/
-    /**
-        Ikinji element haýsy-da bolsa bir operator bolmaly
-    **/
-    /**
-        Üçünji element edil birinji element ýaly.
-    **/
-    if (cmd->items_num>CMD_CLASS_ARIF_MAX_ITEMS || !cmd->items_num)
+    if (cmd->items_num>CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type] || !cmd->items_num)
 	{
 		return 0;
 	}
 
     int ret_class = -1, ret_type = -1;
+
     command_item *e1 = &cmd->items[0];
-    if((e1->type==TOKEN_ITEM &&
-        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num]
-        (&e1->tok, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e1->type==CMD_ITEM &&
-        CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd,&ret_class, &ret_type) &&
-        ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e1->type==PAREN_ITEM &&
-        PAREN_RETURN_TYPE[e1->paren.type](&e1->paren, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED))
+    if(e1->type==TOKEN_ITEM)
+        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, &ret_class, &ret_type);
+    else if (e1->type==CMD_ITEM)
+        CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd,&ret_class, &ret_type);
+    else if (e1->type==PAREN_ITEM)
+        PAREN_RETURN_TYPE[e1->paren.type](&e1->paren, &ret_class, &ret_type);
+
+    if (ret_class==TOK_CLASS_CONST_DATA && (ret_type==INT_CONST_DATA_TOK_NUM || ret_type==FLOAT_CONST_DATA_TOK_NUM))
     {
         cmd_arif_mod(cmd, 0);
     }
@@ -52,8 +49,7 @@ int is_cmd_arif(command *cmd)
 	if(cmd->items_num>1)
 	{
 	    command_item *e2 = &cmd->items[1];
-		if (e2->type==TOKEN_ITEM &&
-			e2->tok.type_class==TOK_CLASS_ARIF)
+		if (e2->type==TOKEN_ITEM && e2->tok.type_class==TOK_CLASS_ARIF)
 		{
 			cmd_arif_mod(cmd, 1);
 			//printf("Birlik baglanmanynky eken\n");
@@ -67,15 +63,15 @@ int is_cmd_arif(command *cmd)
 	// Uchunji token identifikator bolmaly.
 	if (cmd->items_num>2)
 	{
-	    command_item *e3 = &cmd->items[1];
-	    if((e3->type==TOKEN_ITEM &&
-		   TOK_RETURN_TYPE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num]
-		   (&e3->tok, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED) ||
-		   (e3->type==CMD_ITEM &&
-           CMD_RETURN_TYPE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd,&ret_class, &ret_type) &&
-        ret_class!=TOK_CLASS_UNDEFINED) ||
-           (e3->type==PAREN_ITEM &&
-            PAREN_RETURN_TYPE[e3->paren.type](&e3->paren, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED))
+	    command_item *e3 = &cmd->items[2];
+	    if(e3->type==TOKEN_ITEM)
+		   TOK_RETURN_TYPE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num](&e3->tok, &ret_class, &ret_type);
+        else if(e3->type==CMD_ITEM)
+           CMD_RETURN_TYPE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd,&ret_class, &ret_type);
+        else if(e3->type==PAREN_ITEM)
+            PAREN_RETURN_TYPE[e3->paren.type](&e3->paren, &ret_class, &ret_type);
+
+        if (ret_class==TOK_CLASS_CONST_DATA && (ret_type==INT_CONST_DATA_TOK_NUM || ret_type==FLOAT_CONST_DATA_TOK_NUM))
 		{
 		    cmd_arif_mod(cmd, 2);
 		}
@@ -107,7 +103,12 @@ int cmd_arif_mod(command *cmd, int item_num)
     **/
     else if (item_num==1)
     {
-        cmd->cmd_type = cmd->items[0].tok.potentional_types[0].type_num;
+        if (cmd->items[1].tok.potentional_types[0].type_num==0 ||
+            cmd->items[1].tok.potentional_types[0].type_num==1)
+            cmd->cmd_type = CMD_ARIF_LOW_PRIOR_TYPE;
+        else if (cmd->items[1].tok.potentional_types[0].type_num==2 ||
+            cmd->items[1].tok.potentional_types[0].type_num==3)
+            cmd->cmd_type = CMD_ARIF_HIGH_PRIOR_TYPE;
     }
     /**
         Üçünji element boýunça:
@@ -121,8 +122,6 @@ int cmd_arif_mod(command *cmd, int item_num)
 }
 
 
-
-
 int semantic_cmd_arif(command *cmd)
 {
     int prev_part = CUR_PART;
@@ -131,29 +130,19 @@ int semantic_cmd_arif(command *cmd)
     //printf("Arifmetiki komandanyn semantikasy barlanmaly\n");
 
     /** BIRINJI ELEMENT
-        Garaşylýan tipi SAN ýa DROB.
-        Eger element näbelli tip gaýtarsa,
-            eger element näbelli ülňi bolsa,
-                näbelli ülňileriň arasyna salynýar.
-            ýa   element näbelli funksiýa bolsa
-                näbelli funksiýalaryň arasyna salynýar.
-        Ýa elementiň gaýtaran tipi SAN ýa DROB bolmasa
-            "Nädogry tip geldi" diýen ýalňyşlyk gaýtarylýar.
+        1) Garaşylýan tipi SAN ýa DROB.
+        2) Eger element näbelli tip gaýtarsa,
+            a)"Nädogry tip geldi" diýen ýalňyşlyk gaýtarylýar.
         Ýogsa
-            Birinji elementiň tipi bellenilýär.
+            b)Birinji elementiň tipi bellenilýär.
 
         IKINJI ELEMENT
-        Eger element näbelli tip gaýtarsa
-            eger element näbelli ülňi bolsa,
-                näbelli ülňileriň arasyna salynýar.
-            ýa   element näbelli funksiýa bolsa
-                näbelli funksiýalaryň arasyna salynýar.
-        Ýa elementiň gaýtaran tipi SAN ýa DROB bolmasa
-            "NÄDOGRY tip geldi" diýen ýalňyşlyk gaýtarylýar.
+        3)Eger element näbelli tip gaýtarsa
+            a)"NÄDOGRY tip geldi" diýen ýalňyşlyk gaýtarylýar.
         Ýa eger birinji element hem gaýtarýan tipi belli bolup, iki elementiň tipleri gabat gelmese
-            "Nädogry tip geldi" diýen ýalňyşlyk gaýtarylýar.
+            b)"Nädogry tip geldi" diýen ýalňyşlyk gaýtarylýar.
 
-        Şowlulyk gaýtarylýar.
+        4)Şowlulyk gaýtarylýar.
     */
 
     int e1_class = -1, e1_type = -1, e3_class = -1, e3_type = -1;
@@ -170,19 +159,7 @@ int semantic_cmd_arif(command *cmd)
         (e1->type==PAREN_ITEM &&
         PAREN_RETURN_TYPE[e1->paren.type](&e1->paren, &e1_class, &e1_type) && e1_class!=TOK_CLASS_UNDEFINED))
     {
-        if (e1_class==TOK_CLASS_UNKNOWN)
-        {
-            if (e1->type==TOKEN_ITEM && e1->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
-            {
-                //unknown_used_var_add(item, item->potentional_types[0].value);
-                        //print_err(CODE7_LEFT_IDENT_NOT_DEFINED);
-            }
-            else if (e1->type==CMD_ITEM && e1->cmd.cmd_class==CMD_CLASS_FN && e1->cmd.cmd_type==FN_CALL_TYPE_NUM)
-            {
-                // UNKNOWN FUNCTION CALL
-            }
-        }
-        else if (e1_type!=INT_CONST_DATA_TOK_NUM && e1_type!=FLOAT_CONST_DATA_TOK_NUM)
+        if (e1_type!=INT_CONST_DATA_TOK_NUM && e1_type!=FLOAT_CONST_DATA_TOK_NUM)
         {
             printf("SAGBOL 1");
             if (e1->type==TOKEN_ITEM)
@@ -191,6 +168,10 @@ int semantic_cmd_arif(command *cmd)
                 print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&e1->cmd));
             else if(e1->type==PAREN_ITEM)
                 print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&e1->paren));
+        }
+        else
+        {
+
         }
     }
 
@@ -203,48 +184,25 @@ int semantic_cmd_arif(command *cmd)
         (e3->type==PAREN_ITEM &&
         PAREN_RETURN_TYPE[e3->paren.type](&e3->paren, &e3_class, &e3_type) && e3_class!=TOK_CLASS_UNDEFINED))
     {
-        if (e3_class==TOK_CLASS_UNKNOWN)
-        {
-            if (e3->type==TOKEN_ITEM && e3->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
-            {
-                if (e1_class!=TOK_CLASS_UNKNOWN && e1_class!=TOK_CLASS_UNDEFINED)
-                {
-
-                }
-                else
-                {
-
-                }
-                //unknown_used_var_add(item, item->potentional_types[0].value);
-                        //print_err(CODE7_LEFT_IDENT_NOT_DEFINED);
-            }
-            else if (e3->type==CMD_ITEM && e3->cmd.cmd_class==CMD_CLASS_FN && e3->cmd.cmd_type==FN_CALL_TYPE_NUM)
-            {
-                // UNKNOWN FUNCTION CALL
-            }
-        }
-        else if (e3_type!=INT_CONST_DATA_TOK_NUM && e3_type!=FLOAT_CONST_DATA_TOK_NUM)
+        if (e3_type!=INT_CONST_DATA_TOK_NUM && e3_type!=FLOAT_CONST_DATA_TOK_NUM)
         {
             printf("SAGBOL 2");
             if (e1->type==TOKEN_ITEM)
-                print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &e1->tok);
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, &e1->tok);
             else if(e1->type==CMD_ITEM)
-                print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&e1->cmd));
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, (token *)inf_get_last_token(&e1->cmd));
             else if(e1->type==PAREN_ITEM)
-                print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&e1->paren));
+                print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, (token *)inf_get_parens_last_token(&e1->paren));
         }
-        else if (e1_class!=TOK_CLASS_UNKNOWN && e1_class!=TOK_CLASS_UNDEFINED)
+        else if (!(e1_class==e3_class && e1_type==e3_type))
         {
-            if (!(e1_class==e3_class && e1_type==e3_type))
-            {
-                printf("SAGBOL 3");
-                if (e3->type==TOKEN_ITEM)
-                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &e1->tok);
-                else if(e3->type==CMD_ITEM)
-                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&e1->cmd));
-                else if(e3->type==PAREN_ITEM)
-                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&e1->paren));
-            }
+            printf("SAGBOL 3");
+            if (e1->type==TOKEN_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, &e1->tok);
+            else if(e1->type==CMD_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, (token *)inf_get_last_token(&e1->cmd));
+            else if(e1->type==PAREN_ITEM)
+                print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, (token *)inf_get_parens_last_token(&e1->paren));
         }
     }
 
@@ -253,47 +211,19 @@ int semantic_cmd_arif(command *cmd)
 }
 
 
-
 int cmd_arif_return_type(command *cmd, int *ret_class, int *ret_type)
 {
-    /** Eger birinji element belli bolsa
-            birinji elementiň tipi gaýtarylýar.
-        Ýa ikinji element belli bolsa
-            ikinji elementiň tipi gaýtarylýar.
-        Ýogsa
-            näbelli diýen ülňi gaýtarylýar.
-     *
+    /** Birinji elementiň tipi gaýtarylýar.
     **/
-    command_item *e1 = &cmd->items[0], *e3 = &cmd->items[2];
+    command_item *e1 = &cmd->items[0];
 
-    if((e1->type==TOKEN_ITEM &&
-        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num]
-        (&e1->tok, ret_class, ret_type) && *ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e1->type==CMD_ITEM &&
-        CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, ret_class, ret_type) &&
-        *ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e1->type==PAREN_ITEM &&
-        PAREN_RETURN_TYPE[e1->paren.type](&e1->paren, ret_class, ret_type) && *ret_class!=TOK_CLASS_UNDEFINED))
-    {
-        return 1;
-    }
-    else if((e3->type==TOKEN_ITEM &&
-        TOK_RETURN_TYPE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num]
-        (&e3->tok, ret_class, ret_type) && *ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e3->type==CMD_ITEM &&
-        CMD_RETURN_TYPE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd, ret_class, ret_type) &&
-        *ret_class!=TOK_CLASS_UNDEFINED) ||
-        (e3->type==PAREN_ITEM &&
-        PAREN_RETURN_TYPE[e3->paren.type](&e3->paren, ret_class, ret_type) && *ret_class!=TOK_CLASS_UNDEFINED))
-    {
-        return 1;
-    }
-    else
-    {
-        return 1;
-    }
-
-    return 0;
+    if(e1->type==TOKEN_ITEM)
+        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, ret_class, ret_type);
+    else if(e1->type==CMD_ITEM)
+        CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, ret_class, ret_type);
+    else if(e1->type==PAREN_ITEM)
+        PAREN_RETURN_TYPE[e1->paren.type](&e1->paren, ret_class, ret_type);
+    return 1;
 }
 
 
@@ -325,19 +255,15 @@ void cmd_arif_c_code(command *cmd, char **l, int *llen)
     }
     else if (e1->type==PAREN_ITEM)
     {
-        // TODO : paren_get_c_code();
+        /// TODO : paren_get_c_code();
     }
 
     // baglanma ülňiniň c dili üçin warianty goýulýar
     char *arif_c = TOK_CLASS_ARIF_CHARS[e2->tok.potentional_types[0].type_num][1];
     *llen += strlen(arif_c);
     *l = realloc(*l, *llen);
-    if (*l!=NULL)
-
     strncat(*l,arif_c,strlen(arif_c));
-    //debug_cmd(cmd);
-    // üçünji ülňi maglumat.
-    // Üçünji birlik identifikator bolsa, özüni geçirmeli.
+
     if (e3->type==CMD_ITEM)
     {
         CMD_GET_C_CODE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd, l, llen);
@@ -353,12 +279,6 @@ void cmd_arif_c_code(command *cmd, char **l, int *llen)
     // Üç birligi birikdirip täze setir ýasalýar.
     // Setire üç birlik we komandany gutaryjy çatylýar.
     // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
-    char *cmd_end = "; \n";
-
-    *llen += strlen(cmd_end);
-    *l = realloc(*l, *llen);
-
-    strncat(*l,cmd_end,strlen(cmd_end));
-    printf("%s\n", *l);
+    //printf("%s\n", *l);
 }
 

@@ -25,7 +25,8 @@ is_token_item tok_types[] = {
 	   {is_token_var_left_assign},
 	   {is_token_float_const_data},
 	   {is_token_int_const_data},
-	   {is_token_char_const_data}
+	   {is_token_char_const_data},
+	   {is_token_arif}
 };
 
 
@@ -37,7 +38,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // glob
     {get_tok_type_ident_ident_val_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ident
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // assign
-    {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type}  // const_data
+    {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type},  // const_data
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}  // arif
 };
 
 
@@ -49,7 +51,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // glob
     {tok_ident_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // ident
     {tok_assign_c_code,tok_assign_c_code, tok_assign_c_code, tok_assign_c_code}, // assign
-    {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code}  // const_data
+    {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code},  // const_data
+    {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code}  // arif
 };
 
 

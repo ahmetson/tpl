@@ -296,7 +296,7 @@
 	"cmds.h"
 	"tokens.h"
 
-1448187792 d:\c_source\tpl\cmds.h
+1448354337 d:\c_source\tpl\cmds.h
 	"parenthesis.h"
 	"tokens.h"
 
@@ -322,11 +322,11 @@
 1447123310 d:\c_source\tpl\token\token_types\const_data.h
 	"../token_structs.h"
 
-1447895864 d:\c_source\tpl\token\token_types.h
+1448354784 d:\c_source\tpl\token\token_types.h
 	"token_types/ident.h"
 	"token_structs.h"
 
-1448070383 d:\c_source\tpl\token\token_structs.h
+1448357780 d:\c_source\tpl\token\token_structs.h
 
 1448336674 d:\c_source\tpl\main\glob.h
 	"files.h"
@@ -357,7 +357,7 @@
 1446322954 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1448252369 source:d:\c_source\tpl\cmd\assign.c
+1448358879 source:d:\c_source\tpl\cmd\assign.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -368,7 +368,7 @@
 	"../cmds.h"
 	"../main/inf.h"
 
-1448347865 source:d:\c_source\tpl\cmds.c
+1448359935 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -379,12 +379,13 @@
 	"cmd/def_var.h"
 	"cmd/fn_call.h"
 	"cmd/call_glob_var.h"
+	"cmd/arif.h"
 	"algor.h"
 	"dev_debug.h"
 	"error.h"
 	"main/inf.h"
 
-1448244753 source:d:\c_source\tpl\dev_debug.c
+1448356471 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
 	<string.h>
 	"tpl.h"
@@ -453,7 +454,7 @@
 
 1440714998 source:d:\c_source\tpl\other.c
 
-1448335477 source:d:\c_source\tpl\parser.c
+1448357404 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -506,7 +507,7 @@
 
 1441562852 d:\c_source\tpl\token\keywords.h
 
-1447896917 source:d:\c_source\tpl\token\token_types.c
+1448355512 source:d:\c_source\tpl\token\token_types.c
 	<stdio.h>
 	<string.h>
 	<ctype.h>
@@ -546,7 +547,7 @@
 
 1445986091 d:\c_source\tpl\token\token_word.h
 
-1448336943 source:d:\c_source\tpl\tokens.c
+1448355930 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -560,7 +561,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1448345925 source:d:\c_source\tpl\tpl.c
+1448348306 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -629,10 +630,10 @@
 1446682587 d:\c_source\tpl\cmd\assign.h
 	"../cmds.h"
 
-1448345889 d:\c_source\tpl\cmd\def_var.h
+1448359912 d:\c_source\tpl\cmd\def_var.h
 	"../cmds.h"
 
-1448348077 source:d:\c_source\tpl\cmd\def_var.c
+1448359901 source:d:\c_source\tpl\cmd\def_var.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -757,9 +758,12 @@
 	"includes.h"
 	"files.h"
 
-1447895864 d:\c_source\tpl\token\token_types\arif.h
+1448356913 d:\c_source\tpl\token\token_types\arif.h
+	"../token_structs.h"
 
-1447895864 source:d:\c_source\tpl\token\token_types\arif.c
+1448356916 source:d:\c_source\tpl\token\token_types\arif.c
+	<stdlib.h>
+	<string.h>
 	"arif.h"
 
 1448347878 source:d:\c_source\tpl\cmd\call_glob_var.c
@@ -771,5 +775,18 @@
 	"../cmds.h"
 
 1448074588 d:\c_source\tpl\cmd\call_glob_var.h
+	"../cmds.h"
+
+1448359080 source:d:\c_source\tpl\cmd\arif.c
+	<string.h>
+	<stdlib.h>
+	"arif.h"
+	"../cmds.h"
+	"../main/glob.h"
+	"../main/inf.h"
+	"fn_call.h"
+	"../error.h"
+
+1448356170 d:\c_source\tpl\cmd\arif.h
 	"../cmds.h"
 

@@ -80,8 +80,12 @@ void debug_token_type(token_type *tok_type)
 	}
 	else if (tok_type->type_class==TOK_CLASS_CONST_DATA)
     {
-        printf("%s %d", CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], tok_type->type_num);
+        //printf("%s %d", CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], tok_type->type_num);
         strncpy(type, CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], strlen(CONST_DATA_TOK_NUM_WORDS[tok_type->type_num])+1);
+    }
+    else if (tok_type->type_class==TOK_CLASS_ARIF)
+    {
+        strncpy(type, ARIF_TOK_NUM_WORDS[tok_type->type_num], strlen(ARIF_TOK_NUM_WORDS[tok_type->type_num])+1);
     }
     else
 		strncpy(type, "", strlen("")+1);

@@ -32,6 +32,10 @@
 			<Option compilerVar="CC" />
 			<Option target="default" />
 		</Unit>
+		<Unit filename="cmd/arif.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/arif.h" />
 		<Unit filename="cmd/assign.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

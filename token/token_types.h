@@ -15,6 +15,7 @@
  * ident (class num: 3)
  * assign (class num: 4)
  * const_data (class num: 5)
+ * arif (class num: 6)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -40,5 +41,6 @@ int is_token_var_left_assign    (token *tok, char *tok_val);
 int is_token_int_const_data     (token *tok, char *tok_val);
 int is_token_float_const_data   (token *tok, char *tok_val);
 int is_token_char_const_data    (token *tok, char *tok_val);
+int is_token_arif               (token *tok, char *tok_val);
 
 #endif

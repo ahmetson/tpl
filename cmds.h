@@ -1,7 +1,6 @@
 #ifndef CMDS_H
 #define CMDS_H
 
-#define CONST_CMD_MAX_ITEMS 4
 /*
 COMMAND TYPES AND CLASSES ARE:
 	1. var class
@@ -24,6 +23,7 @@ extern int CMD_CLASS_DEF_VAR;
 extern int CMD_CLASS_ASSIGN;
 extern int CMD_CLASS_FN;
 extern int CMD_CLASS_CALL_GLOB_VAR;
+extern int CMD_CLASS_ARIF;
 
 extern int GLOB;
 extern int LOCAL;
@@ -84,7 +84,7 @@ typedef struct{
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 4
+#define CMDS_TYPES_NUM 5
 #endif
 
 #ifndef MAX_CLASS_TYPES
