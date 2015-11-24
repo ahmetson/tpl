@@ -5,8 +5,8 @@
 **/
 #ifndef TRANSLATOR_TO_C_ATTACH_GLOB_VARS_H
 #define TRANSLATOR_TO_C_ATTACH_GLOB_VARS_H
+#include "../main/glob.h"
 
-int is_unknown_var_glob_def();
-int identificate_unknown_vars_as_glob_vars();
+int glob_vars_def_files_include_add(glob_ident *gi);
 
 #endif // TRANSLATOR_TO_C_ATTACH_GLOB_VARS_H

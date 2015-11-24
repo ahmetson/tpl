@@ -18,8 +18,10 @@ short int TPL_ESC_KEY_MAX_LEN = 2;      // Harp we ESC key başlangyjy
 char      TPL_ESC_KEY_OPENER = '=';
 char      TPL_ESC_KEY_C_OPENER = '\\';
 
-/**
- * Açarmy ýa däldigini barlaýar
+/** Açarmy ýa däldigini barlaýar
+    @type - Dyrnaklaryň arasynda goşa dyrnak ulanyp bolýar. We Goşa dyrnaklaryň arasynda dyrnaklary ulanyp bolýar.
+            0 - Goşa dyrnaklaryň içinde
+            1 - Dyrnaklaryň içinde
 **/
 int is_tpl_ESC_key(char ESC_key, char type)
 {

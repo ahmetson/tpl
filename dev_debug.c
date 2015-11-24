@@ -76,11 +76,12 @@ void debug_token_type(token_type *tok_type)
 		strncpy(type, def_type_list[tok_type->type_num].tk_name, strlen(def_type_list[tok_type->type_num].tk_name)+1);
 	else if (tok_type->type_class==TOK_CLASS_ASSIGN)
 	{
-		strncpy(type, ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1], strlen(ASSIGN_TOK_NUM_WORDS[tok_type->type_num-1])+1);
+		strncpy(type, ASSIGN_TOK_NUM_WORDS[tok_type->type_num], strlen(ASSIGN_TOK_NUM_WORDS[tok_type->type_num])+1);
 	}
 	else if (tok_type->type_class==TOK_CLASS_CONST_DATA)
     {
-        strncpy(type, CONST_DATA_TOK_NUM_WORDS[tok_type->type_num-1], strlen(CONST_DATA_TOK_NUM_WORDS[tok_type->type_num-1])+1);
+        printf("%s %d", CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], tok_type->type_num);
+        strncpy(type, CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], strlen(CONST_DATA_TOK_NUM_WORDS[tok_type->type_num])+1);
     }
     else
 		strncpy(type, "", strlen("")+1);
@@ -135,18 +136,16 @@ void debug_GLOB_VAR_DEFS()
 
     printf("\n");
     int i;
-    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+    for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
     {
-        if (USER_VAR_DEFS[i].ns!=GLOB)
-            continue;
-        char *type_class = get_type_class(USER_VAR_DEFS[i].tok_class);
+        char *type_class = get_type_class(GLOBAL_VAR_DEFS[i].type_class);
 
-        const char *type       = def_type_list[ USER_VAR_DEFS[i].tok_type ].tk_name;
+        const char *type       = def_type_list[ GLOBAL_VAR_DEFS[i].type_num ].tk_name;
         printf("\t%d. %s faýlda, (%s) %s %s\n", i+1,
-            USER_VAR_DEFS[i].file_name,
+            FILES[GLOBAL_VAR_DEFS[i].inf_file_num].source,
             type_class,
             type,
-            USER_VAR_DEFS[i].ident);
+            GLOBAL_VAR_DEFS[i].name);
     }
 	printf("\n\n\n");
 }
@@ -158,18 +157,16 @@ void debug_LOCAL_VAR_DEFS()
 
 	printf("\n");
     int i;
-    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+    for(i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
     {
-        if (USER_VAR_DEFS[i].ns!=LOCAL)
-            continue;
-        char *type_class = get_type_class(USER_VAR_DEFS[i].tok_class);
+        char *type_class = get_type_class(LOCAL_VAR_DEFS[i].type_class);
 
-        const char *type       = def_type_list[ USER_VAR_DEFS[i].tok_type ].tk_name;
+        const char *type       = def_type_list[LOCAL_VAR_DEFS[i].type_num ].tk_name;
         printf("\t%d. %s faýlda, (%s) %s %s\n", i+1,
             CUR_FILE_NAME,
             type_class,
             type,
-            USER_VAR_DEFS[i].ident);
+            LOCAL_VAR_DEFS[i].name);
     }
 
 	printf("\n\n\n");

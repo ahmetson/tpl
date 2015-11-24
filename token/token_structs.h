@@ -63,6 +63,16 @@ typedef struct{
     int waited_type;
 }unknown_token;
 
+typedef struct{
+    int type_class;
+    int type_num;
+    char name[MAXLEN];
+    int inf_file_num;
+    int inf_char_num;
+    char inf_char;
+    int inf_line_num;
+}glob_ident;
+
 // Her tokenin tipi uchin funksiyalar
 typedef struct{
 	int (*is_token) (token *tok, char*token_val);

@@ -30,6 +30,7 @@ token parse_string(FILE *s)
         if (!is_token_string_const_data(&string_tok))
         {
             // Nadogry diyip hat chykarmaly
+            printf("SALAMM");
             print_err(CODE2_STRING_IS_WRONG, &string_tok);
         }
         else if (string_tok.potentional_types[0].is_compl==1)
@@ -159,8 +160,24 @@ int is_token_string_const_data(token *tok)
     if (len==1)
         return 1;
 
+    if (!is_valid_string_const_data(tok_val, 1))
+    {
+        return 0;
+    }
+    if (is_string_const_data_compl(tok_val, 0))
+    {
+        tok->potentional_types[0].is_compl = 1;
+        tok->is_compl = 1;
+    }
+    return 1;
+}
+
+/// adaty sozler uchin after_quote_pos - 1.
+int is_valid_string_const_data(char *tok_val, int after_quote_pos)
+{
+    int i, len = strlen(tok_val);
     char escape_quote = 0;
-    for (i=1; i<len; ++i)
+    for (i=after_quote_pos; i<len; ++i)
     {
         // ESC belgini açardan soň, azyndan iki sany harp bolmaly
         // a) ESC belginiň nyşany, b) sözlemi gutaryjy
@@ -168,8 +185,6 @@ int is_token_string_const_data(token *tok)
         {
             if (!is_tpl_ESC_key(tok_val[i+1], 0))
             {
-                // Tokeniň içinde ESC belgi bolmasa, token maksimum 3 belgiden ybarat bolmaly.
-                //delete_potentional_token_type(tok, TOK_CLASS_CONST_DATA, CHAR_CONST_DATA_TOK_NUM);
                 return 0;
             }
             else if (tok_val[i+1]=='"' && i+1==len-1)
@@ -179,14 +194,20 @@ int is_token_string_const_data(token *tok)
         }
     }
 
-    if (tok_val[strlen(tok_val)-1]=='"' && !escape_quote)
+    return 1;
+}
+
+
+int is_string_const_data_compl(char *tok_val, char onstack)
+{
+    if (strlen(tok_val)<2)
+        return 0;
+    if (tok_val[strlen(tok_val)-1]=='"' && tok_val[strlen(tok_val)-2]!='=')
     {
         tpl_ESC_key_to_c_ESC_key(tok_val);
-        change_last_string(tok_val);
-
-        tok->potentional_types[0].is_compl = 1;
-        tok->is_compl = 1;
+        if (!onstack)
+            change_last_string(tok_val);
+        return 1;
     }
-
-    return 1;
+    return 0;
 }

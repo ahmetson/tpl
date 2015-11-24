@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tpl" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="tpl" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="examples/test.tepl " />
+			</Target>
+			<Target title="debug">
+				<Option output="tpl" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Unit filename="algor.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="algor.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/arif.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/arif.h" />
+		<Unit filename="cmd/assign.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/assign.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/assign.o">
+			<Option link="0" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/def_var.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/def_var.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/fn_call.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmd/fn_call.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmds.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="cmds.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="dev_debug.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="dev_debug.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="error.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="error.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/3rdparty/std.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/3rdparty/std.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/3rdparty/std/chap_et.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/3rdparty/std/chap_et.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/fn.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="fns/fn.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/files.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/files.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/glob.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/glob.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/inf.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/inf.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/init.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/init.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/main_file.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/main_file.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/tpl_esc_keys.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="main/tpl_esc_keys.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="other.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="paren/types.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="paren/types.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="paren/types/empty.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="paren/types/empty.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="parenthesis.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="parenthesis.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="parser.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="parser.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="pragma/pragma.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="pragma/pragma.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="semantic.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="semantic.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="semantic/compare_token_types.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="semantic/compare_token_types.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/assign.o">
+			<Option link="0" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/harpl.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/harpl.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/keywords.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/keywords.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_structs.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/arif.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/arif.h" />
+		<Unit filename="token/token_types/assign.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/assign.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/const_data.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/const_data.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/def_types.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/def_types.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/glob.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/glob.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/ident.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_types/ident.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_word.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="token/token_word.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="tokens.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="tokens.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="tpl.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="tpl.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c.h">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c/attach_glob_vars.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c/attach_glob_vars.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c/files.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c/files.h">
+			<Option target="default" />
+		</Unit>
+		<Unit filename="translator_to_c/includes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translator_to_c/includes.h" />
+		<Unit filename="work_with_source.c">
+			<Option compilerVar="CC" />
+			<Option target="default" />
+		</Unit>
+		<Unit filename="work_with_source.h">
+			<Option target="default" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

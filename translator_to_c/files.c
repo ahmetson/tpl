@@ -11,26 +11,6 @@
 
 
 /**
- * Ýasalan koddaky global ülňiniň yglan edilen faýlynyň adyny gaýtarýar.
- *
- * @ident - global ülňiniň ady
-**/
-char *get_used_glob_file_name(char *ident)
-{
-    int i, len;
-    for(i=0; i<USER_VAR_DEFS_NUM; ++i)
-    {
-        if (USER_VAR_DEFS[i].ns!=GLOB)
-            continue;
-        len = (strlen(ident)<strlen(USER_VAR_DEFS[i].ident))?strlen(USER_VAR_DEFS[i].ident):strlen(ident);
-        if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
-            return USER_VAR_DEFS[i].file_name;
-    }
-    return "";
-}
-
-
-/**
  * Faýllaryň sanawyndan, berlen faýlyň adyna görä, faýlyň ýasalan headery gaýtarylýar
 **/
 char *get_header_source_by_source(char *s)

@@ -17,6 +17,10 @@ int is_def_var_cmd(command *cmd);
 
 // Komanda ulni yglan etme bolsa, ulni yglan etmelerin sanawyna goshyar
 int add_to_def_var_list(command *cmd);
+void global_called_vars_add(command *cmd);
 int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type);
+
+/// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
+void work_with_called_glob_vars();
 
 #endif // CMD_DEF_VAR_H

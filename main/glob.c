@@ -10,7 +10,8 @@
 #include "..\fns\fn.h"
 #include "main_file.h"
 
-int TEST = 0;
+int  TEST = 0;
+char CHAR_UNDERSCORE = '_';
 
 // Global, komandanyň soňyny aňladýar
 char CMD_END = '.';
@@ -32,16 +33,6 @@ long            CUR_ALGOR_SIZE;		        // Algoritmiň göwrümi
 int             CUR_ALGOR_ITEMS_NUM;	    // Algoritmdaki komandalaryň sany
 command        *CUR_ALGOR;                  // Algoritmiň poýnteri
 
-
-// Ýasaljak faýl boýunça yglan edilen ülňileriň sanawy.
-int             USER_VAR_DEFS_NUM;
-var_def_item   *USER_VAR_DEFS;
-
-
-// Hemme kodly faýllardaky global ulanylan ülňileriň sanawy
-long            UNKNOWN_USED_VARS_SIZE;
-int             UNKNOWN_USED_VARS_NUM;
-var_def_item   *UNKNOWN_USED_VARS;
 
 // Programmada çagyrylan näbelli funksiýalar
 int             UNKNOWN_CALLED_FNS_NUM;
@@ -72,58 +63,56 @@ command_item  **GLOB_SUBCMD_ITEMS_LIST;
 unsigned int    GLOB_SUBCMDS_NUM;
 
 
-/**
- * Programmadaky kodlaryň setirleri.
-**/
+/** Programmadaky kodlaryň setirleri. **/
 char ***GLOB_SOURCE_CODES;
 
 
-/**
- * Iki sany maglumat birliklerden we ikinji birligi konstanta maglumat bolan komandany
- * barlamak üçin, şeýle komandalaryň sanawy.
-**/
-right_data_cmd_item    *GLOB_RIGHT_DATA_CMDS_LIST;
-unsigned int            GLOB_RIGHT_DATA_CMDS_NUM;
-
-// Identifikator bolan ülňileriň tipleri, tä parserläp gutarylýança
-// näbelli bolýar
-both_ident_cmd_item    *GLOB_BOTH_IDENT_CMDS_LIST;
-unsigned int            GLOB_BOTH_IDENT_CMDS_NUM;
-
-// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
+/// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
 char                  **GLOB_STRINGS;
 unsigned long           GLOB_STRINGS_NUM;
 
-/**
- * Ýasaljak programmadaky faýllaryň sanawy
-**/
-file_item           *FILES;
+/** Ýasaljak programmadaky faýllaryň sanawy **/
+file_item              *FILES;
 
 /** Kodlarda ulanylýan skobkalarda (parenthesis), näçe sany element boljagy näbelli.
-    Şonuň üçin olar kuça-da (heap) ýerleşdirilýär.
-**/
-parenthesis_elem   **GLOB_PARENTHS;
-int                  GLOB_PARENTHS_NUM;
+    Şonuň üçin olar kuça-da (heap) ýerleşdirilýär. **/
+parenthesis_elem     **GLOB_PARENTHS;
+int                    GLOB_PARENTHS_NUM;
 
-/** Programmadaky goldanylýan funksiýalar
-**/
-func                *FUNCS;
-int                  FUNCS_NUM;
+/** Funksiýalar TPL derejede mümkin. Şonuň üçin kuçada ýerleşdirilýär **/
+func                  *FUNCS;
+int                    FUNCS_NUM;
 
-/** Programmadaky goldanylýan funksiýalaryň argumentleri
-**/
-func_arg           **FUNC_ARGS;
-int                  FUNC_ARGS_NUM; // Goşulan argumentleriň sanawy
+/** Funksiýalaryň argumentleri **/
+func_arg             **FUNC_ARGS;
+int                    FUNC_ARGS_NUM; // Goşulan argumentleriň sanawy
 
 /// Goşmaly faýllaryň sanawy
-file_incs           *INCLUDES;
-int                  INCLUDES_NUM;
+file_incs             *INCLUDES;
+int                    INCLUDES_NUM;
 
+/// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
+glob_ident          *GLOBAL_VAR_DEFS;
+int                  GLOBAL_VAR_DEFS_NUMS;
 
+/// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
+glob_ident          *GLOBAL_VAR_DECS;
+int                  GLOBAL_VAR_DECS_NUMS;
 
-/**
- * Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar
-**/
+/// Ýasaljak kodly faýlda yglan edilen ülňileriň maglumatlarynyň sanawy
+glob_ident          *LOCAL_VAR_DEFS;
+int                  LOCAL_VAR_DEFS_NUMS;
+
+/// Global yglan etmeli faýllaryň sanawy
+char               **GLOB_DECS_FILES;
+int                  GLOB_DECS_FILES_NUM;
+
+/// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
+/// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
+called_var         *GLOBAL_CALLED_VARS;
+int                 GLOBAL_CALLED_VARS_NUM;
+
+/** Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar */
 void free_globs(void)
 {
     int i;
@@ -146,6 +135,18 @@ void free_globs(void)
         free(UNKNOWN_CALLED_FNS);
     }
 
+    if (GLOBAL_CALLED_VARS_NUM)
+    {
+        for(i=0; i<GLOBAL_CALLED_VARS_NUM; ++i)
+        {
+            if(GLOBAL_CALLED_VARS[i].num)
+            {
+                free(GLOBAL_CALLED_VARS[i].ident);
+            }
+        }
+        free(GLOBAL_CALLED_VARS);
+    }
+
     if (GLOB_PARENTHS_NUM)
     {
         for (i=0; i<GLOB_PARENTHS_NUM; ++i)
@@ -156,38 +157,15 @@ void free_globs(void)
 		}
 
         free(GLOB_PARENTHS);
-
     }
-
-
-    if (GLOB_RIGHT_DATA_CMDS_NUM)
-    {
-        free(GLOB_RIGHT_DATA_CMDS_LIST);
-    }
-    if (GLOB_BOTH_IDENT_CMDS_NUM)
-    {
-        free(GLOB_BOTH_IDENT_CMDS_LIST);
-    }
-
-	// Global yglan edilen ülňiler boşadylýar.
-	if (USER_VAR_DEFS_NUM)
-        free(USER_VAR_DEFS);
-
-    // Ulanylan global ülňileriň sanawy boşadylýar
-    if (UNKNOWN_USED_VARS_NUM)
-        free(UNKNOWN_USED_VARS);
-
 
     // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
 	if (GLOB_SUBCMDS_NUM)
 	{
-
 		for (i=0; i<GLOB_SUBCMDS_NUM; ++i)
 		{
-			// Her komandanyň birlikleri üçin aýratyn ýer eýelenýär
 			free(GLOB_SUBCMD_ITEMS_LIST[i]);
 		}
-
 		free(GLOB_SUBCMD_ITEMS_LIST);
 	}
 
@@ -239,6 +217,24 @@ void free_globs(void)
         free(INCLUDES);
     }
 
+    /// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
+    if (GLOBAL_VAR_DEFS_NUMS)
+        free(GLOBAL_VAR_DEFS);
+
+    /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
+    if (GLOBAL_VAR_DECS_NUMS)
+        free(GLOBAL_VAR_DECS);
+
+    /// Global yglan etmeli faýllaryň sanawy
+    if (GLOB_DECS_FILES_NUM)
+    {
+        for (i=0; i<GLOB_DECS_FILES_NUM; ++i)
+        {
+            if (GLOB_DECS_FILES[i]!=NULL)
+            free(GLOB_DECS_FILES[i]);
+        }
+        free(GLOB_DECS_FILES);
+    }
     /*if (COMPARE_IDENTS_NUM)
         free(COMPARE_IDENTS);*/
 
@@ -266,5 +262,12 @@ void free_locals(void)
     {
         free(cmd.items);
         cmd.items = NULL;
+    }
+
+    if (LOCAL_VAR_DEFS_NUMS)
+    {
+        LOCAL_VAR_DEFS_NUMS=0;
+        free(LOCAL_VAR_DEFS);
+        LOCAL_VAR_DEFS = NULL;
     }
 }

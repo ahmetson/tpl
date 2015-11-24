@@ -1,0 +1,50 @@
+/** Arifmetiki operatorlar:
+ *  +, -, *, :
+ **/
+#include <stdlib.h>
+#include <string.h>
+#include "arif.h"
+
+
+/** GOŞMAK +
+**/
+int TOK_CLASS_ARIF_PLUS_TYPE = 0;
+
+/** AÝYRMAK -
+**/
+int TOK_CLASS_ARIF_MINUS_TYPE = 1;
+
+/** KÖPELTMEK *
+**/
+int TOK_CLASS_ARIF_MULTI_TYPE = 2;
+
+/** BÖLMEK :
+**/
+int TOK_CLASS_ARIF_DIV_TYPE = 3;
+
+
+// Arifmetiki operatorlar üçin ulanylýan harplar.
+// Ikinji element bolsa, C dilinde, arifmetiki operatorlar üçin ulanylýan harp ekwiwalentleri
+char *TOK_CLASS_ARIF_CHARS[TOK_CLASS_ARIF_TYPES_NUM][2] = {
+    {"+", "+"},
+    {"-", "-"},
+    {"*", "*"},
+    {":", "/"}
+};
+
+// Debaglamak üçin
+char *ARIF_TOK_NUM_WORDS[TOK_CLASS_ARIF_TYPES_NUM] = {
+    "Goşmak",
+    "Aýyrmak",
+    "Köpeltmek",
+    "Bölmek"
+};
+
+
+void tok_arif_c_code(token *tok, char **l, int *llen)
+{
+    *llen += 1;
+    *l = realloc(*l, *llen);
+    *l[*llen-2] = TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1][0];
+    *l[*llen-1] = '\0';
+}

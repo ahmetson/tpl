@@ -12,41 +12,13 @@
 #include "../main/glob.h"
 
 
-/**
- * Näbelli yglan edilen ülňiler başga ýasalan kodlarda yglan edilen global ülňidiginiň jogabyny gaýtarýar.
-**/
-int is_unknown_var_glob_def()
-{
-    int i;
-    for(i=0; i<UNKNOWN_USED_VARS_NUM; ++i)
-    {
-        token t; init_token(&t);
-        t.inf_file_num = UNKNOWN_USED_VARS[i].file_num;
-        token_type ty;
-        strncpy(ty.value, UNKNOWN_USED_VARS[i].ident, strlen(UNKNOWN_USED_VARS[i].ident)+1);
-        add_potentional_token_type(&t, ty);
-        if (!is_ident_used(&t,1))
-        {
-            inf_tok.inf_char = UNKNOWN_USED_VARS[i].start_char;
-            inf_tok.inf_char_num = UNKNOWN_USED_VARS[i].start_char_position;
-            inf_tok.inf_line_num = UNKNOWN_USED_VARS[i].line;
-            inf_tok.inf_file_num = UNKNOWN_USED_VARS[i].file_num;
-            return 0;
-        }
-        init_token(&t);
-    }
-
-    // Ülňi hiç yglan edilmändir.
-    return 1;
-}
-
 
 /**
  * Ýasalan kodly faýllarda, näbelli ulanylan ülňileriň yglan edilen ýasalan kodlaryna salgylanma ýasalýar.
  * (Bu şerti C programma talap edýär: #include "glob_var_def.h").
  *
 **/
-int identificate_unknown_vars_as_glob_vars()
+int glob_vars_def_files_include_add(glob_ident *gi)
 {
     // Näbelli ülňileriň ulanylan faýly
     file_item *f;
@@ -55,7 +27,7 @@ int identificate_unknown_vars_as_glob_vars()
 
     int i;
 
-    // ÜLŇILER:
+    /** ÜLŇILER:
     //      näbelli ülňiniň çagyrylan faýlynyň inkludlanýan faýl atlarynyň sanawynyň adresi (1-nji ülňi)
     //      näbelli ülňiniň çagyrylan faýlynyň, faýllar sanawyndan maglumatlarynyň adresi (2-nji ülňi)
     //      näbelli ülňiniň yglan edilen faýlynyň .h faýlynyň ady (3-nji ülňi)
@@ -79,43 +51,37 @@ int identificate_unknown_vars_as_glob_vars()
     //     .h faýlyň adresi, inklud etmeli elementiň inkludleriniň sanawyna goşulýar. (Funksiýa ilki goşmaly
     //     faýlyň inklud edilýän faýlda öň goşulanandygyny barlaýar. Eger goşulmadyk bolsa, onda goşýar).
 
-    //  P.S add_includes_to_source diýen funksiýa, soň inklud etmeli faýllara, içinde inklud etmeli faýllaryň atlaryny goşýar.
+    //  P.S add_includes_to_source diýen funksiýa, soň inklud etmeli faýllara, içinde inklud etmeli faýllaryň atlaryny goşýar.*/
 
 
-    for (i=0; i<UNKNOWN_USED_VARS_NUM; ++i)
+    f = &FILES[gi->inf_file_num];
+
+    // 2)
+    if ((f->num+1)>INCLUDES_NUM)
     {
-        // 1) Näbelli ülňiniň ulanylan faýlynyň maglumatlary
-        f = &FILES[UNKNOWN_USED_VARS[i].file_num];
-
-        // 2)
-        if ((f->num+1)>INCLUDES_NUM)
-        {
-            // 2.a)
-            fi = includes_add_new();
-        }
-        else
-        {
-            // 2.b)
-            fi = &INCLUDES[f->num];
-        }
-
-        // #1
-
-        // 3)
-        char var_def_f[MAX_FILE_LEN] = {0};
-        strncpy(var_def_f, "\"", strlen("\"")+1);
-
-        // 4)
-        strncat(var_def_f, get_header_source_by_source(get_used_glob_file_name(UNKNOWN_USED_VARS[i].ident)), strlen(get_header_source_by_source(get_used_glob_file_name(UNKNOWN_USED_VARS[i].ident))));
-
-        // 5)
-        strncat(var_def_f, "\"", strlen("\""));
-        //printf("%s\n", var_def_f);
-
-        // 6)
-        includes_file_add_include(fi, var_def_f);
-
+        // 2.a)
+        fi = includes_add_new();
     }
+    else
+    {
+        // 2.b)
+        fi = &INCLUDES[f->num];
+    }
+
+    // #1
+
+    // 3)
+    char var_def_f[MAX_FILE_LEN] = {0};
+    strncpy(var_def_f, "\"", strlen("\"")+1);
+
+    // 4)
+    strncat(var_def_f, f->h_source, strlen(f->h_source));
+
+    // 5)
+    strncat(var_def_f, "\"", strlen("\""));
+
+    // 6)
+    includes_file_add_include(fi, var_def_f);
 
     return 1;
 }

@@ -9,7 +9,7 @@
 #include "glob.h"
 
 /**
- * Programma-da ulanylýan faýllaryň sanwyna ýene täze faýl goşulýar.
+ * Programma-da ulanylýan faýllaryň sanawyna ýene täze faýl goşulýar.
 **/
 int add_to_file_list_file()
 {
@@ -92,4 +92,33 @@ file_item *get_file_by_name(char *name)
             return &FILES[i];
     }
     return &FILES[0];
+}
+
+
+
+int is_glob_defs_file_exist(char *fn)
+{
+    int i;
+    for(i=0; i<GLOB_DECS_FILES_NUM; ++i)
+    {
+        if(strlen(fn)==strlen(GLOB_DECS_FILES[i]) && strncmp(fn, GLOB_DECS_FILES[i], strlen(fn))==0)
+           return 1;
+    }
+    return 0;
+}
+
+
+void glob_defs_file_add(char fn[MAX_FILE_LEN])
+{
+    ++GLOB_DECS_FILES_NUM;
+    //printf("%d\n", strlen(*fn));
+    GLOB_DECS_FILES = realloc(GLOB_DECS_FILES, sizeof(*GLOB_DECS_FILES)*GLOB_DECS_FILES_NUM);
+    GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1] = NULL;
+    GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1] = realloc(GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1], fn[MAX_FILE_LEN]);
+    strncpy(GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1], fn, strlen(fn));
+        //printf("HAWAWAWA\n");
+  /*  ++GLOB_DECS_FILES_NUM;
+    //printf("%d\n", strlen(*fn));
+    GLOB_DECS_FILES = malloc(300);*/
+    //strncpy(GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1], fn, strlen(fn)+1);
 }
