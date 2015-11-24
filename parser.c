@@ -108,5 +108,9 @@ int is_valid_char()
         CUR_CHAR==CHAR_CONST_DATA_OPENER ||         // '
         CUR_CHAR==CHAR_MINUS ||                     // -
         CUR_CHAR==CHAR_UNDERSCORE ||                // _; drob sanlar başlap bilýär
-        CUR_CHAR==GLOB_IDENT_OPENER);               // @; global ülňileriň birinji harpy
+        CUR_CHAR==GLOB_IDENT_OPENER ||              // @; global ülňileriň birinji harpy
+        CUR_CHAR==ARIF_PLUS_CHAR  ||                /// ARIFMETIKI OPERATORLAR: +
+        CUR_CHAR==ARIF_MINUS_CHAR ||                // -; aýyrmak
+        CUR_CHAR==ARIF_MULTI_CHAR ||                // *; köpeltmek
+        CUR_CHAR==ARIF_DIV_CHAR);                   // :; bölmek
 }

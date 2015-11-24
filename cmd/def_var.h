@@ -23,4 +23,6 @@ int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type);
 /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
 void work_with_called_glob_vars();
 
+void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen);
+
 #endif // CMD_DEF_VAR_H

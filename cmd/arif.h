@@ -4,7 +4,12 @@
 #define CMD_ARIF_H
 #include "../cmds.h"
 
+/// Iki sany tipleri bolýar
+extern int CMD_ARIF_LOW_PRIOR_TYPE;    // +, -
+extern int CMD_ARIF_HIGH_PRIOR_TYPE;   // *, :
+
 int is_cmd_arif(command *cmd);
+
 int cmd_arif_mod(command *cmd, int item_num);
 
 int semantic_cmd_arif(command *cmd);

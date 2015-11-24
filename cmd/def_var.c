@@ -192,9 +192,6 @@ void global_called_vars_add(command *cmd)
     int  *fnum = &cmd->items[cmd->items_num-1].tok.inf_file_num;
     char *ident= cmd->items[cmd->items_num-1].tok.potentional_types[0].value;
 
-    if (ident[0]=='a')
-        printf("ASHLADY:\n");
-
     if (*fnum+1<GLOBAL_CALLED_VARS_NUM)
     {
         called_var *cv = &GLOBAL_CALLED_VARS[*fnum];
@@ -238,7 +235,7 @@ int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type)
     int ident_prev = cmd->items_num-1;
     *return_class = cmd->items[ident_prev-1].tok.potentional_types[0].type_class;
     *return_type  = cmd->items[ident_prev-1].tok.potentional_types[0].type_num;
-
+    set_def_type_alias_const_data(return_class, return_type);
     return 1;
 }
 
@@ -272,4 +269,20 @@ void work_with_called_glob_vars()
             includes_file_add_include(fi, var_def_f);
         }
     }
+}
+
+
+/** Eger ülňi yglan edilen wagty programçy tarapyndan maglumat bilen baglanylsa,
+    Bu ýagdaý iki tapgyra bölünýär.
+    Birinji ülňiniň özi yglan edilýär we TPL tarapyndan başlangyç maglumat içine salynýar.
+    Ikinjiden bolsa, ülňi çagyrylyp, programçynyň maglumaty bilen baglanylýar.
+
+    Bu funksiýa ikinji tapgyry edýär. Sebäbi Ülňiniň yglan edilmegi algoritmi ýazýan funksiýadan başga funksiýa edýär.
+**/
+void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
+{
+    /** Yglan etme başga komandalaryň birligi boljak bolsa, çagyrylmaly. Şonuň üçin identifikatory ýazylýar */
+    token *t = &cmd->items[cmd->items_num-1].tok;
+    TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
+
 }

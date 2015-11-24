@@ -72,7 +72,6 @@ int is_token_def_type(token *tok, char *tok_val)
 
 	return found;
 }
-// umumy
 int is_token_def_glob(token *tok, char *tok_val)
 {
 	int answer;
@@ -305,6 +304,35 @@ int is_token_char_const_data(token *tok, char *tok_val)
 	add_potentional_token_type(tok, tok_type);
 
     return 1;
+}
+int is_token_arif(token *tok, char *tok_val)
+{
+    if (strlen(tok_val)!=1)
+        return 0;
+
+    int i;
+    for (i=0; i<TOK_CLASS_ARIF_TYPES_NUM; ++i)
+    {
+        if (strncmp(tok_val, TOK_CLASS_ARIF_CHARS[i][0], strlen(TOK_CLASS_ARIF_CHARS[i][0]))==0)
+        {
+            token_type tok_type;
+            tok_type.type_num   = i;	// Number of token type
+            tok_type.type_class = TOK_CLASS_ARIF;
+            tok_type.need_value = 0;
+            tok_type.parenthesis = 1;
+            tok_type.is_compl = 1;
+            tok_type.type_must_check = 0;
+
+            tok->is_compl     = 1;
+            tok->type_class   = TOK_CLASS_ARIF;
+
+            add_potentional_token_type(tok, tok_type);
+
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 

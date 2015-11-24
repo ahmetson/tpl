@@ -12,6 +12,7 @@ All Command information
 #include "cmd/def_var.h"
 #include "cmd/fn_call.h"
 #include "cmd/call_glob_var.h"
+#include "cmd/arif.h"
 #include "algor.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -31,6 +32,7 @@ int CMD_CLASS_DEF_VAR = 1;
 int CMD_CLASS_ASSIGN = 2;
 int CMD_CLASS_FN = 3;
 int CMD_CLASS_CALL_GLOB_VAR = 4;
+int CMD_CLASS_ARIF = 5;
 
 int GLOB = 0;
 int LOCAL = 1;
@@ -39,7 +41,8 @@ is_cmd_item cmd_types[] = {
 	   {is_cmd_def_var},
 	   {is_cmd_assign},
 	   {is_cmd_fn_call},
-	   {is_cmd_call_glob_var}
+	   {is_cmd_call_glob_var},
+	   {is_cmd_arif}
 };
 
 // Dine debug uchin ulanylyar. Komanda tiplerinin atlary
@@ -47,14 +50,16 @@ char *cmd_classes[] = {
 	"var",
 	"assign",
 	"function",
-	"call_glob_var"
+	"call_glob_var",
+	"arifmethic"
 };
 
 char *cmd_class_types[][MAX_CLASS_TYPES] = {
 	{"def", 0},			// Var class
 	{"left", "right"},
 	{"call", 0},
-	{""}
+	{""},
+	{"low_prior", "high_prior"}
 };
 
 
@@ -62,8 +67,9 @@ int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd
     {empty_cmd_return_type,         empty_cmd_return_type},
     {cmd_def_var_return_type,       empty_cmd_return_type},//CMD_CLASS_DEF_VAR = 1;
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_ASSIGN = 2;
-    {cmd_fn_call_return_type,       empty_cmd_return_type},
-    {cmd_call_glob_var_return_type, empty_cmd_return_type} //CMD_CLASS_FNS = 3;
+    {cmd_fn_call_return_type,       empty_cmd_return_type},//CMD_CLASS_FNS = 3;
+    {cmd_call_glob_var_return_type, empty_cmd_return_type},//CMD_CLASS_CALL_GLOB_VAR_RETURN_TYOE = 4;
+    {cmd_arif_return_type,          cmd_arif_return_type} //CMD_CLASS_ARIF = 5;
 };
 
 
@@ -73,27 +79,30 @@ int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd) = {
     {empty_cmd_checking_semantic, empty_cmd_checking_semantic},//CMD_CLASS_DEF_VAR = 1;
     {semantic_cmd_assign,         empty_cmd_checking_semantic},//CMD_CLASS_ASSIGN = 2;
     {semantic_cmd_fn_call,        empty_cmd_checking_semantic},//CMD_CLASS_FNS = 3;
-    {semantic_cmd_call_glob_var,  empty_cmd_checking_semantic} //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {semantic_cmd_call_glob_var,  empty_cmd_checking_semantic},//CMD_CLASS_CALL_GLOB_VAR = 4;
+    {semantic_cmd_arif,           semantic_cmd_arif}           //CMD_CLASS_ARIF = 5;
 };
 // Command can contain maximum 3 tokens
 
 // Komandanyň klasy we tipi boýunça semantikasyny barlaýan funksiýalar
 int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
-    {MAX_NO_ITEMS,   MAX_NO_ITEMS},
+    {MAX_NO_ITEMS,    MAX_NO_ITEMS},
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_DEF_VAR = 1;
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_ASSIGN = 2;
     {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},   //CMD_CLASS_FNS = 3;
-    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS}    //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},   //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS}  //CMD_CLASS_ARIF = 5;
 };
 
 
 // Komandalaryň klasy we tipi boýunça, komandanyň tekstini ýazýan funksiýa çagyrylýar.
 void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len) = {
     {empty_cmd_c_code,          empty_cmd_c_code},
-    {empty_cmd_c_code,          empty_cmd_c_code}, //CMD_CLASS_DEF_VAR = 1;
+    {cmd_def_var_as_subcmd_c_code, empty_cmd_c_code}, //CMD_CLASS_DEF_VAR = 1;
     {cmd_assign_c_code,         cmd_assign_c_code},//CMD_CLASS_ASSIGN = 2;
     {cmd_fn_call_c_code,        empty_cmd_c_code},  //CMD_CLASS_FNS = 3;
-    {cmd_call_glob_var_c_code,  empty_cmd_c_code},  //CMD_CLASS_CALL_GLOB_VAR = 3;
+    {cmd_call_glob_var_c_code,  empty_cmd_c_code},  //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {cmd_arif_c_code,           cmd_arif_c_code}  //CMD_CLASS_ARIF = 5;
 };
 
 
