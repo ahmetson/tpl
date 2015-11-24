@@ -3,13 +3,6 @@
 
 int check_semantics(command *cmd);
 
-int unknown_used_var_add(token *tok, char *tok_name);
-
-
-int add_global_right_data_item(command *cmd);
-int add_global_both_ident_item(command *cmd);
-
-void work_with_unknown_fns();
 void work_with_unknown_tokens();
 void work_with_unknown_cmds();
 void work_with_unknown_parens();

@@ -216,9 +216,10 @@ int is_token_float_const_data(token *tok, char *tok_val)
 {
     int i, dot=0;
 
-    if (!isdigit(tok_val[0]) || tok_val[0]!='-' || tok_val[0]!=FLOAT_CONST_DATA_SEPARATOR)
+    if (!isdigit(tok_val[0]) && tok_val[0]!='-' && tok_val[0]!=FLOAT_CONST_DATA_SEPARATOR)
+    {
         return 0;
-
+    }
     for (i=1; i<strlen(tok_val); ++i)
     {
         if (!isdigit(tok_val[i]))
@@ -226,13 +227,14 @@ int is_token_float_const_data(token *tok, char *tok_val)
             if (tok_val[i]==FLOAT_CONST_DATA_SEPARATOR && !dot)
             {
                 // Ýasaljak kodda, droblar kodly faýlynyňkydan üýtgeşik bölüniji arkaly tapawutlanmaly.
-                tok_val[i] = FLOAT_CONST_DATA_C_CODE_SEPARATOR;
-
+                //tok_val[i] = FLOAT_CONST_DATA_C_CODE_SEPARATOR;
                 // Indiki sanlar drobyň galyndylarynyňky
                 dot = 1;
             }
             else
+            {
                 return 0;
+            }
         }
     }
 

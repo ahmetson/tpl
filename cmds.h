@@ -23,6 +23,7 @@ extern int CMD_CLASS_UNKNOWN;
 extern int CMD_CLASS_DEF_VAR;
 extern int CMD_CLASS_ASSIGN;
 extern int CMD_CLASS_FN;
+extern int CMD_CLASS_CALL_GLOB_VAR;
 
 extern int GLOB;
 extern int LOCAL;
@@ -30,6 +31,14 @@ extern int LOCAL;
 typedef struct command_item command_item;
 typedef struct command command;
 
+#ifndef TPL_MAX_ITEMS
+#define TPL_MAX_ITEMS 4
+#define MAX_THREE_ITEMS 3
+#define MAX_TWO_ITEMS 2
+#define MAX_ONE_ITEMS 1
+#define MAX_ZERO_ITEMS 0
+#define MAX_NO_ITEMS -1
+#endif
 
 // Bashga komandalar ya tokenler bolup bilyan komanda
 struct command{
@@ -75,7 +84,7 @@ typedef struct{
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 3
+#define CMDS_TYPES_NUM 4
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -116,10 +125,24 @@ int empty_cmd_return_type(command *cmd, int *cmd_class, int *cmd_type);
 int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd);
 int empty_cmd_checking_semantic(command *cmd);
 
+int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES];
+
 void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len);
 void empty_cmd_c_code(command *cmd, char **l, int *len);
 
 void unknown_cmd_add(command *cmd, int cmd_class, int cmd_type, int waited_class, int waited_type);
 
 command get_empty_cmd();
+
+int is_cmd_item_compl(command_item *ci);
+int is_paren_compl(parenthesis *p);
+
+command_item *subcmd_items_add(unsigned int items_num);
+
+
+int is_glob_decl_support_cmd(command *cmd);
+void glob_vars_decl_add(command *cmd);
+int is_glob_var_dec_exist(char *ident);
+void get_glob_var_dec_value_type(char *ident, int *c, int *t);
+void cmd_wrapper_c_code(char **line, int *llen);
 #endif

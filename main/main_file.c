@@ -22,7 +22,6 @@ char (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 int add_addtn_file_fns()
 {
     FILE *s = fopen(get_c_source_by_source(MAIN_FILE_NAME), "r+");
-
     int i, j;
 	int len = 1,        // Harplaryň sany
         c_len = 1,      // Birinji teswirdäki harplaryň sany, funksiýalaryň yglan edilen faýllaryny goýmak üçin
@@ -102,17 +101,20 @@ int add_addtn_file_fns()
 
             // Prototipler baş faýlda çagyrylýar, olaryň yglan edilen faýly baş faýla inklud edilmeli faýllaryň
             // sanawyna goşulýar
-		    for(i=0; i<MAIN_FILE_INCLUDES_NUM-1; ++i)
+		    for(i=0; i<MAIN_FILE_INCLUDES_NUM; ++i)
             {
+
                 //printf("Goshmaly:%s %d\n", included_files[i], files_num);
-                char putme[MAX_FILE_LEN+20];
+                char putme[MAX_FILE_LEN+20] = {0};
                 strncpy(putme, "\t", strlen("\t")+1);
                 strncat(putme, MAIN_FILE_INCLUDES[i][1], strlen(MAIN_FILE_INCLUDES[i][1]));
-                strncat(putme, " \n", strlen(" \n"));
 
+
+                strncat(putme, " \n", strlen(" \n"));
                 for(j=0; j<strlen(putme); ++j)
                 {
-                    l[len-1] = putme[j];
+                    l[len-1] =
+                    putme[j];
 
                     len++;
                     l = realloc(l, len);

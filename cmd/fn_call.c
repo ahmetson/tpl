@@ -16,7 +16,7 @@ int FN_CALL_TYPE_NUM = 0;
 **/
 int is_cmd_fn_call(command *cmd)
 {
-    if (cmd->items_num>DEF_VAR_MAX_TOKENS || !cmd->items_num)
+    if (cmd->items_num>CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type] || !cmd->items_num)
 	{
 		// Komandany savgaryp bolmady
 		return 0;
@@ -267,11 +267,6 @@ void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
     *llen += strlen(")");
     *line = realloc(*line, *llen);
     strncat(*line,")",strlen(")"));
-
-    char *cmd_end = "; \n";
-    *llen += strlen(cmd_end);
-    *line = realloc(*line, *llen);
-    strncat(*line,cmd_end,strlen(cmd_end));
 
     // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
 }

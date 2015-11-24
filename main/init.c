@@ -52,13 +52,6 @@ int init()
 	// Butin programma boyuncha ichki komandalaryn sanawy.
 	GLOB_SUBCMDS_NUM = 0;
 
-	// Global yglan edilen ulniler
-	USER_VAR_DEFS_NUM  = 0;
-	UNKNOWN_USED_VARS_SIZE = UNKNOWN_USED_VARS_NUM = 0;
-
-    // Semantika üçin sag tarapy konstanta maglumat we çep tarapy konstanta maglumat bolmadyk komandalary
-    // barlamak üçin
-    GLOB_RIGHT_DATA_CMDS_NUM = 0;
 
     // Ýasaljak programma-da ulanylýan harpl tokenleriň sanawy
     GLOB_STRINGS_NUM = 0;
@@ -68,8 +61,8 @@ int init()
 	CUR_FILE_NUM = 0;
 
     // Baş faýla salmaly faýllar bilen funksiýalar
-    MAIN_FILE_INCLUDES_NUM = 1;
-    MAIN_FILE_INCLUDES = malloc(sizeof(*MAIN_FILE_INCLUDES));
+    MAIN_FILE_INCLUDES_NUM = 0;
+    MAIN_FILE_INCLUDES = NULL;
 
     // C translator, ýasaljak kodlarda inklud edilmeli faýl atlary
     INCLUDES = NULL;
@@ -77,13 +70,9 @@ int init()
 
     init_token(&inf_tok);
 
-    GLOB_SOURCE_CODES = NULL;
-
     GLOB_PARENTHS     = NULL;
     GLOB_PARENTHS_NUM = 0;
 
-    USER_VAR_DEFS_NUM = 0;
-    USER_VAR_DEFS = NULL;
 
     FUNCS = NULL;
     FUNCS_NUM = 0;
@@ -100,9 +89,22 @@ int init()
     // Standard lib'däki faňksiýeler goşulýar
     add_std_funs();
 
-    // A->B, B->A yagday bolmaz yaly
-    //COMPARE_IDENTS = NULL;
-    //COMPARE_IDENTS_NUM = 0;
+    GLOBAL_VAR_DEFS = NULL;
+    GLOBAL_VAR_DEFS_NUMS = 0;
+
+    /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
+    GLOBAL_VAR_DECS = NULL;
+    GLOBAL_VAR_DECS_NUMS = 0;
+
+    /// Global yglan etmeli faýllaryň sanawy
+    GLOB_DECS_FILES = NULL;
+    GLOB_DECS_FILES_NUM = 0;
+
+    LOCAL_VAR_DEFS = NULL;
+    LOCAL_VAR_DEFS_NUMS = 0;
+
+    GLOBAL_CALLED_VARS = NULL;
+    GLOBAL_CALLED_VARS_NUM = 0;
 
 	// C dilinin kody uchin papkany tayynlayar
 	sys_mkdir(C_SOURCE_FOLDER, 1);

@@ -10,13 +10,14 @@
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="examples/test.tepl examples/test1.tepl examples/test2.tepl" />
+				<Option parameters="examples/test.tepl examples/test0.tepl" />
 			</Target>
 			<Target title="debug">
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
+				<Option parameters="examples/test.tepl examples/test0.tepl" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
@@ -42,6 +43,10 @@
 			<Option link="0" />
 			<Option target="default" />
 		</Unit>
+		<Unit filename="cmd/call_glob_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/call_glob_var.h" />
 		<Unit filename="cmd/def_var.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

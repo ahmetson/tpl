@@ -7,6 +7,7 @@
 
 #include "tpl.h"
 #include "fns.h"
+#include "cmds.h"
 #include "translator_to_c.h"
 
 // file length - 255, command length - 95
@@ -71,14 +72,11 @@ int c_trans_header_add_glob_def_var(FILE *f)
 
 	fputs("// Global yglan edilen ulniler.\n", f);
 
-	for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
 	{
-	    if (USER_VAR_DEFS[i].ns!=GLOB)
-            continue;
-		if (strlen(USER_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
-			!strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
+		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = USER_VAR_DEFS[i].tok_type;
+			type_num = GLOBAL_VAR_DEFS[i].type_num;
 
 			char *line = malloc(line_size);
 			line_len = strlen("extern ")+1;
@@ -95,12 +93,12 @@ int c_trans_header_add_glob_def_var(FILE *f)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(USER_VAR_DEFS[i].ident)>= line_size)
+			if (line_len+strlen(GLOBAL_VAR_DEFS[i].name)>= line_size)
 			{
-				line_len += strlen(USER_VAR_DEFS[i].ident)+100;
+				line_len += strlen(GLOBAL_VAR_DEFS[i].name)+100;
 				line = realloc(line, line_len);
 			}
-			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
+			strncat(line, GLOBAL_VAR_DEFS[i].name, strlen(GLOBAL_VAR_DEFS[i].name));
 			// Komanda gutardy
 			strncat(line, "; \n", strlen("; \n"));
 			//printf("%s global ulna goshulyar\n", line);
@@ -126,14 +124,11 @@ int c_trans_source_add_glob_def_var(FILE *f)
 
 	fputs("// Global yglan edilen ulniler.\n", f);
 
-	for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
 	{
-	    if (USER_VAR_DEFS[i].ns!=GLOB)
-            continue;
-		if (strlen(USER_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
-			!strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
+		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = USER_VAR_DEFS[i].tok_type;
+			type_num = GLOBAL_VAR_DEFS[i].type_num;
 
             line_len = strlen(def_type_list[type_num].value)+1;
 			char *line = malloc(line_len);
@@ -146,9 +141,9 @@ int c_trans_source_add_glob_def_var(FILE *f)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-            line_len += strlen(USER_VAR_DEFS[i].ident)+1;
+            line_len += strlen(GLOBAL_VAR_DEFS[i].name)+1;
             line = realloc(line, line_len);
-			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
+			strncat(line, GLOBAL_VAR_DEFS[i].name, strlen(GLOBAL_VAR_DEFS[i].name));
 
 			// Ülňilere başlangyç maglumatlar baglamaly
             line_len += strlen(" = ")+1;
@@ -166,7 +161,6 @@ int c_trans_source_add_glob_def_var(FILE *f)
             line = realloc(line, line_len);
 			strncat(line, "; \n", strlen("; \n"));
 
-			//printf("%s global ulna goshulyar\n", line);
 			fputs(line, f);
 			line_len = 100;
 
@@ -226,11 +220,9 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 		int i, type_num;
 		long line_len;
 
-		for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+		for(i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
 		{
-		    if (USER_VAR_DEFS[i].ns!=LOCAL)
-                continue;
-			type_num = USER_VAR_DEFS[i].tok_type;
+			type_num = LOCAL_VAR_DEFS[i].type_num;
 
             line_len = strlen("\t")+1;
 			char *line = malloc(line_len);
@@ -246,9 +238,9 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			line_len += strlen(USER_VAR_DEFS[i].ident)+1;
+			line_len += strlen(LOCAL_VAR_DEFS[i].name)+1;
             line = realloc(line, line_len);
-			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
+			strncat(line, LOCAL_VAR_DEFS[i].name, strlen(LOCAL_VAR_DEFS[i].name));
 
             // Ülňilere başlangyç maglumatlar baglamaly
             line_len += strlen(" = ");
@@ -281,14 +273,11 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 		int i, type_num, len;
 		long line_len;
 
-		for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+		for(i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
 		{
-
-
-            len = strlen(USER_VAR_DEFS[i].file_name)>strlen(CUR_FILE_NAME)?strlen(USER_VAR_DEFS[i].file_name):strlen(CUR_FILE_NAME);
-            if (strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, len)!=0)
+            if (LOCAL_VAR_DEFS[i].inf_file_num!=CUR_FILE_NUM)
                 continue;
-			type_num = USER_VAR_DEFS[i].tok_type;
+			type_num = LOCAL_VAR_DEFS[i].type_num;
 
             line_len = strlen("\t")+1;
 			char *line = malloc(line_len);
@@ -304,9 +293,9 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			line_len += strlen(USER_VAR_DEFS[i].ident);
+			line_len += strlen(LOCAL_VAR_DEFS[i].name);
             line = realloc(line, line_len);
-			strncat(line, USER_VAR_DEFS[i].ident, strlen(USER_VAR_DEFS[i].ident));
+			strncat(line, LOCAL_VAR_DEFS[i].name, strlen(LOCAL_VAR_DEFS[i].name));
 
             // Ülňilere başlangyç maglumatlar baglamaly
             line_len += strlen(" = ");
@@ -378,7 +367,6 @@ int work_with_translator(char main_file)
 
 	if (is_glob_def_var_in_cur())
 	{
-		//printf("Global ulni yglan edilipdir: %s\n", CUR_FILE_NAME);
 		c_trans_header_add_glob_def_var(h_source);
 		c_trans_source_add_glob_def_var(c_source);
 	}
@@ -396,12 +384,15 @@ int work_with_translator(char main_file)
     {
         main_file = 0;
 
+        MAIN_FILE_INCLUDES_NUM++;
+        MAIN_FILE_INCLUDES = realloc(MAIN_FILE_INCLUDES, MAIN_FILE_INCLUDES_NUM*(sizeof(*MAIN_FILE_INCLUDES)));
+
         // Baş faýla ýazmaly funksiýanyň prototipi yglan edilen faýl goşulýar
         strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][0], f_name, strlen(f_name)+1);
 
         // Faýlyň adyndan funksiýanyň ady ýazylýar.
         remove_ext(f_name, ".h");
-        //printf("Faýlyň ady:%s\n", f_name);
+       // printf("Faýlyň ady:%s\t", f_name);
 
         // Baş funksiýanyň prototipi
         c_trans_write_file_fn_prototype(h_source, f_name);
@@ -409,11 +400,13 @@ int work_with_translator(char main_file)
         c_trans_write_file_fn_open(c_source, f_name);
 
         // Baş faýla ýazmaly funksiýanyň prototipi.
-        MAIN_FILE_INCLUDES_NUM++;
-        MAIN_FILE_INCLUDES = realloc(MAIN_FILE_INCLUDES, MAIN_FILE_INCLUDES_NUM*(sizeof(*MAIN_FILE_INCLUDES)));
+
         char fn_prototype[MAX_FILE_LEN];
         c_trans_get_file_fn_prototype(f_name, fn_prototype);
         strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][1], fn_prototype, strlen(fn_prototype)+1);
+        //printf("Funksiyanyn ady:%s\n", fn_prototype);
+
+
     }
 
 	// Lokal yglan edilen funksiyalar
@@ -517,6 +510,7 @@ int c_trans_source_add_algor(FILE *f, int main_file)
     for (i=0; i<CUR_ALGOR_ITEMS_NUM; ++i)
     {
         CMD_GET_C_CODE[CUR_ALGOR[i].cmd_class][CUR_ALGOR[i].cmd_type](&CUR_ALGOR[i], &l, &len);
+        cmd_wrapper_c_code(&l, &len);
         //debug_cmd(&CUR_ALGOR[i]);
         //printf("%s\n", l);
         fputs(l, f);

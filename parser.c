@@ -96,13 +96,17 @@ int parse(FILE *source)
 /** TPL programma diliniň goldaýan harpymy ýa däldigini barlaýar **/
 int is_valid_char()
 {
-    return (isspace(CUR_CHAR) ||                        // boshluk
+    return (isspace(CUR_CHAR) ||                    // boshluk
         isalnum(CUR_CHAR) ||                        // harp we san
         CUR_CHAR==CMD_END ||                        // .
         CUR_CHAR==PRAGMA_START_CHAR ||              // #
-        CUR_CHAR==PARENTHESIS_OPEN ||               // (
+        CUR_CHAR==PARENTHESIS_OPEN ||               // (; Ýaýyň açyjysy
+        CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR ||     // ,; Skobkanyň içindäki elementleri aýyryjy
+        CUR_CHAR==PARENTHESIS_CLOSE ||              // ); Ýaýyň ýapyjysy
         CUR_CHAR==HARPL_OPENER ||                   // "
         CUR_CHAR==LEFT_ASSIGN_TOKEN_VALUE[0] ||     // <
         CUR_CHAR==CHAR_CONST_DATA_OPENER ||         // '
-        CUR_CHAR==CHAR_MINUS);                      // -
+        CUR_CHAR==CHAR_MINUS ||                     // -
+        CUR_CHAR==CHAR_UNDERSCORE ||                // _; drob sanlar başlap bilýär
+        CUR_CHAR==GLOB_IDENT_OPENER);               // @; global ülňileriň birinji harpy
 }

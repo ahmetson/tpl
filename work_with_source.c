@@ -30,7 +30,7 @@ void work_with_sources(int argc, const char **args)
 	{
 		//printf("Parsing etmeli: '%s'\n", args[i]);
 		// Häzirki parserlenýän kodly faýlyň ady
-		add_to_file_list_file();                // Ýasalmaly programmadanyň faýllarynyň sanawyna,
+		add_to_file_list_file();                // Ýasalmaly programmanyň faýllarynyň sanawyna,
 		add_to_file_list_source(args[i]);       // häzirki kodly faýl goşulýar
 		includes_add_new();
         strncpy(CUR_FILE_NAME, args[i], strlen(args[i])+1);

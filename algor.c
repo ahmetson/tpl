@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "main/glob.h"
 #include "tpl.h"
 #include "algor.h"
 #include "translator_to_c.h"
@@ -59,37 +60,57 @@ int algor_add_cmd(command add_cmd)
 }
 
 
-int add_user_var_def_item(command cmd)
+void var_def_add(command *cmd, char glob)
 {
-    int ident_tok_pos = (is_glob_def_var_cmd(&cmd)) ? 2 : 1;
-    char *tok_name = cmd.items[ident_tok_pos].tok.potentional_types[0].value;
+    int ident_tok_pos = 2;  // GLOBAL: @, def_type, ident
+    if (!glob)
+        ident_tok_pos = 1;  //  LOKAL: def_type, ident
+
+    char *tok_name = cmd->items[ident_tok_pos].tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
-	if (is_ident_used(&cmd.items[ident_tok_pos].tok, 0))
-        return 0;
+	if (glob)
+    {
+        if (is_ident_used(&cmd->items[ident_tok_pos].tok, 1))
+        {
+            CUR_PART = 4;
+            print_err(CODE4_VARS_IDENT_USED, &cmd->items[ident_tok_pos].tok);
+        }
+    }
+    else
+    {
+        if (is_ident_used(&cmd->items[ident_tok_pos].tok, 0))
+        {
+            CUR_PART = 4;
+            print_err(CODE4_VARS_IDENT_USED, &cmd->items[ident_tok_pos].tok);
+        }
+    }
 
-	var_def_item new_def = {
+	glob_ident new_def = {
+	    cmd->items[ident_tok_pos-1].tok.potentional_types[0].type_class,
+		cmd->items[ident_tok_pos-1].tok.potentional_types[0].type_num,
 		"",
-		cmd.items[ident_tok_pos-1].tok.inf_file_num,
-		cmd.items[ident_tok_pos-1].tok.inf_line_num,
-		cmd.items[ident_tok_pos-1].tok.inf_char_num,
-		cmd.items[ident_tok_pos-1].tok.inf_char,
-		"",
-		cmd.items[ident_tok_pos-1].tok.potentional_types[0].type_class,
-		cmd.items[ident_tok_pos-1].tok.potentional_types[0].type_num,
-        cmd.ns
+		cmd->items[ident_tok_pos-1].tok.inf_file_num,
+        cmd->items[ident_tok_pos-1].tok.inf_char_num,
+		cmd->items[ident_tok_pos-1].tok.inf_char,
+		cmd->items[ident_tok_pos-1].tok.inf_line_num
 	};
-	strncpy(new_def.file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
-	strncpy(new_def.ident, tok_name, strlen(tok_name)+1);
+
+	strncpy(new_def.name, tok_name, strlen(tok_name)+1);
 
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-    ++USER_VAR_DEFS_NUM;
-
-	long size = sizeof(*USER_VAR_DEFS) * (USER_VAR_DEFS_NUM);
-    USER_VAR_DEFS = realloc(USER_VAR_DEFS, size);
-
-	USER_VAR_DEFS[USER_VAR_DEFS_NUM-1] = new_def;
-	return 1;
+    if (glob)
+    {
+        ++GLOBAL_VAR_DEFS_NUMS;
+        GLOBAL_VAR_DEFS = realloc(GLOBAL_VAR_DEFS, sizeof(*GLOBAL_VAR_DEFS)*GLOBAL_VAR_DEFS_NUMS);
+        GLOBAL_VAR_DEFS[GLOBAL_VAR_DEFS_NUMS-1] = new_def;
+    }
+    else
+    {
+        ++LOCAL_VAR_DEFS_NUMS;
+        LOCAL_VAR_DEFS = realloc(LOCAL_VAR_DEFS, sizeof(*LOCAL_VAR_DEFS)*LOCAL_VAR_DEFS_NUMS);
+        LOCAL_VAR_DEFS[LOCAL_VAR_DEFS_NUMS-1] = new_def;
+    }
 }
 
 
@@ -100,54 +121,87 @@ char loc_source_file[] = ".c";
 int is_glob_def_var_in_cur()
 {
 	int i;
-	for(i=0; i<USER_VAR_DEFS_NUM; ++i)
+	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
 	{
-	    if (USER_VAR_DEFS[i].ns!=GLOB)
-            continue;
-		if (strlen(USER_VAR_DEFS[i].file_name)==strlen(CUR_FILE_NAME) &&
-			!strncmp(USER_VAR_DEFS[i].file_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)))
+		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 			return 1;
 	}
 	return 0;
 }
 
+int is_glob_var_def_exist(char *name)
+{
+    int i, len;
+    for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+    {
+        len = strlen(name)>strlen(GLOBAL_VAR_DEFS[i].name)?strlen(name):strlen(GLOBAL_VAR_DEFS[i].name);
+        if (strncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+int is_local_var_def_exist(char *name)
+{
+    int i, len;
+    for (i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
+    {
+        len = strlen(name)>strlen(LOCAL_VAR_DEFS[i].name)?strlen(name):strlen(LOCAL_VAR_DEFS[i].name);
+        if (strncmp(LOCAL_VAR_DEFS[i].name, name, len)==0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int is_var_def_exist(char *ident)
+{
+    if (is_glob_var_def_exist(ident) ||
+        is_glob_var_dec_exist(ident) ||
+        is_local_var_def_exist(ident))
+        return 1;
+}
 
 /*
  * Ulninin ady boyuncha onun on yglan edilendigini barlayar.
 **/
-int is_ident_used(token *t, char only_glob)
+int is_ident_used(token *t, char except_code)
+{
+    char *ident = t->potentional_types[0].value;
+
+    /// Ähli bolup biljek identifikatorlaryň bölümlerinde barlamaly.
+    ///     Ülňileriň adymy, funksiýalaryň adymy, açar sözlerimi we ş.m.
+    if (!except_code)
+    {
+        return is_var_def_exist(ident);
+    }
+    /// Global ülňileriň maglumatlary yglan edilen sanawda identifikator gözlenenok.
+    else if (except_code==1)
+    {
+        return is_local_var_def_exist(ident) || is_glob_var_def_exist(ident);
+    }
+    return 0;
+}
+
+
+glob_ident *glob_vars_def_get_by_name(char *name)
 {
     int i, len;
-    char *f = FILES[t->inf_file_num].source;
-    char *ident = t->potentional_types[0].value;
-    // Lokal yglan edilen ulnilerin arasynda barlanyar
-
-    for (i=0; i<USER_VAR_DEFS_NUM; ++i)
+    glob_ident *ret;
+    for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
     {
         //printf("%d: check <%s> that defined <%s>\n, current <%s> defined in <%s>\n", USER_VAR_DEFS_NUM, ident, f, USER_VAR_DEFS[i].ident, USER_VAR_DEFS[i].file_name);
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
-        if (USER_VAR_DEFS[i].ns==LOCAL)
+        len = strlen(name)>strlen(GLOBAL_VAR_DEFS[i].name)?strlen(name):strlen(GLOBAL_VAR_DEFS[i].name);
+        if (strncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
         {
-            if (only_glob)
-                continue;
-            len = strlen(f)>strlen(USER_VAR_DEFS[i].file_name)?strlen(f):strlen(USER_VAR_DEFS[i].file_name);
-            if (strncmp(USER_VAR_DEFS[i].file_name, f, len)==0)
-            {
-                len = strlen(ident)>strlen(USER_VAR_DEFS[i].ident)?strlen(ident):strlen(USER_VAR_DEFS[i].ident);
-                if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
-                {
-                    return 1;
-                }
-            }
-        }
-        else
-        {
-            len = strlen(ident)>strlen(USER_VAR_DEFS[i].ident)?strlen(ident):strlen(USER_VAR_DEFS[i].ident);
-            if (strncmp(USER_VAR_DEFS[i].ident, ident, len)==0)
-            {
-                return 1;
-            }
+            ret = &GLOBAL_VAR_DEFS[i];
+            break;
         }
     }
-    return 0;
+    return ret;
 }

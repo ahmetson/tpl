@@ -14,4 +14,6 @@ int is_token_string_const_data    (token *tok);
 token parse_string(FILE *f);
 void  string_prepare(token *string_toke);
 
+int is_valid_string_const_data(char *str, int after_quote_pos);
+int is_string_const_data_compl(char *tok_val, char onstack);
 #endif // TOKEN_HARPL_H

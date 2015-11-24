@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include "../main/main_file.h"
 
-char *get_used_glob_file_name(char *ident);
 char *get_header_source_by_source(char *s);
 char *get_c_source_by_source(char *s);
 

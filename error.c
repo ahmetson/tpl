@@ -40,6 +40,8 @@ int CODE0_NOT_FOUND_MAIN_FILE           = 2;
 int CODE0_IDENT_NOT_DEFINED             = 3;
 int CODE0_IDENT_CANT_ADD                = 4;
 int CODE0_INCLUDES_CANT_ADD             = 5;
+int CODE0_CANT_OPEN_FILE                = 6;
+int CODE0_UNSUPPORT_INCLUDE_FILE_CMD    = 7;
 
 int CODE1_FILE_NOT_FOUND                = 0;
 int CODE1_FILE_CANT_OPEN                = 1;
@@ -68,10 +70,12 @@ int CODE7_FN_ARG_NUMES_NOT_MATCH        = 4;
 int CODE7_UNKNOWN_FNS_CALLED            = 5;
 int CODE7_UNKNOWN_DATA_USED             = 6;
 int CODE7_A_TO_B_B_TO_A                 = 7;
+int CODE7_UNKNOWN_GLOB_VAR_CALLED       = 8;
+int CODE7_GLOB_VAR_MUST_DEF             = 9;
 //int CODE7_IDENT_NOT_DEFINED = 0;
-//int CODE7_LEFT_IDENT_DEFINED = 0;
-//int CODE7_LEFT_IDENT_NOT_DEFINED = 1;
-//int CODE7_RIGHT_IDENT_NOT_DEFINED = 2;
+int CODE7_LEFT_IDENT_NOT_DEFINED        = 10;
+int CODE7_RIGHT_IDENT_NOT_DEFINED       = 11;
+int CODE7_GLOB_VAR_NOT_MATCH_DATA_TYPE  = 12;
 
 /* Ýalňyşlyklaryň tekstleri */
 error_item err_items[] = {
@@ -89,6 +93,10 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         "Ülňi üçin faýly tapyp bolmady"},
     {0, 5, NO_FILE, 0, 0, 0, NO_CMD,
         "C translýatorynda faýllary birikdirip bolmady"},
+    {0, 6, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        "Pragma yglan edilen maglumatlaryň faýlyny açyp bilmedi"},
+    {0, 7, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        "Pragma arkaly görülýän faýllarda diňe yglan etme komandalary bolup bilýär"},
     // 1. FAÝL ******************************************************
     {1, 0, NO_FILE, 0, 0, 0, NO_CMD,
         "Kodly faýl gelmedi"},
@@ -141,7 +149,17 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Näbelli maglumat ulanyldy"},
     {7, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "'A'->'B', 'B'->'A' ýagdaýy boldy. TPL'de bu mümkin däl"}
+        "'A'->'B', 'B'->'A' ýagdaýy boldy. TPL'de bu mümkin däl"},
+    {7, 8, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Näbelli global ülňi çagyrldy"},
+    {7, 9, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Maglumatlara laýyk global ülňi bir ýerlerde yglan edilmeli"},
+    {7, 10, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Çep tarapdaky identifikator yglan edilmedi"},
+    {7, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Sag tarapdaky identifikator yglan edilmedi"},
+    {7, 12, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Yglan edilen global ülňiniň we bu ülňiniň yglan edilen maglumatlarynyň tipleri gabat gelenok"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
