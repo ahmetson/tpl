@@ -234,34 +234,6 @@ int empty_cmd_checking_semantic(command *cmd)
     return 0;
 }
 
-
-/** Nätanyş ulanylan komandalara goşulýar
-
-    \cmd - nätanyş komanda
-    \cmdClass - gabat gelen komandanyň klasy
-    \cmdType - gabat gelen komandanyň tipi
-    \arg - komanda-da, şu tokeniň deregine garaşylan maglumat tipi
-**/
-void unknown_cmd_add(command *cmd, int cmd_class, int cmd_type, int waited_class, int waited_type)
-{
-    unknown_cmd unk;
-    unk.cmd = cmd;
-    unk.cmd_class = cmd_class;
-    unk.cmd_type = cmd_class;
-    unk.waited_class = waited_class;
-    unk.waited_type = waited_type;
-
-    ++UNKNOWN_CMDS_NUM;
-
-    long size;
-    size = sizeof(unk)*UNKNOWN_CMDS_NUM;
-    UNKNOWN_CMDS = realloc(UNKNOWN_CMDS, size);
-
-    UNKNOWN_CMDS[UNKNOWN_CMDS_NUM-1] = unk;
-}
-
-
-
 void empty_cmd_c_code(command *cmd, char **l, int *len)
 {
     return;
@@ -462,7 +434,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                                 printf("SALAM 51");
                                 print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                             }
-
                             add_to_def_var_list(cmd);
                             global_called_vars_add(cmd);
                         }
@@ -534,35 +505,135 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
         /// 1.b)
         else if(cmd->items[last].type==CMD_ITEM)
         {
-            cmd->items[last].cmd.items_num++;
-            long size =cmd->items[last].cmd.items_num*(sizeof(*cmd->items[last].cmd.items));
-            cmd->items[last].cmd.items = realloc(cmd->items[last].cmd.items, size);
+            /** ŞERT #3: Dört we ondanam kän komandany saklaýan komanda tanalar ýaly edilýär.
+                         Onuň üçin, iň soňky komanda täze komandanyň bölegi bölegine öwrülýär.
+                #3.1)Eger iň soňky birlik gutarylan bolsa, onda
+                    #3.1.a)Täze komanda ýasalýar.
+                    #3.1.b)Komanda iň soňky birlik geçirilýär.
+                    #3.1.ç)Täze komandanyň ikinji birligi diýip goşulmaly obýek geçirilýär.
+                    #3.1.d)Eger täze komanda tanalmasa
+                        #3.1.d.I)"Komanda tanalmady" diýen ýalňyşlyk görkezilýär.
+                    Ýogsa
+                        #3.1.d.II)Täze komanda iň soňky birligiň deregine goýulýar.
+                        #3.1.d.III)Eger komanda iň soňky birligi üýtgän soň tanalmasa
+                            #3.1.d.III.1) "Komanda tanalmady" diýen ýalňyşlyk görkezilýär
+                Ýogsa eger token gutarylmadyk bolsa
+                ** öňki şertiň 1.b) bölümini alýar **
+                    #3.1.e)iň soňky birlige goşulmaly birlik goşulýar.
+                    #3.1.ä)Eger iň soňky birlik tanalmasa
+                        #3.1.ä.I)"Komanda tanalmady" diýen ýalňyşlyk görkezilýär.
+            */
+            command *lc = &cmd->items[last].cmd;
+            if (lc->is_compl && lc->items_num)
+            {
+                /// #3.1.a)
+                command newlc; init_cmd(&newlc, 0);
+                newlc.items_num = 2;
+                newlc.items = NULL;
+                newlc.items = realloc(newlc.items, sizeof(*newlc.items)*newlc.items_num);
 
-            /// 1.b.I)
-            command_item ci;
-            ci.type = item_type;
-            if(item_type==TOKEN_ITEM)
-                ci.tok = t;
+                /// #3.1.b)
+                command newlcsub;
+                newlcsub = *lc;
+                newlcsub.items = subcmd_items_add(newlcsub.items_num);
+                int i;
+                for (i=0; i<newlcsub.items_num; ++i)
+                {
+                    newlcsub.items[i] = lc->items[i];
+                }
+                command_item fci;
+                fci.type = CMD_ITEM;
+                fci.cmd  = newlcsub;
+                newlc.items[0] = fci;
+
+                /// #3.1.c)
+                command_item sci;
+                sci.type = item_type;
+                if(item_type==TOKEN_ITEM)
+                    sci.tok = t;
+                else if(item_type==CMD_ITEM)
+                    sci.cmd = c;
+                else if(item_type==PAREN_ITEM)
+                    sci.paren = p;
+                newlc.items[1] = sci;
+
+                /// #3.1.d)
+                if (!parse_cmd(&newlc))
+                {
+                    /// #3.1.d.I)
+                    free(newlc.items);
+                    newlc.items = NULL;
+                    printf("SALAM 60");
+                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(lc));
+                }
+                else
+                {
+                    /// #3.1.d.II)
+                    if (newlc.items_num!=lc->items_num)
+                    {
+                        lc->items = realloc(lc->items, sizeof(*lc->items)*lc->items_num);
+                    }
+                    lc->cmd_class = newlc.cmd_class;
+                    lc->cmd_type = newlc.cmd_type;
+                    lc->is_compl = newlc.is_compl;
+                    lc->items_num = newlc.items_num;
+                    lc->ns = newlc.ns;
+                    lc->parenthesis = newlc.parenthesis;
+                    lc->value_class = newlc.value_class;
+                    lc->value_type = newlc.value_type;
+                    for(i=0; i<lc->items_num; ++i)
+                    {
+                        lc->items[i] = newlc.items[i];
+                    }
+                    add_to_def_var_list(lc);
+                    global_called_vars_add(lc);
+                    free(newlc.items);
+                    newlc.items = NULL;
+
+                    /// #3.1.da.III)
+                    if (!parse_cmd(cmd))
+                    {
+                        /// #3.1.d.III.1)
+                        printf("SALAM 60");
+                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                    }
+                    //debug_cmd(cmd);
+                }
+            }
             else
-                ci.cmd = c;
-            cmd->items[last].cmd.items[cmd->items[last].cmd.items_num-1] = ci;
+            {
+                //debug_cmd(lc);
+                /// #3.1.e)
+                lc->items_num++;
+                long size =cmd->items[last].cmd.items_num*(sizeof(*cmd->items[last].cmd.items));
+                cmd->items[last].cmd.items = realloc(cmd->items[last].cmd.items, size);
 
-            /// 1.b.II)
-            if (!parse_cmd(&cmd->items[last].cmd))
-            {
-                 /// 1.b.II.a)
-                printf("SALAM 21");
-                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd->items[last].cmd));
+                command_item ci;
+                ci.type = item_type;
+                if(item_type==TOKEN_ITEM)
+                    ci.tok = t;
+                else
+                    ci.cmd = c;
+                cmd->items[last].cmd.items[cmd->items[last].cmd.items_num-1] = ci;
+
+                /// #3.1.ä)
+                if (!parse_cmd(&cmd->items[last].cmd))
+                {
+                    /// #3.1.ä.I)
+                    debug_cmd(&cmd->items[last].cmd);
+                    printf("SALAM 21");
+                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd->items[last].cmd));
+                }
+                else if (!parse_cmd(cmd))
+                {
+                    //debug_cmd(cmd);
+                     /// 1.b.ä.I)
+                    printf("SALAM 22");
+                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
+                }
+                add_to_def_var_list(&cmd->items[last].cmd);
+                global_called_vars_add(&cmd->items[last].cmd);
             }
-            else if (!parse_cmd(cmd))
-            {
-                //debug_cmd(cmd);
-                 /// 1.b.II.a)
-                printf("SALAM 22");
-                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-            }
-            add_to_def_var_list(&cmd->items[last].cmd);
-            global_called_vars_add(&cmd->items[last].cmd);
         }
     }
     else
@@ -767,7 +838,7 @@ command_item *subcmd_items_add(unsigned int items_num)
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
     }
 
-    long size = sizeof(**GLOB_SUBCMD_ITEMS_LIST)*2;
+    long size = sizeof(**GLOB_SUBCMD_ITEMS_LIST)*items_num;
     GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = NULL;
     GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = realloc(GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1], size);
 

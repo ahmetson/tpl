@@ -192,12 +192,21 @@ void global_called_vars_add(command *cmd)
     int  *fnum = &cmd->items[cmd->items_num-1].tok.inf_file_num;
     char *ident= cmd->items[cmd->items_num-1].tok.potentional_types[0].value;
 
-    if (*fnum+1<GLOBAL_CALLED_VARS_NUM)
+    /// Eger ülňi yglan edilen faýlynda çagyrylýan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
+    int i, len;
+    for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+    {
+        if ((strlen(GLOBAL_VAR_DEFS[i].name)==strlen(ident) &&
+            strncmp(GLOBAL_VAR_DEFS[i].name, ident, strlen(ident))==0) &&
+            *fnum==GLOBAL_VAR_DEFS[i].inf_file_num)
+            return;
+    }
+
+    if (*fnum+1<=GLOBAL_CALLED_VARS_NUM)
     {
         called_var *cv = &GLOBAL_CALLED_VARS[*fnum];
 
         /// Eger eýýäm şeýle ülňi öňem çagyrylan bolsa, onda ikinji gezek goşmak nämä gerek?
-        int i;
         for(i=0; i<cv->num; ++i)
         {
             if (strlen(cv->ident[i])==strlen(ident) && strncmp(cv->ident[i], ident, strlen(ident)==0))

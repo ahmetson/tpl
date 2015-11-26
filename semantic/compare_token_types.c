@@ -33,6 +33,7 @@ int get_var_def_value_type(char *ident, int *type_class, int *type_num, char glo
         {
             *type_class = items[i].type_class;
             *type_num   = items[i].type_num;
+            set_def_type_alias_const_data(type_class, type_num);
             return 1;
         }
     }

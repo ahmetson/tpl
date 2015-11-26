@@ -52,7 +52,6 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok);
 int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren);
 int recognize_paren(parenthesis *paren);
 
-void unknown_paren_add(parenthesis *paren, int cmd_class, int cmd_type, int waited_class, int waited_type);
 
 parenthesis get_empty_paren();
 #endif

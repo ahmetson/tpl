@@ -33,24 +33,6 @@ long            CUR_ALGOR_SIZE;		        // Algoritmiň göwrümi
 int             CUR_ALGOR_ITEMS_NUM;	    // Algoritmdaki komandalaryň sany
 command        *CUR_ALGOR;                  // Algoritmiň poýnteri
 
-
-// Programmada çagyrylan näbelli funksiýalar
-int             UNKNOWN_CALLED_FNS_NUM;
-command        *UNKNOWN_CALLED_FNS;
-
-unknown_token  *UNKNOWN_TOKENS;
-int             UNKNOWN_TOKENS_NUM;
-
-unknown_cmd    *UNKNOWN_CMDS;
-int             UNKNOWN_CMDS_NUM;
-
-unknown_paren  *UNKNOWN_PARENS;
-int             UNKNOWN_PARENS_NUM;
-
-
-/*compare_ident  *COMPARE_IDENTS;
-int             COMPARE_IDENTS_NUM;*/
-
 /**
  * Komandanyn ichindaki komandalaryn birlikleri kuchada yerleshmeli
  * Programmadan chykylanda, olary kuchadan boshatmaly
@@ -116,24 +98,6 @@ int                 GLOBAL_CALLED_VARS_NUM;
 void free_globs(void)
 {
     int i;
-
-    if (UNKNOWN_TOKENS_NUM)
-    {
-        free(UNKNOWN_TOKENS);
-    }
-    if (UNKNOWN_CMDS_NUM)
-    {
-        free(UNKNOWN_CMDS);
-    }
-    if (UNKNOWN_PARENS_NUM)
-    {
-        free(UNKNOWN_PARENS);
-    }
-
-    if(UNKNOWN_CALLED_FNS_NUM)
-    {
-        free(UNKNOWN_CALLED_FNS);
-    }
 
     if (GLOBAL_CALLED_VARS_NUM)
     {

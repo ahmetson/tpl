@@ -46,18 +46,6 @@ extern command cmd;
 extern token   inf_tok;
 
 
-extern int             UNKNOWN_CALLED_FNS_NUM;
-extern command        *UNKNOWN_CALLED_FNS;
-
-extern unknown_token  *UNKNOWN_TOKENS;
-extern int             UNKNOWN_TOKENS_NUM;
-
-extern unknown_cmd    *UNKNOWN_CMDS;
-extern int             UNKNOWN_CMDS_NUM;
-
-extern unknown_paren  *UNKNOWN_PARENS;
-extern int             UNKNOWN_PARENS_NUM;
-
 extern command        *CUR_ALGOR;
 extern long            CUR_ALGOR_SIZE;
 extern int             CUR_ALGOR_ITEMS_NUM;

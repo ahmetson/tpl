@@ -20,8 +20,8 @@ int algor_add_cmd(command add_cmd)
     // komanda dogrylygy barlanyar
     check_semantics(&add_cmd);
 
-    GLOB_SUBCMDS_NUM++;
-	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(command_item*)*GLOB_SUBCMDS_NUM);
+    ++GLOB_SUBCMDS_NUM;
+	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(*GLOB_SUBCMD_ITEMS_LIST)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
         printf("SALAM 1");
@@ -29,7 +29,7 @@ int algor_add_cmd(command add_cmd)
     }
     else
     {
-        long size = cmd.items_num * sizeof(command_item);
+        long size = cmd.items_num * sizeof(**GLOB_SUBCMD_ITEMS_LIST);
         GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1] = malloc(size);
 
             // Ichki komanda uchin yere, birlikler gechirilyar.

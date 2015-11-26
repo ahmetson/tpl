@@ -44,7 +44,7 @@ void make_std_chap_et_args(parenthesis *paren, char **line, int *llen)
     int flen = strlen("\"")+1, slen = strlen("")+1;
     first = realloc(first, flen);
     second = realloc(second, slen);
-    strncpy(first, "\"", strlen("\""));
+    strncpy(first, "\"", strlen("\"")+1);
     strncpy(second, "", strlen("")+1);
     int i;
 

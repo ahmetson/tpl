@@ -83,7 +83,7 @@ int semantic_cmd_fn_call(command *cmd)
     // CONTINUE
     if (!is_fn_exist(cmd->items[1].tok.potentional_types[0].value))
     {
-        unknown_fn_call_add(*cmd);
+        printf("Fayl:%s Setir: %d, nabelli funksiya yglan edildi", __FILE__, __LINE__);
         return 0;
     }
     else
@@ -141,41 +141,35 @@ int fn_call_cmd_return_type(command *cmd, int *return_class, int *ret_type)
 int check_fn_args(int argn, func_arg *args, parenthesis *paren)
 {
     // funksiýa çagyrylanda berlen maglumatlaryň barlananynyň nomeri
-    int checked_arg_pos = -1, i, j, ret_class, ret_type;
+    int checked_arg_pos = -1, i, j, ret_class = -1, ret_type = -1;
 
     if (argn==FN_ARGS_MULTIPLE)
     {
         for(j=0; j<paren->elems_num; ++j)
         {
-            if (((paren->elems[j].type==TOKEN_ITEM && TOK_RETURN_TYPE[paren->elems[j].tok.potentional_types[0].type_class]
-                    [paren->elems[j].tok.potentional_types[0].type_num](&paren->elems[j].tok, &ret_class, &ret_type) &&
-                     set_def_type_alias_const_data(&ret_class, &ret_type)) &&
-                     ret_class==args[0].type_class && ret_type==args[0].type_num) ||
-                ((paren->elems[j].type==CMD_ITEM && CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class]
-                    [paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type) &&
-                 set_def_type_alias_const_data(&ret_class, &ret_type)) &&
-                     ret_class==args[0].type_class && ret_type==args[0].type_num) ||
-                (paren->elems[j].type==PAREN_ITEM && PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type) &&
-                     set_def_type_alias_const_data(&ret_class, &ret_type) &&
-                     ret_class==args[0].type_class && ret_type==args[0].type_num)
-                )
+            if (paren->elems[j].type==TOKEN_ITEM)
+            {
+                token_type *tt = &paren->elems[j].tok.potentional_types[0];
+                TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren->elems[j].tok, &ret_class, &ret_type);
+            }
+            else if (paren->elems[j].type==CMD_ITEM)
+                CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class][paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type);
+            else if (paren->elems[j].type==PAREN_ITEM)
+                PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type);
+
+            if(ret_class==args[0].type_class && ret_type==args[0].type_num)
             {
                 checked_arg_pos = j;
             }
             else
             {
-                if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                    unknown_tok_add(&paren->elems[j].tok, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
-                else if(paren->elems[j].type==CMD_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                    unknown_cmd_add(&paren->elems[j].cmd, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
+                CUR_PART = 7;
+                if(paren->elems[j].type==TOKEN_ITEM)
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren->elems[j].tok);
+                else if(paren->elems[j].type==CMD_ITEM)
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren->elems[j].cmd));
                 else if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                    unknown_paren_add(&paren->elems[j].paren, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
-                else
-                {
-                    CUR_PART = 7;
-                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &inf_tok);
-                }
-                checked_arg_pos = j;
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren->elems[j].paren));
             }
         }
     }
@@ -185,30 +179,27 @@ int check_fn_args(int argn, func_arg *args, parenthesis *paren)
         {
             for(j=0; j<paren->elems_num; ++j)
             {
-                if ((paren->elems[j].type==TOKEN_ITEM && TOK_RETURN_TYPE[paren->elems[j].tok.potentional_types[0].type_class]
-                        [paren->elems[j].tok.potentional_types[0].type_num](&paren->elems[j].tok, &ret_class, &ret_type) &&
-                     ret_class==args[i].type_class && ret_type==args[i].type_num) ||
-                    (paren->elems[j].type==CMD_ITEM && CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class]
-                        [paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type) &&
-                     ret_class==args[i].type_class && ret_type==args[i].type_num) ||
-                    (paren->elems[j].type==PAREN_ITEM && PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type) &&
-                     ret_class==args[i].type_class && ret_type==args[i].type_num)
-                    )
+                if (paren->elems[j].type==TOKEN_ITEM)
+                {
+                    token_type *tt = &paren->elems[j].tok.potentional_types[0];
+                    TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren->elems[j].tok, &ret_class, &ret_type);
+                 }
+                else if(paren->elems[j].type==CMD_ITEM)
+                    CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class][paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type);
+                else if(paren->elems[j].type==PAREN_ITEM)
+                    PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type);
+
+                if (ret_class==args[i].type_class && ret_type==args[i].type_num)
                     checked_arg_pos = j;
                 else
                 {
-                    if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                        unknown_tok_add(&paren->elems[j].tok, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
-                    else if(paren->elems[j].type==CMD_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                        unknown_cmd_add(&paren->elems[j].cmd, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
+                    CUR_PART = 7;
+                    if(paren->elems[j].type==TOKEN_ITEM)
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren->elems[j].tok);
+                    else if(paren->elems[j].type==CMD_ITEM)
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren->elems[j].cmd));
                     else if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                        unknown_paren_add(&paren->elems[j].paren, CMD_CLASS_FN, FN_CALL_TYPE_NUM, args[0].type_class, args[0].type_num);
-                    else
-                    {
-                        CUR_PART = 7;
-                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &inf_tok);
-                    }
-                    checked_arg_pos = j;
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren->elems[j].paren));
                 }
             }
         }
@@ -260,7 +251,6 @@ void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
 
     \return     - taýyn C dilindäki analogy
     **/
-
     func_params->make_args_string(&cmd->items[0].paren, line, llen);
 
     // Funksiýany ýapýar

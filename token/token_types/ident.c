@@ -9,6 +9,7 @@
 // token type: <class> <number>
 int get_tok_type_ident_ident_val_type(token *tok, int *tok_class, int *tok_type)
 {
+
     //debug_token(tok);
     if (is_local_var_def_exist(tok->potentional_types[0].value))
     {

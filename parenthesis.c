@@ -220,33 +220,6 @@ int recognize_paren(parenthesis *paren)
     return 0;
 }
 
-
-/** Nätanyş ulanylan ýaýlara goşulýar
-
-    \paren - nätanyş ulanylan ýaý
-    \cmdClass - gabat gelen komandanyň klasy
-    \cmdType - gabat gelen komandanyň tipi
-    \arg - komanda-da, şu tokeniň deregine garaşylan maglumat tipi
-**/
-void unknown_paren_add(parenthesis *paren, int cmd_class, int cmd_type, int waited_class, int waited_type)
-{
-    unknown_paren unk;
-    unk.paren = paren;
-    unk.cmd_class = cmd_class;
-    unk.cmd_type = cmd_class;
-    unk.waited_class = waited_class;
-    unk.waited_type = waited_type;
-
-    ++UNKNOWN_PARENS_NUM;
-
-    long size;
-    size = sizeof(unk)*UNKNOWN_PARENS_NUM;
-    UNKNOWN_PARENS = realloc(UNKNOWN_PARENS, size);
-
-    UNKNOWN_PARENS[UNKNOWN_PARENS_NUM-1] = unk;
-}
-
-
 parenthesis get_empty_paren()
 {
     parenthesis p;

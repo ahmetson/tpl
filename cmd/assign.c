@@ -120,7 +120,6 @@ int is_cmd_assign(command *cmd)
            (cmd->items[2].type==PAREN_ITEM &&
             PAREN_RETURN_TYPE[cmd->items[2].paren.type](&cmd->items[2].paren, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED))
 		{
-
 		    assign_cmd_mod(cmd, 2);
 		}
 		else
@@ -184,19 +183,11 @@ int semantic_cmd_assign(command *cmd)
     // KOMANDANYN CHEPE BAGLANMA GORNUSHI UCHIN
     if (cmd->items[1].tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
     {
-        //printf("Chepe baglanyan komandanyn semantikasy barlanmaly\n");
-
-        // BIRINJI BIRLIK BARLANYAR
-        //      ulninin yglan etme bolsa                      - identifikator hokman goshulandyr shonun uchin barlananok
-        //      eyyam ygaln edilen ulnin identifikatory bolsa - identifikator hokman on bir yerde yglan edilmeli
         if (cmd->items[0].type==TOKEN_ITEM && cmd->items[0].tok.type_class==TOK_CLASS_IDENT)
         {
-            //debug_cmd(cmd);
-            //debug_GLOB_VAR_DEFS(GLOB_VAR_DEFS);
-            //debug_LOCAL_VAR_DEFS(LOCAL_VAR_DEFS);
             token *item = &cmd->items[0].tok; // Gysgaltmak uchin ulanlyar
 
-            if (!is_var_def_exist(item->potentional_types[0].value))
+            if (!is_local_var_def_exist(item->potentional_types[0].value))
             {
                 print_err(CODE7_LEFT_IDENT_NOT_DEFINED, item);
             }
@@ -211,15 +202,9 @@ int semantic_cmd_assign(command *cmd)
         //      eyyam yglan edilen ulnin identifikatory bolsa - identifikator hokman on bir yerde yglan edilmeli
         if (cmd->items[2].type==TOKEN_ITEM && cmd->items[2].tok.type_class==TOK_CLASS_IDENT)
         {
-            //debug_cmd(cmd);
-            //debug_GLOB_VAR_DEFS(GLOB_VAR_DEFS);
-            //debug_LOCAL_VAR_DEFS(LOCAL_VAR_DEFS);
             token *item = &cmd->items[2].tok; // Gysgaltmak uchin ulanlyar
 
-            // A->B, B->A yagdayy bolmaz yaly
-            //compare_idents_add_new(cmd->items[0].tok.potentional_types[0].value, *item);
-
-            if (!is_var_def_exist(item->potentional_types[0].value))
+            if (!is_local_var_def_exist(item->potentional_types[0].value))
             {
                 print_err(CODE7_RIGHT_IDENT_NOT_DEFINED, item);
             }
@@ -316,7 +301,7 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
         else if (cmd->items[0].type==TOKEN_ITEM)
         {
             token *t = &cmd->items[0].tok;
-            TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_class](t, l, llen);
+            TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
         }
 
         // baglanma ülňiniň c dili üçin warianty goýulýar
