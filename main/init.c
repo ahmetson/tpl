@@ -79,13 +79,6 @@ int init()
     FUNC_ARGS = NULL;
     FUNC_ARGS_NUM = 0;
 
-    UNKNOWN_CALLED_FNS_NUM = 0;
-    UNKNOWN_CALLED_FNS = NULL;
-
-    UNKNOWN_TOKENS_NUM = UNKNOWN_PARENS_NUM = UNKNOWN_CMDS_NUM = 0;
-    UNKNOWN_TOKENS = NULL;
-    UNKNOWN_PARENS = NULL;
-    UNKNOWN_CMDS = NULL;
     // Standard lib'däki faňksiýeler goşulýar
     add_std_funs();
 

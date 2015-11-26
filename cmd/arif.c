@@ -231,6 +231,8 @@ int cmd_arif_return_type(command *cmd, int *ret_class, int *ret_type)
 **/
 void cmd_arif_c_code(command *cmd, char **l, int *llen)
 {
+    //debug_cmd(cmd);
+    //printf("KOMANDANYN SONY NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\n");
     // Çepe baglanma:
     if (!(*llen))
     {

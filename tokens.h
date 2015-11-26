@@ -34,7 +34,6 @@ token parse_token(FILE *s);
 int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *tok_class, int *tok_num);
 int empty_tok_return_type(token *tok, int *tok_class, int *tok_num);
 
-void unknown_tok_add(token *tok, int cmd_class, int cmd_type, int waited_class, int waited_type);
 
 void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char **l, int *llen);
 void empty_tok_c_code(token *tok, char **l, int *llen);

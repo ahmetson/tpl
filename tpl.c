@@ -61,23 +61,6 @@ void tpl(int argc, const char **args)
 	// HER BERLEN KODLY FAÝLYŇ ALGORITMLERI ÝASALÝAR
 	work_with_sources(argc, args);
 
-    if (UNKNOWN_CALLED_FNS_NUM)
-    {
-        work_with_unknown_fns();
-    }
-
-    if (UNKNOWN_TOKENS_NUM)
-    {
-        work_with_unknown_tokens();
-    }
-    if (UNKNOWN_CMDS_NUM)
-    {
-        work_with_unknown_cmds();
-    }
-    if (UNKNOWN_PARENS_NUM)
-    {
-        work_with_unknown_parens();
-    }
     if (GLOBAL_VAR_DECS_NUMS)
     {
         work_with_glob_decs();

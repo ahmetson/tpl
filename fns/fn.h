@@ -51,12 +51,6 @@ void add_func_to_list(func f);
 int is_fn_exist(char *fn_name);
 
 
-/** Programma-da çagyrylan näbelli funksiýalaryň sanawyna ýene bir näbelli çagyrylan funksiýany goşýar
-    \tok    - çagyrylan funksiýanyň identifikatorynyň maglumatlary
-**/
-void unknown_fn_call_add(command cmd);
-
-
 /** Funksiýanyň maglumatlaryny gaýtarýar. Maglumatlaryny gaýtarmaly funksiýa ady boýunça alynýar
     Bu funksiýa hökmän is_fn_exist() funksiýa şowly bolan soň çagyrylmaly
 

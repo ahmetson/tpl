@@ -130,8 +130,6 @@ int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES];
 void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len);
 void empty_cmd_c_code(command *cmd, char **l, int *len);
 
-void unknown_cmd_add(command *cmd, int cmd_class, int cmd_type, int waited_class, int waited_type);
-
 command get_empty_cmd();
 
 int is_cmd_item_compl(command_item *ci);

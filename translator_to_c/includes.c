@@ -41,6 +41,11 @@ void includes_file_add_include(file_incs *fi, char *h_source)
                 return;
         }
     }
+    else
+    {
+        fi->num = 0;
+        fi->inc = NULL;
+    }
 
     // 1.b)
     fi->num++;
@@ -64,13 +69,11 @@ void translator_to_c_add_includes()
     //      ç) açylan papka ýapylýar.
 
     int i;
-
     for(i=0; i<INCLUDES_NUM; ++i)
     {
         if (INCLUDES[i].num)
         {
             FILE *s = fopen(FILES[i].c_source, "r+");
-            //printf("Ichine salmaly:%s\n", FILES[i].name);
             add_includes_to_source(s, INCLUDES[i].inc, INCLUDES[i].num);
 
             fclose(s);

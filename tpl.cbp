@@ -10,14 +10,14 @@
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="examples/test.tepl examples/test0.tepl" />
+				<Option parameters="examples/test.tepl " />
 			</Target>
 			<Target title="debug">
 				<Option output="tpl" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
-				<Option parameters="examples/test.tepl examples/test0.tepl" />
+				<Option parameters="examples/test.tepl" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />

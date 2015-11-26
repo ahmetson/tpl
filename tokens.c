@@ -284,31 +284,6 @@ int empty_tok_return_type(token *tok, int *tok_class, int *tok_num)
 }
 
 
-/** Nätanyş ulanylan tokenlere goşulýar
-
-    \tok - ulanylan token
-    \cmdClass - gabat gelen komandanyň klasy
-    \cmdType - gabat gelen komandanyň tipi
-    \arg - komanda-da, şu tokeniň deregine garaşylan maglumat tipi
-**/
-void unknown_tok_add(token *tok, int cmd_class, int cmd_type, int waited_class, int waited_type)
-{
-    unknown_token unk_tok;
-    unk_tok.tok = tok;
-    unk_tok.cmd_class = cmd_class;
-    unk_tok.cmd_type = cmd_class;
-    unk_tok.waited_class = waited_class;
-    unk_tok.waited_type = waited_type;
-
-    ++UNKNOWN_TOKENS_NUM;
-
-    long size;
-    size = sizeof(unk_tok)*UNKNOWN_TOKENS_NUM;
-    UNKNOWN_TOKENS = realloc(UNKNOWN_TOKENS, size);
-
-    UNKNOWN_TOKENS[UNKNOWN_TOKENS_NUM-1] = unk_tok;
-}
-
 void empty_tok_c_code(token *tok, char **l, int *llen)
 {
     return;
