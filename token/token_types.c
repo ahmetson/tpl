@@ -11,11 +11,13 @@
 #include "token_types/def_types.h"
 #include "token_types/const_data.h"
 #include "token_types/arif.h"
+#include "token_types/cmp.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
 #include "../fns.h"
 #include "../tokens.h"
+#include "../main/glob.h"
 
 // In uly token 'ident' - 6 harpdan ybarat
 
@@ -28,6 +30,7 @@ const int TOK_CLASS_IDENT        = 3;
 const int TOK_CLASS_ASSIGN		 = 4;
 const int TOK_CLASS_CONST_DATA   = 5;
 const int TOK_CLASS_ARIF         = 6;
+const int TOK_CLASS_CMP          = 7;
 
 // Used for debugging
 char *type_classes[] = {
@@ -37,7 +40,8 @@ char *type_classes[] = {
 	"ident",
 	"assign",
 	"const_data",
-	"arifmetika"
+	"arifmetika",
+	"deňeşdirme"
 };
 
 
@@ -186,8 +190,33 @@ int is_token_int_const_data(token *tok, char *tok_val)
     if (!isdigit(tok_val[0]) && tok_val[0]!=CHAR_MINUS)
     {
         return 0;
-
     }
+
+    /// Eger tokeniň birinji harpy '-' bolsa we tokenden öň komanda-da san bar bolsa
+    ///     Token arifmetiki aýyrmak belgini aňladýar.
+    /// Ýogsa
+    ///     Token negatiw sany aňladýar.
+    if (strlen(tok_val)==1 && tok_val[0]==ARIF_MINUS_CHAR &&
+        CUR_CMD!=NULL && CUR_CMD->items_num)
+    {
+        int ret_class = -1, ret_type = -1;
+        command_item *lci = get_cmd_item(CUR_CMD->items, CUR_CMD->items_num-1);
+        if (lci->type==CMD_ITEM)
+        {
+            command *c = &lci->cmd;
+            CMD_RETURN_TYPE[c->cmd_class][c->cmd_type](c, &ret_class, &ret_type);
+        }
+        else if(lci->type==TOKEN_ITEM)
+		   TOK_RETURN_TYPE[lci->tok.potentional_types[0].type_class]
+                         [lci->tok.potentional_types[0].type_num](&lci->tok, &ret_class, &ret_type);
+        else if(lci->type==PAREN_ITEM)
+            PAREN_RETURN_TYPE[lci->paren.type](&lci->paren, &ret_class, &ret_type);
+
+        if (ret_class==TOK_CLASS_CONST_DATA && (ret_type==INT_CONST_DATA_TOK_NUM || ret_type==FLOAT_CONST_DATA_TOK_NUM))
+        {
+            return 0;
+        }
+   }
 
     for (i=1; i<strlen(tok_val); ++i)
     {
@@ -219,6 +248,29 @@ int is_token_float_const_data(token *tok, char *tok_val)
     {
         return 0;
     }
+    if (strlen(tok_val)==1 && tok_val[0]==ARIF_MINUS_CHAR &&
+        CUR_CMD!=NULL && CUR_CMD->items_num)
+    {
+        int ret_class = -1, ret_type = -1;
+        command_item *lci = get_cmd_item(CUR_CMD->items, CUR_CMD->items_num-1);
+        if (lci->type==CMD_ITEM)
+        {
+            command *c = &lci->cmd;
+            //debug_cmd(c);
+            CMD_RETURN_TYPE[c->cmd_class][c->cmd_type](c, &ret_class, &ret_type);
+        }
+        else if(lci->type==TOKEN_ITEM)
+		   TOK_RETURN_TYPE[lci->tok.potentional_types[0].type_class][lci->tok.potentional_types[0].type_num](&lci->tok, &ret_class, &ret_type);
+        else if(lci->type==PAREN_ITEM)
+            PAREN_RETURN_TYPE[lci->paren.type](&lci->paren, &ret_class, &ret_type);
+
+        if (ret_class==TOK_CLASS_CONST_DATA && (ret_type==INT_CONST_DATA_TOK_NUM || ret_type==FLOAT_CONST_DATA_TOK_NUM))
+        {
+            return 0;
+        }
+   }
+
+
     for (i=1; i<strlen(tok_val); ++i)
     {
         if (!isdigit(tok_val[i]))
@@ -333,6 +385,38 @@ int is_token_arif(token *tok, char *tok_val)
     }
 
     return 0;
+}
+int is_token_cmp(token *tok, char *tok_val)
+{
+    if (!strlen(tok_val) || strlen(tok_val)>2)
+        return 0;
+
+    int i;
+    char found = 0;
+    for (i=0; i<TOK_CLASS_CMP_TYPES_NUM; ++i)
+    {
+
+        if (strlen(tok_val)==strlen(TOK_CLASS_CMP_CHARS[i][0]) &&
+            strncmp(tok_val, TOK_CLASS_CMP_CHARS[i][0], strlen(TOK_CLASS_CMP_CHARS[i][0]))==0)
+        {
+            token_type tok_type;
+            tok_type.type_num   = i;	// Number of token type
+            tok_type.type_class = TOK_CLASS_CMP;
+            tok_type.need_value = 0;
+            tok_type.parenthesis = 1;
+            tok_type.is_compl = 1;
+            tok_type.type_must_check = 0;
+
+            tok->is_compl     = 1;
+            tok->type_class   = TOK_CLASS_CMP;
+
+            add_potentional_token_type(tok, tok_type);
+
+            found = 1;
+        }
+    }
+
+    return found;
 }
 
 

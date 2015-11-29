@@ -2,6 +2,7 @@
  *
 **/
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "parenthesis.h"
@@ -23,6 +24,8 @@ int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, 
     empty_paren_return_type,
     paren_fns_args_return_type
 };
+
+
 
 
 /** Parserde skobka duşan wagty, içindäki elementler bilen işleýän bölüm
@@ -79,11 +82,17 @@ parenthesis parse_paren(FILE *s)
         }
         else if (CUR_CHAR==PARENTHESIS_OPEN)
         {
-           parenthesis in_paren = parenthesis_new();
+           parenthesis in_paren = parse_paren(s);
            param_elem_add_paren(&elem, in_paren);
         }
         else
         {
+            //if (CUR_CHAR=='-')
+            //    printf("SSS\n");
+            if (elem.type==CMD_ITEM)
+                CUR_CMD = &elem.cmd;
+            else
+                CUR_CMD = NULL;
             token tok = parse_token(s);
             paren_elem_add_token(&elem, tok);
         }
@@ -160,26 +169,54 @@ void paren_add_element(parenthesis *paren, parenthesis_elem elem)
 **/
 int paren_elem_add_token(parenthesis_elem *elem, token tok)
 {
+    /// Elementde öňem birlik bardy
     if (elem->type!=UNKNOWN_ITEM)
     {
-        command new_cmd;
-        init_cmd(&new_cmd, 0);
         if (elem->type==CMD_ITEM)
         {
-            cmd_add_item(&cmd, CMD_ITEM, get_empty_paren(), elem->cmd, get_empty_tok());
+            cmd_add_item(&elem->cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), tok);
         }
         else if (elem->type==PAREN_ITEM)
         {
-            cmd_add_item(&new_cmd, PAREN_ITEM, elem->paren, get_empty_cmd(), get_empty_tok());
+            command new_cmd;
+            init_cmd(&new_cmd, 0);
+            new_cmd.items_num = 2;
+            new_cmd.items = subcmd_items_add(new_cmd.items_num);
+            command_item fci;
+            fci.type = PAREN_ITEM;
+            fci.paren = elem->paren;
+            put_cmd_item(new_cmd.items , 0, fci);
+
+
+
+            command_item sci;
+            sci.type = TOKEN_ITEM;
+            sci.tok = tok;
+            put_cmd_item(new_cmd.items , 1, sci);
+
+            elem->cmd = new_cmd;
+            elem->type = CMD_ITEM;
         }
         else if (elem->type==TOKEN_ITEM)
         {
-            cmd_add_item(&new_cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), elem->tok);
-        }
-        cmd_add_item(&new_cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), tok);
+            command new_cmd;
+            init_cmd(&new_cmd, 0);
+            new_cmd.items_num = 2;
+            new_cmd.items = subcmd_items_add(new_cmd.items_num);
+            command_item fci;
+            fci.type = TOKEN_ITEM;
+            fci.tok = elem->tok;
+            put_cmd_item(new_cmd.items , 0, fci);
 
-        elem->cmd = new_cmd;
-        elem->type = CMD_ITEM;
+            command_item sci;
+            sci.type = TOKEN_ITEM;
+            sci.tok = tok;
+            put_cmd_item(new_cmd.items , 1, sci);
+
+            elem->cmd = new_cmd;
+            elem->type = CMD_ITEM;
+        }
+        return 1;
     }
     else
     {
@@ -199,6 +236,58 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok)
 **/
 int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren)
 {
+    /// Elementde öňem birlik bardy
+    if (elem->type!=UNKNOWN_ITEM)
+    {
+        if (elem->type==CMD_ITEM)
+        {
+            cmd_add_item(&elem->cmd, PAREN_ITEM, paren, get_empty_cmd(), get_empty_tok());
+        }
+        else if (elem->type==PAREN_ITEM)
+        {
+            command new_cmd;
+            init_cmd(&new_cmd, 0);
+            new_cmd.items_num = 2;
+            new_cmd.items = subcmd_items_add(new_cmd.items_num);
+            command_item fci;
+            fci.type = PAREN_ITEM;
+            fci.paren = elem->paren;
+            put_cmd_item(new_cmd.items, 0, fci);
+
+            command_item sci;
+            sci.type = PAREN_ITEM;
+            sci.paren = paren;
+            put_cmd_item(new_cmd.items, 1, sci);
+
+            elem->cmd = new_cmd;
+            elem->type = CMD_ITEM;
+        }
+        else if (elem->type==TOKEN_ITEM)
+        {
+            command new_cmd;
+            init_cmd(&new_cmd, 0);
+            new_cmd.items_num = 2;
+            new_cmd.items = subcmd_items_add(new_cmd.items_num);
+            command_item fci;
+            fci.type = TOKEN_ITEM;
+            fci.tok = elem->tok;
+            put_cmd_item(new_cmd.items , 0, fci);
+            command_item sci;
+            sci.type = PAREN_ITEM;
+            sci.paren = paren;
+            put_cmd_item(new_cmd.items , 1, sci);
+
+            elem->cmd = new_cmd;
+            elem->type = CMD_ITEM;
+        }
+        return 1;
+    }
+    else
+    {
+        elem->paren = paren;
+        elem->type = PAREN_ITEM;
+        return 1;
+    }
     return 0;
 }
 
@@ -224,4 +313,43 @@ parenthesis get_empty_paren()
 {
     parenthesis p;
     return p;
+}
+
+
+void paren_get_c_code(parenthesis *p, char **l, int *llen)
+{
+    if (!(*llen))
+    {
+        // Çepe baglanma:
+        *llen += strlen("\t")+1;
+        *l = realloc(*l, *llen);
+
+        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
+        strncpy(*l, "\t", strlen("\t")+1);
+    }
+
+    /// ( Ýaý açylýar
+    *llen += strlen("(");
+    *l = realloc(*l, *llen);
+    strncat(*l, "(", strlen("("));
+
+    /// ülňiler salynýar
+    if (p->type==PAREN_TYPE_FNS_ARGS)
+    {
+        int i;
+        for (i=0; i<p->elems_num; ++i)
+        {
+            if (p->elems[i].type==CMD_ITEM)
+                CMD_GET_C_CODE[p->elems[i].cmd.cmd_class][p->elems[i].cmd.cmd_type](&p->elems[i].cmd, l, llen);
+            else if (p->elems[i].type==TOKEN_ITEM)
+                TOK_GET_C_CODE[p->elems[i].tok.potentional_types[0].type_class][p->elems[i].tok.potentional_types[0].type_num](&p->elems[i].tok, l, llen);
+            else if (p->elems[i].type==PAREN_ITEM)
+                paren_get_c_code(&p->elems[i].paren, l, llen);
+        }
+    }
+
+    /// ) Ýaý ýapylýar
+    *llen += strlen(")");
+    *l = realloc(*l, *llen);
+    strncat(*l, ")", strlen(")"));
 }

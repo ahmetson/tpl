@@ -42,23 +42,3 @@ int get_var_def_value_type(char *ident, int *type_class, int *type_num, char glo
 }
 
 
-// Komandanyň görnüşini tanaýar
-int get_cmd_value_type(command *cmd, int *type_class, int *type_num)
-{
-    int item_pos = 0;
-    // Yglan etmek komandanyň identifikatorynyň
-    if (is_def_var_cmd(cmd))
-    {
-        if (is_glob_def_var_cmd(cmd))
-        {
-            item_pos = 1;
-        }
-
-        *type_class = cmd->items[item_pos].tok.potentional_types[0].type_class;
-        *type_num   = cmd->items[item_pos].tok.potentional_types[0].type_num;
-        return 1;
-    }
-
-    return 0;
-}
-

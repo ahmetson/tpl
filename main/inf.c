@@ -62,11 +62,12 @@ token *inf_get_last_token(command *cmd)
 {
     if (cmd->items_num)
     {
-        if(cmd->items[cmd->items_num-1].type==CMD_ITEM)
-            return inf_get_last_token(&cmd->items[cmd->items_num-1].cmd);
-        else if (cmd->items[cmd->items_num-1].type==PAREN_ITEM)
-            return inf_get_parens_last_token(&cmd->items[cmd->items_num-1].paren);
-        return &(cmd->items[cmd->items_num-1].tok);
+        command_item *lci = get_cmd_item(cmd->items , cmd->items_num-1);
+        if(lci->type==CMD_ITEM)
+            return inf_get_last_token(&lci->cmd);
+        else if (lci->type==PAREN_ITEM)
+            return inf_get_parens_last_token(&lci->paren);
+        return &lci->tok;
     }
     return &inf_tok;
 }

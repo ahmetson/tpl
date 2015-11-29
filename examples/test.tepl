@@ -1,6 +1,3 @@
 #b1
-
-
-harpl AT.
-AT <- "Medet".
-(AT)chap_et.
+@san a <- 1 + (12 + 1).
+@a <- (77 + 12) - 2 .

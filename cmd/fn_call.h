@@ -9,7 +9,7 @@
 extern int FN_CALL_TYPE_NUM;
 
 int is_cmd_fn_call(command *cmd);
-int fn_call_cmd_mod(command *cmd, int item_num);
+void fn_call_cmd_mod(command *cmd, int item_num);
 int fn_call_cmd_return_type(command *cmd, int *return_class, int *ret_type);
 int semantic_cmd_fn_call(command *cmd);
 

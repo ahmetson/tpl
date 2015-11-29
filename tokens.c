@@ -26,7 +26,8 @@ is_token_item tok_types[] = {
 	   {is_token_float_const_data},
 	   {is_token_int_const_data},
 	   {is_token_char_const_data},
-	   {is_token_arif}
+	   {is_token_arif},
+	   {is_token_cmp}
 };
 
 
@@ -39,7 +40,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {get_tok_type_ident_ident_val_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ident
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // assign
     {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type},  // const_data
-    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}  // arif
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // arif
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}  // cmp
 };
 
 
@@ -52,7 +54,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {tok_ident_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // ident
     {tok_assign_c_code,tok_assign_c_code, tok_assign_c_code, tok_assign_c_code}, // assign
     {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code},  // const_data
-    {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code}  // arif
+    {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code},  // arif
+    {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code}   // cmp
 };
 
 
@@ -63,16 +66,6 @@ void init_token(token *tok)
 	tok->ns = 0;							// Global ýa Lokal
 
 	int i; token_type tok_type;
-
-	if (tok->potentional_types_num>=1 && tok->potentional_types_num<=TOKEN_TYPES_NUM)
-	{
-	    for(i=0; i<(tok->potentional_types_num); i++)
-		{
-		    //tok->potentional_types[i].string_value = NULL;
-		    tok->potentional_types[i] = tok_type;
-			//
-		}
-    }
 
     tok->potentional_types_num = 0;								// Number of recognized types for token
 	//char source_file[MAXLEN];									// source file of token

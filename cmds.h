@@ -24,6 +24,7 @@ extern int CMD_CLASS_ASSIGN;
 extern int CMD_CLASS_FN;
 extern int CMD_CLASS_CALL_GLOB_VAR;
 extern int CMD_CLASS_ARIF;
+extern int CMD_CLASS_CMP;
 
 extern int GLOB;
 extern int LOCAL;
@@ -42,7 +43,7 @@ typedef struct command command;
 
 // Bashga komandalar ya tokenler bolup bilyan komanda
 struct command{
-	command_item *items;
+	int items;         /// Komandadaku birlikleri saklaýan global sanawdaky komandanyň nomeri
 	unsigned int items_num;
 	int cmd_type;
 	int cmd_class;
@@ -52,7 +53,8 @@ struct command{
 	int ns;
 	char parenthesis;
 	char inf_file_name[];
-};
+};// Bashga komandalar ya tokenler bolup bilyan komanda
+
 
 #include "parenthesis.h"
 #include "tokens.h"
@@ -74,17 +76,10 @@ typedef struct{
 
 extern is_cmd_item cmd_types[];
 
-typedef struct{
-    command *cmd;
-    int cmd_class;
-    int cmd_type;
-    int waited_class;
-    int waited_type;
-}unknown_cmd;
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 5
+#define CMDS_TYPES_NUM 6
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -93,8 +88,7 @@ typedef struct{
 
 extern char *cmd_classes[];
 
-#define CONST_MAX_CLASS_TYPES 2
-extern char *cmd_class_types[][CONST_MAX_CLASS_TYPES];
+extern char *cmd_class_types[][MAX_CLASS_TYPES];
 
 // Komanda-da bolup biljek tokenlerin sanawynda ulanylyan tip
 typedef struct{
@@ -135,7 +129,7 @@ command get_empty_cmd();
 int is_cmd_item_compl(command_item *ci);
 int is_paren_compl(parenthesis *p);
 
-command_item *subcmd_items_add(unsigned int items_num);
+int subcmd_items_add(unsigned int items_num);
 
 
 int is_glob_decl_support_cmd(command *cmd);
@@ -143,4 +137,9 @@ void glob_vars_decl_add(command *cmd);
 int is_glob_var_dec_exist(char *ident);
 void get_glob_var_dec_value_type(char *ident, int *c, int *t);
 void cmd_wrapper_c_code(char **line, int *llen);
+
+command_item **main_cmd_add(unsigned int items_num);
+command_item *get_cmd_item(int cmd_num, int item_num);
+int change_cmd_items_num(int cmd_num, int new_num);
+void put_cmd_item(int cmd_num, int item_num, command_item ci);
 #endif

@@ -8,6 +8,7 @@
 #include "token/token_types/assign.h"
 #include "token/token_types/const_data.h"
 #include "token/token_types/arif.h"
+#include "token/token_types/cmp.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"

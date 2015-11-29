@@ -16,7 +16,7 @@ int DEF_VAR_TYPE_NUM = 0;
 **/
 int is_cmd_def_var(command *cmd)
 {
-	if (cmd->items_num>CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type] || !cmd->items_num)
+	if (cmd->items_num>CMD_MAX_ITEMS[CMD_CLASS_DEF_VAR][0] || !cmd->items_num)
 	{
 		// Komandany saygaryp bolmady
 		return 0;
@@ -24,8 +24,8 @@ int is_cmd_def_var(command *cmd)
 
 	// Maksimum bolup biljek tokenlerden duryar, diymek global ulni yglan edilyar
 	// Emma global ulni yglan edilmandir
-	if (cmd->items_num==CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type] && cmd->items[0].type==TOKEN_ITEM &&
-		cmd->items[0].tok.type_class!=TOK_CLASS_GLOB)
+	command_item *fci = get_cmd_item(cmd->items,0);
+	if (cmd->items_num==CMD_MAX_ITEMS[CMD_CLASS_DEF_VAR][0] && fci->type==TOKEN_ITEM && fci->tok.type_class!=TOK_CLASS_GLOB)
 	{
 		return 0;
 	}
@@ -33,17 +33,15 @@ int is_cmd_def_var(command *cmd)
 	//printf("Birinji token barlanmaly\n");
 	int next=-1;
 	// Birinji token umumy ya maglumat tipi bolup bilyar
-	if (cmd->items[0].type==TOKEN_ITEM &&
-	cmd->items[0].tok.type_class==TOK_CLASS_GLOB)
+	if (fci->type==TOKEN_ITEM && fci->tok.type_class==TOK_CLASS_GLOB)
 	{
-		def_var_cmd_mod(cmd, &cmd->items[0].tok, 0);
+	    def_var_cmd_mod(cmd, &fci->tok, 0);
 		//debug_cmd(cmd);
 		next = TOK_CLASS_DEF_TYPE;
 	}
-	else if (cmd->items[0].type==1 &&
-	cmd->items[0].tok.type_class==TOK_CLASS_DEF_TYPE)
+	else if (fci->type==1 && fci->tok.type_class==TOK_CLASS_DEF_TYPE)
 	{
-		def_var_cmd_mod(cmd, &cmd->items[0].tok, 0);
+	    def_var_cmd_mod(cmd, &fci->tok, 0);
 		next = TOK_CLASS_IDENT;
 	}
 	else
@@ -56,14 +54,16 @@ int is_cmd_def_var(command *cmd)
 	// Yada identifikator bolup bilyar
 	if (cmd->items_num>1)
 	{
-		if ( cmd->items[1].type==TOKEN_ITEM &&
-		cmd->items[1].tok.type_class==next)
+        command_item *sci = get_cmd_item(cmd->items,1);
+		if (sci->type==TOKEN_ITEM && sci->tok.type_class==next)
 		{
-			def_var_cmd_mod(cmd, &cmd->items[1].tok, 1);
-			if (cmd->items[0].tok.type_class==TOK_CLASS_GLOB)
+            def_var_cmd_mod(cmd, &sci->tok, 1);
+			if (fci->tok.type_class==TOK_CLASS_GLOB)
 				next = TOK_CLASS_IDENT;
 			else
-				next = -1;
+            {
+               next = -1;
+            }
 		}
 		else
 		{
@@ -75,10 +75,10 @@ int is_cmd_def_var(command *cmd)
 	//	identifikator bolup bilyar.
 	if (cmd->items_num>2)
 	{
-		if(next>0 && cmd->items[2].type==TOKEN_ITEM &&
-		next==cmd->items[2].tok.type_class)
+	    command_item *tci = get_cmd_item(cmd->items,2);
+		if(next>0 && tci->type==TOKEN_ITEM && next==tci->tok.type_class)
 		{
-			def_var_cmd_mod(cmd, &cmd->items[2].tok, 2);
+			def_var_cmd_mod(cmd, &tci->tok, 2);
 		}
 		else
 		{
@@ -92,7 +92,7 @@ int is_cmd_def_var(command *cmd)
 
 
 // Def_var komandasy uchin tokene gora maglumatlaryny uytgedyar
-int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
+void def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 {
 	if (tok->type_class==TOK_CLASS_IDENT)
 	{
@@ -108,25 +108,19 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 			// Bu token in sonky. Shonun uchin lokalmy ya yokdugyny barlap bolyar
 			if (cmd->items_num<CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type])
 				cmd->ns = 1;
-
-			return 1;
 		}
 	}
 	else if (tok->type_class==TOK_CLASS_DEF_TYPE)
 	{
 		// Eger ulni global ulninin yglan edilshi bolsa, ikinji token,
 		// yogsa komanda-da birinji token bolmaly
-		if ((cmd->items[0].type==1 &&
-			 cmd->items[0].tok.type_class==TOK_CLASS_GLOB &&
-			 tok_num==1) ||
-			 tok_num==0)
+		command_item *fci = get_cmd_item(cmd->items, 0);
+		if ( (fci->type==1 && fci->tok.type_class==TOK_CLASS_GLOB && tok_num==1) || tok_num==0)
 		{
 			cmd->cmd_class = CMD_CLASS_DEF_VAR;
 			cmd->cmd_type = DEF_VAR_TYPE_NUM;
 			cmd->value_class = tok->potentional_types[0].type_class;
 			cmd->value_type  = tok->potentional_types[0].type_num;
-
-			return 1;
 		}
 	}
 	else if (tok->type_class==TOK_CLASS_GLOB)
@@ -138,11 +132,8 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 			cmd->cmd_type = DEF_VAR_TYPE_NUM;
 
 			cmd->ns = 0;
-
-			return 1;
 		}
 	}
-	return 0;
 }
 
 
@@ -150,7 +141,7 @@ int def_var_cmd_mod(command *cmd, token *tok, int tok_num)
 // Komandanyn global ulni yglan etmedigini barlayar
 int is_glob_def_var_cmd(command *cmd)
 {
-	if (is_def_var_cmd(cmd) && cmd->ns==GLOB)
+	if (cmd->is_compl && is_def_var_cmd(cmd) && cmd->ns==GLOB)
 		return 1;
 	return 0;
 }
@@ -187,10 +178,11 @@ int add_to_def_var_list(command *cmd)
 */
 void global_called_vars_add(command *cmd)
 {
-    if (!(cmd->cmd_class==CMD_CLASS_CALL_GLOB_VAR && cmd->is_compl))
+    if (!cmd->is_compl || cmd->cmd_class!=CMD_CLASS_CALL_GLOB_VAR)
         return;
-    int  *fnum = &cmd->items[cmd->items_num-1].tok.inf_file_num;
-    char *ident= cmd->items[cmd->items_num-1].tok.potentional_types[0].value;
+    command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1); // lci - last command item
+    int  *fnum = &lci->tok.inf_file_num;
+    char *ident= lci->tok.potentional_types[0].value;
 
     /// Eger ülňi yglan edilen faýlynda çagyrylýan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
     int i, len;
@@ -241,9 +233,10 @@ void global_called_vars_add(command *cmd)
 **/
 int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type)
 {
-    int ident_prev = cmd->items_num-1;
-    *return_class = cmd->items[ident_prev-1].tok.potentional_types[0].type_class;
-    *return_type  = cmd->items[ident_prev-1].tok.potentional_types[0].type_num;
+    int ident_prev = cmd->items_num-2;
+    command_item *ipci = get_cmd_item(cmd->items,ident_prev); // ipci - iden previoud command item
+    *return_class = ipci->tok.potentional_types[0].type_class;
+    *return_type  = ipci->tok.potentional_types[0].type_num;
     set_def_type_alias_const_data(return_class, return_type);
     return 1;
 }
@@ -291,7 +284,8 @@ void work_with_called_glob_vars()
 void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
 {
     /** Yglan etme başga komandalaryň birligi boljak bolsa, çagyrylmaly. Şonuň üçin identifikatory ýazylýar */
-    token *t = &cmd->items[cmd->items_num-1].tok;
+    command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1);
+    token *t = &lci->tok;
     TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
 
 }

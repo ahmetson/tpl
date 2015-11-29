@@ -8,7 +8,7 @@
 extern int DEF_VAR_TYPE_NUM;
 
 int is_cmd_def_var(command *cmd);
-int def_var_cmd_mod(command *cmd, token *tok, int tok_num);
+void def_var_cmd_mod(command *cmd, token *item, int item_num);
 
 
 // Gutarylan komandanyň ülňi yglan etme komandasymydygyny barlaýar
