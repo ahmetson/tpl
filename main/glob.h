@@ -113,6 +113,12 @@ extern int                  LOCAL_VAR_DEFS_NUMS;
 extern called_var          *GLOBAL_CALLED_VARS;
 extern int                  GLOBAL_CALLED_VARS_NUM;
 
+/// Häzirki içine parsing edilip goşulýan birlikli komanda
+command                    *CUR_CMD;
+
+command_item               *MAIN_CMD_ITEMS_LIST;
+command_item               *TMP_CMD_ITEMS_LIST;
+
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);
 void free_locals(void);

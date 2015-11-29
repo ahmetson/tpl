@@ -3,7 +3,7 @@
 #include "../cmds.h"
 
 int is_cmd_assign(command  *cmd);
-int assign_cmd_mod(command *cmd, int tok_num);
+void assign_cmd_mod(command *cmd, int item_num);
 int semantic_cmd_assign(command *cmd);
 
 // C translator

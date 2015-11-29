@@ -19,6 +19,7 @@ char CMD_END = '.';
 // Hazirki yasalyp duran komanda
 command         cmd;
 token           inf_tok;
+command_item   *MAIN_CMD_ITEMS_LIST;
 
 // Parsing edilip duran faýlyň maglumatlary
 int             CUR_PART;
@@ -94,6 +95,12 @@ int                  GLOB_DECS_FILES_NUM;
 called_var         *GLOBAL_CALLED_VARS;
 int                 GLOBAL_CALLED_VARS_NUM;
 
+
+/// Häzirki içine parsing edilip goşulýan birlikli komanda
+command             *CUR_CMD;
+
+command_item               *TMP_CMD_ITEMS_LIST;
+
 /** Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar */
 void free_globs(void)
 {
@@ -111,6 +118,17 @@ void free_globs(void)
         free(GLOBAL_CALLED_VARS);
     }
 
+    // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
+	if (GLOB_SUBCMDS_NUM)
+	{
+		for (i=0; i<GLOB_SUBCMDS_NUM; ++i)
+		{
+            if (GLOB_SUBCMD_ITEMS_LIST[i]!=NULL)
+			free(GLOB_SUBCMD_ITEMS_LIST[i]);
+		}
+		free(GLOB_SUBCMD_ITEMS_LIST);
+	}
+
     if (GLOB_PARENTHS_NUM)
     {
         for (i=0; i<GLOB_PARENTHS_NUM; ++i)
@@ -123,15 +141,6 @@ void free_globs(void)
         free(GLOB_PARENTHS);
     }
 
-    // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
-	if (GLOB_SUBCMDS_NUM)
-	{
-		for (i=0; i<GLOB_SUBCMDS_NUM; ++i)
-		{
-			free(GLOB_SUBCMD_ITEMS_LIST[i]);
-		}
-		free(GLOB_SUBCMD_ITEMS_LIST);
-	}
 
     // Ýasaljak kodda ulanyljak harpl tokenleriň maglumatlarynyň sanawy
 	if (GLOB_STRINGS_NUM)
@@ -224,8 +233,8 @@ void free_locals(void)
 	// Indi, olaryň alýan ýerleri boşadylýar.
 	if (cmd.items_num)
     {
-        free(cmd.items);
-        cmd.items = NULL;
+        free(MAIN_CMD_ITEMS_LIST);
+        MAIN_CMD_ITEMS_LIST = NULL;
     }
 
     if (LOCAL_VAR_DEFS_NUMS)

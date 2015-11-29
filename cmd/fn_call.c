@@ -22,32 +22,33 @@ int is_cmd_fn_call(command *cmd)
 		return 0;
 	}
 
-   if (cmd->items_num)
-   {
-        if (cmd->items[0].type==PAREN_ITEM)
+    if (cmd->items_num)
+    {
+       command_item *fci = get_cmd_item(cmd->items,0);
+        if (fci->type==PAREN_ITEM)
             fn_call_cmd_mod(cmd, 0);
         else
             return 0;
-   }
+    }
 
-   if (cmd->items_num==2)
-   {
-
-        if (cmd->items[1].type==TOKEN_ITEM &&
-            cmd->items[1].tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+    if (cmd->items_num==2)
+    {
+        command_item *sci = get_cmd_item(cmd->items,1);
+        if (sci->type==TOKEN_ITEM && sci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
             fn_call_cmd_mod(cmd, 1);
         else
         {
             return 0;
         }
-
-   }
-   return 1;
+    }
+    else if (cmd->items_num>2)
+        return 0;
+    return 1;
 }
 
 
 // Def_var komandasy uchin tokene gora maglumatlaryny uytgedyar
-int fn_call_cmd_mod(command *cmd, int item_num)
+void fn_call_cmd_mod(command *cmd, int item_num)
 {
     if (item_num==0)
     {
@@ -55,18 +56,12 @@ int fn_call_cmd_mod(command *cmd, int item_num)
         cmd->cmd_type  = FN_CALL_TYPE_NUM;
         cmd->is_compl  = 0;
         cmd->parenthesis = 1;
-
-        return 1;
     }
     else if (item_num==1)
     {
         cmd->is_compl  = 1;
-
-        return 1;
     }
-    return 0;
 }
-
 
 // Funksiça çagyryş komandasynyn semantikasy
 int semantic_cmd_fn_call(command *cmd)
@@ -81,13 +76,15 @@ int semantic_cmd_fn_call(command *cmd)
     // IKINJI BIRLIK BARLANÝAR
     // IDENTIFIKATOR BOLMALY, FUNKSIÝALARYŇ SANAWYNDA DUŞMALY
     // CONTINUE
-    if (!is_fn_exist(cmd->items[1].tok.potentional_types[0].value))
+    command_item *sci = get_cmd_item(cmd->items,1);
+
+    if (!is_fn_exist(sci->tok.potentional_types[0].value))
     {
         printf("Fayl:%s Setir: %d, nabelli funksiya yglan edildi", __FILE__, __LINE__);
         return 0;
     }
     else
-        f = fn_get_by_name(cmd->items[1].tok.potentional_types[0].value);
+        f = fn_get_by_name(sci->tok.potentional_types[0].value);
 
     // BIRINJI IDENTIFIKATOR BARLANÝAR
     //      Skobka bolmaly. Içinde islendik möçberde
@@ -95,9 +92,10 @@ int semantic_cmd_fn_call(command *cmd)
     //          harpl bolmaly
     //          funksiýa çagyrylyş bolmaly
     //          Ýa-da skobkanyň içi boş hem bolmaly.
-    if (!check_fn_args(f->args_num, f->args, &cmd->items[0].paren))
+    command_item *fci = get_cmd_item(cmd->items,0);
+    if (!check_fn_args(f->args_num, f->args, &fci->paren))
     {
-        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &cmd->items[1].tok);
+        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &sci->tok);
     }
     CUR_PART = prev_part;
 
@@ -106,7 +104,7 @@ int semantic_cmd_fn_call(command *cmd)
     file_incs *fi;
     // 1) Eger içine inklud etmeli faýla öň faýl goşulmadyk bolsa
     //     a) Içine inklud etmeli faýl taýynlanýar
-    if ((cmd->items[1].tok.inf_file_num+1)>INCLUDES_NUM)
+    if ((sci->tok.inf_file_num+1)>INCLUDES_NUM)
     {
         // 1.a)
         fi = includes_add_new();
@@ -114,7 +112,7 @@ int semantic_cmd_fn_call(command *cmd)
     else
     {
         // 1.b)
-        fi = &INCLUDES[cmd->items[1].tok.inf_file_num];
+        fi = &INCLUDES[sci->tok.inf_file_num];
     }
 
     // 2)
@@ -233,7 +231,8 @@ void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
 
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
-    func *func_params = fn_get_by_name(cmd->items[1].tok.potentional_types[0].value);
+    command_item *sci = get_cmd_item(cmd->items,1);
+    func *func_params = fn_get_by_name(sci->tok.potentional_types[0].value);
 
     *llen += strlen(func_params->c_name);
     *line = realloc(*line, *llen);
@@ -251,7 +250,8 @@ void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
 
     \return     - taýyn C dilindäki analogy
     **/
-    func_params->make_args_string(&cmd->items[0].paren, line, llen);
+    command_item *fci = get_cmd_item(cmd->items,0);
+    func_params->make_args_string(&fci->paren, line, llen);
 
     // Funksiýany ýapýar
     *llen += strlen(")");
@@ -270,7 +270,8 @@ int cmd_fn_call_return_type(command *cmd, int *return_class, int *return_type)
         *return_type  = 0;
         return 1;
     }
-    char *n = cmd->items[1].tok.potentional_types[0].value;
+    command_item *sci = get_cmd_item(cmd->items,1);
+    char *n = sci->tok.potentional_types[0].value;
     if(!is_fn_exist(n))
     {
         *return_class = TOK_CLASS_UNDEFINED;

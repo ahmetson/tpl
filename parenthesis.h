@@ -52,6 +52,8 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok);
 int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren);
 int recognize_paren(parenthesis *paren);
 
-
 parenthesis get_empty_paren();
+
+void paren_get_c_code(parenthesis *p, char **l, int *llen);
+
 #endif

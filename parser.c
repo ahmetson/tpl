@@ -38,6 +38,7 @@ int parse(FILE *source)
 	    if(!is_valid_char())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
+
         // 2. Pragma modyna geçmeli
         if(CUR_CHAR==PRAGMA_START_CHAR)
         {
@@ -65,10 +66,11 @@ int parse(FILE *source)
         {
             //work_with_token(&tok, prev_tok_string);
             work_with_cmd();
-            init_cmd(&cmd, 1);
+            init_cmd(&cmd, 0);
         }
         else
         {
+            CUR_CMD = &cmd;
             token tok = parse_token(source);
             // Komanda goşulýar
             if (!work_with_token(&tok, &cmd))
@@ -112,5 +114,8 @@ int is_valid_char()
         CUR_CHAR==ARIF_PLUS_CHAR  ||                /// ARIFMETIKI OPERATORLAR: +
         CUR_CHAR==ARIF_MINUS_CHAR ||                // -; aýyrmak
         CUR_CHAR==ARIF_MULTI_CHAR ||                // *; köpeltmek
-        CUR_CHAR==ARIF_DIV_CHAR);                   // :; bölmek
+        CUR_CHAR==ARIF_DIV_CHAR   ||                // :; bölmek
+        CUR_CHAR==CMP_EQ_CHAR   ||                  /// DEŇEŞDIRME OPERATORLAR: =
+        CUR_CHAR==CMP_LT_CHAR   ||                  // <; kiçi
+        CUR_CHAR==CMP_GT_CHAR);                     // >; uly
 }

@@ -21,7 +21,8 @@ int algor_add_cmd(command add_cmd)
     check_semantics(&add_cmd);
 
     ++GLOB_SUBCMDS_NUM;
-	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(*GLOB_SUBCMD_ITEMS_LIST)*GLOB_SUBCMDS_NUM);
+
+	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(**GLOB_SUBCMD_ITEMS_LIST)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
         printf("SALAM 1");
@@ -37,10 +38,10 @@ int algor_add_cmd(command add_cmd)
         for (i=0; i<add_cmd.items_num; ++i)
         {
 
-            GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = add_cmd.items[i];
+            GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1][i] = *get_cmd_item(add_cmd.items,i);
 
         }
-        add_cmd.items = GLOB_SUBCMD_ITEMS_LIST[GLOB_SUBCMDS_NUM-1];
+        add_cmd.items = GLOB_SUBCMDS_NUM-1;
 
         /*
         int size = sizeof(cmd);
@@ -66,34 +67,35 @@ void var_def_add(command *cmd, char glob)
     if (!glob)
         ident_tok_pos = 1;  //  LOKAL: def_type, ident
 
-    char *tok_name = cmd->items[ident_tok_pos].tok.potentional_types[0].value;
+    command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
+    char *tok_name = ci->tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
 	if (glob)
     {
-        if (is_ident_used(&cmd->items[ident_tok_pos].tok, 1))
+        if (is_ident_used(&ci->tok, 1))
         {
             CUR_PART = 4;
-            print_err(CODE4_VARS_IDENT_USED, &cmd->items[ident_tok_pos].tok);
+            print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
     }
     else
     {
-        if (is_ident_used(&cmd->items[ident_tok_pos].tok, 0))
+        if (is_ident_used(&ci->tok, 0))
         {
             CUR_PART = 4;
-            print_err(CODE4_VARS_IDENT_USED, &cmd->items[ident_tok_pos].tok);
+            print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
     }
-
+    command_item *prevci = get_cmd_item(cmd->items, ident_tok_pos-1);
 	glob_ident new_def = {
-	    cmd->items[ident_tok_pos-1].tok.potentional_types[0].type_class,
-		cmd->items[ident_tok_pos-1].tok.potentional_types[0].type_num,
+	    prevci->tok.potentional_types[0].type_class,
+		prevci->tok.potentional_types[0].type_num,
 		"",
-		cmd->items[ident_tok_pos-1].tok.inf_file_num,
-        cmd->items[ident_tok_pos-1].tok.inf_char_num,
-		cmd->items[ident_tok_pos-1].tok.inf_char,
-		cmd->items[ident_tok_pos-1].tok.inf_line_num
+		prevci->tok.inf_file_num,
+        prevci->tok.inf_char_num,
+		prevci->tok.inf_char,
+		prevci->tok.inf_line_num
 	};
 
 	strncpy(new_def.name, tok_name, strlen(tok_name)+1);

@@ -13,8 +13,7 @@
 #include "../fns/3rdparty/std.h"
 
 
-/**
- * TPL programma hökman kodly faýllar berilmeli. Bu funksiýa bolsa kodly faýllaryň barmy ýa ýokdygyny barlaýar
+/** TPL programma hökman kodly faýllar berilmeli. Bu funksiýa bolsa kodly faýllaryň barmy ýa ýokdygyny barlaýar
  *
  * @argn - TPL programma berlen argumentleriň sany
 **/
@@ -27,8 +26,7 @@ int source_codes_exist(int argn)
     return 0;
 }
 
-/**
- * Işe başlamazdan öňürti, hemme ulanyljak ülňiler taýynlanmaly.
+/** Işe başlamazdan öňürti, hemme ulanyljak ülňiler taýynlanmaly.
 **/
 int init()
 {
@@ -41,7 +39,10 @@ int init()
 	CUR_CHAR = -1;
 	CUR_CHAR_POS = 0;
 
+    MAIN_CMD_ITEMS_LIST = NULL;
+    TMP_CMD_ITEMS_LIST = NULL;
 	init_cmd(&cmd, 0);
+	cmd.items = -1;
 
 	// Algoritmler uchin
 	CUR_ALGOR_SIZE = 0;
@@ -101,6 +102,8 @@ int init()
 
 	// C dilinin kody uchin papkany tayynlayar
 	sys_mkdir(C_SOURCE_FOLDER, 1);
+
+
 
 	return 1;
 }

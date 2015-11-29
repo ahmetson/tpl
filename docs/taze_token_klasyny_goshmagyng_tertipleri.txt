@@ -12,6 +12,9 @@ Täze token tipiniň faýllary ýasalýar ([täze_token_klasy].c we [täze_token
 Täze token tipiniň 'header' faýly #include preporcessor komandasy arkaly goşulýar.
 Token_types.c ichine goshulmagynyn sebabi, faylyn ichindaki maglumat bilen, tokeni tanayan funksiya ishlemeli.
 
+5) token/token_structs.h Setir: 8
+TOKEN_CLASSES_NUM ýene bir san ulalýar
+
 ///////////BOLDY, INDI TOKEN TIPI GIRIZILEN////////////////////
 
 TOKEN TIPINI DEBAGLAÝAN FUNKSIÝALARYŇ SAÝGARMAGY.

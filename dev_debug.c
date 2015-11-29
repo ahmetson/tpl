@@ -30,12 +30,13 @@ void debug_cmd(command *cmd)
 		//printf("  potentional types: %d", tok->potentional_types_num);
 		for(i=0; i<cmd->items_num; i++)
 		{
-			if (cmd->items[i].type==TOKEN_ITEM)
-				debug_token(&cmd->items[i].tok);
-			else if(cmd->items[i].type==CMD_ITEM)
-				debug_cmd(&cmd->items[i].cmd);
-            else if(cmd->items[i].type==PAREN_ITEM)
-                debug_paren(&cmd->items[i].paren);
+		    command_item *ci = get_cmd_item(cmd->items , i);
+			if (ci->type==TOKEN_ITEM)
+				debug_token(&ci->tok);
+			else if(ci->type==CMD_ITEM)
+				debug_cmd(&ci->cmd);
+            else if(ci->type==PAREN_ITEM)
+                debug_paren(&ci->paren);
 		}
 	}
 	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -47,6 +48,8 @@ void debug_token(token *tok)
 	char *ns = (tok->ns==1)?"local":"global";
 
 	char *type_class = get_type_class(tok->type_class);
+
+
 
 	char *complete = (tok->is_compl) ? "Complete" : "Not complete";
 
@@ -86,6 +89,10 @@ void debug_token_type(token_type *tok_type)
     else if (tok_type->type_class==TOK_CLASS_ARIF)
     {
         strncpy(type, ARIF_TOK_NUM_WORDS[tok_type->type_num], strlen(ARIF_TOK_NUM_WORDS[tok_type->type_num])+1);
+    }
+    else if (tok_type->type_class==TOK_CLASS_CMP)
+    {
+        strncpy(type, CMP_TOK_NUM_WORDS[tok_type->type_num], strlen(CMP_TOK_NUM_WORDS[tok_type->type_num])+1);
     }
     else
 		strncpy(type, "", strlen("")+1);
