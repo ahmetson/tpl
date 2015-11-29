@@ -283,6 +283,7 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
     command_item *first =  get_cmd_item(cmd->items,0);
     command_item *second = get_cmd_item(cmd->items,1);
     command_item *third =  get_cmd_item(cmd->items,2);
+
     if (second->tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
     {
         if (!(*llen))
@@ -340,6 +341,10 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
         else if (third->type==CMD_ITEM)
         {
             CMD_GET_C_CODE[third->cmd.cmd_class][third->cmd.cmd_type](&third->cmd, l, llen);
+        }
+        else if (third->type==PAREN_ITEM)
+        {
+            paren_get_c_code(&third->paren, l, llen);
         }
     }
 }

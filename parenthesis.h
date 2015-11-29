@@ -42,6 +42,15 @@ typedef struct{
 
 int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, int *ret_type);
 
+/** Eger ýaý bir birlik saklaýan bolsa, onda birligiň tipini gaýtarýar:
+    @p        - ýaýyň özi,
+    @itemType - ýaýyň içindäki birligiň tipi
+    @rClass   - birligiň tipiniň klasy
+    @rType    - birligiň tipi
+
+    \return - ýaýyň içindäki birligiň tipini ötürdip boldumy ýa ýoklugynyň statusyny gaýtarýar */
+int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType);
+
 // Parserde skobka duşan wagty, içindäki elementler bilen işleýän bölüm
 parenthesis parse_paren(FILE *f);
 
@@ -55,5 +64,7 @@ int recognize_paren(parenthesis *paren);
 parenthesis get_empty_paren();
 
 void paren_get_c_code(parenthesis *p, char **l, int *llen);
+
+int is_paren_not_compl_item_exist(parenthesis *p, char rec);
 
 #endif

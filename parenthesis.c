@@ -158,8 +158,6 @@ void paren_add_element(parenthesis *paren, parenthesis_elem elem)
 }
 
 
-
-
 /** Elemente täze tokeni goşýar
 
     \elem - içine goşulmaly
@@ -182,6 +180,7 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok)
             init_cmd(&new_cmd, 0);
             new_cmd.items_num = 2;
             new_cmd.items = subcmd_items_add(new_cmd.items_num);
+
             command_item fci;
             fci.type = PAREN_ITEM;
             fci.paren = elem->paren;
@@ -211,7 +210,7 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok)
             command_item sci;
             sci.type = TOKEN_ITEM;
             sci.tok = tok;
-            put_cmd_item(new_cmd.items , 1, sci);
+            put_cmd_item(new_cmd.items, 1, sci);
 
             elem->cmd = new_cmd;
             elem->type = CMD_ITEM;
@@ -353,3 +352,66 @@ void paren_get_c_code(parenthesis *p, char **l, int *llen)
     *l = realloc(*l, *llen);
     strncat(*l, ")", strlen(")"));
 }
+
+
+/** Eger ýaý bir birlik saklaýan bolsa, onda birligiň tipini gaýtarýar:
+    @p        - ýaýyň özi,
+    @itemType - ýaýyň içindäki birligiň tipi
+    @rClass   - birligiň tipiniň klasy
+    @rType    - birligiň tipi
+
+    \return - ýaýyň içindäki birligiň tipini ötürdip boldumy ýa ýoklugynyň statusyny gaýtarýar */
+int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType)
+{
+    if (p->type==PAREN_TYPE_FNS_ARGS && p->elems_num==1)
+    {
+        if (p->elems[0].type==PAREN_ITEM)
+        {
+            return get_paren_item_type(&p->elems[0].paren, item_type, rClass, rType);
+        }
+        else if (p->elems[0].type==CMD_ITEM)
+        {
+            *item_type = CMD_ITEM;
+            *rClass = p->elems[0].cmd.cmd_class;
+            *rType  = p->elems[0].cmd.cmd_type;
+        }
+        else if (p->elems[0].type==TOKEN_ITEM)
+        {
+            *item_type = TOKEN_ITEM;
+            *rClass = p->elems[0].tok.potentional_types[0].type_class;
+            *rType  = p->elems[0].tok.potentional_types[0].type_num;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+
+
+int is_paren_not_compl_item_exist(parenthesis *p, char rec)
+{
+    int i;
+    for (i=0; i<p->elems_num; ++i)
+    {
+        if (p->elems[i].type==CMD_ITEM)
+        {
+            if (!p->elems[i].cmd.is_compl)
+            {
+                return 1;
+            }
+        }
+        else if (p->elems[i].type!=TOKEN_ITEM && rec)
+        {
+            if (p->elems[i].type==CMD_ITEM)
+            {
+                return is_cmd_not_compl_item_exist(&p->elems[i].cmd, 1);
+            }
+            else if (p->elems[i].type==PAREN_ITEM)
+            {
+                return is_paren_not_compl_item_exist(&p->elems[i].paren, rec);
+            }
+        }
+    }
+    return 0;
+}
+

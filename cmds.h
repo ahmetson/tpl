@@ -25,6 +25,7 @@ extern int CMD_CLASS_FN;
 extern int CMD_CLASS_CALL_GLOB_VAR;
 extern int CMD_CLASS_ARIF;
 extern int CMD_CLASS_CMP;
+extern int CMD_CLASS_LOGIC;
 
 extern int GLOB;
 extern int LOCAL;
@@ -79,7 +80,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 6
+#define CMDS_TYPES_NUM 7
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -142,4 +143,9 @@ command_item **main_cmd_add(unsigned int items_num);
 command_item *get_cmd_item(int cmd_num, int item_num);
 int change_cmd_items_num(int cmd_num, int new_num);
 void put_cmd_item(int cmd_num, int item_num, command_item ci);
+
+int is_cmd_not_compl_item_exist(command *cmd, char rec);
+
+int is_cmd_item_can_be_needed(command *cmd);
+
 #endif

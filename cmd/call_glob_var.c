@@ -12,7 +12,7 @@ int CMD_CALL_GLOB_VAR_TYPE_NUM = 0;
 
 int is_cmd_call_glob_var(command *cmd)
 {
-    if (cmd->items_num>CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type] || !cmd->items_num)
+    if (cmd->items_num>CMD_MAX_ITEMS[CMD_CLASS_CALL_GLOB_VAR][CMD_CALL_GLOB_VAR_TYPE_NUM] || !cmd->items_num)
 	{
 		// Komandany saygaryp bolmady
 		return 0;
@@ -43,8 +43,6 @@ int is_cmd_call_glob_var(command *cmd)
         else
             return 0;
     }
-    else
-        return 0;
     return 1;
 }
 

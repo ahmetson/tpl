@@ -27,6 +27,7 @@ extern const int TOK_CLASS_ASSIGN;
 extern const int TOK_CLASS_CONST_DATA;
 extern const int TOK_CLASS_ARIF;
 extern const int TOK_CLASS_CMP;
+extern const int TOK_CLASS_LOGIC;
 
 // Debug üçin
 extern char *type_classes[];
@@ -44,5 +45,6 @@ int is_token_float_const_data   (token *tok, char *tok_val);
 int is_token_char_const_data    (token *tok, char *tok_val);
 int is_token_arif               (token *tok, char *tok_val);
 int is_token_cmp                (token *tok, char *tok_val);
+int is_token_logic              (token *tok, char *tok_val);
 
 #endif
