@@ -27,7 +27,8 @@ is_token_item tok_types[] = {
 	   {is_token_int_const_data},
 	   {is_token_char_const_data},
 	   {is_token_arif},
-	   {is_token_cmp}
+	   {is_token_cmp},
+	   {is_token_logic}
 };
 
 
@@ -41,7 +42,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // assign
     {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type},  // const_data
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // arif
-    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}  // cmp
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // cmp
+    {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}  // logic
 };
 
 
@@ -55,7 +57,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {tok_assign_c_code,tok_assign_c_code, tok_assign_c_code, tok_assign_c_code}, // assign
     {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code},  // const_data
     {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code},  // arif
-    {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code}   // cmp
+    {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code, tok_cmp_c_code},   // cmp
+    {tok_logic_c_code, tok_logic_c_code, tok_logic_c_code}   // logic
 };
 
 
@@ -253,14 +256,12 @@ token parse_token(FILE *s)
         else
         {
             empty_string(prev_tok_string, CONST_MAX_TOKEN_LEN);
+            inf_add_to_token(&new_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
             strncpy(prev_tok_string, new_tok_string, strlen(new_tok_string)+1);
 
             empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
             tok = new_tok;
             init_token(&new_tok);
-                // Tokene maglumatlary goýmaly
-            inf_add_to_token(&new_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
-
         }
     }
     //if (!work_with_token(&tok, &prev_tok_string))

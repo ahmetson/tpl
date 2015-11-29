@@ -48,6 +48,7 @@ int parse(FILE *source)
         {
             parenthesis par = parse_paren(source);
             cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
+
         }
         else if (isspace(CUR_CHAR))
         {
@@ -117,5 +118,8 @@ int is_valid_char()
         CUR_CHAR==ARIF_DIV_CHAR   ||                // :; bölmek
         CUR_CHAR==CMP_EQ_CHAR   ||                  /// DEŇEŞDIRME OPERATORLAR: =
         CUR_CHAR==CMP_LT_CHAR   ||                  // <; kiçi
-        CUR_CHAR==CMP_GT_CHAR);                     // >; uly
+        CUR_CHAR==CMP_GT_CHAR   ||                  // >; uly
+        CUR_CHAR==LOGIC_AND_CHAR  ||                /// LOGIKI OPERATORLAR: &
+        CUR_CHAR==LOGIC_OR_CHAR   ||                // ?; ýa
+        CUR_CHAR==LOGIC_NOT_CHAR);                  // !; däl bolsa
 }

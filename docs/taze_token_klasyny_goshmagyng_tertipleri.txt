@@ -19,7 +19,7 @@ TOKEN_CLASSES_NUM ýene bir san ulalýar
 
 TOKEN TIPINI DEBAGLAÝAN FUNKSIÝALARYŇ SAÝGARMAGY.
 
-1) token/token_types.c           SETIR: 29
+1) token/token_types.c           SETIR: 38
 char *type_classes[] diyen sanawa taze goshulan token tipinin ady goshulyar.
 Bu sanaw debag edilende, tokeniň tipine derek soz ulanmak uchin doredilen.
 

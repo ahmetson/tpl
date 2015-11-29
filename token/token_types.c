@@ -12,6 +12,7 @@
 #include "token_types/const_data.h"
 #include "token_types/arif.h"
 #include "token_types/cmp.h"
+#include "token_types/logic.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -31,6 +32,7 @@ const int TOK_CLASS_ASSIGN		 = 4;
 const int TOK_CLASS_CONST_DATA   = 5;
 const int TOK_CLASS_ARIF         = 6;
 const int TOK_CLASS_CMP          = 7;
+const int TOK_CLASS_LOGIC        = 8;
 
 // Used for debugging
 char *type_classes[] = {
@@ -41,7 +43,8 @@ char *type_classes[] = {
 	"assign",
 	"const_data",
 	"arifmetika",
-	"deňeşdirme"
+	"deňeşdirme",
+	"logiki"
 };
 
 
@@ -196,7 +199,7 @@ int is_token_int_const_data(token *tok, char *tok_val)
     ///     Token arifmetiki aýyrmak belgini aňladýar.
     /// Ýogsa
     ///     Token negatiw sany aňladýar.
-    if (strlen(tok_val)==1 && tok_val[0]==ARIF_MINUS_CHAR &&
+    if (strlen(tok_val)>=1 && tok_val[0]==ARIF_MINUS_CHAR &&
         CUR_CMD!=NULL && CUR_CMD->items_num)
     {
         int ret_class = -1, ret_type = -1;
@@ -248,7 +251,7 @@ int is_token_float_const_data(token *tok, char *tok_val)
     {
         return 0;
     }
-    if (strlen(tok_val)==1 && tok_val[0]==ARIF_MINUS_CHAR &&
+    if (strlen(tok_val)>=1 && tok_val[0]==ARIF_MINUS_CHAR &&
         CUR_CMD!=NULL && CUR_CMD->items_num)
     {
         int ret_class = -1, ret_type = -1;
@@ -409,6 +412,38 @@ int is_token_cmp(token *tok, char *tok_val)
 
             tok->is_compl     = 1;
             tok->type_class   = TOK_CLASS_CMP;
+
+            add_potentional_token_type(tok, tok_type);
+
+            found = 1;
+        }
+    }
+
+    return found;
+}
+int is_token_logic(token *tok, char *tok_val)
+{
+    if (!strlen(tok_val) || strlen(tok_val)>2)
+        return 0;
+
+    int i;
+    char found = 0;
+    for (i=0; i<TOK_CLASS_LOGIC_TYPES_NUM; ++i)
+    {
+
+        if (strlen(tok_val)==strlen(TOK_CLASS_LOGIC_CHARS[i][0]) &&
+            strncmp(tok_val, TOK_CLASS_LOGIC_CHARS[i][0], strlen(TOK_CLASS_LOGIC_CHARS[i][0]))==0)
+        {
+            token_type tok_type;
+            tok_type.type_num   = i;	// Number of token type
+            tok_type.type_class = TOK_CLASS_LOGIC;
+            tok_type.need_value = 0;
+            tok_type.parenthesis = 1;
+            tok_type.is_compl = 1;
+            tok_type.type_must_check = 0;
+
+            tok->is_compl     = 1;
+            tok->type_class   = TOK_CLASS_LOGIC;
 
             add_potentional_token_type(tok, tok_type);
 

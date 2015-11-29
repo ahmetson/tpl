@@ -118,9 +118,6 @@ void cmd_cmp_mod(command *cmd, int item_num)
 }
 
 
-
-
-
 int semantic_cmd_cmp(command *cmd)
 {
     int prev_part = CUR_PART;
