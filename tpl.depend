@@ -351,15 +351,15 @@
 1448220155 d:\c_source\tpl\translator_to_c\attach_glob_vars.h
 	"../main/glob.h"
 
-1446622847 d:\c_source\tpl\translator_to_c.h
+1448866858 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
 
 1448252175 d:\c_source\tpl\error.h
 
-1446322954 d:\c_source\tpl\dev_debug.h
+1448841741 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1448784894 source:d:\c_source\tpl\cmd\assign.c
+1448859648 source:d:\c_source\tpl\cmd\assign.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -389,8 +389,9 @@
 	"error.h"
 	"main/inf.h"
 
-1448775423 source:d:\c_source\tpl\dev_debug.c
+1448843358 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
+	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"tokens.h"
@@ -458,7 +459,7 @@
 
 1440714998 source:d:\c_source\tpl\other.c
 
-1448801470 source:d:\c_source\tpl\parser.c
+1448843058 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -568,7 +569,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1448585940 source:d:\c_source\tpl\tpl.c
+1448840896 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -584,7 +585,7 @@
 
 1444812339 d:\c_source\tpl\work_with_source.h
 
-1448336079 source:d:\c_source\tpl\translator_to_c.c
+1448866325 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -713,7 +714,7 @@
 
 1446318733 d:\c_source\tpl\paren\types\empty.h
 
-1448771204 source:d:\c_source\tpl\cmd\fn_call.c
+1448866355 source:d:\c_source\tpl\cmd\fn_call.c
 	<stdlib.h>
 	<string.h>
 	"../cmds.h"
@@ -774,7 +775,7 @@
 	<string.h>
 	"arif.h"
 
-1448801339 source:d:\c_source\tpl\cmd\call_glob_var.c
+1448859737 source:d:\c_source\tpl\cmd\call_glob_var.c
 	<string.h>
 	<stdlib.h>
 	"../main/glob.h"
@@ -785,7 +786,7 @@
 1448767181 d:\c_source\tpl\cmd\call_glob_var.h
 	"../cmds.h"
 
-1448771398 source:d:\c_source\tpl\cmd\arif.c
+1448859625 source:d:\c_source\tpl\cmd\arif.c
 	<string.h>
 	<stdlib.h>
 	"arif.h"
@@ -806,7 +807,7 @@
 	<stdlib.h>
 	"cmp.h"
 
-1448778861 source:d:\c_source\tpl\cmd\cmp.c
+1448859754 source:d:\c_source\tpl\cmd\cmp.c
 	<stdlib.h>
 	<string.h>
 	"cmp.h"
@@ -824,7 +825,7 @@
 	<string.h>
 	"logic.h"
 
-1448801425 source:d:\c_source\tpl\cmd\logic.c
+1448859965 source:d:\c_source\tpl\cmd\logic.c
 	<stdlib.h>
 	<string.h>
 	"logic.h"

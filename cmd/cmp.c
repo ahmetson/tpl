@@ -180,16 +180,6 @@ int semantic_cmd_cmp(command *cmd)
 **/
 void cmd_cmp_c_code(command *cmd, char **l, int *llen)
 {
-    if (!(*llen))
-    {
-        // Çepe baglanma:
-        *llen += strlen("\t")+1;
-        *l = realloc(*l, *llen);
-
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*l, "\t", strlen("\t")+1);
-    }
-
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *e1 = get_cmd_item(cmd->items,0), *e2 = get_cmd_item(cmd->items,1), *e3 = get_cmd_item(cmd->items,2);

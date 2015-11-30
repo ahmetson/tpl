@@ -219,24 +219,23 @@ int check_fn_args(int argn, func_arg *args, parenthesis *paren)
 **/
 void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
 {
-    if (!(*llen))
-    {
-        // Çepe baglanma:
-        *llen += strlen("\t")+1;
-        *line = realloc(*line, *llen);
-
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*line, "\t", strlen("\t")+1);
-    }
-
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *sci = get_cmd_item(cmd->items,1);
     func *func_params = fn_get_by_name(sci->tok.potentional_types[0].value);
 
-    *llen += strlen(func_params->c_name);
-    *line = realloc(*line, *llen);
-    strncat(*line,func_params->c_name,strlen(func_params->c_name));
+    if (!(*llen))
+    {
+        *llen += strlen(func_params->c_name)+1;
+        *line = realloc(*line, *llen);
+        strncpy(*line,func_params->c_name,strlen(func_params->c_name)+1);
+    }
+    else
+    {
+        *llen += strlen(func_params->c_name);
+        *line = realloc(*line, *llen);
+        strncat(*line,func_params->c_name,strlen(func_params->c_name));
+    }
 
     *llen += strlen("(");
     *line = realloc(*line, *llen);

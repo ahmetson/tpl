@@ -286,16 +286,6 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
 
     if (second->tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
     {
-        if (!(*llen))
-        {
-            // Çepe baglanma:
-            *llen += strlen("\t")+1;
-            *l = realloc(*l, *llen);
-
-            // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-            strncpy(*l, "\t", strlen("\t")+1);
-        }
-
         // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
         // Eger birinji ülňi identifikator bolsa, özi alynýar.
         if (first->type==CMD_ITEM)

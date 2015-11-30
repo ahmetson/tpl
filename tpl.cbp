@@ -69,6 +69,10 @@
 		<Unit filename="cmd/fn_call.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="cmd/logic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/logic.h" />
 		<Unit filename="cmds.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -297,6 +301,10 @@
 		<Unit filename="token/token_types/ident.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="token/token_types/logic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/logic.h" />
 		<Unit filename="token/token_word.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

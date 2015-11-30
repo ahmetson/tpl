@@ -111,25 +111,23 @@ int cmd_call_glob_var_return_type(command *cmd, int *return_class, int *ret_type
 **/
 void cmd_call_glob_var_c_code(command *cmd, char **line, int *llen)
 {
-    if (!(*llen))
-    {
-        // Çepe baglanma:
-        *llen += strlen("\t")+1;
-        *line = realloc(*line, *llen);
-
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*line, "\t", strlen("\t")+1);
-    }
-
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *sci = get_cmd_item(cmd->items,1);
     token_type *ty = &sci->tok.potentional_types[0];
 
-    *llen += strlen(ty->value);
-    *line = realloc(*line, *llen);
-    strncat(*line,ty->value,strlen(ty->value));
-
+    if (!(*llen))
+    {
+        *llen += strlen(ty->value)+1;
+        *line = realloc(*line, *llen);
+        strncat(*line,ty->value,strlen(ty->value)+1);
+    }
+    else
+    {
+        *llen += strlen(ty->value);
+        *line = realloc(*line, *llen);
+        strncat(*line,ty->value,strlen(ty->value));
+    }
     // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
 }
 
