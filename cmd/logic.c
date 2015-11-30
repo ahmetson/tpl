@@ -133,16 +133,6 @@ void cmd_binar_logic_mod(command *cmd, int item_num)
 **/
 void cmd_logic_c_code(command *cmd, char **l, int *llen)
 {
-    if (!(*llen))
-    {
-        // Çepe baglanma:
-        *llen += strlen("\t")+1;
-        *l = realloc(*l, *llen);
-
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*l, "\t", strlen("\t")+1);
-    }
-
     /** ŞERT #1: Logiki komandalaryň Faýla Ç kody ýazymaly:
         Iki maglumat saklaýan logiki komandalar çep we sag tarapdaky maglumatlaryň daşlarynda ýaý goýulýar,
         Sebäbi komandalar biri biriniň içine salynanda deň derejede bolýalar.
@@ -175,10 +165,21 @@ void cmd_logic_c_code(command *cmd, char **l, int *llen)
     }
     else
     {
+        if (!(*llen))
+        {
+            // Çepe baglanma:
+            *llen += strlen("(")+1;
+            *l = realloc(*l, *llen);
 
-        *llen += strlen("(");
-        *l = realloc(*l, *llen);
-        strncat(*l, "(", strlen("("));
+            // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
+            strncpy(*l, "(", strlen("(")+1);
+        }
+        else
+        {
+            *llen += strlen("(");
+            *l = realloc(*l, *llen);
+            strncat(*l, "(", strlen("("));
+        }
 
         command_item *e1 = get_cmd_item(cmd->items,0);
         if (e1->type==CMD_ITEM)

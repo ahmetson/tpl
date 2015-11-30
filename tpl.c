@@ -49,6 +49,8 @@
             global ülňiniň maglumatlaryny global yglan edilen ülňileriň arasynda barlygy görülýär.
 **/
 
+
+
 void tpl(int argc, const char **args)
 {
 	// Kodly faýl bolmasa, TPL işlänok

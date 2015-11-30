@@ -2,6 +2,7 @@
  * This file includes functions for debugging while compiler building
 **/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "tpl.h"
@@ -11,22 +12,45 @@
 #include "paren/types.h"
 #include "dev_debug.h"
 
+int DEV_ITEMS_STEPS = 0;
+
+/** ŞERT #6: Debaglamanyň üçünji görnüşini düzmeli.
+    ** Birinji görnüşinde ýöne ýalňyşlyk görkezýärdi.
+       Ikinji görnüşinde ýalňyşlygyň nirede (haýsy faýlda, setirde, harpda) bolandygyny görkezýärdi.
+       Indi üçünji görnüşini ýasamaly.
+    Üçünji görnüşinde, içki birlikler bir TAB çepe süýşürilip tämiz görkezilmeli.
+
+    1) Debaglanýan tekstiň häzir haýsy birligiň içindeliginiň basgançagyny görkezýän global ülňi bolýar.
+    Adatça ol 0-njy derejede bolýar.
+    2) Funksiýa berlen basgançagyň sanyna görä '\t' harplary çap edýär.
+
+    3) Komanda, ýaý debaglanýan wagty, içindäki elementlere gezek ýetende,
+       birlikleriň içindeliginiň basgançagy bir basgançak ulaldylýar.
+    4) Komanda, ýaý debaglanýan wagty, içindäki elementler çap edilen soň,
+       birlikleriň içindeliginiň basgançagy bir basgançak kemeldilýär.
+*/
+
 void debug_cmd(command *cmd)
 {
 	char *cmd_class = get_cmd_class(cmd->cmd_class);
 	char *cmd_type = get_cmd_class_type(cmd->cmd_class, cmd->cmd_type);
 
-	char *complete = (cmd->is_compl) ? "Complete" : "Not complete";
+	char *complete = (cmd->is_compl) ? "Gutaran" : "Gutarylmadyk";
 
-	char *ns = (cmd->ns==1)?"local":"global";
+	char *ns = (cmd->ns==1)?"lokal":"global";
 
-	printf("\nINFO ABOUT COMMAND++++++++++++++++++++++++++\n");
-	printf("'%s', '%s' command, in '%s'->'%s'\n", ns, complete, cmd_class, cmd_type);
-	printf("Has %d tokens\n\n", cmd->items_num);
+    printf("\n");
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("KOMANDANYŇ MAGLUMATY------------------------\n");
+	print_tabs(DEV_ITEMS_STEPS);
+	printf("('%s') '%s'. '%s'->'%s' görnüşdäki komanda\n", ns, complete, cmd_class, cmd_type);
+	print_tabs(DEV_ITEMS_STEPS);
+	printf("%d sany birlikleri bar", cmd->items_num);
 	if (cmd->items_num>0)
 	{
 		int i;
-		printf("Tokens are:\n");
+		++DEV_ITEMS_STEPS;
+		printf(". Olar:\n");
 		//printf("  potentional types: %d", tok->potentional_types_num);
 		for(i=0; i<cmd->items_num; i++)
 		{
@@ -38,41 +62,50 @@ void debug_cmd(command *cmd)
             else if(ci->type==PAREN_ITEM)
                 debug_paren(&ci->paren);
 		}
+		--DEV_ITEMS_STEPS;
 	}
-	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
+	else
+    {
+        printf("\n");
+    }
 
 }
 
 void debug_token(token *tok)
 {
-	char *ns = (tok->ns==1)?"local":"global";
+	char *ns = (tok->ns==1)?"Lokal":"Global";
 
 	char *type_class = get_type_class(tok->type_class);
 
-
-
-	char *complete = (tok->is_compl) ? "Complete" : "Not complete";
+	char *complete = (tok->is_compl) ? "Gutaran" : "Gutarylmadyk";
 
 	// Print results
-	printf("\n  INFO ABOUT TOKEN===================\n");
-	printf("File: '%s'; Line: %d; Char: %c, position is: %d\n", FILES[tok->inf_file_num].source, tok->inf_line_num,
+	printf("\n");
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("Tokeniň maglumatlary------------------------\n");
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("Faýl: '%s'; Setir: %d; Başlaýan harpy: %c, harpyň nomeri: %d\n", FILES[tok->inf_file_num].source, tok->inf_line_num,
         tok->inf_char==-1 ? '?' : tok->inf_char, tok->inf_char_num);
-	printf("  '%s', '%s' token, in '%s' class\n", ns, complete, type_class);
-	printf("  Can be in %d types\n\n", tok->potentional_types_num);
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("(%s) '%s'. '%s' görnüş klasyndaky token\n", ns, complete, type_class);
+	print_tabs(DEV_ITEMS_STEPS);
+	printf("Bolup biljek görnüşleriniň sany:%d\n", tok->potentional_types_num);
 	if (tok->potentional_types_num>0)
 	{
 		int i;
-		//printf("  potentional types: %d", tok->potentional_types_num);
+		++DEV_ITEMS_STEPS;
 		for(i=0; i<tok->potentional_types_num; i++)
 			debug_token_type(&tok->potentional_types[i]);
+        --DEV_ITEMS_STEPS;
 	}
+
 }
 
 
 void debug_token_type(token_type *tok_type)
 {
 	char type[256];
-	char *complete = (tok_type->is_compl) ? "Complete" : "Not complete";
+	char *complete = (tok_type->is_compl) ? "Gutaran" : "Gutarylmadyk";
 	char *type_class = get_type_class(tok_type->type_class);
 
 	if (tok_type->type_class==TOK_CLASS_DEF_TYPE)
@@ -101,15 +134,16 @@ void debug_token_type(token_type *tok_type)
     else
 		strncpy(type, "", strlen("")+1);
 
+    printf("\n");
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("('%s') '%s'->'%s' token tipi\n", complete, type_class, type);
 
-	printf("\tTOK_TYPE------------\n");
-	printf("\t('%s') '%s'->'%s' token type\n", complete, type_class, type);
-
+    print_tabs(DEV_ITEMS_STEPS);
 	if (tok_type->need_value==0)
-		printf("\tValue doesn't required\n");
+		printf("Maglumat saklanok\n");
 	else
-		printf("\tValue: '%s'\n", get_tok_type_value(tok_type));
-	printf("\n\n");
+		printf("Maglumat: '%s'\n", get_tok_type_value(tok_type));
+	printf("\n");
 }
 
 char *get_tok_type_value(token_type *tok_type)
@@ -134,7 +168,7 @@ char *get_cmd_class(int cmd_class_num)
 	if (cmd_class_num>0)
 		return cmd_classes[cmd_class_num-1];
 
-	return "Komandanyn klasy nabelli";
+	return "Komandanyň klasy näbelli";
 }
 
 char *get_cmd_class_type(int cmd_class_num, int cmd_type_num)
@@ -142,7 +176,7 @@ char *get_cmd_class_type(int cmd_class_num, int cmd_type_num)
 	if (cmd_class_num>0 && cmd_type_num>0)
 		return cmd_class_types[cmd_class_num-1][cmd_type_num-1];
 
-	return "Komandanyn tipi nabelli";
+	return "Komandanyň tipi näbelli";
 }
 
 void debug_GLOB_VAR_DEFS()
@@ -193,13 +227,18 @@ void debug_paren(parenthesis *paren)
 {
 	char *paren_type  = get_paren_type(paren->type);
 
-	printf("\nINFO ABOUT PARENTHESIS++++++++++++++++++++++++++\n");
-	printf("'%s' parenthesis\n", paren_type);
-	printf("Has %d items\n\n", paren->elems_num);
+    printf("\n");
+    print_tabs(DEV_ITEMS_STEPS);
+	printf("ÝAÝYŇ MAGLUMATLARY------------------------------\n");
+	print_tabs(DEV_ITEMS_STEPS);
+	printf("'%s' görnüşindäki ýaý\n", paren_type);
+	print_tabs(DEV_ITEMS_STEPS);
+	printf("Birlikleriniň sany: %d", paren->elems_num);
 	if (paren->elems_num>0)
 	{
 		int i;
-		printf("Items are:\n");
+		printf(". Olar:\n");
+		++DEV_ITEMS_STEPS;
 		//printf("  potentional types: %d", tok->potentional_types_num);
 		for(i=0; i<paren->elems_num; i++)
 		{
@@ -210,8 +249,12 @@ void debug_paren(parenthesis *paren)
             else if(paren->elems[i].type==PAREN_ITEM)
                 debug_paren(&paren->elems[i].paren);
 		}
+		--DEV_ITEMS_STEPS;
 	}
-	printf("++++++++++++++++++++++++++++++++++++++++++++\n");
+	else
+    {
+		printf("\n");
+    }
 
 }
 
@@ -219,4 +262,22 @@ void debug_paren(parenthesis *paren)
 char *get_paren_type(int paren_type)
 {
     return PAREN_TYPES_WORDS[paren_type];
+}
+
+
+void print_tabs(int tabs_num)
+{
+    if (!tabs_num)
+        return;
+    char *str = malloc(sizeof(char)*(tabs_num+1));
+
+    strncpy(str, "\t", strlen("\t")+1);
+
+    int i;
+    for (i=1; i<tabs_num; ++i)
+    {
+        strncat(str, "\t", strlen("\t"));
+    }
+    printf("%s", str);
+    free(str);
 }
