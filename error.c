@@ -53,6 +53,7 @@ int CODE2_REMAIN_TOKEN                  = 3;
 int CODE2_TOKEN_TOO_BIG                 = 4;
 int CODE2_PREV_TOKEN_INCORRECT          = 5;
 int CODE2_STRING_IS_WRONG               = 6;
+int CODE2_REQUIRED_END_BLOCK            = 7;
 
 int CODE3_PREV_TOK_INCORRECT            = 0;
 
@@ -76,6 +77,9 @@ int CODE7_GLOB_VAR_MUST_DEF             = 9;
 int CODE7_LEFT_IDENT_NOT_DEFINED        = 10;
 int CODE7_RIGHT_IDENT_NOT_DEFINED       = 11;
 int CODE7_GLOB_VAR_NOT_MATCH_DATA_TYPE  = 12;
+int CODE7_NEED_IF_OR_IFELSE_CMD         = 13;
+int CODE7_GLOB_DEF_IN_BLOCK             = 14;
+int CODE7_NEED_OPEN_BLOCK_CMD       = 15;
 
 /* Ýalňyşlyklaryň tekstleri */
 error_item err_items[] = {
@@ -117,6 +121,8 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         "Token gutarylmady"},
     {2, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Söz tokeninde ýalňyşlyk tapyldy"},
+    {2, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Blogy ýapýan komanda ýetenok"},
     // 3. TOKENLER ******************************************************
     {3, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Nädogry komanda birligi gabat gelindi"},
@@ -159,7 +165,13 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Sag tarapdaky identifikator yglan edilmedi"},
     {7, 12, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Yglan edilen global ülňiniň we bu ülňiniň yglan edilen maglumatlarynyň tipleri gabat gelenok"}
+        "Yglan edilen global ülňiniň we bu ülňiniň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
+    {7, 13, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Başlangyç 'eger' komandasy ýok"},
+    {7, 14, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Global ülňi bloklaryň içinde yglan edildi.\nGlobal ülňiler diňe faýl derejesinde yglan edilmeli"},
+    {7, 15, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Blogy açýan komanda ýetenok"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"

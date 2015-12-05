@@ -10,6 +10,8 @@
 #include "token/token_types/arif.h"
 #include "token/token_types/cmp.h"
 #include "token/token_types/logic.h"
+#include "token/token_types/ctrl_sttmnt.h"
+#include "token/token_types/block.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"

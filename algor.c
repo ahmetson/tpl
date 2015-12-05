@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "main/glob.h"
 #include "tpl.h"
 #include "algor.h"
 #include "translator_to_c.h"
@@ -57,6 +56,8 @@ int algor_add_cmd(command add_cmd)
         // TODO: komandanyn kopiyasyny goymaly.
         CUR_ALGOR[CUR_ALGOR_ITEMS_NUM++] = add_cmd;
     }
+
+
 	return 1;
 }
 
@@ -207,3 +208,75 @@ glob_ident *glob_vars_def_get_by_name(char *name)
     }
     return ret;
 }
+
+
+/// Bloklar ýaýlaryň içinde bolup bolanok. Şonuň
+/// üçin diňe komandalary parsing edilýän funksiýa-da çagyrylýar.
+void work_with_blocks(command *cmd)
+{
+    //if ((cmd.cmd_class==CTRL_STATEMENT))
+    if (cmd->is_compl)
+    {
+        /// Eger komanda blogy ýapýan bolsa
+        if (is_close_block_cmd(cmd))
+        //if ((cmd.cmd_class==CMD_CLASS_CTRL_STATEMENT) || (cmd.cmd_class==CMD_CLASS_CLOSE_BLOCK && cmd.cmd_type==CMD_CLOSE_BLOCK_TYPE_NUM))
+        {
+            close_block(cmd);
+
+        }
+
+        /// Eger komanda blogy açýan bolsa
+        if (is_open_block_cmd(cmd))
+        //if (cmd.cmd_class==CMD_CLASS_CTRL_STATEMENT)
+        {
+            open_block(cmd);
+        }
+
+        if (is_close_block_cmd(cmd) || is_open_block_cmd(cmd))
+        {
+            work_with_cmd();
+            init_cmd(cmd, 0);
+        }
+
+    }
+}
+
+
+void open_block(command *cmd)
+{
+    ++GLOB_BLOCKS_NUM;
+    GLOB_BLOCKS = realloc(GLOB_BLOCKS, sizeof(*GLOB_BLOCKS)*GLOB_BLOCKS_NUM);
+
+    block_inc bi;
+    bi.type_class = cmd->cmd_class;
+    bi.type_num = cmd->cmd_type;
+    bi.inc_num  = GLOB_BLOCK_INCLUDES;
+    command_item *ci = get_cmd_item(cmd->items, 0);
+    bi.inf_file_num = ci->tok.inf_file_num;   // Blok açýan bloklaryň birinji tokeni elmydama token birligi bolýar
+    bi.inf_line_num = ci->tok.inf_line_num;
+    bi.inf_char_num = ci->tok.inf_char_num;
+    bi.inf_char = ci->tok.inf_char;
+
+    GLOB_BLOCKS[GLOB_BLOCKS_NUM-1] = bi;
+
+    // Içindäki bloklaryň sany ulalmaly.
+    ++GLOB_BLOCK_INCLUDES;
+}
+
+
+void close_block()
+{
+    --GLOB_BLOCK_INCLUDES;
+}
+
+block_inc *get_block_by_inc_num(int inc_num)
+{
+    int i;
+    for (i=0; i<GLOB_BLOCKS_NUM; ++i)
+    {
+        if (GLOB_BLOCKS[i].inc_num==inc_num)
+            return &GLOB_BLOCKS[i];
+    }
+
+}
+

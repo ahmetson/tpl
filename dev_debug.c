@@ -131,6 +131,10 @@ void debug_token_type(token_type *tok_type)
     {
         strncpy(type, LOGIC_TOK_NUM_WORDS[tok_type->type_num], strlen(LOGIC_TOK_NUM_WORDS[tok_type->type_num])+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_CTRL_STTMNT)
+    {
+        strncpy(type, TOK_CLASS_CTRL_STTMNT_WORDS[tok_type->type_num], strlen(TOK_CLASS_CTRL_STTMNT_WORDS[tok_type->type_num])+1);
+    }
     else
 		strncpy(type, "", strlen("")+1);
 

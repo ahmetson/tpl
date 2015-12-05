@@ -256,6 +256,7 @@ void cmd_arif_c_code(command *cmd, char **l, int *llen)
     *l = realloc(*l, *llen);
     strncat(*l,arif_c,strlen(arif_c));
 
+
     if (e3->type==CMD_ITEM)
     {
         CMD_GET_C_CODE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd, l, llen);

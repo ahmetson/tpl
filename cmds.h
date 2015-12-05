@@ -26,6 +26,8 @@ extern int CMD_CLASS_CALL_GLOB_VAR;
 extern int CMD_CLASS_ARIF;
 extern int CMD_CLASS_CMP;
 extern int CMD_CLASS_LOGIC;
+extern int CMD_CLASS_CTRL_STTMNT;
+extern int CMD_CLASS_BLOCK;
 
 extern int GLOB;
 extern int LOCAL;
@@ -80,11 +82,11 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 7
+#define CMDS_TYPES_NUM 9
 #endif
 
 #ifndef MAX_CLASS_TYPES
-#define MAX_CLASS_TYPES 2
+#define MAX_CLASS_TYPES 3
 #endif
 
 extern char *cmd_classes[];
@@ -138,8 +140,8 @@ void glob_vars_decl_add(command *cmd);
 int is_glob_var_dec_exist(char *ident);
 void get_glob_var_dec_value_type(char *ident, int *c, int *t);
 void cmd_wrapper_c_code(char **line, int *llen);
+void cmd_block_wrapper_c_code(char **line, int *llen);
 
-command_item **main_cmd_add(unsigned int items_num);
 command_item *get_cmd_item(int cmd_num, int item_num);
 int change_cmd_items_num(int cmd_num, int new_num);
 void put_cmd_item(int cmd_num, int item_num, command_item ci);

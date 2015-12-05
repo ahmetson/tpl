@@ -99,7 +99,17 @@ int                 GLOBAL_CALLED_VARS_NUM;
 /// Häzirki içine parsing edilip goşulýan birlikli komanda
 command             *CUR_CMD;
 
-command_item               *TMP_CMD_ITEMS_LIST;
+command_item        *TMP_CMD_ITEMS_LIST;
+
+
+/// Bloklaryň içindeligini görkezýän ülňi
+int                  GLOB_BLOCK_INCLUDES;
+
+
+/// Bloklaryň içindeliginiň sanawy
+block_inc           *GLOB_BLOCKS;
+int                  GLOB_BLOCKS_NUM;
+
 
 /** Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar */
 void free_globs(void)

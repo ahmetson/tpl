@@ -134,25 +134,62 @@ int get_tok_type_const_data_string_val_type(token *tok, int *tok_class, int *tok
 
 void tok_int_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen(tok->potentional_types[0].value);
-    *l = realloc(*l, *llen);
-    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    if (*llen==0)
+    {
+        *llen += strlen(tok->potentional_types[0].value)+1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value)+1);
+    }
+    else
+    {
+        *llen += strlen(tok->potentional_types[0].value);
+        *l = realloc(*l, *llen);
+        strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    }
+
 }
 void tok_float_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen(tok->potentional_types[0].value);
-    *l = realloc(*l, *llen);
-    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+   if (*llen==0)
+    {
+        *llen += strlen(tok->potentional_types[0].value)+1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value)+1);
+    }
+    else
+    {
+        *llen += strlen(tok->potentional_types[0].value);
+        *l = realloc(*l, *llen);
+        strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    }
 }
 void tok_char_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen(tok->potentional_types[0].value);
-   *l = realloc(*l, *llen);
-    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    if (*llen==0)
+    {
+        *llen += strlen(tok->potentional_types[0].value)+1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value)+1);
+    }
+    else
+    {
+        *llen += strlen(tok->potentional_types[0].value);
+        *l = realloc(*l, *llen);
+        strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    }
 }
 void tok_string_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen(*tok->potentional_types[0].string_value);
-    *l = realloc(*l, *llen);
-    strncat(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value));
+    if (*llen==0)
+    {
+        *llen += strlen(*tok->potentional_types[0].string_value)+1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value)+1);
+    }
+    else
+    {
+        *llen += strlen(*tok->potentional_types[0].string_value);
+        *l = realloc(*l, *llen);
+        strncat(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value));
+    }
 }

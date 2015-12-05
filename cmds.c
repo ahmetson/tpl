@@ -15,6 +15,8 @@ All Command information
 #include "cmd/arif.h"
 #include "cmd/cmp.h"
 #include "cmd/logic.h"
+#include "cmd/ctrl_statement.h"
+#include "cmd/block.h"
 #include "algor.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -35,6 +37,8 @@ int CMD_CLASS_CALL_GLOB_VAR = 4;
 int CMD_CLASS_ARIF          = 5;
 int CMD_CLASS_CMP           = 6;
 int CMD_CLASS_LOGIC         = 7;
+int CMD_CLASS_CTRL_STTMNT   = 8;
+int CMD_CLASS_BLOCK         = 9;
 
 int GLOB = 0;
 int LOCAL = 1;
@@ -46,7 +50,9 @@ is_cmd_item cmd_types[] = {
 	   {is_cmd_call_glob_var},
 	   {is_cmd_arif},
 	   {is_cmd_cmp},
-	   {is_cmd_logic}
+	   {is_cmd_logic},
+	   {is_cmd_ctrl_sttmnt},
+	   {is_cmd_block}
 };
 
 // Dine debug uchin ulanylyar. Komanda tiplerinin atlary
@@ -57,7 +63,9 @@ char *cmd_classes[] = {
 	"call_glob_var",
 	"arifmethic",
 	"deňeşdirme",
-	"logiki"
+	"logiki",
+	"Dolandyryş operatory",
+	"Blok"
 };
 // diňe debuglamak üçin
 char *cmd_class_types[][MAX_CLASS_TYPES] = {
@@ -67,7 +75,9 @@ char *cmd_class_types[][MAX_CLASS_TYPES] = {
 	{""},
 	{"low_prior", "high_prior"},
 	{""},
-	{"Iki maglumatly", "Bir maglumatly"}
+	{"Iki maglumatly", "Bir maglumatly"},
+	{"eger", "ýa", "ýogsa"},
+	{"ýapýan"}
 };
 
 
@@ -79,46 +89,54 @@ int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd
     {cmd_call_glob_var_return_type, empty_cmd_return_type},//CMD_CLASS_CALL_GLOB_VAR_RETURN_TYOE = 4;
     {cmd_arif_return_type,          cmd_arif_return_type}, //CMD_CLASS_ARIF = 5;
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_CMP = 6;
-    {empty_cmd_return_type,         empty_cmd_return_type} //CMD_CLASS_LOGIC = 7;
+    {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_LOGIC = 7;
+    {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_CTRL_STTMNT = 8;
+    {empty_cmd_return_type}                                //CMD_CLASS_LOGIC = 9;
 };
 
 
 // Komandanyň klasy we tipi boýunça semantikasyny barlaýan funksiýalar
 int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd) = {
     {empty_cmd_checking_semantic, empty_cmd_checking_semantic},
-    {empty_cmd_checking_semantic, empty_cmd_checking_semantic},//CMD_CLASS_DEF_VAR = 1;
+    {semantic_cmd_def_var,        semantic_cmd_def_var},       //CMD_CLASS_DEF_VAR = 1;
     {semantic_cmd_assign,         empty_cmd_checking_semantic},//CMD_CLASS_ASSIGN = 2;
     {semantic_cmd_fn_call,        empty_cmd_checking_semantic},//CMD_CLASS_FNS = 3;
     {semantic_cmd_call_glob_var,  empty_cmd_checking_semantic},//CMD_CLASS_CALL_GLOB_VAR = 4;
     {semantic_cmd_arif,           semantic_cmd_arif},          //CMD_CLASS_ARIF = 5;
     {semantic_cmd_cmp,            semantic_cmd_cmp},           //CMD_CLASS_CMP = 6;
-    {empty_cmd_checking_semantic, empty_cmd_checking_semantic} //CMD_CLASS_LOGIC = 7;
+    {empty_cmd_checking_semantic, empty_cmd_checking_semantic},//CMD_CLASS_LOGIC = 7;
+    {empty_cmd_checking_semantic, semantic_cmd_ctrl_sttmnt}, //CMD_CLASS_CTRL_STTMNT = 8;
+    {semantic_cmd_block}                                     //CMD_CLASS_BLOCK = 9;
 };
 // Command can contain maximum 3 tokens
 
 // Komandanyň klasy we tipi boýunça semantikasyny barlaýan funksiýalar
 int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
     {MAX_NO_ITEMS,    MAX_NO_ITEMS},
-    {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_DEF_VAR = 1;
-    {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_ASSIGN = 2;
-    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},   //CMD_CLASS_FNS = 3;
-    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},   //CMD_CLASS_CALL_GLOB_VAR = 4;
-    {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_ARIF = 5;
-    {MAX_THREE_ITEMS, MAX_THREE_ITEMS}, //CMD_CLASS_CMP  = 6;
-    {MAX_THREE_ITEMS, MAX_TWO_ITEMS}    //CMD_CLASS_LOGIC  = 7;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_DEF_VAR = 1;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_ASSIGN = 2;
+    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},                 //CMD_CLASS_FNS = 3;
+    {MAX_TWO_ITEMS,   MAX_TWO_ITEMS},                 //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_ARIF = 5;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_CMP  = 6;
+    {MAX_THREE_ITEMS, MAX_TWO_ITEMS},                 //CMD_CLASS_LOGIC  = 7;
+    {MAX_THREE_ITEMS, MAX_THREE_ITEMS, MAX_ONE_ITEMS},//CMD_CLASS_CTRL_STTMNT  = 8;
+    {MAX_ONE_ITEMS}                                   //CMD_CLASS_BLOCK  = 9;
 };
 
 
 // Komandalaryň klasy we tipi boýunça, komandanyň tekstini ýazýan funksiýa çagyrylýar.
 void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len) = {
     {empty_cmd_c_code,          empty_cmd_c_code},
-    {cmd_def_var_as_subcmd_c_code, empty_cmd_c_code}, //CMD_CLASS_DEF_VAR = 1;
-    {cmd_assign_c_code,         cmd_assign_c_code},   //CMD_CLASS_ASSIGN = 2;
-    {cmd_fn_call_c_code,        empty_cmd_c_code},    //CMD_CLASS_FNS = 3;
-    {cmd_call_glob_var_c_code,  empty_cmd_c_code},    //CMD_CLASS_CALL_GLOB_VAR = 4;
-    {cmd_arif_c_code,           cmd_arif_c_code},     //CMD_CLASS_ARIF = 5;
-    {cmd_cmp_c_code,            cmd_cmp_c_code},      //CMD_CLASS_CMP = 6;
-    {cmd_logic_c_code,          cmd_logic_c_code}     //CMD_CLASS_LOGIC = 7;
+    {cmd_def_var_as_subcmd_c_code, empty_cmd_c_code},   //CMD_CLASS_DEF_VAR = 1;
+    {cmd_assign_c_code,         cmd_assign_c_code},     //CMD_CLASS_ASSIGN = 2;
+    {cmd_fn_call_c_code,        empty_cmd_c_code},      //CMD_CLASS_FNS = 3;
+    {cmd_call_glob_var_c_code,  empty_cmd_c_code},      //CMD_CLASS_CALL_GLOB_VAR = 4;
+    {cmd_arif_c_code,           cmd_arif_c_code},       //CMD_CLASS_ARIF = 5;
+    {cmd_cmp_c_code,            cmd_cmp_c_code},        //CMD_CLASS_CMP = 6;
+    {cmd_logic_c_code,          cmd_logic_c_code},      //CMD_CLASS_LOGIC = 7;
+    {cmd_ctrl_sttmnt_c_code,    cmd_ctrl_sttmnt_c_code},//CMD_CLASS_CTRL_STTMNT = 8;
+    {cmd_block_c_code}                                  //CMD_CLASS_BLOCK = 9;
 };
 
 
@@ -207,15 +225,18 @@ int work_with_cmd()
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
 
+    if (!cmd.items_num)
+        return 0;
+
     // TODO
     // KOMANDA gutarylmadyk bolsa, yalnyshlyk haty komanda gutarylmady diyip gaytaryar
 	// Komanda saygarylyp showly gutardy
 	if (!recognize_cmd(&cmd))
 	{
+	    debug_cmd(&cmd);
         printf("SALAM 2");
 		print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 	}
-
 
 	if (!add_to_def_var_list(&cmd)) // Komanda ulnini yglan etme dal eken
     {
@@ -226,7 +247,6 @@ int work_with_cmd()
 
 	CUR_PART = prev_part;
 	return 1;
-
 }
 
 
@@ -753,6 +773,7 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
          //   debug_cmd(cmd);
         //printf("komanda barlanmana gechmeli\n");
         /// C)
+
         if (!parse_cmd(cmd))
         {
 
@@ -832,6 +853,8 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 /// C.I.7)
                 if (!parse_cmd(&new_subcmd))
                 {
+                    cmd->items_num++;
+                    debug_cmd(cmd);
                     /// C.I.7.a)
                     printf("SALAM 7");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&new_subcmd));
@@ -876,6 +899,9 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
     }
 
 	CUR_PART = prev_part;
+
+    /// Komanda - blok bolsa üýtgetmeli maglumatlary ýerine ýetirýän funksiýa çagyrmaly
+    work_with_blocks(cmd);
 
 	return 1;
 }
@@ -1068,7 +1094,29 @@ void cmd_wrapper_c_code(char **l, int *llen)
     *l = realloc(*l, *llen);
 
     if ((*llen-strlen(cmd_end))==0)
+    {
+        *llen += 1;
+        *l = realloc(*l, *llen);
         strncpy(*l,cmd_end,strlen(cmd_end)+1);
+    }
+    else
+        strncat(*l,cmd_end,strlen(cmd_end));
+}
+
+void cmd_block_wrapper_c_code(char **l, int *llen)
+{
+    char *cmd_end = " \n";
+
+
+    *llen += strlen(cmd_end);
+    *l = realloc(*l, *llen);
+
+    if ((*llen-strlen(cmd_end))==0)
+    {
+        *llen += 1;
+        *l = realloc(*l, *llen);
+        strncpy(*l,cmd_end,strlen(cmd_end)+1);
+    }
     else
         strncat(*l,cmd_end,strlen(cmd_end));
 }
@@ -1152,7 +1200,6 @@ int is_cmd_not_compl_item_exist(command *cmd, char rec)
         }
     }
 }
-
 
 int is_cmd_item_can_be_needed(command *cmd)
 {

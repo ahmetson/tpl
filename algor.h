@@ -10,6 +10,16 @@
 #include "cmds.h"
 #include "tokens.h"
 
+typedef struct{
+    int type_class;
+    int type_num;
+    int inc_num;
+    int inf_file_num;
+    int inf_line_num;
+    int inf_char_num;
+    char inf_char;
+}block_inc;
+
 // Algoritmde komandany goshyar
 int algor_add_cmd(command cmd);
 
@@ -36,4 +46,14 @@ int is_glob_def_var_in_cur();
             (Bu ülňiler pragma arkaly parsing edilen faýllardan alynýar)
 **/
 int is_ident_used(token *t, char except_num);
+
+/// Bloklar ýaýlaryň içinde bolup bolanok. Şonuň
+/// üçin diňe komandalary parsing edilýän funksiýa-da çagyrylýar.
+void work_with_blocks();
+void open_block();
+void close_block();
+
+
+block_inc *get_block_by_inc_num(int inc_num);
+
 #endif

@@ -5,14 +5,14 @@
 #define TOKEN_STRUCTS_H
 
 #ifndef TOKEN_CLASSES_NUM
-#define TOKEN_CLASSES_NUM 9
+#define TOKEN_CLASSES_NUM 11
 #endif
 
 #define MAXLEN 255
 
 // Harpl tokeni hasaplananok.
 #ifndef TOKEN_TYPES_NUM
-#define TOKEN_TYPES_NUM 10
+#define TOKEN_TYPES_NUM 12
 #endif
 
 
