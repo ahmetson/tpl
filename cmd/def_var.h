@@ -25,4 +25,7 @@ void work_with_called_glob_vars();
 
 void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen);
 
+
+int semantic_cmd_def_var(command *cmd);
+
 #endif // CMD_DEF_VAR_H

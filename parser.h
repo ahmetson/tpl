@@ -8,4 +8,5 @@ extern char PARENTHESIS_MODE;
 
 int parse(FILE *source);
 int is_valid_char();
+
 #endif

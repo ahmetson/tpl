@@ -55,6 +55,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmd/cmp.h" />
+		<Unit filename="cmd/ctrl_statement.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/ctrl_statement.h" />
 		<Unit filename="cmd/def_var.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -280,6 +284,10 @@
 		<Unit filename="token/token_types/const_data.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="token/token_types/ctrl_sttmnt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/ctrl_sttmnt.h" />
 		<Unit filename="token/token_types/def_types.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

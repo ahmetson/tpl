@@ -289,3 +289,16 @@ void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
     TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
 
 }
+
+
+int semantic_cmd_def_var(command *cmd)
+{
+    if (cmd->ns==GLOB)
+    {
+        CUR_PART = 7;
+        print_err(CODE7_GLOB_DEF_IN_BLOCK, (token *)inf_get_last_token(cmd));
+    }
+    return 1;
+}
+
+

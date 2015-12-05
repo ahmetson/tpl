@@ -119,6 +119,13 @@ command                    *CUR_CMD;
 command_item               *MAIN_CMD_ITEMS_LIST;
 command_item               *TMP_CMD_ITEMS_LIST;
 
+/// Bloklaryň içindeligini görkezýän ülňi
+extern int                  GLOB_BLOCK_INCLUDES;
+
+/// Bloklaryň içindeliginiň sanawy
+extern block_inc           *GLOB_BLOCKS;
+extern int                  GLOB_BLOCKS_NUM;
+
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);
 void free_locals(void);

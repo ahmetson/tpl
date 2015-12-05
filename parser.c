@@ -85,8 +85,31 @@ int parse(FILE *source)
 	// Eger token bar bolsa, diymek komanda salynmandyr
 	if (cmd.items_num)  print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
 
+    if (GLOB_BLOCK_INCLUDES)
+    {
+        /** Blok açylan soň, içindäki komandalar üçin bloklaryň basgançagy ulalýar.
+            Emma açylan blogyň ýapylýan bölümi ýok bolany üçin, blok açylýan komandanyň maglumatlaryny
+            ulanyja görkezmeli. Görkezmek üçin bolsa, komandanyň maglumatlary içindeliginiň sanawyndan alynýar.
+
+            Alynmak üçin bolsa GLOB_BLOCK_INCLUDES-1 sany ulanylýar. */
+        block_inc *bi = get_block_by_inc_num(GLOB_BLOCK_INCLUDES-1);
+        inf_tok.inf_file_num = bi->inf_file_num;
+        inf_tok.inf_line_num = bi->inf_line_num;
+        inf_tok.inf_char_num = bi->inf_char_num;
+        inf_tok.inf_char     = bi->inf_char;
+
+        print_err(CODE2_REQUIRED_END_BLOCK, &inf_tok);
+    }
+    if (GLOB_BLOCKS_NUM)
+    {
+        GLOB_BLOCKS_NUM = 0;
+        free(GLOB_BLOCKS);
+        GLOB_BLOCKS = NULL;
+    }
+
 	// TRANSLATOR TO C: algoritmi faýla ýazýar
 	work_with_translator('1');
+
 
 	free_locals();
 	CUR_PART = prev_part;
@@ -123,3 +146,4 @@ int is_valid_char()
         CUR_CHAR==LOGIC_OR_CHAR   ||                // ?; ýa
         CUR_CHAR==LOGIC_NOT_CHAR);                  // !; däl bolsa
 }
+

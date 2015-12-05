@@ -100,10 +100,14 @@ int init()
     GLOBAL_CALLED_VARS = NULL;
     GLOBAL_CALLED_VARS_NUM = 0;
 
+    GLOB_BLOCK_INCLUDES = 0;
+
+    /// Bloklaryň içindeliginiň sanawy
+    GLOB_BLOCKS = NULL;
+    GLOB_BLOCKS_NUM = 0;
+
 	// C dilinin kody uchin papkany tayynlayar
 	sys_mkdir(C_SOURCE_FOLDER, 1);
-
-
 
 	return 1;
 }
