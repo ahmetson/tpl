@@ -5,14 +5,14 @@
 #define TOKEN_STRUCTS_H
 
 #ifndef TOKEN_CLASSES_NUM
-#define TOKEN_CLASSES_NUM 11
+#define TOKEN_CLASSES_NUM 12
 #endif
 
 #define MAXLEN 255
 
 // Harpl tokeni hasaplananok.
 #ifndef TOKEN_TYPES_NUM
-#define TOKEN_TYPES_NUM 12
+#define TOKEN_TYPES_NUM 13
 #endif
 
 
@@ -33,7 +33,7 @@ typedef struct{
 	char                    is_compl;		    // Is token completed
 	char                    type_must_check;
 	char                    parenthesis;
-	char                   **string_value;
+	int                    string_value;
 }token_type;
 
 // Token uchin

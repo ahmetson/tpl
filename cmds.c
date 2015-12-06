@@ -17,6 +17,7 @@ All Command information
 #include "cmd/logic.h"
 #include "cmd/ctrl_statement.h"
 #include "cmd/block.h"
+#include "cmd/loop_sttmnt.h"
 #include "algor.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -39,6 +40,7 @@ int CMD_CLASS_CMP           = 6;
 int CMD_CLASS_LOGIC         = 7;
 int CMD_CLASS_CTRL_STTMNT   = 8;
 int CMD_CLASS_BLOCK         = 9;
+int CMD_CLASS_LOOP_STTMNT   = 10;
 
 int GLOB = 0;
 int LOCAL = 1;
@@ -52,10 +54,11 @@ is_cmd_item cmd_types[] = {
 	   {is_cmd_cmp},
 	   {is_cmd_logic},
 	   {is_cmd_ctrl_sttmnt},
-	   {is_cmd_block}
+	   {is_cmd_block},
+	   {is_cmd_loop_sttmnt}
 };
 
-// Dine debug uchin ulanylyar. Komanda tiplerinin atlary
+// Dine debug üçin ulanylyar. Komanda tiplerinin atlary
 char *cmd_classes[] = {
 	"var",
 	"assign",
@@ -65,7 +68,8 @@ char *cmd_classes[] = {
 	"deňeşdirme",
 	"logiki",
 	"Dolandyryş operatory",
-	"Blok"
+	"Blok",
+	"Gaýtalama operatory"
 };
 // diňe debuglamak üçin
 char *cmd_class_types[][MAX_CLASS_TYPES] = {
@@ -77,7 +81,8 @@ char *cmd_class_types[][MAX_CLASS_TYPES] = {
 	{""},
 	{"Iki maglumatly", "Bir maglumatly"},
 	{"eger", "ýa", "ýogsa"},
-	{"ýapýan"}
+	{"ýapýan"},
+	{"tä"}
 };
 
 
@@ -91,7 +96,8 @@ int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_CMP = 6;
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_LOGIC = 7;
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_CTRL_STTMNT = 8;
-    {empty_cmd_return_type}                                //CMD_CLASS_LOGIC = 9;
+    {empty_cmd_return_type},                               //CMD_CLASS_LOGIC = 9;
+    {empty_cmd_return_type,         empty_cmd_return_type} //CMD_CLASS_LOGIC_STTMNT = 10;
 };
 
 
@@ -105,8 +111,9 @@ int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd) = {
     {semantic_cmd_arif,           semantic_cmd_arif},          //CMD_CLASS_ARIF = 5;
     {semantic_cmd_cmp,            semantic_cmd_cmp},           //CMD_CLASS_CMP = 6;
     {empty_cmd_checking_semantic, empty_cmd_checking_semantic},//CMD_CLASS_LOGIC = 7;
-    {empty_cmd_checking_semantic, semantic_cmd_ctrl_sttmnt}, //CMD_CLASS_CTRL_STTMNT = 8;
-    {semantic_cmd_block}                                     //CMD_CLASS_BLOCK = 9;
+    {empty_cmd_checking_semantic, semantic_cmd_ctrl_sttmnt, semantic_cmd_ctrl_sttmnt},   //CMD_CLASS_CTRL_STTMNT = 8;
+    {semantic_cmd_block},                                      //CMD_CLASS_BLOCK = 9;
+    {empty_cmd_checking_semantic, empty_cmd_checking_semantic}//CMD_CLASS_LOOP_STTMNT = 10;
 };
 // Command can contain maximum 3 tokens
 
@@ -121,7 +128,8 @@ int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_CMP  = 6;
     {MAX_THREE_ITEMS, MAX_TWO_ITEMS},                 //CMD_CLASS_LOGIC  = 7;
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS, MAX_ONE_ITEMS},//CMD_CLASS_CTRL_STTMNT  = 8;
-    {MAX_ONE_ITEMS}                                   //CMD_CLASS_BLOCK  = 9;
+    {MAX_ONE_ITEMS},                                  //CMD_CLASS_BLOCK  = 9;
+    {MAX_THREE_ITEMS}                                 //CMD_CLASS_LOOP_STTMNT  = 10;
 };
 
 
@@ -135,8 +143,9 @@ void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l
     {cmd_arif_c_code,           cmd_arif_c_code},       //CMD_CLASS_ARIF = 5;
     {cmd_cmp_c_code,            cmd_cmp_c_code},        //CMD_CLASS_CMP = 6;
     {cmd_logic_c_code,          cmd_logic_c_code},      //CMD_CLASS_LOGIC = 7;
-    {cmd_ctrl_sttmnt_c_code,    cmd_ctrl_sttmnt_c_code},//CMD_CLASS_CTRL_STTMNT = 8;
-    {cmd_block_c_code}                                  //CMD_CLASS_BLOCK = 9;
+    {cmd_ctrl_sttmnt_c_code,    cmd_ctrl_sttmnt_c_code, cmd_ctrl_sttmnt_c_code},//CMD_CLASS_CTRL_STTMNT = 8;
+    {cmd_block_c_code},                                 //CMD_CLASS_BLOCK = 9;
+    {cmd_loop_sttmnt_c_code,    cmd_loop_sttmnt_c_code} //CMD_CLASS_LOOP_STTMNT = 10;
 };
 
 
@@ -233,7 +242,6 @@ int work_with_cmd()
 	// Komanda saygarylyp showly gutardy
 	if (!recognize_cmd(&cmd))
 	{
-	    debug_cmd(&cmd);
         printf("SALAM 2");
 		print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 	}
@@ -854,7 +862,7 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 if (!parse_cmd(&new_subcmd))
                 {
                     cmd->items_num++;
-                    debug_cmd(cmd);
+
                     /// C.I.7.a)
                     printf("SALAM 7");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&new_subcmd));
@@ -929,13 +937,14 @@ int is_paren_compl(parenthesis *p)
 {
     if (!p->elems_num)
         return 1;
+    parenthesis_elem *p_es = get_paren_elems(p->elems);
 
-    if (p->elems[0].type==TOKEN_ITEM)
-        return p->elems[0].tok.is_compl;
-    else if(p->elems[0].type==CMD_ITEM)
-        return p->elems[0].cmd.is_compl;
-    else if(p->elems[0].type==PAREN_ITEM)
-        return is_paren_compl(&p->elems[0].paren);
+    if (p_es[0].type==TOKEN_ITEM)
+        return p_es[0].tok.is_compl;
+    else if(p_es[0].type==CMD_ITEM)
+        return p_es[0].cmd.is_compl;
+    else if(p_es[0].type==PAREN_ITEM)
+        return is_paren_compl(&p_es[0].paren);
 }
 
 

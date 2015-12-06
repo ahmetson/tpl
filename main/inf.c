@@ -76,11 +76,13 @@ token *inf_get_parens_last_token(parenthesis *par)
 {
     if (par->elems_num)
     {
-        if(par->elems[par->elems_num-1].type==CMD_ITEM)
-            return inf_get_last_token(&par->elems[par->elems_num-1].cmd);
-        else if (par->elems[par->elems_num-1].type==PAREN_ITEM)
-            return inf_get_parens_last_token(&par->elems[par->elems_num-1].paren);
-        return &par->elems[par->elems_num-1].tok;
+        parenthesis_elem *par_es = get_paren_elems(par->elems);
+
+        if(par_es[par->elems_num-1].type==CMD_ITEM)
+            return inf_get_last_token(&par_es[par->elems_num-1].cmd);
+        else if (par_es[par->elems_num-1].type==PAREN_ITEM)
+            return inf_get_parens_last_token(&par_es[par->elems_num-1].paren);
+        return &par_es[par->elems_num-1].tok;
     }
     return &inf_tok;
 }

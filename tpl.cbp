@@ -47,6 +47,10 @@
 			<Option link="0" />
 			<Option target="default" />
 		</Unit>
+		<Unit filename="cmd/block.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/block.h" />
 		<Unit filename="cmd/call_glob_var.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -77,6 +81,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmd/logic.h" />
+		<Unit filename="cmd/loop_sttmnt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/loop_sttmnt.h" />
 		<Unit filename="cmds.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -273,6 +281,10 @@
 		<Unit filename="token/token_types/assign.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="token/token_types/block.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/block.h" />
 		<Unit filename="token/token_types/cmp.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -313,6 +325,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/token_types/logic.h" />
+		<Unit filename="token/token_types/loop_sttmnt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/loop_sttmnt.h" />
 		<Unit filename="token/token_word.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

@@ -382,7 +382,7 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
             line = realloc(line, line_len);
 			strncat(line, "; \n", strlen("; \n"));
 
-			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
+			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
 			line_len = 100;
 
@@ -642,10 +642,9 @@ int c_trans_source_add_algor(FILE *f, int main_file)
     char *putl = NULL;
     int putllen = 0;
 
-
-
     for (i=0; i<CUR_ALGOR_ITEMS_NUM; ++i)
     {
+
         CMD_GET_C_CODE[CUR_ALGOR[i].cmd_class][CUR_ALGOR[i].cmd_type](&CUR_ALGOR[i], &l, &len);
         if (!is_open_block_cmd(&CUR_ALGOR[i]) && !is_close_block_cmd(&CUR_ALGOR[i]))
             cmd_wrapper_c_code(&l, &len);
@@ -700,7 +699,7 @@ int is_open_block_cmd(command *cmd)
 {
     if (cmd->is_compl)
     {
-        if (cmd->cmd_class==CMD_CLASS_CTRL_STTMNT)
+        if (cmd->cmd_class==CMD_CLASS_CTRL_STTMNT || cmd->cmd_class==CMD_CLASS_LOOP_STTMNT)
             return 1;
     }
     return 0;

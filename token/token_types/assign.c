@@ -32,8 +32,18 @@ char *ASSIGN_TOK_NUM_WORDS[2] = {
 void tok_assign_c_code(token *tok, char **l, int *llen)
 {
     *llen += strlen("=");
-    *l = realloc(*l, *llen);
-    strncat(*l, "=", strlen("="));
+    if (!(*llen))
+    {
+        *llen += 1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, "=", strlen("=")+1);
+    }
+    else
+    {
+        *l = realloc(*l, *llen);
+        strncat(*l, "=", strlen("="));
+    }
+
 }
 
 

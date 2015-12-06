@@ -107,12 +107,6 @@ parenthesis parse_paren(FILE *s)
 **/
  parenthesis parenthesis_new()
  {
-    parenthesis paren = {
-        NULL,
-        0,
-        0
-    };
-
     ++GLOB_PARENTHS_NUM;
     long size = sizeof(*GLOB_PARENTHS)*GLOB_PARENTHS_NUM;
 
@@ -120,7 +114,15 @@ parenthesis parse_paren(FILE *s)
 
     int last = GLOB_PARENTHS_NUM-1;
     GLOB_PARENTHS[last] = NULL;
-    paren.elems = GLOB_PARENTHS[last];
+
+    parenthesis paren = {
+        0,
+        0,
+        0
+    };
+    paren.elems = last;
+
+
 
     return paren;
  }
@@ -142,8 +144,9 @@ parenthesis_elem parenthesis_elem_new()
 **/
 void paren_add_element(parenthesis *paren, parenthesis_elem elem)
 {
-    paren->elems_num++;
-    parenthesis_elem *e = realloc(paren->elems, sizeof(parenthesis_elem)*paren->elems_num);
+    ++paren->elems_num;
+
+    parenthesis_elem *e = realloc(GLOB_PARENTHS[paren->elems], sizeof(**GLOB_PARENTHS)*paren->elems_num);
     if (e==NULL)
     {
         // TODO
@@ -152,8 +155,8 @@ void paren_add_element(parenthesis *paren, parenthesis_elem elem)
     }
     else
     {
-        paren->elems = e;
-        paren->elems[paren->elems_num-1] = elem;
+        GLOB_PARENTHS[paren->elems] = e;
+        GLOB_PARENTHS[paren->elems][paren->elems_num-1] = elem;
     }
 }
 
@@ -335,15 +338,20 @@ void paren_get_c_code(parenthesis *p, char **l, int *llen)
     /// ülňiler salynýar
     if (p->type==PAREN_TYPE_FNS_ARGS)
     {
-        int i;
-        for (i=0; i<p->elems_num; ++i)
+        if (p->elems_num)
         {
-            if (p->elems[i].type==CMD_ITEM)
-                CMD_GET_C_CODE[p->elems[i].cmd.cmd_class][p->elems[i].cmd.cmd_type](&p->elems[i].cmd, l, llen);
-            else if (p->elems[i].type==TOKEN_ITEM)
-                TOK_GET_C_CODE[p->elems[i].tok.potentional_types[0].type_class][p->elems[i].tok.potentional_types[0].type_num](&p->elems[i].tok, l, llen);
-            else if (p->elems[i].type==PAREN_ITEM)
-                paren_get_c_code(&p->elems[i].paren, l, llen);
+            parenthesis_elem *p_es = get_paren_elems(p->elems);
+
+            int i;
+            for (i=0; i<p->elems_num; ++i)
+            {
+                if (p_es[i].type==CMD_ITEM)
+                    CMD_GET_C_CODE[p_es[i].cmd.cmd_class][p_es[i].cmd.cmd_type](&p_es[i].cmd, l, llen);
+                else if (p_es[i].type==TOKEN_ITEM)
+                    TOK_GET_C_CODE[p_es[i].tok.potentional_types[0].type_class][p_es[i].tok.potentional_types[0].type_num](&p_es[i].tok, l, llen);
+                else if (p_es[i].type==PAREN_ITEM)
+                    paren_get_c_code(&p_es[i].paren, l, llen);
+            }
         }
     }
 
@@ -365,21 +373,23 @@ int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType)
 {
     if (p->type==PAREN_TYPE_FNS_ARGS && p->elems_num==1)
     {
-        if (p->elems[0].type==PAREN_ITEM)
+        parenthesis_elem *p_es = get_paren_elems(p->elems);
+
+        if (p_es[0].type==PAREN_ITEM)
         {
-            return get_paren_item_type(&p->elems[0].paren, item_type, rClass, rType);
+            return get_paren_item_type(&p_es[0].paren, item_type, rClass, rType);
         }
-        else if (p->elems[0].type==CMD_ITEM)
+        else if (p_es[0].type==CMD_ITEM)
         {
             *item_type = CMD_ITEM;
-            *rClass = p->elems[0].cmd.cmd_class;
-            *rType  = p->elems[0].cmd.cmd_type;
+            *rClass = p_es[0].cmd.cmd_class;
+            *rType  = p_es[0].cmd.cmd_type;
         }
-        else if (p->elems[0].type==TOKEN_ITEM)
+        else if (p_es[0].type==TOKEN_ITEM)
         {
             *item_type = TOKEN_ITEM;
-            *rClass = p->elems[0].tok.potentional_types[0].type_class;
-            *rType  = p->elems[0].tok.potentional_types[0].type_num;
+            *rClass = p_es[0].tok.potentional_types[0].type_class;
+            *rType  = p_es[0].tok.potentional_types[0].type_num;
         }
         return 1;
     }
@@ -390,28 +400,38 @@ int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType)
 
 int is_paren_not_compl_item_exist(parenthesis *p, char rec)
 {
-    int i;
-    for (i=0; i<p->elems_num; ++i)
+    if (p->elems_num)
     {
-        if (p->elems[i].type==CMD_ITEM)
+        parenthesis_elem *p_es = get_paren_elems(p->elems);
+
+        int i;
+        for (i=0; i<p->elems_num; ++i)
         {
-            if (!p->elems[i].cmd.is_compl)
+            if (p_es[i].type==CMD_ITEM)
             {
-                return 1;
+                if (!p_es[i].cmd.is_compl)
+                {
+                    return 1;
+                }
             }
-        }
-        else if (p->elems[i].type!=TOKEN_ITEM && rec)
-        {
-            if (p->elems[i].type==CMD_ITEM)
+            else if (p_es[i].type!=TOKEN_ITEM && rec)
             {
-                return is_cmd_not_compl_item_exist(&p->elems[i].cmd, 1);
-            }
-            else if (p->elems[i].type==PAREN_ITEM)
-            {
-                return is_paren_not_compl_item_exist(&p->elems[i].paren, rec);
+                if (p_es[i].type==CMD_ITEM)
+                {
+                    return is_cmd_not_compl_item_exist(&p_es[i].cmd, 1);
+                }
+                else if (p_es[i].type==PAREN_ITEM)
+                {
+                    return is_paren_not_compl_item_exist(&p_es[i].paren, rec);
+                }
             }
         }
     }
     return 0;
 }
 
+
+parenthesis_elem *get_paren_elems(int paren_num)
+{
+    return GLOB_PARENTHS[paren_num];
+}

@@ -30,7 +30,8 @@ is_token_item tok_types[] = {
 	   {is_token_cmp},
 	   {is_token_logic},
 	   {is_token_ctrl_sttmnt},
-	   {is_token_block}
+	   {is_token_block},
+	   {is_token_loop_sttmnt}
 };
 
 
@@ -47,7 +48,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // cmp
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // logic
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ctrl_sttmnt
-    {empty_tok_return_type}                                                                       // block
+    {empty_tok_return_type},                                                                      // block
+    {empty_tok_return_type, empty_tok_return_type}                                                // loop_sttmnt
 };
 
 
@@ -64,7 +66,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code, tok_cmp_c_code},   // cmp
     {tok_logic_c_code, tok_logic_c_code, tok_logic_c_code},   // logic
     {tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code},  // ctrl_sttmnt
-    {tok_block_c_code}                                                           // block
+    {tok_block_c_code},                                                          // block
+    {tok_loop_sttmnt_c_code, tok_loop_sttmnt_c_code}                                                           // loop_sttmnt
 };
 
 
@@ -98,10 +101,9 @@ void empty_token(token *tok)
 }
 
 
-/**
- * Sözüň token bolup biljegini barlaýar.
- * Eger token bolup bilýän bolsa, @tok ülňä ýasalan tokeni baglaýar
-**/
+/** Sözüň token bolup biljegini barlaýar.
+  * Eger token bolup bilýän bolsa, @tok ülňä ýasalan tokeni baglaýar
+ **/
 int recognize_token(token *tok, char *val)
 {
 	int i;
@@ -121,8 +123,7 @@ int recognize_token(token *tok, char *val)
 }
 
 
-/**
- * Tokenin bolup biljek tipini tokene goşýar.
+/** Tokenin bolup biljek tipini tokene goşýar.
  * Tokeniň bolup biljek tipleri ýene köpelýär
  * TODO: Eger tokenin eyyam goshuljak gornushinin klasynda gornushi bar bolsa,
  * we taze gornush gutarylan bolsa, onda onki gornush tazelenyar.
@@ -135,8 +136,7 @@ int add_potentional_token_type(token *tok, token_type tok_type)
 }
 
 
-/**
- * Tokenin bolup biljek tipini tokene goşýar.
+/**  Tokenin bolup biljek tipini tokene goşýar.
  * Tokeniň bolup biljek tipleri ýene köpelýär
  * TODO: Eger tokenin eyyam goshuljak gornushinin klasynda gornushi bar bolsa,
  * we taze gornush gutarylan bolsa, onda onki gornush tazelenyar.
@@ -174,8 +174,7 @@ int delete_potentional_token_type(token *tok, int type_class, int type_num)
 	return 1;
 }
 
-/**
- * Tokeniň içinden, komanda-da gerek bolmajak maglumatlary pozýar.
+/** Tokeniň içinden, komanda-da gerek bolmajak maglumatlary pozýar.
 **/
 int finishize_token(token *tok)
 {
@@ -199,16 +198,14 @@ int finishize_token(token *tok)
 }
 
 
-/**
- * Tokeniň içinde ulanyp boljak maglumat bardygyny barlaýar
+/** Tokeniň içinde ulanyp boljak maglumat bardygyny barlaýar
 **/
 int is_token_empty(token *tok)
 {
 	return !tok->potentional_types_num;
 }
 
-/**
- * Token gutaran soň, komanda geçirilmeli.
+/** Token gutaran soň, komanda geçirilmeli.
 **/
 int work_with_token(token *tok, command *cmd)
 {

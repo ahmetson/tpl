@@ -14,4 +14,3 @@ def_type def_type_list[] = {
 	{"harpl", "char *", "\"\""}
 };
 
-

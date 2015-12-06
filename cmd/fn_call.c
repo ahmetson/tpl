@@ -136,8 +136,10 @@ int fn_call_cmd_return_type(command *cmd, int *return_class, int *ret_type)
 
     \paren - funksiýa çagyrylynda berlen maglumatlar
 **/
-int check_fn_args(int argn, func_arg *args, parenthesis *paren)
+int check_fn_args(int argn, int args_num, parenthesis *paren)
 {
+    func_arg *args = get_fn_args(args_num);
+    parenthesis_elem *paren_elems = get_paren_elems(paren->elems);
     // funksiýa çagyrylanda berlen maglumatlaryň barlananynyň nomeri
     int checked_arg_pos = -1, i, j, ret_class = -1, ret_type = -1;
 
@@ -145,15 +147,15 @@ int check_fn_args(int argn, func_arg *args, parenthesis *paren)
     {
         for(j=0; j<paren->elems_num; ++j)
         {
-            if (paren->elems[j].type==TOKEN_ITEM)
+            if (paren_elems[j].type==TOKEN_ITEM)
             {
-                token_type *tt = &paren->elems[j].tok.potentional_types[0];
-                TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren->elems[j].tok, &ret_class, &ret_type);
+                token_type *tt = &paren_elems[j].tok.potentional_types[0];
+                TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren_elems[j].tok, &ret_class, &ret_type);
             }
-            else if (paren->elems[j].type==CMD_ITEM)
-                CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class][paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type);
-            else if (paren->elems[j].type==PAREN_ITEM)
-                PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type);
+            else if (paren_elems[j].type==CMD_ITEM)
+                CMD_RETURN_TYPE[paren_elems[j].cmd.cmd_class][paren_elems[j].cmd.cmd_type](&paren_elems[j].cmd, &ret_class, &ret_type);
+            else if (paren_elems[j].type==PAREN_ITEM)
+                PAREN_RETURN_TYPE[paren_elems[j].paren.type-1](&paren_elems[j].paren, &ret_class, &ret_type);
 
             if(ret_class==args[0].type_class && ret_type==args[0].type_num)
             {
@@ -162,12 +164,12 @@ int check_fn_args(int argn, func_arg *args, parenthesis *paren)
             else
             {
                 CUR_PART = 7;
-                if(paren->elems[j].type==TOKEN_ITEM)
-                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren->elems[j].tok);
-                else if(paren->elems[j].type==CMD_ITEM)
-                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren->elems[j].cmd));
-                else if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren->elems[j].paren));
+                if(paren_elems[j].type==TOKEN_ITEM)
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren_elems[j].tok);
+                else if(paren_elems[j].type==CMD_ITEM)
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren_elems[j].cmd));
+                else if(paren_elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
+                    print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren_elems[j].paren));
             }
         }
     }
@@ -177,27 +179,27 @@ int check_fn_args(int argn, func_arg *args, parenthesis *paren)
         {
             for(j=0; j<paren->elems_num; ++j)
             {
-                if (paren->elems[j].type==TOKEN_ITEM)
+                if (paren_elems[j].type==TOKEN_ITEM)
                 {
-                    token_type *tt = &paren->elems[j].tok.potentional_types[0];
-                    TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren->elems[j].tok, &ret_class, &ret_type);
+                    token_type *tt = &paren_elems[j].tok.potentional_types[0];
+                    TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren_elems[j].tok, &ret_class, &ret_type);
                  }
-                else if(paren->elems[j].type==CMD_ITEM)
-                    CMD_RETURN_TYPE[paren->elems[j].cmd.cmd_class][paren->elems[j].cmd.cmd_type](&paren->elems[j].cmd, &ret_class, &ret_type);
-                else if(paren->elems[j].type==PAREN_ITEM)
-                    PAREN_RETURN_TYPE[paren->elems[j].paren.type-1](&paren->elems[j].paren, &ret_class, &ret_type);
+                else if(paren_elems[j].type==CMD_ITEM)
+                    CMD_RETURN_TYPE[paren_elems[j].cmd.cmd_class][paren_elems[j].cmd.cmd_type](&paren_elems[j].cmd, &ret_class, &ret_type);
+                else if(paren_elems[j].type==PAREN_ITEM)
+                    PAREN_RETURN_TYPE[paren_elems[j].paren.type-1](&paren_elems[j].paren, &ret_class, &ret_type);
 
                 if (ret_class==args[i].type_class && ret_type==args[i].type_num)
                     checked_arg_pos = j;
                 else
                 {
                     CUR_PART = 7;
-                    if(paren->elems[j].type==TOKEN_ITEM)
-                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren->elems[j].tok);
-                    else if(paren->elems[j].type==CMD_ITEM)
-                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren->elems[j].cmd));
-                    else if(paren->elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
-                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren->elems[j].paren));
+                    if(paren_elems[j].type==TOKEN_ITEM)
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, &paren_elems[j].tok);
+                    else if(paren_elems[j].type==CMD_ITEM)
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_last_token(&paren_elems[j].cmd));
+                    else if(paren_elems[j].type==TOKEN_ITEM && ret_class==TOK_CLASS_UNKNOWN)
+                        print_err(CODE7_FN_ARG_TYPES_NOT_MATCH, (token *)inf_get_parens_last_token(&paren_elems[j].paren));
                 }
             }
         }

@@ -78,7 +78,6 @@ int init()
     FUNCS = NULL;
     FUNCS_NUM = 0;
     FUNC_ARGS = NULL;
-    FUNC_ARGS_NUM = 0;
 
     // Standard lib'däki faňksiýeler goşulýar
     add_std_funs();

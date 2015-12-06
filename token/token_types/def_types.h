@@ -4,6 +4,8 @@
 #ifndef DEF_TYPES_H
 #define DEF_TYPES_H
 
+#include "../token_structs.h"
+
 // Sada tiplerin in uzynyn bolup biljeginin uzynlygy
 #define DEF_TYPES_LEN 7
 
@@ -18,5 +20,6 @@ extern const int DEF_TYPES_NUM;
 
 // tiplering atlarynyn spisogy
 extern def_type def_type_list[];
+
 
 #endif
