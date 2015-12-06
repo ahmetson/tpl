@@ -14,11 +14,6 @@
 extern char CHAR_UNDERSCORE;
 
 
-typedef struct {
-    int                 num;        // Elementleriň sany
-    parenthesis_elem    *elem;       // Element
-}parenthesis_elems;
-
 typedef struct{
     char  (*inc)[MAX_FILE_LEN];
     int    num;
@@ -82,7 +77,6 @@ extern int                  FUNCS_NUM;
 /** Programmadaky goldanylýan funksiýalaryň argumentleri
 **/
 extern func_arg           **FUNC_ARGS;
-extern int                  FUNC_ARGS_NUM;
 
 /// Goşmaly faýllaryň sanawy
 extern file_incs           *INCLUDES;

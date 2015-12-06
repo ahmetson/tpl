@@ -1,13 +1,6 @@
 #ifndef CMDS_H
 #define CMDS_H
 
-/*
-COMMAND TYPES AND CLASSES ARE:
-	1. var class
-		1. decl
-*/
-
-
 // Komandanyn birliginin nomeri
 extern const int UNKNOWN_ITEM;
 extern const int TOKEN_ITEM;
@@ -28,6 +21,7 @@ extern int CMD_CLASS_CMP;
 extern int CMD_CLASS_LOGIC;
 extern int CMD_CLASS_CTRL_STTMNT;
 extern int CMD_CLASS_BLOCK;
+extern int CMD_CLASS_LOOP_STTMNT;
 
 extern int GLOB;
 extern int LOCAL;
@@ -82,7 +76,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 9
+#define CMDS_TYPES_NUM 10
 #endif
 
 #ifndef MAX_CLASS_TYPES

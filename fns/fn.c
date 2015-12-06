@@ -13,23 +13,28 @@ int FUNC_CLASS_USER_DEF  = 1;
 
 void add_func_to_list(func f)
 {
-    FUNCS_NUM++;
-    long size = sizeof(func)*FUNCS_NUM;
+    ++FUNCS_NUM;
+    long size = sizeof(*FUNCS)*FUNCS_NUM;
     FUNCS = realloc(FUNCS, size);
     FUNCS[FUNCS_NUM-1] = f;
 
     // Argumentler üçin ýadyň ýerini ulaltmaly
-    size = sizeof(func_arg*)*FUNCS_NUM;
+    size = sizeof(*FUNC_ARGS)*FUNCS_NUM;
     FUNC_ARGS = realloc(FUNC_ARGS, size);
     if (f.args_num<=1)
-        size = sizeof(func_arg);
+        size = sizeof(**FUNC_ARGS);
     else
-        size = sizeof(func_arg)*f.args_num;
+        size = sizeof(**FUNC_ARGS)*f.args_num;
     FUNC_ARGS[FUNCS_NUM-1] = NULL;
 
     FUNC_ARGS[FUNCS_NUM-1] = realloc(FUNC_ARGS[FUNCS_NUM-1], size);
 
-    FUNCS[FUNCS_NUM-1].args = FUNC_ARGS[FUNCS_NUM-1];
+    FUNCS[FUNCS_NUM-1].args = FUNCS_NUM-1;
+}
+
+func_arg *get_fn_args(int args_num)
+{
+    return FUNC_ARGS[args_num];
 }
 
 void add_arg_to_last_func(func_arg arg, int pos)

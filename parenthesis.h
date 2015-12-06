@@ -13,32 +13,22 @@ extern char PARENTHESIS_ELEM_SEPARATOR;
 #define PARENTHESIS_TYPES 2
 #endif
 
-typedef struct parenthesis parenthesis;
-typedef struct parenthesis_elem parenthesis_elem;
-
 // Bashga komandalar ya tokenler bolup bilyan skobka
-struct parenthesis{
-	parenthesis_elem *elems;
-	unsigned int elems_num;
+typedef struct {
+	int elems;
+	int elems_num;
 	int type;
-};
+}parenthesis;
 
 #include "cmds.h"
 #include "tokens.h"
-struct parenthesis_elem{
+typedef struct {
     parenthesis paren;
     token   tok;
     command cmd;
     char type;
-};
+}parenthesis_elem;
 
-typedef struct{
-    parenthesis *paren;
-    int cmd_class;
-    int cmd_type;
-    int waited_class;
-    int waited_type;
-}unknown_paren;
 
 int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, int *ret_type);
 
@@ -62,6 +52,8 @@ int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren);
 int recognize_paren(parenthesis *paren);
 
 parenthesis get_empty_paren();
+
+parenthesis_elem *get_paren_elems(int paren_num);
 
 void paren_get_c_code(parenthesis *p, char **l, int *llen);
 

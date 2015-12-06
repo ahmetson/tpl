@@ -1,7 +1,6 @@
-/*
- * Tokenlerin tiplerinin bilen bagly ahli maglumatlar.
- * Eyyam bolup biljek tiplerin hemmesi yglan edilen son doredilmeli
-**/
+/** Tokenlerin tiplerinin bilen bagly ahli maglumatlar.
+    Eyyam bolup biljek tiplerin hemmesi yglan edilen son doredilmeli
+*/
 #ifndef TOKEN_TYPES_H
 #define TOKEN_TYPES_H
 
@@ -20,6 +19,7 @@
  * logic (class num: 8)
  * ctrl_sttmnt (class num: 9)
  * block (class num: 10)
+ * loop_sttmnt (class num: 11)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -34,8 +34,9 @@ extern const int TOK_CLASS_CMP;
 extern const int TOK_CLASS_LOGIC;
 extern const int TOK_CLASS_CTRL_STTMNT;
 extern const int TOK_CLASS_BLOCK;
+extern const int TOK_CLASS_LOOP_STTMNT;
 
-// Debug üçin
+// Debag üçin
 extern char *type_classes[];
 
 // Funksiyalar token uchin strukturalary talap edyaler
@@ -54,5 +55,6 @@ int is_token_cmp                (token *tok, char *tok_val);
 int is_token_logic              (token *tok, char *tok_val);
 int is_token_ctrl_sttmnt        (token *tok, char *tok_val);
 int is_token_block              (token *tok, char *tok_val);
+int is_token_loop_sttmnt        (token *tok, char *tok_val);
 
 #endif

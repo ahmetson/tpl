@@ -12,6 +12,7 @@
 #include "token/token_types/logic.h"
 #include "token/token_types/ctrl_sttmnt.h"
 #include "token/token_types/block.h"
+#include "token/token_types/loop_sttmnt.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"

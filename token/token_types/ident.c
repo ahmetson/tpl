@@ -36,7 +36,16 @@ int get_tok_type_ident_ident_val_type(token *tok, int *tok_class, int *tok_type)
 **/
 void tok_ident_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen(tok->potentional_types[0].value);
-    *l = realloc(*l, *llen);
-    strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    if (!(*llen))
+    {
+        *llen += strlen(tok->potentional_types[0].value)+1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value)+1);
+    }
+    else
+    {
+        *llen += strlen(tok->potentional_types[0].value);
+        *l = realloc(*l, *llen);
+        strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
+    }
 }

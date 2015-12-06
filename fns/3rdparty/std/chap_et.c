@@ -50,21 +50,23 @@ void make_std_chap_et_args(parenthesis *paren, char **line, int *llen)
 
     for(i=0; i<paren->elems_num; ++i)
     {
+        parenthesis_elem *p_es = get_paren_elems(paren->elems);
+
         flen+=strlen("%s");
         first = realloc(first, flen);
         strncat(first, "%s", strlen("%s"));
         slen+=strlen(", ");
         second = realloc(second, slen);
         strncat(second, ", ", strlen(", "));
-        if (paren->elems[i].type==TOKEN_ITEM)
-            TOK_GET_C_CODE[paren->elems[i].tok.potentional_types[0].type_class]
-                                [paren->elems[i].tok.potentional_types[0].type_num](&paren->elems[i].tok, &second, &slen);
-        else if(paren->elems[i].type==CMD_ITEM)
-            CMD_GET_C_CODE[paren->elems[i].cmd.cmd_class]
-                                [paren->elems[i].cmd.cmd_type](&paren->elems[i].cmd, &second, &slen);
+        if (p_es[i].type==TOKEN_ITEM)
+            TOK_GET_C_CODE[p_es[i].tok.potentional_types[0].type_class]
+                                [p_es[i].tok.potentional_types[0].type_num](&p_es[i].tok, &second, &slen);
+        else if(p_es[i].type==CMD_ITEM)
+            CMD_GET_C_CODE[p_es[i].cmd.cmd_class]
+                                [p_es[i].cmd.cmd_type](&p_es[i].cmd, &second, &slen);
 
-        //else if(paren->elems[i].type==PAREN_ITEM)
-         //   tmp = PAREN_GET_C_CODE[paren->elems[i].paren.type](&paren->elems[i].paren);
+        //else if(p_es[i].type==PAREN_ITEM)
+         //   tmp = PAREN_GET_C_CODE[p_es[i].paren.type](&p_es[i].paren);
     }
     flen += strlen("\"");
     first = realloc(first, flen);

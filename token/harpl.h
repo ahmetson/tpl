@@ -9,6 +9,8 @@ extern char HARPL_OPENER;
 int increment_string_tokens();
 int add_char_to_last_string(char c);
 
+char *get_string_item(int str_num);
+
 int is_token_string_const_data    (token *tok);
 
 token parse_string(FILE *f);

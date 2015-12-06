@@ -68,7 +68,6 @@ int                    FUNCS_NUM;
 
 /** Funksiýalaryň argumentleri **/
 func_arg             **FUNC_ARGS;
-int                    FUNC_ARGS_NUM; // Goşulan argumentleriň sanawy
 
 /// Goşmaly faýllaryň sanawy
 file_incs             *INCLUDES;
@@ -183,7 +182,7 @@ void free_globs(void)
     if(FUNCS_NUM)
     {
         free(FUNCS);
-        for(i=0; i<FUNC_ARGS_NUM; ++i)
+        for(i=0; i<FUNCS_NUM; ++i)
         {
             free(FUNC_ARGS[i]);
         }

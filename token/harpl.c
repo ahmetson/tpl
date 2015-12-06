@@ -66,7 +66,7 @@ void string_prepare(token *string_tok)
     tok_type.type_class = TOK_CLASS_CONST_DATA;
     tok_type.type_num = STRING_CONST_DATA_TOK_NUM;
     tok_type.parenthesis = 1;
-    tok_type.string_value = &GLOB_STRINGS[GLOB_STRINGS_NUM-1];
+    tok_type.string_value = GLOB_STRINGS_NUM-1;
 
     add_potentional_token_type(string_tok, tok_type);
     // Token inisializasiya edilip bolan son,
@@ -104,6 +104,12 @@ int increment_string_tokens()
 }
 
 
+char *get_string_item(int str_num)
+{
+    return GLOB_STRINGS[str_num];
+}
+
+
 /**
  * Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
 **/
@@ -131,14 +137,13 @@ int add_char_to_last_string(char c)
 int change_last_string(char *new_val)
 {
     int last = GLOB_STRINGS_NUM-1;
-    long size = strlen(new_val);
+    long size = strlen(new_val)+1;
 
     char *tmp = realloc(GLOB_STRINGS[last], size);
     if (tmp!=NULL)
     {
         GLOB_STRINGS[last] = tmp;
     }
-
     strncpy(GLOB_STRINGS[last], new_val, strlen(new_val)+1);
 
     return 1;

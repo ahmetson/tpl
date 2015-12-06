@@ -21,7 +21,7 @@ int semantic_cmd_fn_call(command *cmd);
 
     \paren - funksiýa çagyrylynda berlen maglumatlar
 **/
-int check_fn_args(int argn, func_arg *args, parenthesis *paren);
+int check_fn_args(int argn, int args_num, parenthesis *paren);
 
 
 // C translator

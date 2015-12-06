@@ -97,7 +97,7 @@ char *get_const_data_string(token *tok)
     }
     else if (tok->potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM)
     {
-        return *tok->potentional_types[0].string_value;
+        return (char *)get_string_item(tok->potentional_types[0].string_value);
     }
     return "";
 }
@@ -180,16 +180,18 @@ void tok_char_c_code(token *tok, char **l, int *llen)
 }
 void tok_string_c_code(token *tok, char **l, int *llen)
 {
-    if (*llen==0)
+    char *str = (char *)get_string_item(tok->potentional_types[0].string_value);
+
+    if (!(*llen))
     {
-        *llen += strlen(*tok->potentional_types[0].string_value)+1;
+        *llen += strlen(str)+1;
         *l = realloc(*l, *llen);
-        strncpy(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value)+1);
+        strncpy(*l, str, strlen(str)+1);
     }
     else
     {
-        *llen += strlen(*tok->potentional_types[0].string_value);
+        *llen += strlen(str);
         *l = realloc(*l, *llen);
-        strncat(*l, *tok->potentional_types[0].string_value, strlen(*tok->potentional_types[0].string_value));
+        strncat(*l, str, strlen(str));
     }
 }

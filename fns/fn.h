@@ -30,7 +30,7 @@ typedef struct{
     int type_class;
     int type_num;
     int args_num;
-    func_arg *args;
+    int args;
     char inf_char;
     int  inf_char_pos;
     int  inf_line_pos;
@@ -57,6 +57,9 @@ int is_fn_exist(char *fn_name);
     \fnName - maglumatlary alynmaly funksiýanyň ady
 **/
 func *fn_get_by_name(char *fn_name);
+
+
+func_arg *get_fn_args(int args_num);
 
 
 void add_arg_to_last_func(func_arg arg, int pos);

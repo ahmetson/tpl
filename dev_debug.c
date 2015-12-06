@@ -135,6 +135,14 @@ void debug_token_type(token_type *tok_type)
     {
         strncpy(type, TOK_CLASS_CTRL_STTMNT_WORDS[tok_type->type_num], strlen(TOK_CLASS_CTRL_STTMNT_WORDS[tok_type->type_num])+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_BLOCK)
+    {
+        strncpy(type, TOK_CLASS_BLOCK_WORDS[tok_type->type_num], strlen(TOK_CLASS_BLOCK_WORDS[tok_type->type_num])+1);
+    }
+    else if (tok_type->type_class==TOK_CLASS_LOOP_STTMNT)
+    {
+        strncpy(type, TOK_CLASS_LOOP_STTMNT_WORDS[tok_type->type_num], strlen(TOK_CLASS_LOOP_STTMNT_WORDS[tok_type->type_num])+1);
+    }
     else
 		strncpy(type, "", strlen("")+1);
 
@@ -154,7 +162,7 @@ char *get_tok_type_value(token_type *tok_type)
 {
     if (tok_type->type_class==TOK_CLASS_CONST_DATA && tok_type->type_num==STRING_CONST_DATA_TOK_NUM)
     {
-        return *tok_type->string_value;
+        return (char *)get_string_item(tok_type->string_value);
     }
     return tok_type->value;
 };
@@ -240,18 +248,20 @@ void debug_paren(parenthesis *paren)
 	printf("Birlikleriniň sany: %d", paren->elems_num);
 	if (paren->elems_num>0)
 	{
+	    parenthesis_elem *p_es = get_paren_elems(paren->elems);
+
 		int i;
 		printf(". Olar:\n");
 		++DEV_ITEMS_STEPS;
 		//printf("  potentional types: %d", tok->potentional_types_num);
 		for(i=0; i<paren->elems_num; i++)
 		{
-			if (paren->elems[i].type==TOKEN_ITEM)
-				debug_token(&paren->elems[i].tok);
-			else if(paren->elems[i].type==CMD_ITEM)
-				debug_cmd(&paren->elems[i].cmd);
-            else if(paren->elems[i].type==PAREN_ITEM)
-                debug_paren(&paren->elems[i].paren);
+			if (p_es[i].type==TOKEN_ITEM)
+				debug_token(&p_es[i].tok);
+			else if(p_es[i].type==CMD_ITEM)
+				debug_cmd(&p_es[i].cmd);
+            else if(p_es[i].type==PAREN_ITEM)
+                debug_paren(&p_es[i].paren);
 		}
 		--DEV_ITEMS_STEPS;
 	}
