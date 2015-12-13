@@ -22,5 +22,7 @@ int paren_type_is_fns_args(parenthesis *paren);
 int empty_paren_return_type(parenthesis *paren, int *ret_class, int *ret_num);
 int paren_fns_args_return_type(parenthesis *paren, int *ret_class, int *ret_num);
 
+int is_param_item_int(parenthesis *par);
+
 #endif // PAREN_TYPES_H
 

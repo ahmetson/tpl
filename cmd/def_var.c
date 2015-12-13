@@ -7,6 +7,8 @@
 #include "../main/inf.h"
 #include "../translator_to_c/includes.h"
 #include "../error.h"
+#include "../cmds.h"
+#include "array.h"
 #include "def_var.h"
 
 int DEF_VAR_TYPE_NUM = 0;
@@ -154,9 +156,16 @@ int is_def_var_cmd(command *cmd)
 	return 0;
 }
 
+// Komandanyn gornushinin ulni yglan etmedigini barlayar
+int is_def_arr_cmd(command *cmd)
+{
+	if (cmd->cmd_class==CMD_CLASS_ARR && cmd->cmd_type==CMD_CLASS_ARR_DEF && cmd->is_compl)
+		return 1;
+	return 0;
+}
 
-/**
- * Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.
+
+/** Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.
 **/
 int add_to_def_var_list(command *cmd)
 {
@@ -173,8 +182,25 @@ int add_to_def_var_list(command *cmd)
     return 1;
 }
 
+/** Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.
+**/
+int add_to_def_arr_list(command *cmd)
+{
+    //printf("Komanda showly saygaryldy\n");
+	if (!is_def_arr_cmd(cmd))
+	{
+        // Ulni yglan etme komanda dal
+        return 0;
+	}
+    if (cmd->ns==GLOB)
+        arr_def_add(cmd, 1);
+    else
+        arr_def_add(cmd, 0);
+    return 1;
+}
+
 /** Ýasalan kodda başga faýllarda yglan edilen global ülňileriň çagyrylanlarynyň sanawyna täze ülňini goşýar
-    Bu sanaw Trans Ç bölümde gerek. Sebäbi ýasalan kodda çagyrylan ülňiniň yglan edilen ýeriniň .h hem goşulmaly.
+    Bu sanaw C kody üçin bölümde gerek. Sebäbi ýasalan kodda çagyrylan ülňiniň yglan edilen ýeriniň .h hem goşulmaly.
 */
 void global_called_vars_add(command *cmd)
 {
@@ -227,6 +253,8 @@ void global_called_vars_add(command *cmd)
         strncpy(GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident[0], ident, strlen(ident)+1);
     }
 }
+
+
 
 /** Komandanyň gaýtarýan maglumatynyň tipini berýän funksiýa:
     Iň soňky tokeniň maglumaty
@@ -293,7 +321,7 @@ void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
 
 int semantic_cmd_def_var(command *cmd)
 {
-    if (cmd->ns==GLOB)
+    if (cmd->ns==GLOB && GLOB_BLOCK_INCLUDES)
     {
         CUR_PART = 7;
         print_err(CODE7_GLOB_DEF_IN_BLOCK, (token *)inf_get_last_token(cmd));

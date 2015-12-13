@@ -53,7 +53,6 @@ int init()
 	// Butin programma boyuncha ichki komandalaryn sanawy.
 	GLOB_SUBCMDS_NUM = 0;
 
-
     // Ýasaljak programma-da ulanylýan harpl tokenleriň sanawy
     GLOB_STRINGS_NUM = 0;
     GLOB_STRINGS     = NULL;
@@ -83,21 +82,32 @@ int init()
     add_std_funs();
 
     GLOBAL_VAR_DEFS = NULL;
+    GLOBAL_ARR_DEFS = NULL;
     GLOBAL_VAR_DEFS_NUMS = 0;
+    GLOBAL_ARR_DEFS_NUMS = 0;
+    GLOBAL_ARR_DEFS_ITEMS = NULL;
+    GLOBAL_ARR_DECS_ITEMS = NULL;
 
     /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
     GLOBAL_VAR_DECS = NULL;
+    GLOBAL_ARR_DECS = NULL;
     GLOBAL_VAR_DECS_NUMS = 0;
+    GLOBAL_ARR_DECS_NUMS = 0;
 
     /// Global yglan etmeli faýllaryň sanawy
     GLOB_DECS_FILES = NULL;
     GLOB_DECS_FILES_NUM = 0;
 
     LOCAL_VAR_DEFS = NULL;
+    LOCAL_ARR_DEFS = NULL;
     LOCAL_VAR_DEFS_NUMS = 0;
+    LOCAL_ARR_DEFS_NUMS = 0;
+    LOCAL_ARR_DEFS_ITEMS = NULL;
 
     GLOBAL_CALLED_VARS = NULL;
+    GLOBAL_CALLED_ARRS = NULL;
     GLOBAL_CALLED_VARS_NUM = 0;
+    GLOBAL_CALLED_ARRS_NUM = 0;
 
     GLOB_BLOCK_INCLUDES = 0;
 

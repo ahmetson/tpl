@@ -65,7 +65,11 @@ void tpl(int argc, const char **args)
 
     if (GLOBAL_VAR_DECS_NUMS)
     {
-        work_with_glob_decs();
+        work_with_glob_var_decs();
+    }
+    if (GLOBAL_ARR_DECS_NUMS)
+    {
+        work_with_glob_arr_decs();
     }
 
 	// Ýasalan programmanyň baş faýly tanalmaly
@@ -87,6 +91,7 @@ void tpl(int argc, const char **args)
 
     /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
     work_with_called_glob_vars();
+    work_with_called_glob_arrs();
 
 
     /// ŞERT BÖLÜMI: TRANSLATOR TO Ç

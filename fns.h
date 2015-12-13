@@ -32,4 +32,6 @@ char *remove_ext(char *f, char *e);
 
 void return_last_char(FILE *f);
 
+void divide_string(char *source, char d, char ***out, int *items);
+
 #endif

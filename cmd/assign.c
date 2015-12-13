@@ -73,7 +73,15 @@ int is_cmd_assign(command *cmd)
 		// Indiki token dine chepe tarap baglanma bolmaly
 		next_item_type= LEFT_ASSIGN_TOK_NUM;
     }
-	else if (fci->type==TOKEN_ITEM &&
+    else if (fci->type==CMD_ITEM &&
+            fci->cmd.cmd_class==CMD_CLASS_ARR && fci->cmd.cmd_type==CMD_CLASS_ARR_CON)
+    {
+        assign_cmd_mod(cmd, 0);
+		next_item_class=TOK_CLASS_ASSIGN;
+		// Indiki token dine chepe tarap baglanma bolmaly
+		next_item_type= LEFT_ASSIGN_TOK_NUM;
+    }
+	/*else if (fci->type==TOKEN_ITEM &&
           fci->tok.type_class==TOK_CLASS_CONST_DATA)
 	{
 
@@ -81,7 +89,7 @@ int is_cmd_assign(command *cmd)
 		//next_item_class=TOK_CLASS_ASSIGN;
 		// Indiki token dine chepe tarap baglanma bolmaly
 		//next_item_type= RIGHT_ASSIGN_TOK_NUM;
-    }
+    }*/
     else
     {
 		return 0;
@@ -248,6 +256,7 @@ int semantic_cmd_assign(command *cmd)
             }
             else
             {
+                printf("CHAP EDIL\n");
                  if(f->type==TOKEN_ITEM)
                     print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &f->tok);
                  if(f->type==CMD_ITEM)

@@ -22,6 +22,7 @@ extern int CMD_CLASS_LOGIC;
 extern int CMD_CLASS_CTRL_STTMNT;
 extern int CMD_CLASS_BLOCK;
 extern int CMD_CLASS_LOOP_STTMNT;
+extern int CMD_CLASS_ARR;
 
 extern int GLOB;
 extern int LOCAL;
@@ -76,7 +77,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 10
+#define CMDS_TYPES_NUM 11
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -143,5 +144,7 @@ void put_cmd_item(int cmd_num, int item_num, command_item ci);
 int is_cmd_not_compl_item_exist(command *cmd, char rec);
 
 int is_cmd_item_can_be_needed(command *cmd);
+
+int is_glob_arr_dec_exist(char *ident);
 
 #endif

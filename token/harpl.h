@@ -8,6 +8,8 @@ extern char HARPL_OPENER;
 
 int increment_string_tokens();
 int add_char_to_last_string(char c);
+int add_string_to_last_string(char *str);
+void free_last_string();
 
 char *get_string_item(int str_num);
 

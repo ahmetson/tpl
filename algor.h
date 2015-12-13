@@ -9,6 +9,7 @@
 
 #include "cmds.h"
 #include "tokens.h"
+#include "cmd/array.h"
 
 typedef struct{
     int type_class;
@@ -25,6 +26,8 @@ int algor_add_cmd(command cmd);
 
 void var_def_add(command *cmd, char glob);
 
+void arr_def_add(command *cmd, char glob);
+
 // Wagtlayyn fayllaryn rasshireniyasyny
 extern char loc_head_file[MAX_FILE_LEN];
 extern char loc_source_file[MAX_FILE_LEN];
@@ -34,7 +37,14 @@ int is_glob_var_def_exist(char *name);
 int is_local_var_def_exist(char *name);
 int is_var_def_exist(char *name);
 
+//void write_loc_def_var();
+int is_glob_arr_def_exist(char *name);
+int is_local_arr_def_exist(char *name);
+int is_arr_def_exist(char *name);
+
 glob_ident *glob_vars_def_get_by_name(char *ident);
+array_item *glob_arrs_def_get_by_name(char *name);
+
 
 // Hazirki parsing edilen faylda global ulni yglan edileninin jogabyny gaytaryar
 int is_glob_def_var_in_cur();

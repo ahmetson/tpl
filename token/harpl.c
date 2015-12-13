@@ -75,17 +75,9 @@ void string_prepare(token *string_tok)
 
     // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
     add_char_to_last_string(HARPL_OPENER);
-
-    // eger-de token sozlem tokeni yaly tanalmasa,
-    if (!is_token_string_const_data(string_tok))
-    {
-        // Nadogry diyip hat chykarmaly
-        print_err(CODE2_STRING_IS_WRONG, string_tok);
-    }
 }
 
-/**
- * Ýasaljak programma-da ulanylýan sözleriň sanawy ýene bire köpeldilýär.
+/** Ýasaljak programma-da ulanylýan sözleriň sanawy ýene bire köpeldilýär.
 **/
 int increment_string_tokens()
 {
@@ -110,8 +102,7 @@ char *get_string_item(int str_num)
 }
 
 
-/**
- * Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
+/** Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
 **/
 int add_char_to_last_string(char c)
 {
@@ -130,6 +121,31 @@ int add_char_to_last_string(char c)
     return 1;
 }
 
+/** Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
+**/
+int add_string_to_last_string(char *str)
+{
+    int last = GLOB_STRINGS_NUM-1;
+    int size = strlen(str)+1;
+
+    GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
+
+    if (GLOB_STRINGS[last]==NULL)
+        printf("Soz uchin yer yasap bolmady\n");
+
+    strncpy(GLOB_STRINGS[last], str, size);
+    return 1;
+}
+
+void free_last_string()
+{
+    int last = GLOB_STRINGS_NUM-1;
+    if (GLOB_STRINGS[last]!=NULL)
+    {
+        free(GLOB_STRINGS[last]);
+        GLOB_STRINGS[last] = NULL;
+    }
+}
 
 /**
  * Ýasaljak programma üçin goşulan iň soňky sözi çalyşýar
