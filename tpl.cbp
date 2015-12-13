@@ -36,6 +36,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmd/arif.h" />
+		<Unit filename="cmd/array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/array.h" />
 		<Unit filename="cmd/assign.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

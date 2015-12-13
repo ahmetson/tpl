@@ -26,6 +26,10 @@ int prepare_c_source(FILE *f, char *h_source);
 int c_trans_header_add_glob_def_var(FILE *f);
 int c_trans_source_add_glob_def_var(FILE *f);
 
+// Global funksiya yglan etmelerini fayllara goshyar.
+int c_trans_header_add_glob_def_arr(FILE *f);
+int c_trans_source_add_glob_def_arr(FILE *f);
+
 // Lokal yglan edilen funksiyalary ichine goshyar
 int c_trans_source_add_loc_def_var(FILE *f, char main_file);
 

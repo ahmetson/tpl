@@ -89,6 +89,7 @@ int cmd_call_glob_var_return_type(command *cmd, int *return_class, int *ret_type
         ýogsa
             global ülňileriň maglumatlarynyň sanawyndan identifikatoryň maglumaty gaýtarylýar.
     **/
+
     command_item *sci = get_cmd_item(cmd->items,1);
     if (is_glob_var_def_exist(sci->tok.potentional_types[0].value))
     {
@@ -101,7 +102,9 @@ int cmd_call_glob_var_return_type(command *cmd, int *return_class, int *ret_type
         return 1;
     }
     CUR_PART = 7;
-    print_err(CODE7_UNKNOWN_GLOB_VAR_CALLED, (token *)inf_get_last_token(cmd));
+
+    if (!is_glob_arr_def_exist(sci->tok.potentional_types[0].value) && !is_glob_arr_dec_exist(sci->tok.potentional_types[0].value))
+        print_err(CODE7_UNKNOWN_GLOB_VAR_CALLED, (token *)inf_get_last_token(cmd));
     return 0;
 }
 

@@ -161,3 +161,52 @@ void return_last_char(FILE *f)
     pos--;
     fsetpos(f, &pos);
 }
+
+
+void divide_string(char *source, char d, char ***out, int *items)
+{
+    int i;
+    char *tmp = malloc(sizeof(char)*10);
+
+    tmp[0] = '\0';
+    for (i=0; i<strlen(source); ++i)
+    {
+        if (source[i]==d)
+        {
+            if (strlen(tmp))
+            {
+                *items += 1;
+                *out = realloc(*out, sizeof(**out)*(*items));
+                (*out)[*items-1] = malloc(sizeof(char)*10);
+                strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
+
+                free(tmp);
+
+                tmp = malloc(sizeof(char)*10);
+                tmp[0] = '\0';
+            }
+        }
+        else
+        {
+            if (strlen(tmp))
+            {
+                tmp[strlen(tmp)-1] = source[i];
+                tmp[strlen(tmp)]   = '\0';
+            }
+            else
+            {
+                tmp[0] = source[i];
+                tmp[1] = '\0';
+            }
+        }
+    }
+    if (strlen(tmp))
+    {
+        *items += 1;
+        *out = realloc(*out, sizeof(**out)*(*items));
+        (*out)[*items-1] = malloc(sizeof(char)*10);
+        strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
+    }
+    free(tmp);
+}
+

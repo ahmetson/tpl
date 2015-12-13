@@ -85,15 +85,41 @@ int                  GLOBAL_VAR_DECS_NUMS;
 glob_ident          *LOCAL_VAR_DEFS;
 int                  LOCAL_VAR_DEFS_NUMS;
 
-/// Global yglan etmeli faýllaryň sanawy
-char               **GLOB_DECS_FILES;
-int                  GLOB_DECS_FILES_NUM;
-
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
 called_var         *GLOBAL_CALLED_VARS;
 int                 GLOBAL_CALLED_VARS_NUM;
 
+
+/// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
+array_item          *GLOBAL_ARR_DEFS;
+int                  GLOBAL_ARR_DEFS_NUMS;
+
+/// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen birsyhly sanawlaryň maglumatlarynyň sanawy
+array_inc_item     **GLOBAL_ARR_DEFS_ITEMS;
+
+array_item          *GLOBAL_ARR_DECS;
+int                  GLOBAL_ARR_DECS_NUMS;
+
+array_inc_item     **GLOBAL_ARR_DECS_ITEMS;
+
+
+/// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
+array_inc_item     **LOCAL_ARR_DEFS_ITEMS;
+
+/// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
+array_item          *LOCAL_ARR_DEFS;
+int                  LOCAL_ARR_DEFS_NUMS;
+
+/// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
+/// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
+called_var         *GLOBAL_CALLED_ARRS;
+int                 GLOBAL_CALLED_ARRS_NUM;
+
+
+/// Global yglan etmeli faýllaryň sanawy
+char               **GLOB_DECS_FILES;
+int                  GLOB_DECS_FILES_NUM;
 
 /// Häzirki içine parsing edilip goşulýan birlikli komanda
 command             *CUR_CMD;
@@ -114,6 +140,17 @@ int                  GLOB_BLOCKS_NUM;
 void free_globs(void)
 {
     int i;
+    if (GLOBAL_CALLED_ARRS_NUM)
+    {
+        for(i=0; i<GLOBAL_CALLED_ARRS_NUM; ++i)
+        {
+            if (GLOBAL_CALLED_ARRS[i].num)
+            {
+                free(GLOBAL_CALLED_ARRS[i].ident);
+            }
+        }
+        free(GLOBAL_CALLED_ARRS);
+    }
 
     if (GLOBAL_CALLED_VARS_NUM)
     {
@@ -202,10 +239,36 @@ void free_globs(void)
     /// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
     if (GLOBAL_VAR_DEFS_NUMS)
         free(GLOBAL_VAR_DEFS);
+    if (GLOBAL_ARR_DEFS_NUMS)
+    {
+        free(GLOBAL_ARR_DEFS);
+        int i;
+        for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+        {
+            if (GLOBAL_ARR_DEFS_ITEMS[i]!=NULL)
+            {
+                free(GLOBAL_ARR_DEFS_ITEMS[i]);
+            }
+        }
+        free(GLOBAL_ARR_DEFS_ITEMS);
+    }
 
     /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
     if (GLOBAL_VAR_DECS_NUMS)
         free(GLOBAL_VAR_DECS);
+    if (GLOBAL_ARR_DECS_NUMS)
+    {
+        free(GLOBAL_ARR_DECS);
+        int i;
+        for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
+        {
+            if (GLOBAL_ARR_DECS_ITEMS[i]!=NULL)
+            {
+                free(GLOBAL_ARR_DECS_ITEMS[i]);
+            }
+        }
+        free(GLOBAL_ARR_DECS_ITEMS);
+    }
 
     /// Global yglan etmeli faýllaryň sanawy
     if (GLOB_DECS_FILES_NUM)
@@ -251,5 +314,22 @@ void free_locals(void)
         LOCAL_VAR_DEFS_NUMS=0;
         free(LOCAL_VAR_DEFS);
         LOCAL_VAR_DEFS = NULL;
+    }
+    if (LOCAL_ARR_DEFS_NUMS)
+    {
+        int i;
+        for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
+        {
+            if (LOCAL_ARR_DEFS_ITEMS[i]!=NULL)
+            {
+                free(LOCAL_ARR_DEFS_ITEMS[i]);
+            }
+        }
+        LOCAL_ARR_DEFS_NUMS=0;
+        free(LOCAL_ARR_DEFS);
+        LOCAL_ARR_DEFS = NULL;
+
+        free(LOCAL_ARR_DEFS_ITEMS);
+        LOCAL_ARR_DEFS_ITEMS = NULL;
     }
 }

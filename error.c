@@ -79,7 +79,13 @@ int CODE7_RIGHT_IDENT_NOT_DEFINED       = 11;
 int CODE7_GLOB_VAR_NOT_MATCH_DATA_TYPE  = 12;
 int CODE7_NEED_IF_OR_IFELSE_CMD         = 13;
 int CODE7_GLOB_DEF_IN_BLOCK             = 14;
-int CODE7_NEED_OPEN_BLOCK_CMD       = 15;
+int CODE7_NEED_OPEN_BLOCK_CMD           = 15;
+int CODE7_ARRAY_DOESNT_EXIST            = 16;
+int CODE7_UNDEFINED_ARRAY_INCLUDE       = 17;
+int CODE7_CONNECTING_TO_ARRAY_NOT_TO_ITEM = 18;
+int CODE7_OUT_OF_ARRAY_ITEMS            = 19;
+int CODE7_GLOB_ARR_MUST_DEF             = 20;
+int CODE7_GLOB_ARR_NOT_MATCH_DATA_TYPE  = 21;
 
 /* Ýalňyşlyklaryň tekstleri */
 error_item err_items[] = {
@@ -171,7 +177,19 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 14, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Global ülňi bloklaryň içinde yglan edildi.\nGlobal ülňiler diňe faýl derejesinde yglan edilmeli"},
     {7, 15, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Blogy açýan komanda ýetenok"}
+        "Blogy açýan komanda ýetenok"},
+    {7, 16, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Birsyhly sanaw, çatylynmadan öň yglan edilmeli"},
+    {7, 17, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Birsyhly sanawyň çatylan birlige görä içki sanawlary duşanok"},
+    {7, 18, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Birsyhly sanawyň sanaw birligine çatylyndy. Diňe iň içki sanawlarynyň iň soňky birligine çatylyp bolýar"},
+    {7, 19, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Birsyhly sanawda saklanylýan birlikleriň möçberi, çatylylan birlikden azyny saklaýar"},
+    {7, 20, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Maglumatlara laýyk global birsyhly sanaw bir ýerlerde yglan edilmeli"},
+    {7, 21, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Yglan edilen global birsyhly sanawyň we bu birsyhly sanawyň yglan edilen maglumatlarynyň tipleri gabat gelenok"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
@@ -225,8 +243,7 @@ void print_err(int num, token *tok)
 
 
 
-/**
- * Ýüze çykan ýalňyşlyk kody boýunça, ýalňyşlyk üçin gerekli maglumatlary yzyna gaýtarýar
+/**  Ýüze çykan ýalňyşlyk kody boýunça, ýalňyşlyk üçin gerekli maglumatlary yzyna gaýtarýar
 **/
 error_item *get_err_inf(int num)
 {

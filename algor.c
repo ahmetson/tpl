@@ -116,6 +116,72 @@ void var_def_add(command *cmd, char glob)
     }
 }
 
+void arr_def_add(command *cmd, char glob)
+{
+    int ident_tok_pos = cmd->items_num-1;  // Identifikator - bu komandadaky iň soňky element
+
+    command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
+    char *tok_name = ci->tok.potentional_types[0].value;
+
+	// Identifikator eyyam yglan edilen eken.
+	if (glob)
+    {
+        if (is_ident_used(&ci->tok, 1))
+        {
+            CUR_PART = 4;
+            print_err(CODE4_VARS_IDENT_USED, &ci->tok);
+        }
+    }
+    else
+    {
+        if (is_ident_used(&ci->tok, 0))
+        {
+            CUR_PART = 4;
+            print_err(CODE4_VARS_IDENT_USED, &ci->tok);
+        }
+    }
+    command_item *prevci = get_cmd_item(cmd->items, ident_tok_pos-1);
+    command_item *yay_ci = get_cmd_item(cmd->items, ident_tok_pos-2);
+
+    array_item ai = {
+        prevci->tok.inf_file_num,
+        prevci->tok.inf_char_num,
+        prevci->tok.inf_char,
+        prevci->tok.inf_line_num,
+        "",
+        yay_ci->paren.elems_num,
+        prevci->tok.potentional_types[0].type_class,
+		prevci->tok.potentional_types[0].type_num
+    };
+
+	strncpy(ai.ident, tok_name, strlen(tok_name)+1);
+
+    // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
+    if (glob)
+    {
+        ++GLOBAL_ARR_DEFS_NUMS;
+        GLOBAL_ARR_DEFS = realloc(GLOBAL_VAR_DEFS, sizeof(*GLOBAL_ARR_DEFS)*GLOBAL_ARR_DEFS_NUMS);
+        GLOBAL_ARR_DEFS[GLOBAL_ARR_DEFS_NUMS-1] = ai;
+
+        GLOBAL_ARR_DEFS_ITEMS = realloc(GLOBAL_ARR_DEFS_ITEMS, sizeof(*GLOBAL_ARR_DEFS_ITEMS)*GLOBAL_ARR_DEFS_NUMS);
+        GLOBAL_ARR_DEFS_ITEMS[GLOBAL_ARR_DEFS_NUMS-1] = NULL;
+
+        add_to_last_glob_arr_items(cmd);
+    }
+    else
+    {
+        ++LOCAL_ARR_DEFS_NUMS;
+        LOCAL_ARR_DEFS = realloc(LOCAL_ARR_DEFS, sizeof(*LOCAL_ARR_DEFS)*LOCAL_ARR_DEFS_NUMS);
+        LOCAL_ARR_DEFS[LOCAL_ARR_DEFS_NUMS-1] = ai;
+
+        LOCAL_ARR_DEFS_ITEMS = realloc(LOCAL_ARR_DEFS_ITEMS, sizeof(*LOCAL_ARR_DEFS_ITEMS)*LOCAL_ARR_DEFS_NUMS);
+        LOCAL_ARR_DEFS_ITEMS[LOCAL_ARR_DEFS_NUMS-1] = NULL;
+
+        add_to_last_loc_arr_items(cmd);
+    }
+}
+
+
 
 // Lokal fayllar uchin
 char loc_head_file[] = ".h";
@@ -130,6 +196,31 @@ int is_glob_def_var_in_cur()
 			return 1;
 	}
 	return 0;
+}
+
+int is_glob_def_arr_in_cur()
+{
+	int i;
+	for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+	{
+		if (GLOBAL_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+			return 1;
+	}
+	return 0;
+}
+
+int is_glob_arr_def_exist(char *name)
+{
+    int i, len;
+    for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    {
+        len = strlen(name)>strlen(GLOBAL_ARR_DEFS[i].ident)?strlen(name):strlen(GLOBAL_ARR_DEFS[i].ident);
+        if (strncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int is_glob_var_def_exist(char *name)
@@ -161,6 +252,20 @@ int is_local_var_def_exist(char *name)
     return 0;
 }
 
+int is_local_arr_def_exist(char *name)
+{
+    int i, len;
+    for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
+    {
+        len = strlen(name)>strlen(LOCAL_ARR_DEFS[i].ident)?strlen(name):strlen(LOCAL_ARR_DEFS[i].ident);
+        if (strncmp(LOCAL_ARR_DEFS[i].ident, name, len)==0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int is_var_def_exist(char *ident)
 {
     if (is_glob_var_def_exist(ident) ||
@@ -169,8 +274,15 @@ int is_var_def_exist(char *ident)
         return 1;
 }
 
-/*
- * Ulninin ady boyuncha onun on yglan edilendigini barlayar.
+int is_arr_def_exist(char *ident)
+{
+    if (is_glob_arr_def_exist(ident) ||
+        is_glob_var_dec_exist(ident) ||
+        is_local_arr_def_exist(ident))
+        return 1;
+}
+
+/** Ulninin ady boyuncha onun on yglan edilendigini barlayar.
 **/
 int is_ident_used(token *t, char except_code)
 {
@@ -180,12 +292,15 @@ int is_ident_used(token *t, char except_code)
     ///     Ülňileriň adymy, funksiýalaryň adymy, açar sözlerimi we ş.m.
     if (!except_code)
     {
-        return is_var_def_exist(ident);
+        int res = is_var_def_exist(ident);
+        res = is_arr_def_exist(ident);
+        return res;
     }
-    /// Global ülňileriň maglumatlary yglan edilen sanawda identifikator gözlenenok.
+    /// Global ülňileriň maglumatlary beýan edilen sanawda identifikator gözlenenok.
     else if (except_code==1)
     {
-        return is_local_var_def_exist(ident) || is_glob_var_def_exist(ident);
+        return is_local_var_def_exist(ident) || is_glob_var_def_exist(ident)
+            || is_local_arr_def_exist(ident) || is_glob_arr_def_exist(ident);
     }
     return 0;
 }
@@ -203,6 +318,25 @@ glob_ident *glob_vars_def_get_by_name(char *name)
         if (strncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
         {
             ret = &GLOBAL_VAR_DEFS[i];
+            break;
+        }
+    }
+    return ret;
+}
+
+
+array_item *glob_arrs_def_get_by_name(char *name)
+{
+    int i, len;
+    array_item *ret;
+    for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    {
+        //printf("%d: check <%s> that defined <%s>\n, current <%s> defined in <%s>\n", USER_VAR_DEFS_NUM, ident, f, USER_VAR_DEFS[i].ident, USER_VAR_DEFS[i].file_name);
+        // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
+        len = strlen(name)>strlen(GLOBAL_ARR_DEFS[i].ident)?strlen(name):strlen(GLOBAL_ARR_DEFS[i].ident);
+        if (strncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        {
+            ret = &GLOBAL_ARR_DEFS[i];
             break;
         }
     }

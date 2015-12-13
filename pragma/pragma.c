@@ -269,6 +269,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
             else
             {
                 glob_vars_decl_add(&cmd);
+                glob_arrs_decl_add(&cmd);
             }
             init_cmd(&cmd, 1);
         }

@@ -15,6 +15,8 @@ void def_var_cmd_mod(command *cmd, token *item, int item_num);
 int is_glob_def_var_cmd(command *cmd);
 int is_def_var_cmd(command *cmd);
 
+int is_def_arr_cmd(command *cmd);
+
 // Komanda ulni yglan etme bolsa, ulni yglan etmelerin sanawyna goshyar
 int add_to_def_var_list(command *cmd);
 void global_called_vars_add(command *cmd);

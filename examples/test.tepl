@@ -1,14 +1,4 @@
 #b1
-san a <- 1.
-eger (a > 2) bolsa
-	("SALAM=s")chap_et.
-	eger (a < 3) bolsa
-		("Salam name?=s")chap_et.
-	yogsa
-		ta (a>5) bolyancha
-			("SALAM=s")chap_et.
-			a <- a + 1.
-		===.
-		("Sen name diyyanay?=s")chap_et.
-	===.
-===.
+@(1)san ident.
+
+@ident 0 <- 12.

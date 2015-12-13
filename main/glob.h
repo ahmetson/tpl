@@ -10,6 +10,7 @@
 #include "../parenthesis.h"
 #include "../fns/fn.h"
 #include "../semantic.h"
+#include "../cmd/array.h"
 
 extern char CHAR_UNDERSCORE;
 
@@ -106,6 +107,31 @@ extern int                  LOCAL_VAR_DEFS_NUMS;
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
 extern called_var          *GLOBAL_CALLED_VARS;
 extern int                  GLOBAL_CALLED_VARS_NUM;
+
+/// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
+extern array_item          *GLOBAL_ARR_DEFS;
+extern int                  GLOBAL_ARR_DEFS_NUMS;
+
+/// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen birsyhly sanawlaryň maglumatlarynyň sanawy
+extern array_inc_item     **GLOBAL_ARR_DEFS_ITEMS;
+
+extern array_item          *GLOBAL_ARR_DECS;
+extern int                  GLOBAL_ARR_DECS_NUMS;
+
+extern array_inc_item     **GLOBAL_ARR_DECS_ITEMS;
+
+/// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
+extern array_item          *LOCAL_ARR_DEFS;
+extern int                  LOCAL_ARR_DEFS_NUMS;
+
+extern array_inc_item     **LOCAL_ARR_DEFS_ITEMS;
+
+
+/// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
+/// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
+extern called_var         *GLOBAL_CALLED_ARRS;
+extern int                 GLOBAL_CALLED_ARRS_NUM;
+
 
 /// Häzirki içine parsing edilip goşulýan birlikli komanda
 command                    *CUR_CMD;
