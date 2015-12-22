@@ -125,15 +125,25 @@ int add_char_to_last_string(char c)
 **/
 int add_string_to_last_string(char *str)
 {
-    int last = GLOB_STRINGS_NUM-1;
-    int size = strlen(str)+1;
+    int last = GLOB_STRINGS_NUM-1, size = 0;
 
-    GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
+    if (GLOB_STRINGS[last]!=NULL)
+    {
+        size = strlen(GLOB_STRINGS[last]) + strlen(str);
+        GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
+        if (GLOB_STRINGS[last]==NULL)
+            printf("Soz uchin yer yasap bolmady\n");
+        strncat(GLOB_STRINGS[last], str, strlen(str));
+    }
+    else
+    {
+        size += strlen(str)+1;
+        GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
+        if (GLOB_STRINGS[last]==NULL)
+            printf("Soz uchin yer yasap bolmady\n");
+        strncpy(GLOB_STRINGS[last], str, size);
+    }
 
-    if (GLOB_STRINGS[last]==NULL)
-        printf("Soz uchin yer yasap bolmady\n");
-
-    strncpy(GLOB_STRINGS[last], str, size);
     return 1;
 }
 

@@ -3,9 +3,10 @@
 **/
 #include "token_types/ctrl_sttmnt.h"
 #include "token_types/loop_sttmnt.h"
+#include "token_types/utype.h"
 #include "keywords.h"
 
-int MAX_KEYWORDS_NUM = (4) + 1 + (4);
+int MAX_KEYWORDS_NUM = (4) + 1 + (4) + 1;
 char *keywords[] = {
 	"san",					// tipler
 	"harp",
@@ -17,5 +18,6 @@ char *keywords[] = {
 	ELSE_WORD,
 	CTRL_STTMNT_CLOSE_BLOCK,
 	UNTIL_WORD,             // loop_sttmnt
-	UNTIL_CLOSE_WORD
+	UNTIL_CLOSE_WORD,
+	UTYPE_DEF_SIGNIFIER_WORD  // utype
 };

@@ -66,4 +66,6 @@ void close_block();
 
 block_inc *get_block_by_inc_num(int inc_num);
 
+int is_tmp_triangle_block_item_ident(char *ident);
+
 #endif

@@ -9,6 +9,7 @@
 #include "glob.h"
 #include "..\fns\fn.h"
 #include "main_file.h"
+#include "user_def_type.h"
 
 int  TEST = 0;
 char CHAR_UNDERSCORE = '_';
@@ -140,6 +141,35 @@ int                  GLOB_BLOCKS_NUM;
 void free_globs(void)
 {
     int i;
+    if (USER_DEF_TYPES_NUM)
+    {
+        for (i=0; i<USER_DEF_TYPES_NUM; ++i)
+        {
+            /// Eger tipiň sanaw birlikleri bar bolsa
+            if (USER_DEF_TYPES_ARRS_NUMS[i])
+            {
+                if (USER_DEF_TYPES_ARRS[i]!=NULL)
+                {
+                    free(USER_DEF_TYPES_ARRS[i]);
+                }
+                if (USER_DEF_TYPES_ARRS_ITEMS[i]!=NULL)
+                {
+                    int j;
+                    for (j=0; j<USER_DEF_TYPES_ARRS_NUMS[i]; ++j)
+                        free(USER_DEF_TYPES_ARRS_ITEMS[i][j]);
+                    free(USER_DEF_TYPES_ARRS_ITEMS[i]);
+                }
+            }
+            if (USER_DEF_TYPE_ITEMS[i]!=NULL)
+                free(USER_DEF_TYPE_ITEMS[i]);
+        }
+        free(USER_DEF_TYPES_ARRS_ITEMS);
+        free(USER_DEF_TYPES_ARRS);
+        free(USER_DEF_TYPE_ITEMS);
+        free(USER_DEF_TYPES_ARRS_NUMS);
+    }
+    free_tmp_user_type();
+
     if (GLOBAL_CALLED_ARRS_NUM)
     {
         for(i=0; i<GLOBAL_CALLED_ARRS_NUM; ++i)

@@ -13,6 +13,9 @@
 #include "token/token_types/ctrl_sttmnt.h"
 #include "token/token_types/block.h"
 #include "token/token_types/loop_sttmnt.h"
+#include "token/token_types/triangle_block.h"
+#include "token/token_types/utype.h"
+#include "token/token_types/utype_con.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"
@@ -44,4 +47,7 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
 void empty_tok_c_code(token *tok, char **l, int *llen);
 
 token get_empty_tok();
+
+int return_tok_type(token *tok, int *ret_class, int *ret_type);
+
 #endif

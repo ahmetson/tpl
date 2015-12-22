@@ -122,8 +122,7 @@ int is_cmd_assign(command *cmd)
 	    command_item *tci = get_cmd_item(cmd->items,2); // tci - third command item
 	    int ret_class = -1, ret_type = -1;
 	    if((tci->type==TOKEN_ITEM &&
-		   TOK_RETURN_TYPE[tci->tok.potentional_types[0].type_class][tci->tok.potentional_types[0].type_num]
-                (&tci->tok, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED) ||
+		   return_tok_type(&tci->tok, &ret_class, &ret_type) && ret_class!=TOK_CLASS_UNDEFINED) ||
 		   (tci->type==CMD_ITEM && CMD_RETURN_TYPE[tci->cmd.cmd_class][tci->cmd.cmd_type](&tci->cmd,&ret_class, &ret_type) &&
                 ret_class!=TOK_CLASS_UNDEFINED) ||
            (tci->type==PAREN_ITEM &&
@@ -225,8 +224,7 @@ int semantic_cmd_assign(command *cmd)
         command_item *ci = tci;
         int class1 = -1, type1 = -1, class2 = -1, type2 = -1;
 	    if((ci->type==TOKEN_ITEM &&
-		   TOK_RETURN_TYPE[ci->tok.potentional_types[0].type_class][ci->tok.potentional_types[0].type_num]
-		   (&ci->tok, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED) ||
+		   return_tok_type(&ci->tok, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED) ||
 		   (ci->type==CMD_ITEM &&
            CMD_RETURN_TYPE[ci->cmd.cmd_class][ci->cmd.cmd_type](&ci->cmd,&class2, &type2) &&
         class2!=TOK_CLASS_UNDEFINED) ||
@@ -235,8 +233,7 @@ int semantic_cmd_assign(command *cmd)
 		{
 		    command_item *f = get_cmd_item(cmd->items,0);
             if((f->type==TOKEN_ITEM &&
-               TOK_RETURN_TYPE[f->tok.potentional_types[0].type_class][f->tok.potentional_types[0].type_num]
-               (&f->tok, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED) ||
+               return_tok_type(&f->tok, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED) ||
                (f->type==CMD_ITEM &&
                CMD_RETURN_TYPE[f->cmd.cmd_class][f->cmd.cmd_type](&f->cmd,&class1, &type1) &&
                 class1!=TOK_CLASS_UNDEFINED) ||

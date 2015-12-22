@@ -20,6 +20,9 @@
  * ctrl_sttmnt (class num: 9)
  * block (class num: 10)
  * loop_sttmnt (class num: 11)
+ * triangle_block (class num: 12)
+ * utype (class num: 13)
+ * utype_con (class num: 14)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -35,6 +38,9 @@ extern const int TOK_CLASS_LOGIC;
 extern const int TOK_CLASS_CTRL_STTMNT;
 extern const int TOK_CLASS_BLOCK;
 extern const int TOK_CLASS_LOOP_STTMNT;
+extern const int TOK_CLASS_TRIANGLE_BLOCK;
+extern const int TOK_CLASS_UTYPE;
+extern const int TOK_CLASS_UTYPE_CON;   // Hasaba alynanok
 
 // Debag üçin
 extern char *type_classes[];
@@ -56,5 +62,8 @@ int is_token_logic              (token *tok, char *tok_val);
 int is_token_ctrl_sttmnt        (token *tok, char *tok_val);
 int is_token_block              (token *tok, char *tok_val);
 int is_token_loop_sttmnt        (token *tok, char *tok_val);
+int is_token_triangle_block     (token *tok, char *tok_val);
+int is_token_utype              (token *tok, char *tok_val);
+int is_token_utype_con          (token *tok, char *tok_val);
 
 #endif

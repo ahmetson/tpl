@@ -72,11 +72,6 @@ int set_def_type_alias_const_data(int *left_class, int *left_type)
         else if (*left_type==3)
             *left_type=STRING_CONST_DATA_TOK_NUM;
     }
-    else
-    {
-        *left_class = 0;
-        *left_type=0;   // Natanysh
-    }
     return 1;
 }
 

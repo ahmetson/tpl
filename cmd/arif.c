@@ -32,7 +32,7 @@ int is_cmd_arif(command *cmd)
 
     command_item *e1 = get_cmd_item(cmd->items, 0);
     if(e1->type==TOKEN_ITEM)
-        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, &ret_class, &ret_type);
+        return_tok_type(&e1->tok, &ret_class, &ret_type);
     else if (e1->type==CMD_ITEM)
         CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd,&ret_class, &ret_type);
     else if (e1->type==PAREN_ITEM)
@@ -69,7 +69,7 @@ int is_cmd_arif(command *cmd)
 	{
 	    command_item *e3 = get_cmd_item(cmd->items,2);
 	    if(e3->type==TOKEN_ITEM)
-		   TOK_RETURN_TYPE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num](&e3->tok, &ret_class, &ret_type);
+		   return_tok_type(&e3->tok, &ret_class, &ret_type);
         else if(e3->type==CMD_ITEM)
            CMD_RETURN_TYPE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd,&ret_class, &ret_type);
         else if(e3->type==PAREN_ITEM)
@@ -154,8 +154,7 @@ int semantic_cmd_arif(command *cmd)
     //      ulninin yglan etme bolsa                      - identifikator hokman goshulandyr shonun uchin barlananok
     //      eyyam ygaln edilen ulnin identifikatory bolsa - identifikator hokman on bir yerde yglan edilmeli
     if((e1->type==TOKEN_ITEM &&
-        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num]
-        (&e1->tok, &e1_class, &e1_type) && e1_class!=TOK_CLASS_UNDEFINED) ||
+        return_tok_type(&e1->tok, &e1_class, &e1_type) && e1_class!=TOK_CLASS_UNDEFINED) ||
         (e1->type==CMD_ITEM &&
         CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd,&e1_class, &e1_type) &&
         e1_class!=TOK_CLASS_UNDEFINED) ||
@@ -179,8 +178,7 @@ int semantic_cmd_arif(command *cmd)
     }
 
     if((e3->type==TOKEN_ITEM &&
-        TOK_RETURN_TYPE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num]
-        (&e3->tok, &e3_class, &e3_type) && e3_class!=TOK_CLASS_UNDEFINED) ||
+        return_tok_type(&e3->tok, &e3_class, &e3_type) && e3_class!=TOK_CLASS_UNDEFINED) ||
         (e3->type==CMD_ITEM &&
         CMD_RETURN_TYPE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd,&e3_class, &e3_type) &&
         e3_class!=TOK_CLASS_UNDEFINED) ||
@@ -221,7 +219,7 @@ int cmd_arif_return_type(command *cmd, int *ret_class, int *ret_type)
     command_item *e1 = get_cmd_item(cmd->items,0);
 
     if(e1->type==TOKEN_ITEM)
-        TOK_RETURN_TYPE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, ret_class, ret_type);
+        return_tok_type(&e1->tok, ret_class, ret_type);
     else if(e1->type==CMD_ITEM)
         CMD_RETURN_TYPE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, ret_class, ret_type);
     else if(e1->type==PAREN_ITEM)

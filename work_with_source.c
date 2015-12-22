@@ -7,6 +7,7 @@
 
 #include "tpl.h"
 #include "main/glob.h"
+#include "main/user_def_type.h"
 #include "cmds.h"
 #include "parser.h"
 #include "algor.h"
@@ -30,8 +31,16 @@ void work_with_sources(int argc, const char **args)
 	{
 		//printf("Parsing etmeli: '%s'\n", args[i]);
 		// Häzirki parserlenýän kodly faýlyň ady
+
 		add_to_file_list_file();                // Ýasalmaly programmanyň faýllarynyň sanawyna,
 		add_to_file_list_source(args[i]);       // häzirki kodly faýl goşulýar
+                                                // Faýl adyny ýalňyşlyklaryň arasynda görkezmek üçin
+
+		if (is_reserved_source_name((char *)args[i]))
+        {
+            CUR_PART = 1;
+            print_err(CODE1_FILE_NAME_RESERVED, &inf_tok);
+        }
 		includes_add_new();
         strncpy(CUR_FILE_NAME, args[i], strlen(args[i])+1);
 

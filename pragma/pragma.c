@@ -276,11 +276,14 @@ void act_pragma_include_glob_decl_file(pragma *p)
         else
         {
             token tok = parse_token(source);
-            // Komanda goşulýar
             if (!work_with_token(&tok, &cmd))
             {
                 // TODO
                 // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
+            }
+            if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
+            {
+                parse_triangle_block_inside(source, &cmd);
             }
         }
 

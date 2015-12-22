@@ -31,7 +31,10 @@ is_token_item tok_types[] = {
 	   {is_token_logic},
 	   {is_token_ctrl_sttmnt},
 	   {is_token_block},
-	   {is_token_loop_sttmnt}
+	   {is_token_loop_sttmnt},
+	   {is_token_triangle_block},
+	   {is_token_utype},
+	   {is_token_utype_con}
 };
 
 
@@ -49,7 +52,10 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // logic
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ctrl_sttmnt
     {empty_tok_return_type},                                                                      // block
-    {empty_tok_return_type, empty_tok_return_type}                                                // loop_sttmnt
+    {empty_tok_return_type, empty_tok_return_type},                                               // loop_sttmnt
+    {empty_tok_return_type, empty_tok_return_type},                                               // triangle_block
+    {empty_tok_return_type, empty_tok_return_type},                                               // utype,
+    {get_utype}                                                                                   // utype_con
 };
 
 
@@ -64,10 +70,13 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code},  // const_data
     {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code},  // arif
     {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code, tok_cmp_c_code},   // cmp
-    {tok_logic_c_code, tok_logic_c_code, tok_logic_c_code},   // logic
+    {tok_logic_c_code, tok_logic_c_code, tok_logic_c_code},                      // logic
     {tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code, tok_ctrl_sttmnt_c_code},  // ctrl_sttmnt
     {tok_block_c_code},                                                          // block
-    {tok_loop_sttmnt_c_code, tok_loop_sttmnt_c_code}                                                           // loop_sttmnt
+    {tok_loop_sttmnt_c_code, tok_loop_sttmnt_c_code},                            // loop_sttmnt
+    {empty_tok_c_code, empty_tok_c_code},                                        // triangle_block
+    {empty_tok_c_code, utype_item_separator_c_code},                             // utype
+    {tok_utype_con_c_code}                                                       // utype_con
 };
 
 
@@ -292,4 +301,16 @@ token get_empty_tok()
     token t;
     init_token(&t);
     return t;
+}
+
+
+int return_tok_type(token *tok, int *ret_class, int *ret_type)
+{
+    if (tok->type_class==TOK_CLASS_UTYPE_CON)
+    {
+        *ret_class = TOK_CLASS_UTYPE_CON;
+        *ret_type   = tok->potentional_types[0].type_num;
+        return 1;
+    }
+    return TOK_RETURN_TYPE[tok->potentional_types[0].type_class][tok->potentional_types[0].type_num](tok, ret_class, ret_type);
 }
