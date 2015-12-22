@@ -13,11 +13,11 @@ Additonal functions
 // Folder name = 255, command name = 45
 #define MAX_SYS_CMD_LEN 300
 
-/* 2 sozi we bir harpy goshyar
+/**2 sozi we bir harpy goshyar
  *
  * @to        - final string
  * @from      - first  adding string
- * @c         - second adding char
+ * @C         - second adding char
  * @from_len  - number of characters of first string
  * @to_len    - number of characters of final string
 **/
@@ -177,7 +177,8 @@ void divide_string(char *source, char d, char ***out, int *items)
             {
                 *items += 1;
                 *out = realloc(*out, sizeof(**out)*(*items));
-                (*out)[*items-1] = malloc(sizeof(char)*10);
+                (*out)[*items-1] = NULL;
+                (*out)[*items-1] = realloc((*out)[*items-1], sizeof(***out)*(strlen(tmp)+1));
                 strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
 
                 free(tmp);
@@ -190,8 +191,9 @@ void divide_string(char *source, char d, char ***out, int *items)
         {
             if (strlen(tmp))
             {
-                tmp[strlen(tmp)-1] = source[i];
-                tmp[strlen(tmp)]   = '\0';
+                int last = strlen(tmp)-1;
+                tmp[last+1] = source[i];
+                tmp[last+2]   = '\0';
             }
             else
             {
@@ -203,10 +205,27 @@ void divide_string(char *source, char d, char ***out, int *items)
     if (strlen(tmp))
     {
         *items += 1;
+        //free((*out)[*items-2]);
         *out = realloc(*out, sizeof(**out)*(*items));
-        (*out)[*items-1] = malloc(sizeof(char)*10);
+        (*out)[*items-1] = NULL;
+        (*out)[*items-1] = realloc((*out)[*items-1], sizeof(***out)*(strlen(tmp)+1));
         strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
     }
     free(tmp);
+}
+
+
+/** Harplyň daşynda duran goşa dyrnaklary aýyryp, yzyna gaýtarýar.
+
+    @withKuotes - daşy goşa dyrnakly tekst,
+    @unKutoed   - goşa dyrnaklar aýrylan görnüşi (Harplaryň sanawynyň uzynlygy @withKuotes sanawynyňky ýaly bolmaly)*/
+void string_helper_remove_dquotes(char *unquoted, char *with_quotes)
+{
+    int u, q; // unquoted position, quoted position
+    for(u=0, q=1;q<(strlen(with_quotes)-1); ++q, ++u)
+    {
+        unquoted[u] = with_quotes[q];
+    }
+    unquoted[u] = '\0';
 }
 

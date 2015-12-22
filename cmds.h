@@ -23,6 +23,7 @@ extern int CMD_CLASS_CTRL_STTMNT;
 extern int CMD_CLASS_BLOCK;
 extern int CMD_CLASS_LOOP_STTMNT;
 extern int CMD_CLASS_ARR;
+extern int CMD_CLASS_UTYPE;
 
 extern int GLOB;
 extern int LOCAL;
@@ -77,7 +78,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 11
+#define CMDS_TYPES_NUM 12
 #endif
 
 #ifndef MAX_CLASS_TYPES

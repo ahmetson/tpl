@@ -6,6 +6,11 @@
 
 #include <stdio.h>
 
+// file length - 255, command length - 95
+#ifndef MAX_PREP_LEN
+#define MAX_PREP_LEN 350
+#endif
+
 // C kod nirede saklanyar?
 extern char *C_SOURCE_FOLDER;
 
@@ -48,5 +53,9 @@ char *c_trans_get_file_fn_prototype(char *fn_name, char *out);
 
 int is_open_block_cmd(command *cmd);
 int is_close_block_cmd(command *cmd);
+
+void get_type_c_code(int type_class, int type_num, char **l, int *llen);
+void get_type_init_val_c_code(char is_arr, int type_class, int type_num, char **l, int *llen);
+void get_cmd_end_c_code(char **l, int *llen);
 
 #endif

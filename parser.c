@@ -74,10 +74,15 @@ int parse(FILE *source)
             CUR_CMD = &cmd;
             token tok = parse_token(source);
             // Komanda goşulýar
+
             if (!work_with_token(&tok, &cmd))
             {
                 // TODO
                 // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
+            }
+            if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
+            {
+                parse_triangle_block_inside(source, &cmd);
             }
         }
 
@@ -122,28 +127,29 @@ int parse(FILE *source)
 /** TPL programma diliniň goldaýan harpymy ýa däldigini barlaýar **/
 int is_valid_char()
 {
-    return (isspace(CUR_CHAR) ||                    // boshluk
-        isalnum(CUR_CHAR) ||                        // harp we san
-        CUR_CHAR==CMD_END ||                        // .
-        CUR_CHAR==PRAGMA_START_CHAR ||              // #
-        CUR_CHAR==PARENTHESIS_OPEN ||               // (; Ýaýyň açyjysy
-        CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR ||     // ,; Skobkanyň içindäki elementleri aýyryjy
-        CUR_CHAR==PARENTHESIS_CLOSE ||              // ); Ýaýyň ýapyjysy
-        CUR_CHAR==HARPL_OPENER ||                   // "
-        CUR_CHAR==LEFT_ASSIGN_TOKEN_VALUE[0] ||     // <
-        CUR_CHAR==CHAR_CONST_DATA_OPENER ||         // '
-        CUR_CHAR==CHAR_MINUS ||                     // -
-        CUR_CHAR==CHAR_UNDERSCORE ||                // _; drob sanlar başlap bilýär
-        CUR_CHAR==GLOB_IDENT_OPENER ||              // @; global ülňileriň birinji harpy
-        CUR_CHAR==ARIF_PLUS_CHAR  ||                /// ARIFMETIKI OPERATORLAR: +
-        CUR_CHAR==ARIF_MINUS_CHAR ||                // -; aýyrmak
-        CUR_CHAR==ARIF_MULTI_CHAR ||                // *; köpeltmek
-        CUR_CHAR==ARIF_DIV_CHAR   ||                // :; bölmek
-        CUR_CHAR==CMP_EQ_CHAR   ||                  /// DEŇEŞDIRME OPERATORLAR: =
-        CUR_CHAR==CMP_LT_CHAR   ||                  // <; kiçi
-        CUR_CHAR==CMP_GT_CHAR   ||                  // >; uly
-        CUR_CHAR==LOGIC_AND_CHAR  ||                /// LOGIKI OPERATORLAR: &
-        CUR_CHAR==LOGIC_OR_CHAR   ||                // ?; ýa
-        CUR_CHAR==LOGIC_NOT_CHAR);                  // !; däl bolsa
+    return (isspace(CUR_CHAR) ||                                // boshluk
+        isalnum(CUR_CHAR) ||                                    // harp we san
+        CUR_CHAR==CMD_END ||                                    // .
+        CUR_CHAR==PRAGMA_START_CHAR ||                          // #
+        CUR_CHAR==PARENTHESIS_OPEN ||                           // (; Ýaýyň açyjysy
+        CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR ||                 // ,; Skobkanyň içindäki elementleri aýyryjy
+        CUR_CHAR==PARENTHESIS_CLOSE ||                          // ); Ýaýyň ýapyjysy
+        CUR_CHAR==HARPL_OPENER ||                               // "
+        CUR_CHAR==LEFT_ASSIGN_TOKEN_VALUE[0] ||                 // <
+        CUR_CHAR==CHAR_CONST_DATA_OPENER ||                     // '
+        CUR_CHAR==CHAR_MINUS ||                                 // -
+        CUR_CHAR==CHAR_UNDERSCORE ||                            // _; drob sanlar başlap bilýär
+        CUR_CHAR==GLOB_IDENT_OPENER ||                          // @; global ülňileriň birinji harpy
+        CUR_CHAR==ARIF_PLUS_CHAR  ||                            /// ARIFMETIKI OPERATORLAR: +
+        CUR_CHAR==ARIF_MINUS_CHAR ||                            // -; aýyrmak
+        CUR_CHAR==ARIF_MULTI_CHAR ||                            // *; köpeltmek
+        CUR_CHAR==ARIF_DIV_CHAR   ||                            // :; bölmek
+        CUR_CHAR==CMP_EQ_CHAR   ||                              /// DEŇEŞDIRME OPERATORLAR: =
+        CUR_CHAR==CMP_LT_CHAR   ||                              // <; kiçi
+        CUR_CHAR==CMP_GT_CHAR   ||                              // >; uly
+        CUR_CHAR==LOGIC_AND_CHAR  ||                            /// LOGIKI OPERATORLAR: &
+        CUR_CHAR==LOGIC_OR_CHAR   ||                            // ?; ýa
+        CUR_CHAR==LOGIC_NOT_CHAR  ||                            // !; däl bolsa
+        CUR_CHAR==TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[0][0]);  /// Ulanyjy TIPI BILEN BAGLY OPERATORLAR; birlik bölüji
 }
 

@@ -53,7 +53,7 @@ int paren_fns_args_return_type(parenthesis *paren, int *ret_class, int *ret_num)
         else if (p_es[0].type==CMD_ITEM)
             return CMD_RETURN_TYPE[p_es[0].cmd.cmd_class][p_es[0].cmd.cmd_type](&p_es[0].cmd, ret_class, ret_num);
         else if (p_es[0].type==TOKEN_ITEM)
-            return TOK_RETURN_TYPE[p_es[0].tok.potentional_types[0].type_class][p_es[0].tok.potentional_types[0].type_num](&p_es[0].tok, ret_class, ret_num);
+            return return_tok_type(&p_es[0].tok, ret_class, ret_num);
     }
     *ret_class = TOK_CLASS_UNDEFINED;
     return 0;
@@ -70,7 +70,7 @@ int is_param_item_int(parenthesis *par)
         else if (p_es[0].type==CMD_ITEM)
             CMD_RETURN_TYPE[p_es[0].cmd.cmd_class][p_es[0].cmd.cmd_type](&p_es[0].cmd, &ret_class, &ret_num);
         else if (p_es[0].type==TOKEN_ITEM)
-            TOK_RETURN_TYPE[p_es[0].tok.potentional_types[0].type_class][p_es[0].tok.potentional_types[0].type_num](&p_es[0].tok, &ret_class, &ret_num);
+            return_tok_type(&p_es[0].tok, &ret_class, &ret_num);
         if (ret_class==TOK_CLASS_CONST_DATA && ret_num==INT_CONST_DATA_TOK_NUM)
             continue;
         return 0;

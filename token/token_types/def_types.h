@@ -10,9 +10,9 @@
 #define DEF_TYPES_LEN 7
 
 typedef struct{
-	const char tk_name[DEF_TYPES_LEN];
-	const char value[DEF_TYPES_LEN];
-	const char init_val[DEF_TYPES_LEN];
+	char tk_name[DEF_TYPES_LEN];
+	char value[DEF_TYPES_LEN];
+	char init_val[DEF_TYPES_LEN];
 }def_type;
 
 // Programmada belli bolan tiplerin sany

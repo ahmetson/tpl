@@ -11,9 +11,7 @@
 #include "cmd/ctrl_statement.h"
 #include "cmd/block.h"
 #include "translator_to_c.h"
-
-// file length - 255, command length - 95
-#define MAX_PREP_LEN 350
+#include "main/user_def_type.h"
 
 
 /** ŞERT #7: Ýasalýan kodda: içki komandalaryň, enelerinden bir TAB saga süýşürilip tämiz görkezilmeli.
@@ -90,10 +88,8 @@ void write_tabs_c_code(char **l, int *llen, int tabs_num)
     }
     free(str);
 }
-
 // C kod nirede saklanyar?
 char *C_SOURCE_FOLDER = "c:\\\\c_by_tpl";
-
 // Header fayly ulanmaga tayynlayar
 int prepare_h_source(FILE *f, char *f_name)
 {
@@ -120,12 +116,12 @@ int prepare_h_source(FILE *f, char *f_name)
 	free(line3);
 	free(line4);
 
+    add_addtn_headers(f);
+
 	fputs("\n\n", f);
 
 	return 1;
 }
-
-
 int prepare_c_source(FILE *f, char *h_source)
 {
     char *fline = "//Created by TPL.\n";
@@ -142,6 +138,8 @@ int prepare_c_source(FILE *f, char *h_source)
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, sline);
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line3);
 
+    add_addtn_headers(f);
+
     free(line3);
 
     fputs("//.\n", f);
@@ -149,13 +147,9 @@ int prepare_c_source(FILE *f, char *h_source)
 
 	return 1;
 }
-
-
 int c_trans_header_add_glob_def_var(FILE *f)
 {
-	int i;
-	long line_size = 100;
-	long line_len = 0;
+	int i, line_len = 0;
 
 	int type_num;
 
@@ -169,37 +163,25 @@ int c_trans_header_add_glob_def_var(FILE *f)
 	{
 		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = GLOBAL_VAR_DEFS[i].type_num;
-
-			char *line = malloc(line_size);
-			line_len = strlen("extern ")+1;
-			strncpy(line, "extern ", line_len);
+            line_len = strlen("extern ")+1;
+			char *line = malloc(line_len);
+            strncpy(line, "extern ", line_len);
 
 			// Ulninin tipi goshulyar
-			if (line_len+strlen(def_type_list[type_num].value)>= line_size)
-			{
-				line_len += strlen(def_type_list[type_num].value)+100;
-				line = realloc(line, line_len);
-			}
-			strncat(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value));
+			get_type_c_code(GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
 
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
-			if (line_len+strlen(GLOBAL_VAR_DEFS[i].name)>= line_size)
-			{
-				line_len += strlen(GLOBAL_VAR_DEFS[i].name)+100;
-				line = realloc(line, line_len);
-			}
+			line_len += strlen(GLOBAL_VAR_DEFS[i].name);
+            line = realloc(line, line_len);
 			strncat(line, GLOBAL_VAR_DEFS[i].name, strlen(GLOBAL_VAR_DEFS[i].name));
 			// Komanda gutardy
-			strncat(line, "; \n", strlen("; \n"));
+            get_cmd_end_c_code(&line, &line_len);
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
 			//printf("%s global ulna goshulyar\n", line);
-			line_len = 100;
-
 			free(line);
 		}
 	}
@@ -208,7 +190,6 @@ int c_trans_header_add_glob_def_var(FILE *f)
 
 	return 1;
 }
-
 int c_trans_header_add_glob_def_arr(FILE *f)
 {
 	int i;
@@ -229,14 +210,11 @@ int c_trans_header_add_glob_def_arr(FILE *f)
 			type_num = GLOBAL_ARR_DEFS[i].type_num;
 
             line_len = strlen("extern ")+1;
-
 			char *line = malloc(line_len);
 			strncpy(line, "extern ", line_len);
 
 			// Ulninin tipi goshulyar
-			line_len += strlen(def_type_list[type_num].value);
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value));
+            get_type_c_code(GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ");
             line = realloc(line, line_len);
@@ -252,9 +230,7 @@ int c_trans_header_add_glob_def_arr(FILE *f)
             add_arr_elem_inf_c_code(&line, &line_len, 0, i, GLOBAL_ARR_DEFS[i].incs);
 
 			// Komanda gutardy
-			line_len += strlen("; \n");
-            line = realloc(line, line_len);
-			strncat(line, "; \n", strlen("; \n"));
+            get_cmd_end_c_code(&line, &line_len);
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
@@ -267,12 +243,9 @@ int c_trans_header_add_glob_def_arr(FILE *f)
 
 	return 1;
 }
-
-
 int c_trans_source_add_glob_def_var(FILE *f)
 {
-	int i;
-	long line_len;
+	int i, line_len;
 
 	int type_num;
 
@@ -288,11 +261,11 @@ int c_trans_source_add_glob_def_var(FILE *f)
 		{
 			type_num = GLOBAL_VAR_DEFS[i].type_num;
 
-            line_len = strlen(def_type_list[type_num].value)+1;
-			char *line = malloc(line_len);
+            line_len = 0;
+			char *line = NULL;
 
 			// Ulninin tipi
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+			get_type_c_code(GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ")+1;
             line = realloc(line, line_len);
@@ -304,9 +277,7 @@ int c_trans_source_add_glob_def_var(FILE *f)
 			strncat(line, GLOBAL_VAR_DEFS[i].name, strlen(GLOBAL_VAR_DEFS[i].name));
 
 			// Ülňilere başlangyç maglumatlar baglamaly
-            line_len += strlen(" = ")+1;
-            line = realloc(line, line_len);
-			strncat(line, " = ", strlen(" = "));
+            get_type_init_val_c_code(0, GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
 
             // Ülňileriň başlangyç maglumatlary
             line_len += strlen(def_type_list[type_num].init_val)+1;
@@ -315,9 +286,7 @@ int c_trans_source_add_glob_def_var(FILE *f)
 
 
 			// Komanda gutardy
-			line_len += strlen("; \n")+1;
-            line = realloc(line, line_len);
-			strncat(line, "; \n", strlen("; \n"));
+            get_cmd_end_c_code(&line, &line_len);
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
@@ -331,12 +300,9 @@ int c_trans_source_add_glob_def_var(FILE *f)
 
 	return 1;
 }
-
 int c_trans_source_add_glob_def_arr(FILE *f)
 {
 	int i, line_len;
-
-	int type_num;
 
 	char *fline = "// Global yglan edilen birsyhly sanawlar.\n";
 
@@ -348,13 +314,11 @@ int c_trans_source_add_glob_def_arr(FILE *f)
 	{
 		if (GLOBAL_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = GLOBAL_ARR_DEFS[i].type_num;
-
-            line_len = strlen(def_type_list[type_num].value)+1;
-			char *line = malloc(line_len);
+            line_len = 0;
+			char *line = NULL;
 
 			// Ulninin tipi
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+            get_type_c_code(GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ");
             line = realloc(line, line_len);
@@ -369,20 +333,10 @@ int c_trans_source_add_glob_def_arr(FILE *f)
             add_arr_elem_inf_c_code(&line, &line_len, 0, i, GLOBAL_ARR_DEFS[i].incs);
 
 			// Ülňilere başlangyç maglumatlar baglamaly
-            line_len += strlen(" = {");
-            line = realloc(line, line_len);
-			strncat(line, " = {", strlen(" = {"));
+            get_type_init_val_c_code(1, GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
 
-            // Ülňileriň başlangyç maglumatlary
-            line_len += strlen(def_type_list[type_num].init_val);
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
-
-
-			// Komanda gutardy
-			line_len += strlen("}; \n");
-            line = realloc(line, line_len);
-			strncat(line, "}; \n", strlen("}; \n"));
+            // Komandany soňlaýan bölüm
+            get_cmd_end_c_code(&line, &line_len);
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
@@ -427,7 +381,6 @@ int finishize_main_func(FILE *f)
 	return 1;
 }
 
-
 // Esasy funksiyanyn sonyny taynlayar
 int finishize_void_func(FILE *f)
 {
@@ -455,7 +408,6 @@ int finishize_h_source(FILE *f)
 	return 1;
 }
 
-
 // Lokal yglan edilen funksiyalar yglan edilyar
 int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 {
@@ -474,11 +426,10 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 
 		for(i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
 		{
-			type_num = LOCAL_VAR_DEFS[i].type_num;
+            int  line_len = 0;
+			char *line = NULL;
+			get_type_c_code(LOCAL_VAR_DEFS[i].type_class, LOCAL_VAR_DEFS[i].type_num, &line, &line_len);
 
-            line_len = strlen(def_type_list[type_num].value)+1;
-			char *line = malloc(line_len);
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
 
             line_len += strlen(" ");
 			line = realloc(line, line_len);
@@ -489,24 +440,13 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
             line = realloc(line, line_len);
 			strncat(line, LOCAL_VAR_DEFS[i].name, strlen(LOCAL_VAR_DEFS[i].name));
 
-            // Ülňilere başlangyç maglumatlar baglamaly
-            line_len += strlen(" = ");
-            line = realloc(line, line_len);
-			strncat(line, " = ", strlen(" = "));
-
-            // Ülňileriň başlangyç maglumatlary
-            line_len += strlen(def_type_list[type_num].init_val);
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
+            // Ülňiniň başlangyç maglumatlary goýulýar.
+            get_type_init_val_c_code(0, LOCAL_VAR_DEFS[i].type_class, LOCAL_VAR_DEFS[i].type_num, &line, &line_len);
 
 			// Komanda gutardy
-			line_len += strlen("; \n");
-            line = realloc(line, line_len);
-			strncat(line, "; \n", strlen("; \n"));
+			get_cmd_end_c_code(&line, &line_len);
 
 			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
-
-			line_len = 100;
 
 			free(line);
 		}
@@ -527,11 +467,12 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 		{
             if (LOCAL_VAR_DEFS[i].inf_file_num!=CUR_FILE_NUM)
                 continue;
-			type_num = LOCAL_VAR_DEFS[i].type_num;
 
-            line_len = strlen(def_type_list[type_num].value)+1;
+
+            int line_len = 0;
 			char *line = malloc(line_len);
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+
+			get_type_c_code(LOCAL_VAR_DEFS[i].type_class, LOCAL_VAR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ");
             line = realloc(line, line_len);
@@ -543,19 +484,11 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 			strncat(line, LOCAL_VAR_DEFS[i].name, strlen(LOCAL_VAR_DEFS[i].name));
 
             // Ülňilere başlangyç maglumatlar baglamaly
-            line_len += strlen(" = ");
-            line = realloc(line, line_len);
-			strncat(line, " = ", strlen(" = "));
-
-            // Ülňileriň başlangyç maglumatlary
-            line_len += strlen(def_type_list[type_num].init_val);
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
+            get_type_init_val_c_code(0, LOCAL_VAR_DEFS[i].type_class, LOCAL_VAR_DEFS[i].type_num, &line, &line_len);
 
 			// Komanda gutardy
-			line_len += strlen("; \n");
-            line = realloc(line, line_len);
-			strncat(line, "; \n", strlen("; \n"));
+			get_cmd_end_c_code(&line, &line_len);
+
 			//printf("%s global ulna goshulyar\n", line);
 			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
@@ -567,11 +500,9 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 	return 1;
 }
 
-
 // Lokal yglan edilen funksiyalar yglan edilyar
 int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
 {
-
     char *l = NULL;
     int llen = 0;
 
@@ -587,9 +518,9 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
         {
 			type_num = LOCAL_ARR_DEFS[i].type_num;
 
-            line_len = strlen(def_type_list[type_num].value)+1;
-			char *line = malloc(line_len);
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+            int line_len = 0;
+			char *line = NULL;
+			get_type_c_code(LOCAL_ARR_DEFS[i].type_class, LOCAL_ARR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ");
 			line = realloc(line, line_len);
@@ -604,24 +535,14 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
             add_arr_elem_inf_c_code(&line, &line_len, 1, i, LOCAL_ARR_DEFS[i].incs);
 
             // Ülňilere başlangyç maglumatlar baglamaly
-            line_len += strlen(" = {");
-            line = realloc(line, line_len);
-			strncat(line, " = {", strlen(" = {"));
+            get_type_init_val_c_code(1, LOCAL_ARR_DEFS[i].type_class, LOCAL_ARR_DEFS[i].type_num, &line, &line_len);
 
-            // Ülňileriň başlangyç maglumatlary
-            line_len += strlen(def_type_list[type_num].init_val);
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
-
-			// Komanda gutardy
-			line_len += strlen("}; \n");
-            line = realloc(line, line_len);
-			strncat(line, "}; \n", strlen("}; \n"));
+            // Komanda gutardy
+			get_cmd_end_c_code(&line, &line_len);
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
 			//printf("%s global ulna goshulyar\n", line);
-			line_len = 0;
 
 			free(line);
 		}
@@ -642,11 +563,10 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
         {
             if (LOCAL_ARR_DEFS[i].inf_file_num!=CUR_FILE_NUM)
                 continue;
-			type_num = LOCAL_ARR_DEFS[i].type_num;
 
-            line_len = strlen(def_type_list[type_num].value)+1;
-			char *line = malloc(line_len);
-			strncpy(line, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+			int line_len = 0;
+			char *line = NULL;
+			get_type_c_code(LOCAL_ARR_DEFS[i].type_class, LOCAL_ARR_DEFS[i].type_num, &line, &line_len);
 
             line_len += strlen(" ");
 			line = realloc(line, line_len);
@@ -660,8 +580,12 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
 			 // sanawyň elelemntleri hakda maglumat goşulýar
             add_arr_elem_inf_c_code(&line, &line_len, 1, i, LOCAL_ARR_DEFS[i].incs);
 
-			// Komanda gutardy
-			strncat(line, "; \n", strlen("; \n"));
+            // Başlangyç maglumatlar goşulýar
+            get_type_init_val_c_code(1, LOCAL_ARR_DEFS[i].type_class, LOCAL_ARR_DEFS[i].type_num, &line, &line_len);
+
+            // Komanda gutardy
+			get_cmd_end_c_code(&line, &line_len);
+
 
             write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
@@ -674,7 +598,6 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
 	}
 	return 1;
 }
-
 
 // Lokal fayla degishli bolan ahli maglumatlary fayla terjime edyar
 // @main_file - Lokal fayl bash faylmy?
@@ -952,5 +875,102 @@ int is_close_block_cmd(command *cmd)
     return 0;
 }
 
+/// Tipiň (TPL-ň ýa Ulanyjy tarapyndan ýasalanyň) C kodyny ýazýar.
+void get_type_c_code(int type_class, int type_num, char **l, int *llen)
+{
+    if (type_class==TOK_CLASS_DEF_TYPE)
+    {
+        *llen += strlen(def_type_list[type_num].value);
+        if (!(*llen-strlen(def_type_list[type_num].value)))
+        {
+            *llen += 1;
+            *l = realloc(*l, *llen);
+            strncpy(*l, def_type_list[type_num].value, strlen(def_type_list[type_num].value)+1);
+        }
+        else
+        {
+            *l = realloc(*l, *llen);
+            strncat(*l,  def_type_list[type_num].value, strlen(def_type_list[type_num].value));
+        }
+
+    }
+    else
+    {
+        *llen += strlen(USER_DEF_TYPES[type_num].ident);
+        if (!(*llen-strlen(USER_DEF_TYPES[type_num].ident)))
+        {
+            *llen += 1;
+            *l = realloc(*l, *llen);
+            strncpy(*l, USER_DEF_TYPES[type_num].ident, strlen(USER_DEF_TYPES[type_num].ident)+1);
+        }
+        else
+        {
+            *l = realloc(*l, *llen);
+            strncat(*l, USER_DEF_TYPES[type_num].ident, strlen(USER_DEF_TYPES[type_num].ident));
+        }
+    }
+
+}
 
 
+void get_type_init_val_c_code(char is_arr, int type_class, int type_num, char **l, int *llen)
+{
+    if (type_class!=TOK_CLASS_DEF_TYPE)
+        return;
+
+    char *arr_o = " = {";
+    char *arr_c = "}";
+    char *o     = " = ";
+    char *f = NULL;
+
+    if (is_arr)
+    {
+        f = arr_o;
+    }
+    else
+    {
+        f = o;
+    }
+
+    *llen += strlen(f);
+    if (!(*llen-strlen(f)))
+    {
+        *llen += 1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, f, strlen(f)+1);
+    }
+    else
+    {
+        *l = realloc(*l, *llen);
+        strncat(*l, f, strlen(f));
+    }
+
+    // Ülňileriň başlangyç maglumatlary
+    *llen += strlen(def_type_list[type_num].init_val);
+    *l = realloc(*l, *llen);
+    strncat(*l, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
+
+    if (is_arr)
+    {
+        *llen += strlen(arr_c);
+        *l = realloc(*l, *llen);
+        strncat(*l, arr_c, strlen(arr_c));
+    }
+}
+
+void get_cmd_end_c_code(char **l, int *llen)
+{
+    char *end = "; \n";
+    *llen += strlen(end);
+    if (!(*llen-strlen(end)))
+    {
+        *llen += 1;
+        *l = realloc(*l, *llen);
+        strncpy(*l, end, strlen(end)+1);
+    }
+    else
+    {
+        *l = realloc(*l, *llen);
+        strncat(*l, end, strlen(end));
+    }
+}

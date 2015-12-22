@@ -16,6 +16,9 @@
 #include "token_types/ctrl_sttmnt.h"
 #include "token_types/block.h"
 #include "token_types/loop_sttmnt.h"
+#include "token_types/triangle_block.h"
+#include "token_types/utype.h"
+#include "token_types/utype_con.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -26,19 +29,22 @@
 // In uly token 'ident' - 6 harpdan ybarat
 
 // Nache sany token tip bar bolsa, shonchada klas bar
-const int TOK_CLASS_UNDEFINED    = -1;
-const int TOK_CLASS_UNKNOWN      = 0;
-const int TOK_CLASS_DEF_TYPE 	 = 1;
-const int TOK_CLASS_GLOB 		 = 2;
-const int TOK_CLASS_IDENT        = 3;
-const int TOK_CLASS_ASSIGN		 = 4;
-const int TOK_CLASS_CONST_DATA   = 5;
-const int TOK_CLASS_ARIF         = 6;
-const int TOK_CLASS_CMP          = 7;
-const int TOK_CLASS_LOGIC        = 8;
-const int TOK_CLASS_CTRL_STTMNT  = 9;
-const int TOK_CLASS_BLOCK        = 10;
-const int TOK_CLASS_LOOP_STTMNT  = 11;
+const int TOK_CLASS_UNDEFINED       = -1;
+const int TOK_CLASS_UNKNOWN         = 0;
+const int TOK_CLASS_DEF_TYPE 	    = 1;
+const int TOK_CLASS_GLOB 		    = 2;
+const int TOK_CLASS_IDENT           = 3;
+const int TOK_CLASS_ASSIGN		    = 4;
+const int TOK_CLASS_CONST_DATA      = 5;
+const int TOK_CLASS_ARIF            = 6;
+const int TOK_CLASS_CMP             = 7;
+const int TOK_CLASS_LOGIC           = 8;
+const int TOK_CLASS_CTRL_STTMNT     = 9;
+const int TOK_CLASS_BLOCK           = 10;
+const int TOK_CLASS_LOOP_STTMNT     = 11;
+const int TOK_CLASS_TRIANGLE_BLOCK  = 12;
+const int TOK_CLASS_UTYPE           = 13;
+const int TOK_CLASS_UTYPE_CON       = -2;
 
 // Used for debugging
 char *type_classes[] = {
@@ -53,7 +59,10 @@ char *type_classes[] = {
 	"logiki",
 	"dolandyryş operatory",
 	"blok",
-	"gaýtalama operatory"
+	"gaýtalama operatory",
+	"üçburç blok",
+	"Ulanyjyň görnüşi",
+	"Ulanyjyň görnüşine çatylma"
 };
 
 
@@ -219,8 +228,7 @@ int is_token_int_const_data(token *tok, char *tok_val)
             CMD_RETURN_TYPE[c->cmd_class][c->cmd_type](c, &ret_class, &ret_type);
         }
         else if(lci->type==TOKEN_ITEM)
-		   TOK_RETURN_TYPE[lci->tok.potentional_types[0].type_class]
-                         [lci->tok.potentional_types[0].type_num](&lci->tok, &ret_class, &ret_type);
+            return_tok_type(&lci->tok, &ret_class, &ret_type);
         else if(lci->type==PAREN_ITEM)
             PAREN_RETURN_TYPE[lci->paren.type](&lci->paren, &ret_class, &ret_type);
 
@@ -272,7 +280,7 @@ int is_token_float_const_data(token *tok, char *tok_val)
             CMD_RETURN_TYPE[c->cmd_class][c->cmd_type](c, &ret_class, &ret_type);
         }
         else if(lci->type==TOKEN_ITEM)
-		   TOK_RETURN_TYPE[lci->tok.potentional_types[0].type_class][lci->tok.potentional_types[0].type_num](&lci->tok, &ret_class, &ret_type);
+            return_tok_type(&lci->tok, &ret_class, &ret_type);
         else if(lci->type==PAREN_ITEM)
             PAREN_RETURN_TYPE[lci->paren.type](&lci->paren, &ret_class, &ret_type);
 
@@ -557,4 +565,106 @@ int is_token_loop_sttmnt(token *tok, char *tok_val)
 	}
 
 	return found;
+}// eger, ýa, ýogsa, bolsa
+int is_token_triangle_block(token *tok, char *tok_val)
+{
+	/*Go through array of possible types*/
+	int i, answer, found = 0;
+	token_type tok_type;
+
+	for(i=0; i<TRIANGLE_BLOCK_TOKENS_NUM; i++)
+	{
+
+		answer = strstr_by_offset(TRIANGLE_BLOCK_TOKENS_KEYWORDS[i][0], tok_val, 0);
+		if (answer>=0)
+		{
+			tok_type.type_num = i;							// Number of token type
+			tok_type.type_class = TOK_CLASS_TRIANGLE_BLOCK;
+			tok_type.need_value = 0;
+			tok_type.is_compl = (answer==0) ? 1 : 0;
+			tok_type.type_must_check = 0;
+			tok_type.parenthesis = 0;
+			tok->is_compl = (answer==0) ? 1 : 0;
+
+			add_potentional_token_type(tok, tok_type);
+
+			// Tokene gornush girizilen son chagyrylmaly
+			if (tok_type.is_compl==1)
+				tok->type_class = TOK_CLASS_TRIANGLE_BLOCK;
+			found = 1;
+		}
+	}
+
+	return found;
+}
+int is_token_utype(token *tok, char *tok_val)
+{
+	/*Go through array of possible types*/
+	int i, answer, found = 0;
+	token_type tok_type;
+
+	answer = strstr_by_offset(UTYPE_DEF_SIGNIFIER_WORD, tok_val, 0);
+	if (answer>=0)
+    {
+        tok_type.type_num = UTYPE_DEF_SIGNIFIER;							// Number of token type
+        tok_type.type_class = TOK_CLASS_UTYPE;
+        tok_type.need_value = 0;
+        tok_type.is_compl = (answer==0) ? 1 : 0;
+        tok_type.type_must_check = 0;
+        tok_type.parenthesis = 0;
+        tok->is_compl = (answer==0) ? 1 : 0;
+
+        add_potentional_token_type(tok, tok_type);
+
+        // Tokene gornush girizilen son chagyrylmaly
+        if (tok_type.is_compl==1)
+            tok->type_class = TOK_CLASS_UTYPE;
+        found = 1;
+	}
+
+    /// Birinji Ulanyjynyň tipi bilen bagly token tanalmady.
+    /// Ikinji token görnüşi bilen deňeşdirip görülýär
+	if (!found)
+    {
+        answer = strstr_by_offset(TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[0], tok_val, 0);
+        if (answer>=0)
+        {
+            tok_type.type_num = UTYPE_ITEM_SEPARATOR;							// Number of token type
+            tok_type.type_class = TOK_CLASS_UTYPE;
+            tok_type.need_value = 0;
+            tok_type.is_compl = (answer==0) ? 1 : 0;
+            tok_type.type_must_check = 0;
+            tok_type.parenthesis = 0;
+            tok->is_compl = (answer==0) ? 1 : 0;
+
+            add_potentional_token_type(tok, tok_type);
+
+            // Tokene gornush girizilen son chagyrylmaly
+            if (tok_type.is_compl==1)
+                tok->type_class = TOK_CLASS_UTYPE;
+            found = 1;
+        }
+    }
+
+	return found;
+}
+int is_token_utype_con(token *tok, char *tok_val)
+{
+    if (is_utype_ident(tok_val))
+    {
+        token_type tok_type;
+        get_utype_addr(tok_val, &tok_type.type_num);							// Number of token type
+        tok_type.type_class = TOK_CLASS_UTYPE_CON;
+        tok_type.need_value = 1;
+        strncpy(tok_type.value, tok_val, strlen(tok_val)+1);
+        tok_type.is_compl = 1;
+        tok_type.type_must_check = 0;
+        tok_type.parenthesis = 0;
+        tok->is_compl = 1;
+        tok->type_class = TOK_CLASS_UTYPE_CON;
+
+        add_potentional_token_type(tok, tok_type);
+        return 1;
+    }
+    return 0;
 }

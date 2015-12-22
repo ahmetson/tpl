@@ -45,6 +45,7 @@ int CODE0_UNSUPPORT_INCLUDE_FILE_CMD    = 7;
 
 int CODE1_FILE_NOT_FOUND                = 0;
 int CODE1_FILE_CANT_OPEN                = 1;
+int CODE1_FILE_NAME_RESERVED            = 2;
 
 int CODE2_UNKNOWN_TOKENS_CHAR           = 0;
 int CODE2_PRAGMA_NOT_END                = 1;
@@ -54,6 +55,10 @@ int CODE2_TOKEN_TOO_BIG                 = 4;
 int CODE2_PREV_TOKEN_INCORRECT          = 5;
 int CODE2_STRING_IS_WRONG               = 6;
 int CODE2_REQUIRED_END_BLOCK            = 7;
+int CODE2_PRAGMA_NOT_SUPPORT_IN_TRIANGLE_BLOCK = 8;
+int CODE2_CMD_END_CHAR_NOT_SUPPORT_IN_TRIANGLE_BLOCK = 9;
+int CODE2_TRIANGLE_BLOCK_NOT_SUPPORT_CMD = 10;
+int CODE2_TRIANGLE_BLOCK_CANT_BE_EMPTY   = 11;
 
 int CODE3_PREV_TOK_INCORRECT            = 0;
 
@@ -112,6 +117,8 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         "Kodly faýl gelmedi"},
     {1, 1, YES_FILE, 0, 0, 0, NO_CMD,
         "Kodly faýly açmak başartmady"},
+    {1, 2, YES_FILE, 0, 0, 0, NO_CMD,
+        "Faýly parsing edip bolmady. Sebäbi TPL-e gerek at hasaplanylýar"},
     // 2. HARPLAR (PARSER) ******************************************************
     {2, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Şeýle symboldan harp başlanok"},
@@ -129,6 +136,14 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         "Söz tokeninde ýalňyşlyk tapyldy"},
     {2, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Blogy ýapýan komanda ýetenok"},
+    {2, 8, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Pragmalary üçburç bloklaryň içinde çagyrmak bolanok"},
+    {2, 9, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Üçburç bloklaryň içinde komandanyň gutarandygyny aňladýan belgi ulanylanok. Onuň üçin birlikleri bölüji belgi ulanylýar"},
+    {2, 10, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Üçburç bloklaryň içinde beýle komandalary ulanmak bolanok"},
+    {2, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Üçburç bloklar boş bolmaly däl"},
     // 3. TOKENLER ******************************************************
     {3, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Nädogry komanda birligi gabat gelindi"},

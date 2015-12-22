@@ -89,6 +89,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmd/loop_sttmnt.h" />
+		<Unit filename="cmd/user_def_type.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/user_def_type.h" />
 		<Unit filename="cmds.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -188,6 +192,10 @@
 		<Unit filename="main/tpl_esc_keys.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="main/user_def_type.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/user_def_type.h" />
 		<Unit filename="other.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -333,6 +341,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/token_types/loop_sttmnt.h" />
+		<Unit filename="token/token_types/triangle_block.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/triangle_block.h" />
+		<Unit filename="token/token_types/utype.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/utype.h" />
+		<Unit filename="token/token_types/utype_con.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/utype_con.h" />
 		<Unit filename="token/token_word.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

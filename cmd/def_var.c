@@ -33,20 +33,20 @@ int is_cmd_def_var(command *cmd)
 	}
 
 	//printf("Birinji token barlanmaly\n");
-	int next=-1;
+	int is_glob = 0;
 	// Birinji token umumy ya maglumat tipi bolup bilyar
 	if (fci->type==TOKEN_ITEM && fci->tok.type_class==TOK_CLASS_GLOB)
 	{
 	    def_var_cmd_mod(cmd, &fci->tok, 0);
 		//debug_cmd(cmd);
-		next = TOK_CLASS_DEF_TYPE;
+		is_glob = 1;
 	}
-	else if (fci->type==1 && fci->tok.type_class==TOK_CLASS_DEF_TYPE)
+	else if (fci->type==1 && (fci->tok.type_class==TOK_CLASS_DEF_TYPE ||
+                             fci->tok.type_class==TOK_CLASS_UTYPE_CON))
 	{
 	    def_var_cmd_mod(cmd, &fci->tok, 0);
-		next = TOK_CLASS_IDENT;
 	}
-	else
+    else
 	{
 		return 0;
 	}
@@ -57,17 +57,24 @@ int is_cmd_def_var(command *cmd)
 	if (cmd->items_num>1)
 	{
         command_item *sci = get_cmd_item(cmd->items,1);
-		if (sci->type==TOKEN_ITEM && sci->tok.type_class==next)
+		if (is_glob)
 		{
-            def_var_cmd_mod(cmd, &sci->tok, 1);
-			if (fci->tok.type_class==TOK_CLASS_GLOB)
-				next = TOK_CLASS_IDENT;
-			else
+		    if (sci->type==TOKEN_ITEM && (sci->tok.type_class==TOK_CLASS_DEF_TYPE ||
+                                         sci->tok.type_class==TOK_CLASS_UTYPE_CON))
             {
-               next = -1;
+                def_var_cmd_mod(cmd, &sci->tok, 1);
             }
+            else
+            {
+                return 0;
+            }
+
 		}
-		else
+		else if (sci->type==TOKEN_ITEM && sci->tok.type_class==TOK_CLASS_IDENT)
+        {
+            def_var_cmd_mod(cmd, &sci->tok, 1);
+        }
+        else
 		{
 			return 0;
 		}
@@ -78,7 +85,7 @@ int is_cmd_def_var(command *cmd)
 	if (cmd->items_num>2)
 	{
 	    command_item *tci = get_cmd_item(cmd->items,2);
-		if(next>0 && tci->type==TOKEN_ITEM && next==tci->tok.type_class)
+		if(is_glob && tci->type==TOKEN_ITEM && tci->tok.type_class==TOK_CLASS_IDENT)
 		{
 			def_var_cmd_mod(cmd, &tci->tok, 2);
 		}

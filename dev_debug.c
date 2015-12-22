@@ -11,6 +11,7 @@
 #include "algor.h"
 #include "paren/types.h"
 #include "dev_debug.h"
+#include "main/user_def_type.h"
 
 int DEV_ITEMS_STEPS = 0;
 
@@ -143,6 +144,22 @@ void debug_token_type(token_type *tok_type)
     {
         strncpy(type, TOK_CLASS_LOOP_STTMNT_WORDS[tok_type->type_num], strlen(TOK_CLASS_LOOP_STTMNT_WORDS[tok_type->type_num])+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_TRIANGLE_BLOCK)
+    {
+        strncpy(type, TRIANGLE_BLOCK_TOKENS_KEYWORDS[tok_type->type_num][1], strlen(TRIANGLE_BLOCK_TOKENS_KEYWORDS[tok_type->type_num][1])+1);
+    }
+    else if (tok_type->type_class==TOK_CLASS_UTYPE)
+    {
+        if (tok_type->type_num==UTYPE_DEF_SIGNIFIER)
+            strncpy(type, UTYPE_DEF_SIGNIFIER_DB_WORD, strlen(UTYPE_DEF_SIGNIFIER_DB_WORD)+1);
+        else if(tok_type->type_num==UTYPE_ITEM_SEPARATOR)
+            strncpy(type, TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[2], strlen(TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[2])+1);
+    }
+    else if (tok_type->type_class==TOK_CLASS_UTYPE_CON)
+    {
+        int utype_num = tok_type->type_num;
+        strncpy(type, USER_DEF_TYPES[utype_num].ident, strlen(USER_DEF_TYPES[utype_num].ident)+1);
+    }
     else
 		strncpy(type, "", strlen("")+1);
 
@@ -154,7 +171,9 @@ void debug_token_type(token_type *tok_type)
 	if (tok_type->need_value==0)
 		printf("Maglumat saklanok\n");
 	else
+    {
 		printf("Maglumat: '%s'\n", get_tok_type_value(tok_type));
+    }
 	printf("\n");
 }
 

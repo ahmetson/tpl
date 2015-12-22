@@ -1,18 +1,17 @@
-/*
- * Tokenler uchin ulanylyan 'struct' instruksiyasy arkaly yasalan maglumat tipleri
-**/
+/** Tokenler uchin ulanylyan 'struct' instruksiyasy arkaly yasalan maglumat tipleri
+*/
 #ifndef TOKEN_STRUCTS_H
 #define TOKEN_STRUCTS_H
 
 #ifndef TOKEN_CLASSES_NUM
-#define TOKEN_CLASSES_NUM 12
+#define TOKEN_CLASSES_NUM 15
 #endif
 
 #define MAXLEN 255
 
 // Harpl tokeni hasaplananok.
 #ifndef TOKEN_TYPES_NUM
-#define TOKEN_TYPES_NUM 13
+#define TOKEN_TYPES_NUM 16
 #endif
 
 
@@ -54,14 +53,6 @@ typedef struct{
 	char parenthesis;
 	char inf_char;
 }token;
-
-typedef struct{
-    token *tok;
-    int cmd_class;
-    int cmd_type;
-    int waited_class;
-    int waited_type;
-}unknown_token;
 
 typedef struct{
     int type_class;

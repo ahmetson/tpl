@@ -13,6 +13,8 @@
 #include "dev_debug.h"
 #include "main/inf.h"
 #include "cmd/def_var.h"
+#include "main/user_def_type.h"
+
 
 int algor_add_cmd(command add_cmd)
 {
@@ -76,6 +78,7 @@ void var_def_add(command *cmd, char glob)
     {
         if (is_ident_used(&ci->tok, 1))
         {
+            printf("IDENT 0");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -84,6 +87,7 @@ void var_def_add(command *cmd, char glob)
     {
         if (is_ident_used(&ci->tok, 0))
         {
+            printf("IDENT 1");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -116,6 +120,7 @@ void var_def_add(command *cmd, char glob)
     }
 }
 
+
 void arr_def_add(command *cmd, char glob)
 {
     int ident_tok_pos = cmd->items_num-1;  // Identifikator - bu komandadaky iň soňky element
@@ -124,18 +129,32 @@ void arr_def_add(command *cmd, char glob)
     char *tok_name = ci->tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
-	if (glob)
+	if (glob==1)
     {
         if (is_ident_used(&ci->tok, 1))
         {
+            printf("IDENT 2");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
     }
-    else
+    else if (!glob)
     {
         if (is_ident_used(&ci->tok, 0))
         {
+            printf("IDENT 4");
+            CUR_PART = 4;
+            print_err(CODE4_VARS_IDENT_USED, &ci->tok);
+        }
+    }
+    else if (glob==-1)
+    {
+        if (is_ident_used(&ci->tok, 2))
+        {
+            debug_token(&ci->tok);
+            is_ident_used(&ci->tok, 2);
+
+            printf("IDENT 5");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -157,7 +176,7 @@ void arr_def_add(command *cmd, char glob)
 	strncpy(ai.ident, tok_name, strlen(tok_name)+1);
 
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
-    if (glob)
+    if (glob==1)
     {
         ++GLOBAL_ARR_DEFS_NUMS;
         GLOBAL_ARR_DEFS = realloc(GLOBAL_VAR_DEFS, sizeof(*GLOBAL_ARR_DEFS)*GLOBAL_ARR_DEFS_NUMS);
@@ -168,7 +187,7 @@ void arr_def_add(command *cmd, char glob)
 
         add_to_last_glob_arr_items(cmd);
     }
-    else
+    else if (!glob)
     {
         ++LOCAL_ARR_DEFS_NUMS;
         LOCAL_ARR_DEFS = realloc(LOCAL_ARR_DEFS, sizeof(*LOCAL_ARR_DEFS)*LOCAL_ARR_DEFS_NUMS);
@@ -178,6 +197,17 @@ void arr_def_add(command *cmd, char glob)
         LOCAL_ARR_DEFS_ITEMS[LOCAL_ARR_DEFS_NUMS-1] = NULL;
 
         add_to_last_loc_arr_items(cmd);
+    }
+    else if (glob==-1)
+    {
+        ++TMP_USER_DEF_TYPES_ARRS_NUMS;
+        TMP_USER_DEF_TYPES_ARRS = realloc(TMP_USER_DEF_TYPES_ARRS, sizeof(*TMP_USER_DEF_TYPES_ARRS)*TMP_USER_DEF_TYPES_ARRS_NUMS);
+        TMP_USER_DEF_TYPES_ARRS[TMP_USER_DEF_TYPES_ARRS_NUMS-1] = ai;
+
+        TMP_USER_DEF_TYPES_ARRS_ITEMS = realloc(TMP_USER_DEF_TYPES_ARRS_ITEMS, sizeof(*TMP_USER_DEF_TYPES_ARRS_ITEMS)*TMP_USER_DEF_TYPES_ARRS_NUMS);
+        TMP_USER_DEF_TYPES_ARRS_ITEMS[TMP_USER_DEF_TYPES_ARRS_NUMS-1] = NULL;
+
+        add_to_last_tmp_arr_items(cmd);
     }
 }
 
@@ -293,14 +323,23 @@ int is_ident_used(token *t, char except_code)
     if (!except_code)
     {
         int res = is_var_def_exist(ident);
-        res = is_arr_def_exist(ident);
+        if (!res)
+            res = is_arr_def_exist(ident);
+        if (!res)
+            res = is_utype_ident(ident);
         return res;
     }
     /// Global ülňileriň maglumatlary beýan edilen sanawda identifikator gözlenenok.
     else if (except_code==1)
     {
         return is_local_var_def_exist(ident) || is_glob_var_def_exist(ident)
-            || is_local_arr_def_exist(ident) || is_glob_arr_def_exist(ident);
+            || is_local_arr_def_exist(ident) || is_glob_arr_def_exist(ident)
+            || is_utype_ident(ident);
+    }
+    /// Diňe häzirki wagtlaýyn sanawyň birliklerini saklaýan sanawdaky birlikleriň atlarynda görülýär
+    else if(except_code==2)
+    {
+        return is_tmp_triangle_block_item_ident(ident);
     }
     return 0;
 }
@@ -412,5 +451,19 @@ block_inc *get_block_by_inc_num(int inc_num)
             return &GLOB_BLOCKS[i];
     }
 
+}
+
+int is_tmp_triangle_block_item_ident(char *ident)
+{
+    int i, len = strlen(ident);
+    for (i=0; i<TMP_USER_DEF_TYPES_NUM; ++i)
+    {
+        if (strlen(TMP_USER_DEF_TYPE_ITEMS[i].ident)==len &&
+            strncmp(TMP_USER_DEF_TYPE_ITEMS[i].ident, ident, len)==0)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 

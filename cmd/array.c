@@ -259,6 +259,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "array.h"
+#include "user_def_type.h"
 #include "../translator_to_c/includes.h"
 #include "../cmds.h"
 #include "../paren/types.h"
@@ -267,6 +268,7 @@
 #include "../token/harpl.h"
 #include "../error.h"
 #include "../fns.h"
+#include "../main/user_def_type.h"
 
 int CMD_CLASS_ARR_DEF = 0;
 int CMD_CLASS_ARR_CON = 1;
@@ -294,9 +296,12 @@ int is_cmd_arr(command *cmd)
         if (ci->type==PAREN_ITEM && ci->paren.type==PAREN_TYPE_FNS_ARGS && is_param_item_int(&ci->paren))
         {
             ++next_item;
+            debug_paren(&ci->paren);
             cmd_arr_def_mod(cmd, 0);
         }
-        else if (ci->type==TOKEN_ITEM && ci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+        else if ((ci->type==TOKEN_ITEM && ci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT) ||
+                 (ci->type==CMD_ITEM   && ci->cmd.cmd_class==CMD_CLASS_UTYPE && ci->cmd.cmd_type==CMD_UTYPE_CON_TYPE) ||
+                 (ci->type==CMD_ITEM   && ci->cmd.cmd_class==CMD_CLASS_ARR   && ci->cmd.cmd_type==CMD_CLASS_ARR_CON))
         {
             ++next_item;
             cmd_arr_con_mod(cmd, 0);
@@ -312,7 +317,8 @@ int is_cmd_arr(command *cmd)
         if (cmd->cmd_type==CMD_CLASS_ARR_DEF)
         {
             command_item *sci = get_cmd_item(cmd->items, next_item);
-            if (sci->type==TOKEN_ITEM && sci->tok.potentional_types[0].type_class==TOK_CLASS_DEF_TYPE)
+            if (sci->type==TOKEN_ITEM && (sci->tok.potentional_types[0].type_class==TOK_CLASS_DEF_TYPE ||
+                                          sci->tok.potentional_types[0].type_class==TOK_CLASS_UTYPE_CON) )
             {
                 ++next_item;
                 cmd_arr_def_mod(cmd, 1);
@@ -324,7 +330,7 @@ int is_cmd_arr(command *cmd)
         }
         else if (cmd->cmd_type==CMD_CLASS_ARR_CON)
         {
-            int i, type_class = -1, type_num = -1;;
+            int i, type_class = -1, type_num = -1;
 
             /** ŞERT #15: Eger ikinji elementiň görnüşi HARPL identifikatory bolsa
                 Onda next_item bir san ulalýar.
@@ -332,7 +338,7 @@ int is_cmd_arr(command *cmd)
                 ** Komandanyň maglumatlaryny üýtgedýän funksiýada
                 Eger ikinji elementi üýtgetmeli diýen komanda bolsa:
                     Eger ikinji birlik HARPL görnüşde bolsa,
-                        Onda, üçünji birlikden \bSAN diýen sözlem ýasalýar.
+                        Onda, üçünji birlikden |SAN diýen sözlem ýasalýar.
                         Sözlem iň Global HARPL-laryň sanawyndaky iň soňky birligiň içine salynýar.
                     Ýogsa
                         Täze HARPL görnüşde token ýasalýar.
@@ -348,15 +354,21 @@ int is_cmd_arr(command *cmd)
             {
                 command_item *ci = get_cmd_item(cmd->items, i);
 
-                if ((ci->type==TOKEN_ITEM && TOK_RETURN_TYPE[ci->tok.potentional_types[0].type_class]
-                            [ci->tok.potentional_types[0].type_num](&ci->tok, &type_class, &type_num)) ||
+                if ((ci->type==TOKEN_ITEM && return_tok_type(&ci->tok, &type_class, &type_num)) ||
                     (ci->type==CMD_ITEM && CMD_RETURN_TYPE[ci->cmd.cmd_class][ci->cmd.cmd_type](&ci->cmd, &type_class, &type_num)) ||
                     (ci->type==PAREN_ITEM && PAREN_RETURN_TYPE[ci->paren.type](&ci->paren, &type_class, &type_num)))
                 {
                     if (type_class!=TOK_CLASS_DEF_TYPE && type_num!=INT_CONST_DATA_TOK_NUM)
                         return 0;
+                    else
+                    {
+                        type_class = type_num = -1;
+                    }
                 }
-                type_class = type_num = -1;
+                else
+                {
+                    return 0;
+                }
             }
             if (!(sci->type==TOKEN_ITEM && sci->tok.type_class==TOK_CLASS_CONST_DATA &&
                 sci->tok.potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM))
@@ -421,7 +433,7 @@ void cmd_arr_def_mod(command *cmd, int item_num)
 void cmd_arr_con_mod(command *cmd, int item_num)
 {
 
-    int item_pos = 0;
+    int item_pos = item_num;
     if (cmd->ns==GLOB)
     {
         item_pos = item_num+1;
@@ -440,7 +452,7 @@ void cmd_arr_con_mod(command *cmd, int item_num)
                 ** Komandanyň maglumatlaryny üýtgedýän funksiýada
                 Eger ikinji elementi üýtgetmeli diýen komanda bolsa:
                     Eger ikinji birlik HARPL görnüşde bolsa,
-                        Onda, üçünji birlikden \bSAN diýen sözlem ýasalýar.
+                        Onda, üçünji birlikden |SAN diýen sözlem ýasalýar.
                         Sözlem iň Global HARPL-laryň sanawyndaky iň soňky birligiň içine salynýar.
                     Ýogsa
                         Täze HARPL görnüşde token ýasalýar.
@@ -458,11 +470,11 @@ void cmd_arr_con_mod(command *cmd, int item_num)
             {
                 command_item *tci = get_cmd_item(cmd->items, cmd->items_num-1);
                 char *line = NULL;
-                char *separator = "\b";
+                char *separator = "|";
                 len += strlen(separator)+1;
                 line = realloc(line, len);
 
-                strncpy(line, separator, strlen(separator));
+                strncpy(line, separator, strlen(separator)+1);
 
                 TOK_GET_C_CODE[tci->tok.potentional_types[0].type_class][tci->tok.potentional_types[0].type_num]
                 (&tci->tok, &line, &len);
@@ -486,18 +498,22 @@ void cmd_arr_con_mod(command *cmd, int item_num)
 
             TOK_GET_C_CODE[ci->tok.potentional_types[0].type_class][ci->tok.potentional_types[0].type_num]
                     (&ci->tok, &last, &len);
-
-            char *separator = "\b";
+/*
+            char *separator = "|";
             len += strlen(separator);
             last = realloc(last, len);
-            strncat(last, separator, strlen(separator));
+            strncat(last, separator, strlen(separator));*/
 
             add_string_to_last_string(last);
             free(last);
 
+            string_tok.is_compl = 1;
+            string_tok.potentional_types[0].is_compl = 1;
+
             command_item put_me;
             put_me.type = TOKEN_ITEM;
             put_me.tok = string_tok;
+
             put_cmd_item(cmd->items, cmd->items_num-1, put_me);
         }
 
@@ -562,8 +578,28 @@ int semantic_cmd_arr_con(command *cmd)
 
     char *elems = get_string_item(elems_ci->tok.potentional_types[0].string_value);
 
-    int type = -1, num = -1;
-    get_arr_address_by_ident(ident_ci->tok.potentional_types[0].value, &type, &num);
+    int type = -1, num = -1, utype_addr = -1, utype_item_addr = -1;
+    ///
+    if (ident_ci->type==CMD_ITEM && ident_ci->cmd.cmd_class==CMD_CLASS_UTYPE && ident_ci->cmd.cmd_type==CMD_UTYPE_CON_TYPE)
+    {
+        if (get_utype_addr_by_cmd(&ident_ci->cmd, &utype_addr) && get_utype_item_addr_by_cmd(&ident_ci->cmd, &utype_item_addr))
+        {
+            type = 3;
+            if (!is_utype_arr_item(utype_addr, utype_item_addr))
+            {
+                printf("%s %d: Ulanyjynyň ýasan tipiniň sanaw däl ülňisine çatylyndy\n", __FILE__, __LINE__);
+
+            }
+            else
+            {
+                num = USER_DEF_TYPE_ITEMS[utype_addr][utype_item_addr].arr_items_addr;
+            }
+        }
+    }
+    else
+    {
+        get_arr_address_by_ident(ident_ci->tok.potentional_types[0].value, &type, &num);
+    }
 
     if (type==-1 || num==-1)
     {
@@ -582,14 +618,18 @@ int semantic_cmd_arr_con(command *cmd)
         // LOKAL YGLAN EDILEN SANAW EKEN
         ai = &LOCAL_ARR_DEFS[num];
     }
-    else
+    else if (type==2)
     {
         // BASHGA KODLY FAYLDA YGLAN EDILEN SANAW EKEN
         ai = &GLOBAL_ARR_DECS[num];
     }
+    else if (type==3)
+    {
+        ai = &USER_DEF_TYPES_ARRS[utype_addr][num];
+    }
 
 
-    char delims = '\b';
+    char delims = '|';
     char **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
     int items_num = 0;
 
@@ -639,10 +679,14 @@ int semantic_cmd_arr_con(command *cmd)
                 // LOKAL YGLAN EDILEN SANAW EKEN
                 aii = &LOCAL_ARR_DEFS_ITEMS[num][i];
             }
-            else
+            else if (type==2)
             {
                 // BASHGA KODLY FAYLDA YGLAN EDILEN SANAW EKEN
                 aii = &GLOBAL_ARR_DECS_ITEMS[num][i];
+            }
+            else if (type==3)
+            {
+                aii = &USER_DEF_TYPES_ARRS_ITEMS[utype_addr][num][i];
             }
 
             if (atoi(items[i])>aii->elem_num)
@@ -693,24 +737,23 @@ void cmd_arr_con_c_code(command *cmd, char **line, int *line_len)
 
     command_item *fci = get_cmd_item(cmd->items, ident_pos);
 
-    TOK_GET_C_CODE[fci->tok.potentional_types[0].type_class][fci->tok.potentional_types[0].type_num](&fci->tok, line, line_len);
+    if (fci->type==CMD_ITEM)
+    {
+        CMD_GET_C_CODE[fci->cmd.cmd_class][fci->cmd.cmd_type](&fci->cmd, line, line_len);
+    }
+    else if (fci->type==TOKEN_ITEM)
+    {
+        TOK_GET_C_CODE[fci->tok.potentional_types[0].type_class][fci->tok.potentional_types[0].type_num](&fci->tok, line, line_len);
+    }
 
     command_item *sci = get_cmd_item(cmd->items, cmd->items_num-1);
     char *elems = get_string_item(sci->tok.potentional_types[0].string_value);
 
-    char delims[] = "\b";
-    char *tok = NULL;
-    char **items = NULL;
+    char delims = '|';
+    char **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
     int items_num = 0;
-    tok = strtok(elems, delims );
 
-    while( tok != NULL )
-    {
-        ++items_num;
-        items = realloc(items, sizeof(*items)*items_num);
-        items[items_num-1] = tok;
-        tok = strtok( NULL, delims );
-    }
+    divide_string(elems, delims, &items, &items_num);
 
     char *o = "[";
     char *c = "]";
@@ -752,7 +795,30 @@ void add_to_last_loc_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {LOCAL_ARR_DEFS_NUMS-1, i, atoi(pes[0].tok.potentional_types[0].value)};
+        array_inc_item add = {LOCAL_ARR_DEFS_NUMS-1, i, atoi(pes[i].tok.potentional_types[0].value)};
+
+        (*last)[i] = add;
+    }
+}
+
+void add_to_last_tmp_arr_items(command *cmd)
+{
+    int yay_pos = cmd->items_num-3;
+
+    command_item *ci = get_cmd_item(cmd->items, yay_pos);
+
+    parenthesis *p = &ci->paren;
+
+    int i;
+
+    TMP_USER_DEF_TYPES_ARRS_ITEMS[TMP_USER_DEF_TYPES_ARRS_NUMS-1] = realloc(TMP_USER_DEF_TYPES_ARRS_ITEMS[TMP_USER_DEF_TYPES_ARRS_NUMS-1], sizeof(**TMP_USER_DEF_TYPES_ARRS_ITEMS)*p->elems_num);
+    array_inc_item **last = &TMP_USER_DEF_TYPES_ARRS_ITEMS[TMP_USER_DEF_TYPES_ARRS_NUMS-1];
+
+    parenthesis_elem *pes = get_paren_elems(p->elems);
+
+    for(i=0; i<p->elems_num; ++i)
+    {
+        array_inc_item add = {TMP_USER_DEF_TYPES_ARRS_NUMS-1, i, atoi(pes[i].tok.potentional_types[0].value)};
 
         (*last)[i] = add;
     }
@@ -807,26 +873,32 @@ void get_arr_address_by_ident(char *ident, int *type, int *num)
 {
     int i, len = strlen(ident);
     // GLOBAL YGLAN EDILEN SANAWLARYN ARASYNDAN GOZLENILYAR:
+    for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
+    {
+        if (len==strlen(LOCAL_ARR_DEFS[i].ident) && strncmp(ident, LOCAL_ARR_DEFS[i].ident, len)==0)
+        {
+            *type = 1;
+            *num  = i;
+            return;
+        }
+    }
     for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
     {
         if (len==strlen(GLOBAL_ARR_DEFS[i].ident) && strncmp(ident, GLOBAL_ARR_DEFS[i].ident, len)==0)
         {
             *type = 0;
             *num  = i;
+            return;
         }
-    }for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
-    {
-        if (len==strlen(LOCAL_ARR_DEFS[i].ident) && strncmp(ident, LOCAL_ARR_DEFS[i].ident, len)==0)
-        {
-            *type = 1;
-            *num  = i;
-        }
-    }for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
+
+    }
+    for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
     {
         if (len==strlen(GLOBAL_ARR_DECS[i].ident) && strncmp(ident, GLOBAL_ARR_DECS[i].ident, len)==0)
         {
             *type = 2;
             *num  = i;
+            return;
         }
     }
 }
@@ -934,7 +1006,7 @@ void add_arr_elem_inf_c_code(char **line, int *line_len, int arr_type, int arr_n
     {
         aii = LOCAL_ARR_DEFS_ITEMS[arr_num];
     }
-    else
+    else if (arr_type==2)
     {
         aii = GLOBAL_ARR_DECS_ITEMS[arr_num];
     }

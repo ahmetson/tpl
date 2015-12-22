@@ -11,6 +11,7 @@
 
 #include "tpl.h"
 #include "main/init.h"
+#include "main/user_def_type.h"
 #include "work_with_source.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -109,6 +110,7 @@ void tpl(int argc, const char **args)
     }
     //printf("NABELLI IDENTIFIKATORYN TIPLERI HEM BARLANDY\n");
 
+    add_utypes_c_code_file();
 
 	// TPL PROGRAMMADAN ÇYKMALY
 	free_globs();

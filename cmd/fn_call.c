@@ -150,7 +150,7 @@ int check_fn_args(int argn, int args_num, parenthesis *paren)
             if (paren_elems[j].type==TOKEN_ITEM)
             {
                 token_type *tt = &paren_elems[j].tok.potentional_types[0];
-                TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren_elems[j].tok, &ret_class, &ret_type);
+                return_tok_type(&paren_elems[j].tok, &ret_class, &ret_type);
             }
             else if (paren_elems[j].type==CMD_ITEM)
                 CMD_RETURN_TYPE[paren_elems[j].cmd.cmd_class][paren_elems[j].cmd.cmd_type](&paren_elems[j].cmd, &ret_class, &ret_type);
@@ -182,7 +182,7 @@ int check_fn_args(int argn, int args_num, parenthesis *paren)
                 if (paren_elems[j].type==TOKEN_ITEM)
                 {
                     token_type *tt = &paren_elems[j].tok.potentional_types[0];
-                    TOK_RETURN_TYPE[tt->type_class][tt->type_num](&paren_elems[j].tok, &ret_class, &ret_type);
+                    return_tok_type(&paren_elems[j].tok, &ret_class, &ret_type);
                  }
                 else if(paren_elems[j].type==CMD_ITEM)
                     CMD_RETURN_TYPE[paren_elems[j].cmd.cmd_class][paren_elems[j].cmd.cmd_type](&paren_elems[j].cmd, &ret_class, &ret_type);

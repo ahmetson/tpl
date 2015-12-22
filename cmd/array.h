@@ -39,6 +39,7 @@ void cmd_arr_con_c_code(command *cmd, char **l, int *llen);
 void add_to_last_glob_arr_items(command *cmd);
 void add_to_last_loc_arr_items(command *cmd);
 void add_to_last_dec_arr_items(command *cmd);
+void add_to_last_tmp_arr_items(command *cmd);
 
 void get_arr_address_by_ident(char *ident, int *type, int *num);
 
