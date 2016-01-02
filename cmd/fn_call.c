@@ -52,7 +52,7 @@ void fn_call_cmd_mod(command *cmd, int item_num)
 {
     if (item_num==0)
     {
-        cmd->cmd_class = CMD_CLASS_FN;
+        cmd->cmd_class = CMD_CLASS_FN_CALL;
         cmd->cmd_type  = FN_CALL_TYPE_NUM;
         cmd->is_compl  = 0;
         cmd->parenthesis = 1;

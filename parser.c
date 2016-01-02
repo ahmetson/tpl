@@ -88,7 +88,12 @@ int parse(FILE *source)
 
 	}
 	// Eger token bar bolsa, diymek komanda salynmandyr
-	if (cmd.items_num)  print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
+	if (cmd.items_num)
+    {
+        printf("Yalnyshlyk");
+        debug_cmd(&cmd);
+        print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
+    }
 
     if (GLOB_BLOCK_INCLUDES)
     {

@@ -270,11 +270,11 @@ int is_glob_var_def_exist(char *name)
 
 int is_local_var_def_exist(char *name)
 {
-    int i, len;
+    int i, len = strlen(name);
     for (i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
     {
-        len = strlen(name)>strlen(LOCAL_VAR_DEFS[i].name)?strlen(name):strlen(LOCAL_VAR_DEFS[i].name);
-        if (strncmp(LOCAL_VAR_DEFS[i].name, name, len)==0)
+        if (strlen(LOCAL_VAR_DEFS[i].name)==len &&
+            strncmp(LOCAL_VAR_DEFS[i].name, name, len)==0)
         {
             return 1;
         }
@@ -307,7 +307,7 @@ int is_var_def_exist(char *ident)
 int is_arr_def_exist(char *ident)
 {
     if (is_glob_arr_def_exist(ident) ||
-        is_glob_var_dec_exist(ident) ||
+        is_glob_arr_dec_exist(ident) ||
         is_local_arr_def_exist(ident))
         return 1;
 }
@@ -327,6 +327,8 @@ int is_ident_used(token *t, char except_code)
             res = is_arr_def_exist(ident);
         if (!res)
             res = is_utype_ident(ident);
+        if (!res)
+            res = is_fn_name_used(ident);
         return res;
     }
     /// Global ülňileriň maglumatlary beýan edilen sanawda identifikator gözlenenok.
@@ -334,12 +336,22 @@ int is_ident_used(token *t, char except_code)
     {
         return is_local_var_def_exist(ident) || is_glob_var_def_exist(ident)
             || is_local_arr_def_exist(ident) || is_glob_arr_def_exist(ident)
-            || is_utype_ident(ident);
+            || is_utype_ident(ident) || is_fn_name_used(ident);
     }
     /// Diňe häzirki wagtlaýyn sanawyň birliklerini saklaýan sanawdaky birlikleriň atlarynda görülýär
     else if(except_code==2)
     {
         return is_tmp_triangle_block_item_ident(ident);
+    }
+    /// Diňe global ülňileriň sanawynda gözlenmeli
+    else if (except_code==3)
+    {
+        int answer = is_glob_var_def_exist(ident) ||
+        is_glob_var_dec_exist(ident) ||
+        is_glob_arr_def_exist(ident) ||
+        is_glob_arr_dec_exist(ident) ||
+        is_fn_name_used(ident);
+        return answer;
     }
     return 0;
 }
@@ -395,7 +407,6 @@ void work_with_blocks(command *cmd)
         //if ((cmd.cmd_class==CMD_CLASS_CTRL_STATEMENT) || (cmd.cmd_class==CMD_CLASS_CLOSE_BLOCK && cmd.cmd_type==CMD_CLOSE_BLOCK_TYPE_NUM))
         {
             close_block(cmd);
-
         }
 
         /// Eger komanda blogy açýan bolsa
@@ -425,10 +436,23 @@ void open_block(command *cmd)
     bi.type_num = cmd->cmd_type;
     bi.inc_num  = GLOB_BLOCK_INCLUDES;
     command_item *ci = get_cmd_item(cmd->items, 0);
-    bi.inf_file_num = ci->tok.inf_file_num;   // Blok açýan bloklaryň birinji tokeni elmydama token birligi bolýar
-    bi.inf_line_num = ci->tok.inf_line_num;
-    bi.inf_char_num = ci->tok.inf_char_num;
-    bi.inf_char = ci->tok.inf_char;
+    token *inf_tok;
+    if (ci->type==TOKEN_ITEM)
+    {
+        inf_tok = &ci->tok;
+    }
+    else if (ci->type==CMD_ITEM)
+    {
+        inf_tok = inf_get_last_token(&ci->cmd);
+    }
+    else if (ci->type==PAREN_ITEM)
+    {
+        inf_tok = inf_get_parens_last_token(&ci->paren);
+    }
+    bi.inf_file_num = inf_tok->inf_file_num;   // Blok açýan bloklaryň birinji tokeni elmydama token birligi bolýar
+    bi.inf_line_num = inf_tok->inf_line_num;
+    bi.inf_char_num = inf_tok->inf_char_num;
+    bi.inf_char = inf_tok->inf_char;
 
     GLOB_BLOCKS[GLOB_BLOCKS_NUM-1] = bi;
 

@@ -22,7 +22,7 @@ is_token_item tok_types[] = {
 	   {is_token_def_type},
 	   {is_token_def_glob},
 	   {is_token_ident},
-	   {is_token_var_left_assign},
+	   {is_token_assign},
 	   {is_token_float_const_data},
 	   {is_token_int_const_data},
 	   {is_token_char_const_data},
@@ -34,7 +34,8 @@ is_token_item tok_types[] = {
 	   {is_token_loop_sttmnt},
 	   {is_token_triangle_block},
 	   {is_token_utype},
-	   {is_token_utype_con}
+	   {is_token_utype_con},
+	   {is_token_void}
 };
 
 
@@ -55,7 +56,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type},                                               // loop_sttmnt
     {empty_tok_return_type, empty_tok_return_type},                                               // triangle_block
     {empty_tok_return_type, empty_tok_return_type},                                               // utype,
-    {get_utype}                                                                                   // utype_con
+    {get_utype},                                                                                  // utype_con
+    {empty_tok_return_type}                                                                       // void
 };
 
 
@@ -76,7 +78,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {tok_loop_sttmnt_c_code, tok_loop_sttmnt_c_code},                            // loop_sttmnt
     {empty_tok_c_code, empty_tok_c_code},                                        // triangle_block
     {empty_tok_c_code, utype_item_separator_c_code},                             // utype
-    {tok_utype_con_c_code}                                                       // utype_con
+    {tok_utype_con_c_code},                                                      // utype_con
+    {tok_void_con_c_code}                                                        // void
 };
 
 

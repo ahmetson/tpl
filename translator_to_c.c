@@ -10,6 +10,7 @@
 #include "cmds.h"
 #include "cmd/ctrl_statement.h"
 #include "cmd/block.h"
+#include "cmd/fn_def.h"
 #include "translator_to_c.h"
 #include "main/user_def_type.h"
 
@@ -170,6 +171,8 @@ int c_trans_header_add_glob_def_var(FILE *f)
 			// Ulninin tipi goshulyar
 			get_type_c_code(GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
 
+            line_len += strlen(" ");
+            line = realloc(line, line_len);
 			strncat(line, " ", strlen(" "));
 
 			// Ulninin ady goshulyar
@@ -280,10 +283,9 @@ int c_trans_source_add_glob_def_var(FILE *f)
             get_type_init_val_c_code(0, GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
 
             // Ülňileriň başlangyç maglumatlary
-            line_len += strlen(def_type_list[type_num].init_val)+1;
-            line = realloc(line, line_len);
-			strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
-
+            //line_len += strlen(def_type_list[type_num].init_val)+1;
+            //line = realloc(line, line_len);
+			//strncat(line, def_type_list[type_num].init_val, strlen(def_type_list[type_num].init_val));
 
 			// Komanda gutardy
             get_cmd_end_c_code(&line, &line_len);
@@ -348,8 +350,6 @@ int c_trans_source_add_glob_def_arr(FILE *f)
 
 	return 1;
 }
-
-
 // Esasy funksiyanyn bashy yazylyar
 int prepare_main_func(FILE *f)
 {
@@ -363,7 +363,6 @@ int prepare_main_func(FILE *f)
 
 	return 1;
 }
-
 // Esasy funksiyanyn sonyny taynlayar
 int finishize_main_func(FILE *f)
 {
@@ -380,7 +379,6 @@ int finishize_main_func(FILE *f)
 
 	return 1;
 }
-
 // Esasy funksiyanyn sonyny taynlayar
 int finishize_void_func(FILE *f)
 {
@@ -395,7 +393,6 @@ int finishize_void_func(FILE *f)
 
 	return 1;
 }
-
 // Header fayly sonlayar
 int finishize_h_source(FILE *f)
 {
@@ -407,11 +404,9 @@ int finishize_h_source(FILE *f)
 
 	return 1;
 }
-
 // Lokal yglan edilen funksiyalar yglan edilyar
 int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 {
-
     char *l = NULL;
     int llen = 0;
 
@@ -499,7 +494,6 @@ int c_trans_source_add_loc_def_var(FILE *f, char main_file)
 	}
 	return 1;
 }
-
 // Lokal yglan edilen funksiyalar yglan edilyar
 int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
 {
@@ -598,49 +592,21 @@ int c_trans_source_add_loc_def_arr(FILE *f, char main_file)
 	}
 	return 1;
 }
-
 // Lokal fayla degishli bolan ahli maglumatlary fayla terjime edyar
 // @main_file - Lokal fayl bash faylmy?
 int work_with_translator(char main_file)
 {
-	char f_name[MAX_FILE_LEN] = {0};// = CUR_FILE_NAME;
-	strncpy(f_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
-
-	remove_dirnames(f_name);
-	remove_ext(f_name, ".tepl");
-    add_to_file_list_name(f_name);
-
-	// TODO. Eger faylyn ady fayllaryn sanawynda eyyam bar bolsa
-	//		Onda yalnyshlyk chykarylyar.
-
-	// .h faylyn boljak adresi
-	char h_path[MAX_FILE_LEN] = {0};
-	strncat(h_path, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(h_path, "\\", strlen("\\"));
-	strncat(h_path, f_name, strlen(f_name));
-	strncat(h_path, ".h", strlen(".h"));
-
-	// .c faylyn boljak adresi
-	char c_path[MAX_FILE_LEN] = {0};
-	strncat(c_path, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(c_path, "\\", strlen("\\"));
-	strncat(c_path, f_name, strlen(f_name));
-	strncat(c_path, ".c", strlen(".c"));
+    file_item *fi = get_file_by_tpl_source_name(CUR_FILE_NAME);
+    char f_name[MAX_FILE_LEN] = {0};
+    strncpy(f_name, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
 
 	// Fayllar achylyar:
-	FILE *c_source = fopen(c_path, "w");
-	FILE *h_source = fopen(h_path, "w");
-
-	add_to_file_list_h_source(h_path);
-	add_to_file_list_c_source(c_path);
-
-	// Faylyn ichine maglumat yazylyar:
-	//printf("%s-%s-\n\n", CUR_FILE_NAME);
-	//printf("%s\n", f_name);
+	FILE *c_source = fopen(fi->c_source, "w");
+	FILE *h_source = fopen(fi->h_source, "w");
 
     // Ýasaljak faýllaryň başy
-	prepare_h_source(h_source, f_name);
-	prepare_c_source(c_source, strncat(f_name, ".h", strlen(".h")));
+	prepare_h_source(h_source, fi->name);
+	prepare_c_source(c_source, strncat(fi->name, ".h", strlen(".h")));
 
 	if (is_glob_def_var_in_cur())
 	{
@@ -670,7 +636,7 @@ int work_with_translator(char main_file)
         MAIN_FILE_INCLUDES = realloc(MAIN_FILE_INCLUDES, MAIN_FILE_INCLUDES_NUM*(sizeof(*MAIN_FILE_INCLUDES)));
 
         // Baş faýla ýazmaly funksiýanyň prototipi yglan edilen faýl goşulýar
-        strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][0], f_name, strlen(f_name)+1);
+        strncpy(MAIN_FILE_INCLUDES[MAIN_FILE_INCLUDES_NUM-1][0], fi->name, strlen(fi->name)+1);
 
         // Faýlyň adyndan funksiýanyň ady ýazylýar.
         remove_ext(f_name, ".h");
@@ -701,6 +667,10 @@ int work_with_translator(char main_file)
         finishize_main_func(c_source);
     else
         finishize_void_func(c_source);
+    write_to_hsource_loc_fns_proto(h_source);
+    write_to_csource_loc_fns(c_source);
+
+    write_source_std_kabul_et_source_code();
 
 	finishize_h_source(h_source);
 
@@ -858,7 +828,9 @@ int is_open_block_cmd(command *cmd)
 {
     if (cmd->is_compl)
     {
-        if (cmd->cmd_class==CMD_CLASS_CTRL_STTMNT || cmd->cmd_class==CMD_CLASS_LOOP_STTMNT)
+        int type_num = CMD_FN_DEF_TYPE;
+        if (cmd->cmd_class==CMD_CLASS_CTRL_STTMNT || cmd->cmd_class==CMD_CLASS_LOOP_STTMNT || (cmd->cmd_class==CMD_CLASS_FN_DEF &&
+                                                                                              cmd->cmd_type ==CMD_FN_DEF_TYPE))
             return 1;
     }
     return 0;

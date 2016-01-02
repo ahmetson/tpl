@@ -16,6 +16,7 @@
 #include "token/token_types/triangle_block.h"
 #include "token/token_types/utype.h"
 #include "token/token_types/utype_con.h"
+#include "token/token_types/void.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"

@@ -14,8 +14,15 @@
 #define FN_ARGS_MULTIPLE -1
 #endif
 
+#ifndef FN_UNVALIDE_INSIDE_CMDS_NUM
+#define FN_UNVALIDE_INSIDE_CMDS_NUM 2
+#endif // FN_UNVALIDE_INSIDE_CMDS_NUM
+
+extern int unvalid_fn_inside_cmds[][2];
+
 extern int FUNC_CLASS_3RD_PARTY;
 extern int FUNC_TYPE_STD;
+extern int FUNC_CLASS_USER_DEF;
 
 typedef struct{
     int type_class;
@@ -63,5 +70,8 @@ func_arg *get_fn_args(int args_num);
 
 
 void add_arg_to_last_func(func_arg arg, int pos);
+
+
+void make_user_def_fn_args(parenthesis *paren, char **line, int *llen);
 
 #endif // FNS_FN_H

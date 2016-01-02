@@ -160,6 +160,11 @@ void debug_token_type(token_type *tok_type)
         int utype_num = tok_type->type_num;
         strncpy(type, USER_DEF_TYPES[utype_num].ident, strlen(USER_DEF_TYPES[utype_num].ident)+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_VOID)
+    {
+        int type_num = tok_type->type_num;
+        strncpy(type, TOK_VOID_CHARS[type_num][1], strlen(TOK_VOID_CHARS[type_num][1])+1);
+    }
     else
 		strncpy(type, "", strlen("")+1);
 
@@ -190,7 +195,7 @@ char *get_type_class(int type_class_num)
 {
 	if (type_class_num>0)
 		return type_classes[type_class_num];
-
+    printf("%d\n", type_class_num);
 	return "Tipin klasy nabelli";
 }
 

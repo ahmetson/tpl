@@ -163,7 +163,7 @@ void return_last_char(FILE *f)
 }
 
 
-void divide_string(char *source, char d, char ***out, int *items)
+void divide_string(char *source, char d, char ***out, int *its)
 {
     int i;
     char *tmp = malloc(sizeof(char)*10);
@@ -175,11 +175,11 @@ void divide_string(char *source, char d, char ***out, int *items)
         {
             if (strlen(tmp))
             {
-                *items += 1;
-                *out = realloc(*out, sizeof(**out)*(*items));
-                (*out)[*items-1] = NULL;
-                (*out)[*items-1] = realloc((*out)[*items-1], sizeof(***out)*(strlen(tmp)+1));
-                strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
+                *its += 1;
+                *out = realloc(*out, sizeof(**out)*(*its));
+                (*out)[*its-1] = NULL;
+                (*out)[*its-1] = realloc((*out)[*its-1], sizeof(***out)*(strlen(tmp)+1));
+                strncpy((*out)[*its-1], tmp, strlen(tmp)+1);
 
                 free(tmp);
 
@@ -204,12 +204,12 @@ void divide_string(char *source, char d, char ***out, int *items)
     }
     if (strlen(tmp))
     {
-        *items += 1;
+        *its += 1;
         //free((*out)[*items-2]);
-        *out = realloc(*out, sizeof(**out)*(*items));
-        (*out)[*items-1] = NULL;
-        (*out)[*items-1] = realloc((*out)[*items-1], sizeof(***out)*(strlen(tmp)+1));
-        strncpy((*out)[*items-1], tmp, strlen(tmp)+1);
+        *out = realloc(*out, sizeof(*out)*(*its));
+        (*out)[*its-1] = NULL;
+        (*out)[*its-1] = realloc((*out)[*its-1], sizeof(***out)*(strlen(tmp)+1));
+        strncpy((*out)[*its-1], tmp, strlen(tmp)+1);
     }
     free(tmp);
 }

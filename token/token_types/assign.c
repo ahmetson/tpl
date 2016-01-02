@@ -29,19 +29,32 @@ char *ASSIGN_TOK_NUM_WORDS[2] = {
 	"to_right ->"
 };
 
+char *RIGHT_ASSIGN_C_CODES[2] = {"=", "{" };
+
 void tok_assign_c_code(token *tok, char **l, int *llen)
 {
-    *llen += strlen("=");
-    if (!(*llen))
+    char *c_code;
+    if (tok->potentional_types[0].type_num==RIGHT_ASSIGN_TOK_NUM &&
+        tok->potentional_types[0].value[0]=='1')
     {
-        *llen += 1;
-        *l = realloc(*l, *llen);
-        strncpy(*l, "=", strlen("=")+1);
+        c_code = RIGHT_ASSIGN_C_CODES[1];
     }
     else
     {
+        c_code = RIGHT_ASSIGN_C_CODES[0]; // Çep we sag tarapda ülňi bolan baglanmalaryň C kody.
+    }
+
+    if (!(*llen))
+    {
+        *llen += strlen(c_code)+1;
         *l = realloc(*l, *llen);
-        strncat(*l, "=", strlen("="));
+        strncpy(*l, c_code, strlen(c_code)+1);
+    }
+    else
+    {
+        *llen = strlen(c_code);
+        *l = realloc(*l, *llen);
+        strncat(*l, c_code, strlen(c_code));
     }
 
 }

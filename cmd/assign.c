@@ -233,7 +233,8 @@ int semantic_cmd_assign(command *cmd)
 		{
 		    command_item *f = get_cmd_item(cmd->items,0);
             if((f->type==TOKEN_ITEM &&
-               return_tok_type(&f->tok, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED) ||
+               return_tok_type(&f->tok, &class1, &type1) &&
+                class1!=TOK_CLASS_UNDEFINED) ||
                (f->type==CMD_ITEM &&
                CMD_RETURN_TYPE[f->cmd.cmd_class][f->cmd.cmd_type](&f->cmd,&class1, &type1) &&
                 class1!=TOK_CLASS_UNDEFINED) ||

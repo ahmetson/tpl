@@ -296,7 +296,7 @@ int is_cmd_arr(command *cmd)
         if (ci->type==PAREN_ITEM && ci->paren.type==PAREN_TYPE_FNS_ARGS && is_param_item_int(&ci->paren))
         {
             ++next_item;
-            debug_paren(&ci->paren);
+            //debug_paren(&ci->paren);
             cmd_arr_def_mod(cmd, 0);
         }
         else if ((ci->type==TOKEN_ITEM && ci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT) ||
@@ -533,7 +533,16 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         command_item *ci = get_cmd_item(cmd->items, ident_pos);
         char *ident = ci->tok.potentional_types[0].value;
 
-        get_arr_address_by_ident(ident, &type, &num);
+        if (is_inside_fn())
+        {
+            type = 4;
+            get_tmp_func_arr_address_by_ident(ident, &num);
+        }
+        else
+        {
+            get_arr_address_by_ident(ident, &type, &num);
+        }
+
         if (type==-1 || num==-1 )
         {
             return 0;
@@ -543,6 +552,10 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         if (type==0)
         {
             ai = &GLOBAL_ARR_DEFS[num];
+        }
+        else if (type==4)
+        {
+            ai = &TMP_FUNC_ARRS[num];
         }
         else if (type==1)
         {
@@ -598,7 +611,25 @@ int semantic_cmd_arr_con(command *cmd)
     }
     else
     {
-        get_arr_address_by_ident(ident_ci->tok.potentional_types[0].value, &type, &num);
+        if (is_inside_fn())
+        {
+            char *ident = ident_ci->tok.potentional_types[0].value;
+            if ((cmd->ns==GLOB && !is_ident_used(&ident_ci->tok, 3)) || (cmd->ns==LOCAL && !is_tmp_fn_arr_ident_used(ident)) )
+            {
+                CUR_PART = 7;
+                print_err(CODE7_ARRAY_DOESNT_EXIST, (token *)inf_get_last_token(cmd));
+
+            }
+            else
+            {
+                type = 4;
+                get_tmp_func_arr_address_by_ident(ident, &num);
+            }
+        }
+        else
+        {
+            get_arr_address_by_ident(ident_ci->tok.potentional_types[0].value, &type, &num);
+        }
     }
 
     if (type==-1 || num==-1)
@@ -626,6 +657,10 @@ int semantic_cmd_arr_con(command *cmd)
     else if (type==3)
     {
         ai = &USER_DEF_TYPES_ARRS[utype_addr][num];
+    }
+    else if (type==4)
+    {
+        ai = &TMP_FUNC_ARRS[num];
     }
 
 
@@ -688,8 +723,12 @@ int semantic_cmd_arr_con(command *cmd)
             {
                 aii = &USER_DEF_TYPES_ARRS_ITEMS[utype_addr][num][i];
             }
+            else if (type==4)
+            {
+                aii = &TMP_FUNC_ARRS_ITEMS[num][i];
+            }
 
-            if (atoi(items[i])>aii->elem_num)
+            if (atoi(items[i])>=aii->elem_num)
             {
                 if (items_num)
                 {
@@ -710,8 +749,10 @@ int semantic_cmd_arr_con(command *cmd)
             for (i=0; i<items_num; ++i)
             {
                 free(items[i]);
+                items[i]= NULL;
             }
             free(items);
+            items = NULL;
         }
     }
 
@@ -719,7 +760,19 @@ int semantic_cmd_arr_con(command *cmd)
 
 int semantic_cmd_arr_def(command *cmd)
 {
-    if (cmd->ns==GLOB && GLOB_BLOCK_INCLUDES)
+    if (is_inside_fn())
+    {
+        command_item *ident_item = get_cmd_item(cmd->items, 2);
+        char *ident = ident_item->tok.potentional_types[0].value;
+        if (is_ident_used(&ident_item->tok, 3) || is_tmp_fn_ident_used(ident) )
+        {
+            CUR_PART = 4;
+            printf("IDENT 10");
+            print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
+
+        }
+    }
+    else if (cmd->ns==GLOB && GLOB_BLOCK_INCLUDES)
     {
         CUR_PART = 7;
         print_err(CODE7_GLOB_DEF_IN_BLOCK, (token *)inf_get_last_token(cmd));
@@ -774,7 +827,66 @@ void cmd_arr_con_c_code(command *cmd, char **line, int *line_len)
         strncat(*line, c, strlen(c));
     }
 
-    free(items);
+    if (items_num)
+    {
+        int i;
+        for (i=0; i<items_num; ++i)
+        {
+            free(items[i]);
+        }
+        free(items);
+    }
+}
+
+/** Faýla degişli kody C koda ýazýar
+**/
+void cmd_arr_def_c_code(command *cmd, char **line, int *line_len)
+{
+    if (TEST!=100)
+        return;
+    command_item *incs_ci  = get_cmd_item(cmd->items, 0);
+    command_item *type_ci  = get_cmd_item(cmd->items, 1);
+    command_item *ident_ci = get_cmd_item(cmd->items, 2);
+
+    get_type_c_code(type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
+
+    *line_len += strlen(" ");
+    *line = realloc(*line, *line_len);
+    strncat(*line, " ", strlen(" "));
+
+    // Ulninin ady goshulyar
+    char *ident = ident_ci->tok.potentional_types[0].value;
+    *line_len += strlen(ident);
+    *line = realloc(*line, *line_len);
+    strncat(*line, ident, strlen(ident));
+
+    // sanawyň elelemntleri hakda maglumat goşulýar
+    char *o = "[";
+    char *c = "]";
+    int i;
+    parenthesis_elem *pe = get_paren_elems(incs_ci->paren.elems);
+    for (i=0; i<incs_ci->paren.elems_num; ++i)
+    {
+        *line_len += strlen(o);
+        *line = realloc(*line, *line_len);
+        strncat(*line, o, strlen(o));
+
+        char *incs = pe->tok.potentional_types[0].value;
+        *line_len += strlen(incs);
+        *line = realloc(*line, *line_len);
+        strncat(*line, incs, strlen(incs));
+
+        *line_len += strlen(c);
+        *line = realloc(*line, *line_len);
+        strncat(*line, c, strlen(c));
+
+    }
+
+    // Ülňilere başlangyç maglumatlar baglamaly
+    //get_type_init_val_c_code(1, type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
+
+    // Komanda gutardy
+    //get_cmd_end_c_code(&line, &line_len);
 }
 
 
@@ -872,6 +984,7 @@ void add_to_last_dec_arr_items(command *cmd)
 void get_arr_address_by_ident(char *ident, int *type, int *num)
 {
     int i, len = strlen(ident);
+
     // GLOBAL YGLAN EDILEN SANAWLARYN ARASYNDAN GOZLENILYAR:
     for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
     {
@@ -1009,6 +1122,10 @@ void add_arr_elem_inf_c_code(char **line, int *line_len, int arr_type, int arr_n
     else if (arr_type==2)
     {
         aii = GLOBAL_ARR_DECS_ITEMS[arr_num];
+    }
+    else if (arr_type==4)
+    {
+        aii = LOC_FUNCS_ARRS_ITEMS[TEST][arr_num];
     }
 
     for (i=0; i<max_items; ++i)

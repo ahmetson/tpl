@@ -79,6 +79,39 @@ extern int                  FUNCS_NUM;
 **/
 extern func_arg           **FUNC_ARGS;
 
+/** Funksiýalar TPL derejede mümkin. Şonuň üçin kuçada ýerleşdirilýär **/
+extern func                   TMP_FUNC;
+extern int                    TMP_FUNC_NUM;
+extern command               *TMP_FUNC_PARAMS;
+extern command               *TMP_FUNC_ALGOR;
+extern int                    TMP_FUNC_ALGOR_NUM;
+extern glob_ident            *TMP_FUNC_VARS;
+extern int                    TMP_FUNC_VARS_NUM;
+extern array_item            *TMP_FUNC_ARRS;
+extern int                    TMP_FUNC_ARRS_NUM;
+extern array_inc_item       **TMP_FUNC_ARRS_ITEMS;
+
+
+/** Diňe parsing edilip duran faýlyň döwründe işleýär.
+    Diňe parsing edilen faýlyň içinde yglan edilen funksiýalaryň parametrleri **/
+extern int                    LOC_FUNCS_NUM;
+extern func                  *LOC_FUNCS;
+extern command              **LOC_FUNCS_PARAMS;
+extern command              **LOC_FUNCS_ALGOR;
+extern int                   *LOC_FUNCS_ALGOR_NUM;
+extern glob_ident           **LOC_FUNCS_VARS;
+extern int                   *LOC_FUNCS_VARS_NUM;
+extern array_item           **LOC_FUNCS_ARRS;
+extern int                   *LOC_FUNCS_ARRS_NUM;
+extern array_inc_item      ***LOC_FUNCS_ARRS_ITEMS;
+
+
+/** Beýan edilýän faýlda yglan edilen funksiýalaryň maglumatlary **/
+extern func                  *DEC_FUNCS;
+extern int                    DEC_FUNCS_NUM;
+
+extern func_arg             **DEC_FUNC_ARGS;
+
 /// Goşmaly faýllaryň sanawy
 extern file_incs           *INCLUDES;
 extern int                  INCLUDES_NUM;
@@ -149,5 +182,7 @@ extern int                  GLOB_BLOCKS_NUM;
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);
 void free_locals(void);
+void free_tmp_fn();
+void free_local_fns();
 
 #endif // TPL_GLOB_H

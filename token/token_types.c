@@ -19,6 +19,7 @@
 #include "token_types/triangle_block.h"
 #include "token_types/utype.h"
 #include "token_types/utype_con.h"
+#include "token_types/void.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -45,6 +46,7 @@ const int TOK_CLASS_LOOP_STTMNT     = 11;
 const int TOK_CLASS_TRIANGLE_BLOCK  = 12;
 const int TOK_CLASS_UTYPE           = 13;
 const int TOK_CLASS_UTYPE_CON       = -2;
+const int TOK_CLASS_VOID            = 15;
 
 // Used for debugging
 char *type_classes[] = {
@@ -62,7 +64,8 @@ char *type_classes[] = {
 	"gaýtalama operatory",
 	"üçburç blok",
 	"Ulanyjyň görnüşi",
-	"Ulanyjyň görnüşine çatylma"
+	"Ulanyjyň görnüşine çatylma",
+	"Boş tip"
 };
 
 
@@ -177,7 +180,41 @@ int is_token_ident(token *tok, char *tok_val)
 
 	return 1;
 }
+int is_token_assign(token *tok, char *tok_val)
+{
+    if (is_token_var_left_assign(tok, tok_val))
+        return 1;
+    return is_token_var_rigtht_assign(tok, tok_val);
+}
+
 // <-
+int is_token_var_rigtht_assign(token *tok, char *tok_val)
+{
+    int answer;
+	token_type tok_type;
+
+	answer = strstr_by_offset(RIGHT_ASSIGN_TOKEN_VALUE, tok_val, 0);
+	if (answer>=0)
+	{
+		tok_type.type_num = RIGHT_ASSIGN_TOK_NUM;	// Number of token type
+		tok_type.type_class = TOK_CLASS_ASSIGN;
+		tok_type.need_value = 1;
+		strncpy(tok_type.value, "0", strlen("0")+1);
+		tok_type.is_compl = (answer==0) ? 1 : 0;
+		tok_type.type_must_check = 0;
+		tok_type.parenthesis = 0;
+		tok->is_compl = (answer==0) ? 1 : 0;
+
+		add_potentional_token_type(tok, tok_type);
+
+		// Tokene gornush girizilen son chagyrylmaly
+		if (tok_type.is_compl==1)
+			tok->type_class = TOK_CLASS_ASSIGN;
+
+		return 1;
+	}
+	return 0;
+}
 int is_token_var_left_assign(token *tok, char *tok_val)
 {
 	int answer;
@@ -667,4 +704,31 @@ int is_token_utype_con(token *tok, char *tok_val)
         return 1;
     }
     return 0;
+}
+int is_token_void(token *tok, char *tok_val)
+{
+	/*Go through array of possible types*/
+	int i, answer, found = 0;
+	token_type tok_type;
+
+	answer = strstr_by_offset(TOK_VOID_CHARS[0][0], tok_val, 0);
+    if (answer>=0)
+    {
+        tok_type.type_num = 0;							// Number of token type
+        tok_type.type_class = TOK_CLASS_VOID;
+        tok_type.need_value = 0;
+        tok_type.is_compl = (answer==0) ? 1 : 0;
+        tok_type.type_must_check = 0;
+        tok_type.parenthesis = 1;
+        tok->is_compl = (answer==0) ? 1 : 0;
+
+        add_potentional_token_type(tok, tok_type);
+
+        // Tokene gornush girizilen son chagyrylmaly
+        if (tok_type.is_compl==1)
+            tok->type_class = TOK_CLASS_VOID;
+        found = 1;
+    }
+
+	return found;
 }

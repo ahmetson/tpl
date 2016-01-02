@@ -2,12 +2,14 @@
 **/
 #include "std.h"
 #include "std/chap_et.h"
+#include "std/kabul_et.h"
 
-int STD_FUNCS_NUM = 1;
+int STD_FUNCS_NUM = 2;
 
 // Şu funksiýalary programma biler ýaly
 int (*std_funcs[])() = {
-    add_std_chap_et
+    add_std_chap_et,
+    add_std_kabul_et
 };
 
 void add_std_funs()

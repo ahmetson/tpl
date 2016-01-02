@@ -182,6 +182,7 @@ int is_cmd_utype_def(command *cmd)
             if (is_ident_used(&sci->tok, 0))
             {
                 CUR_PART = 4;
+                printf("IDENT 13");
                 print_err(CODE4_VARS_IDENT_USED, &sci->tok);
             }
             cmd_utype_def_mod(cmd, 1);

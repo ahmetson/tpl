@@ -81,6 +81,10 @@
 		<Unit filename="cmd/fn_call.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="cmd/fn_def.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/fn_def.h" />
 		<Unit filename="cmd/logic.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -139,6 +143,10 @@
 		<Unit filename="fns/3rdparty/std/chap_et.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="fns/3rdparty/std/kabul_et.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fns/3rdparty/std/kabul_et.h" />
 		<Unit filename="fns/fn.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -146,6 +154,10 @@
 		<Unit filename="fns/fn.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="fns/fn_helpers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fns/fn_helpers.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -353,6 +365,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/token_types/utype_con.h" />
+		<Unit filename="token/token_types/void.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/void.h" />
 		<Unit filename="token/token_word.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

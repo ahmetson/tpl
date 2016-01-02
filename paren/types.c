@@ -2,18 +2,22 @@
 **/
 #include "types.h"
 #include "../parenthesis.h"
+#include "../cmd/array.h"
 
-int PAREN_TYPE_EMPTY    = 0;
-int PAREN_TYPE_FNS_ARGS = 1;
+int PAREN_TYPE_EMPTY        = 0;
+int PAREN_TYPE_FNS_ARGS     = 1;
+int PAREN_TYPE_DEF_FNS_ARGS = 2;
 
 char *PAREN_TYPES_WORDS[] = {
     "Boş",
-    "Funksiýanyň argumentleri"
+    "Funksiýanyň argumentleri",
+    "Funksiýanyň argumentlerinipň yglan edilmegi"
 };
 
 int (*PAREN_TYPES[])(parenthesis *paren) = {
     paren_type_is_empty,
-    paren_type_is_fns_args
+    paren_type_is_fns_args,
+    paren_type_is_def_fns_args
 };
 
 int paren_type_is_empty(parenthesis *paren)
@@ -30,7 +34,45 @@ int paren_type_is_fns_args(parenthesis *paren)
 {
     if (paren->elems_num)
     {
+        parenthesis_elem *pe = get_paren_elems(paren->elems);
+        int i, tmp_c, tmp_t;
+        for (i=0; i<paren->elems_num; ++i)
+        {
+            if (pe[i].type==CMD_ITEM && !CMD_RETURN_TYPE[pe[i].cmd.cmd_class][pe[i].cmd.cmd_type](&pe[i].cmd, &tmp_c, &tmp_t))
+            {
+                return 0;
+            }
+        }
         paren->type = PAREN_TYPE_FNS_ARGS;
+        return 1;
+    }
+    return 0;
+}
+
+int paren_type_is_def_fns_args(parenthesis *paren)
+{
+    if (paren->elems_num)
+    {
+        parenthesis_elem *pe = get_paren_elems(paren->elems);
+        int i, tmp_c, tmp_t, another = 0;
+        for (i=0; i<paren->elems_num; ++i)
+        {
+            if (pe[i].type==CMD_ITEM && !CMD_RETURN_TYPE[pe[i].cmd.cmd_class][pe[i].cmd.cmd_type](&(pe[i].cmd), &tmp_c, &tmp_t))
+            {
+                if (pe[i].cmd.cmd_class!=CMD_CLASS_DEF_VAR &&
+                    (pe[i].cmd.cmd_class!=CMD_CLASS_ARR && pe[i].cmd.cmd_type==CMD_CLASS_ARR_DEF))
+                {
+                    another = 1;
+                }
+            }
+            else
+            {
+                another = 1;
+            }
+        }
+        if (another)
+            return 0;
+        paren->type = PAREN_TYPE_DEF_FNS_ARGS;
         return 1;
     }
     return 0;
