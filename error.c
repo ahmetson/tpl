@@ -67,6 +67,7 @@ int CODE4_CANT_ADD_TOKEN                = 1;
 int CODE4_CANT_IDENT_CMD                = 2;
 int CODE4_VARS_IDENT_USED               = 3;
 int CODE4_TOK_TYPES_NOT_MATCH           = 4;
+int CODE4_UNSUPPORT_CMD_INSIDE_FN       = 5;
 
 int CODE7_TYPES_NOT_MATCH_RIGHT_DATA    = 0;
 int CODE7_TYPES_NOT_MATCH_LEFT_DATA     = 1;
@@ -91,6 +92,8 @@ int CODE7_CONNECTING_TO_ARRAY_NOT_TO_ITEM = 18;
 int CODE7_OUT_OF_ARRAY_ITEMS            = 19;
 int CODE7_GLOB_ARR_MUST_DEF             = 20;
 int CODE7_GLOB_ARR_NOT_MATCH_DATA_TYPE  = 21;
+int CODE7_FN_RET_TYPE_NOT_MATCH         = 22;
+int CODE7_FN_NOT_DEF                    = 23;
 
 /* Ýalňyşlyklaryň tekstleri */
 error_item err_items[] = {
@@ -158,6 +161,8 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         "Ülňi üçin identifikator eýýäm ulanyldy"},
     {4, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
+    {4, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Funksiýanyň blogynda bolmaly däl komanda gabat geldi"},
     // 5. Algoritmler ******************************************************
 	// 6. Global sanawlar ******************************************************
 	// 7. Semantika ******************************************************
@@ -204,7 +209,11 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 20, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Maglumatlara laýyk global birsyhly sanaw bir ýerlerde yglan edilmeli"},
     {7, 21, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Yglan edilen global birsyhly sanawyň we bu birsyhly sanawyň yglan edilen maglumatlarynyň tipleri gabat gelenok"}
+        "Yglan edilen global birsyhly sanawyň we bu birsyhly sanawyň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
+    {7, 22, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Beýan edilýän we yglan edilýän funksiýanyň gaýtarmaly maglumatynyň tipleri gabat gelmedi"},
+    {7, 23, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Beýan edilen funksiýanyň yglan edilen görnüşi tapylmady"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"

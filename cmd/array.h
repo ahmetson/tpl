@@ -34,7 +34,7 @@ int semantic_cmd_arr_con(command *cmd);
 int semantic_cmd_arr_def(command *cmd);
 
 void cmd_arr_con_c_code(command *cmd, char **l, int *llen);
-
+void cmd_arr_def_c_code(command *cmd, char **line, int *line_len);
 
 void add_to_last_glob_arr_items(command *cmd);
 void add_to_last_loc_arr_items(command *cmd);

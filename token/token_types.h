@@ -22,7 +22,8 @@
  * loop_sttmnt (class num: 11)
  * triangle_block (class num: 12)
  * utype (class num: 13)
- * utype_con (class num: 14)
+ * utype_con (class num: -2)
+ * void (class num: 15)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -40,7 +41,8 @@ extern const int TOK_CLASS_BLOCK;
 extern const int TOK_CLASS_LOOP_STTMNT;
 extern const int TOK_CLASS_TRIANGLE_BLOCK;
 extern const int TOK_CLASS_UTYPE;
-extern const int TOK_CLASS_UTYPE_CON;   // Hasaba alynanok
+extern const int TOK_CLASS_UTYPE_CON;
+extern const int TOK_CLASS_VOID;
 
 // Debag üçin
 extern char *type_classes[];
@@ -52,7 +54,9 @@ extern char *type_classes[];
 int is_token_def_type           (token *tok, char *tok_val);
 int is_token_def_glob           (token *tok, char *tok_val);
 int is_token_ident              (token *tok, char *tok_val);
+int is_token_assign             (token *tok, char *tok_val);
 int is_token_var_left_assign    (token *tok, char *tok_val);
+int is_token_var_rigtht_assign  (token *tok, char *tok_val);
 int is_token_int_const_data     (token *tok, char *tok_val);
 int is_token_float_const_data   (token *tok, char *tok_val);
 int is_token_char_const_data    (token *tok, char *tok_val);
@@ -65,5 +69,6 @@ int is_token_loop_sttmnt        (token *tok, char *tok_val);
 int is_token_triangle_block     (token *tok, char *tok_val);
 int is_token_utype              (token *tok, char *tok_val);
 int is_token_utype_con          (token *tok, char *tok_val);
+int is_token_void               (token *tok, char *tok_val);
 
 #endif

@@ -22,10 +22,9 @@ int PARENTHESIS_CLASS = 3;
 
 int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, int *ret_type) = {
     empty_paren_return_type,
-    paren_fns_args_return_type
+    paren_fns_args_return_type,
+    empty_paren_return_type
 };
-
-
 
 
 /** Parserde skobka duşan wagty, içindäki elementler bilen işleýän bölüm
@@ -122,8 +121,6 @@ parenthesis parse_paren(FILE *s)
     };
     paren.elems = last;
 
-
-
     return paren;
  }
 
@@ -181,7 +178,7 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok)
         {
             command new_cmd;
             init_cmd(&new_cmd, 0);
-            new_cmd.items_num = 2;
+            new_cmd.items_num = 1;
             new_cmd.items = subcmd_items_add(new_cmd.items_num);
 
             command_item fci;
@@ -189,34 +186,26 @@ int paren_elem_add_token(parenthesis_elem *elem, token tok)
             fci.paren = elem->paren;
             put_cmd_item(new_cmd.items , 0, fci);
 
-
-
-            command_item sci;
-            sci.type = TOKEN_ITEM;
-            sci.tok = tok;
-            put_cmd_item(new_cmd.items , 1, sci);
-
             elem->cmd = new_cmd;
             elem->type = CMD_ITEM;
+
+            cmd_add_item(&elem->cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), tok);
         }
         else if (elem->type==TOKEN_ITEM)
         {
             command new_cmd;
             init_cmd(&new_cmd, 0);
-            new_cmd.items_num = 2;
+            new_cmd.items_num = 1;
             new_cmd.items = subcmd_items_add(new_cmd.items_num);
             command_item fci;
             fci.type = TOKEN_ITEM;
             fci.tok = elem->tok;
             put_cmd_item(new_cmd.items , 0, fci);
 
-            command_item sci;
-            sci.type = TOKEN_ITEM;
-            sci.tok = tok;
-            put_cmd_item(new_cmd.items, 1, sci);
-
             elem->cmd = new_cmd;
             elem->type = CMD_ITEM;
+
+            cmd_add_item(&elem->cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), tok);
         }
         return 1;
     }
@@ -249,38 +238,35 @@ int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren)
         {
             command new_cmd;
             init_cmd(&new_cmd, 0);
-            new_cmd.items_num = 2;
+            new_cmd.items_num = 1;
             new_cmd.items = subcmd_items_add(new_cmd.items_num);
+
             command_item fci;
             fci.type = PAREN_ITEM;
             fci.paren = elem->paren;
             put_cmd_item(new_cmd.items, 0, fci);
 
-            command_item sci;
-            sci.type = PAREN_ITEM;
-            sci.paren = paren;
-            put_cmd_item(new_cmd.items, 1, sci);
-
             elem->cmd = new_cmd;
             elem->type = CMD_ITEM;
+
+            cmd_add_item(&elem->cmd, PAREN_ITEM, paren, get_empty_cmd(), get_empty_tok());
         }
         else if (elem->type==TOKEN_ITEM)
         {
             command new_cmd;
             init_cmd(&new_cmd, 0);
-            new_cmd.items_num = 2;
+            new_cmd.items_num = 1;
             new_cmd.items = subcmd_items_add(new_cmd.items_num);
+
             command_item fci;
             fci.type = TOKEN_ITEM;
             fci.tok = elem->tok;
             put_cmd_item(new_cmd.items , 0, fci);
-            command_item sci;
-            sci.type = PAREN_ITEM;
-            sci.paren = paren;
-            put_cmd_item(new_cmd.items , 1, sci);
 
             elem->cmd = new_cmd;
             elem->type = CMD_ITEM;
+
+            cmd_add_item(&elem->cmd, PAREN_ITEM, paren, get_empty_cmd(), get_empty_tok());
         }
         return 1;
     }
@@ -302,8 +288,8 @@ int param_elem_add_paren(parenthesis_elem *elem, parenthesis paren)
 **/
 int recognize_paren(parenthesis *paren)
 {
-    int i, types = CONST_PAREN_TYPES_NUM;
-    for (i=0; i<types; ++i)
+    int i;
+    for (i=0; i<CONST_PAREN_TYPES_NUM; ++i)
     {
         if (PAREN_TYPES[i](paren))
             return 1;

@@ -78,6 +78,16 @@ int init()
     FUNCS_NUM = 0;
     FUNC_ARGS = NULL;
 
+    TMP_FUNC_NUM = -1;
+    free_tmp_fn();
+    free_local_fns();
+
+
+    /** Beýan edilýän faýlda yglan edilen funksiýalaryň maglumatlary **/
+    DEC_FUNCS = NULL;
+    DEC_FUNCS_NUM = 0;
+    DEC_FUNC_ARGS = NULL;
+
     // Standard lib'däki faňksiýeler goşulýar
     add_std_funs();
 

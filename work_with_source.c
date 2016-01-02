@@ -31,10 +31,7 @@ void work_with_sources(int argc, const char **args)
 	{
 		//printf("Parsing etmeli: '%s'\n", args[i]);
 		// Häzirki parserlenýän kodly faýlyň ady
-
-		add_to_file_list_file();                // Ýasalmaly programmanyň faýllarynyň sanawyna,
-		add_to_file_list_source(args[i]);       // häzirki kodly faýl goşulýar
-                                                // Faýl adyny ýalňyşlyklaryň arasynda görkezmek üçin
+        add_file_info(args[i]);
 
 		if (is_reserved_source_name((char *)args[i]))
         {

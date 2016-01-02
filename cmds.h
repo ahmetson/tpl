@@ -14,7 +14,7 @@ extern const int FN_CALL_MAX_ITEMS;
 extern int CMD_CLASS_UNKNOWN;
 extern int CMD_CLASS_DEF_VAR;
 extern int CMD_CLASS_ASSIGN;
-extern int CMD_CLASS_FN;
+extern int CMD_CLASS_FN_CALL;
 extern int CMD_CLASS_CALL_GLOB_VAR;
 extern int CMD_CLASS_ARIF;
 extern int CMD_CLASS_CMP;
@@ -24,6 +24,12 @@ extern int CMD_CLASS_BLOCK;
 extern int CMD_CLASS_LOOP_STTMNT;
 extern int CMD_CLASS_ARR;
 extern int CMD_CLASS_UTYPE;
+extern int CMD_CLASS_FN_DEF;
+
+#ifndef CONST_CMD_CLASS_UTYPE
+#define CONST_CMD_CLASS_UTYPE  12
+#define CONST_CMD_CLASS_FN_DEF 13
+#endif // CONST_CMD_CLASS_UTYPE
 
 extern int GLOB;
 extern int LOCAL;
@@ -32,7 +38,8 @@ typedef struct command_item command_item;
 typedef struct command command;
 
 #ifndef TPL_MAX_ITEMS
-#define TPL_MAX_ITEMS 4
+#define TPL_MAX_ITEMS 5
+#define MAX_FOUR_ITEMS 4
 #define MAX_THREE_ITEMS 3
 #define MAX_TWO_ITEMS 2
 #define MAX_ONE_ITEMS 1
@@ -78,7 +85,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 12
+#define CMDS_TYPES_NUM 13
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -147,5 +154,7 @@ int is_cmd_not_compl_item_exist(command *cmd, char rec);
 int is_cmd_item_can_be_needed(command *cmd);
 
 int is_glob_arr_dec_exist(char *ident);
+
+void make_cmd_copy(command *cmd, command *cmd_out);
 
 #endif

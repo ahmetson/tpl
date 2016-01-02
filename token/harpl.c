@@ -129,11 +129,12 @@ int add_string_to_last_string(char *str)
 
     if (GLOB_STRINGS[last]!=NULL)
     {
-        size = strlen(GLOB_STRINGS[last]) + strlen(str);
+        size = strlen(GLOB_STRINGS[last]) + strlen(str) + 1;
         GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
         if (GLOB_STRINGS[last]==NULL)
             printf("Soz uchin yer yasap bolmady\n");
-        strncat(GLOB_STRINGS[last], str, strlen(str));
+        else
+            strncat(GLOB_STRINGS[last], str, strlen(str));
     }
     else
     {
@@ -158,8 +159,7 @@ void free_last_string()
 }
 
 /**
- * Ýasaljak programma üçin goşulan iň soňky sözi çalyşýar
-**/
+ * Ýasaljak programma üçin goşulan iň soňky sözi çalyşýar */
 int change_last_string(char *new_val)
 {
     int last = GLOB_STRINGS_NUM-1;

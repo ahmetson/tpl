@@ -72,6 +72,10 @@ void tpl(int argc, const char **args)
     {
         work_with_glob_arr_decs();
     }
+    if (DEC_FUNCS_NUM)
+    {
+        work_with_glob_fn_decs();
+    }
 
 	// Ýasalan programmanyň baş faýly tanalmaly
 	if (!strlen(MAIN_FILE_NAME))

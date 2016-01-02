@@ -319,6 +319,18 @@ void work_with_called_glob_vars()
 void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
 {
     /** Yglan etme başga komandalaryň birligi boljak bolsa, çagyrylmaly. Şonuň üçin identifikatory ýazylýar */
+    /** Eger-de funksiýa yglan etmegiň argumenti hökümnde bolsa, onda tipi hem çap edilmeli*/
+    if (TEST==100)
+    {
+        command_item *lci = get_cmd_item(cmd->items,cmd->items_num-2);
+        token *t = &lci->tok;
+
+        get_type_c_code(t->potentional_types[0].type_class, t->potentional_types[0].type_num, l, llen);
+
+        *llen += strlen(" ");
+        *l = realloc(*l, *llen);
+        strncat(*l, " ", strlen(" "));
+    }
     command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1);
     token *t = &lci->tok;
     TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
@@ -328,7 +340,19 @@ void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
 
 int semantic_cmd_def_var(command *cmd)
 {
-    if (cmd->ns==GLOB && GLOB_BLOCK_INCLUDES)
+    if (is_inside_fn())
+    {
+        command_item *ident_item = get_cmd_item(cmd->items, 1);
+        char *ident = ident_item->tok.potentional_types[0].value;
+        if (is_ident_used(&ident_item->tok, 3) || is_tmp_fn_ident_used(ident) )
+        {
+            CUR_PART = 4;
+            printf("IDENT 11");
+            print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
+
+        }
+    }
+    else if (cmd->ns==GLOB && GLOB_BLOCK_INCLUDES)
     {
         CUR_PART = 7;
         print_err(CODE7_GLOB_DEF_IN_BLOCK, (token *)inf_get_last_token(cmd));

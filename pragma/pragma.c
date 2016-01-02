@@ -217,7 +217,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
         return;
 
     glob_defs_file_add(fn);
-
+    add_file_info(fn);
 
 	FILE *source = fopen(fn, "r");
 
@@ -254,6 +254,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
         else if (CUR_CHAR==HARPL_OPENER )
         {
             token tok = parse_string(source);
+            tok.inf_file_num = CUR_FILE_NUM-1;
             if (!work_with_token(&tok, &cmd))
             {
                 // TODO
@@ -270,12 +271,14 @@ void act_pragma_include_glob_decl_file(pragma *p)
             {
                 glob_vars_decl_add(&cmd);
                 glob_arrs_decl_add(&cmd);
+                glob_fns_decl_add(&cmd);
             }
-            init_cmd(&cmd, 1);
+            init_cmd(&cmd, 0);
         }
         else
         {
             token tok = parse_token(source);
+            tok.inf_file_num = CUR_FILE_NUM-1;
             if (!work_with_token(&tok, &cmd))
             {
                 // TODO

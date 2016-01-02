@@ -25,6 +25,7 @@ int add_to_file_list_h_source(char *source);
 int add_to_file_list_c_source(char *source);
 
 file_item *get_file_by_name(char *name);
+file_item *get_file_by_tpl_source_name(char *name);
 
 int is_glob_defs_file_exist(char *fn);
 void glob_defs_file_add(char fn[MAX_FILE_LEN]);

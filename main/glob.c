@@ -66,9 +66,37 @@ int                    GLOB_PARENTHS_NUM;
 /** Funksiýalar TPL derejede mümkin. Şonuň üçin kuçada ýerleşdirilýär **/
 func                  *FUNCS;
 int                    FUNCS_NUM;
-
-/** Funksiýalaryň argumentleri **/
 func_arg             **FUNC_ARGS;
+
+/** Funksiýalar TPL derejede mümkin. Şonuň üçin kuçada ýerleşdirilýär **/
+func                   TMP_FUNC;
+int                    TMP_FUNC_NUM;
+command               *TMP_FUNC_PARAMS;
+command               *TMP_FUNC_ALGOR;
+int                    TMP_FUNC_ALGOR_NUM;
+glob_ident            *TMP_FUNC_VARS;
+int                    TMP_FUNC_VARS_NUM;
+array_item            *TMP_FUNC_ARRS;
+int                    TMP_FUNC_ARRS_NUM;
+array_inc_item       **TMP_FUNC_ARRS_ITEMS;
+
+/** Diňe parsing edilip duran faýlyň döwründe işleýär.
+    Diňe parsing edilen faýlyň içinde yglan edilen funksiýalaryň parametrleri **/
+int                    LOC_FUNCS_NUM;
+func                  *LOC_FUNCS;
+command              **LOC_FUNCS_PARAMS;
+command              **LOC_FUNCS_ALGOR;
+glob_ident           **LOC_FUNCS_VARS;
+int                   *LOC_FUNCS_VARS_NUM;
+array_item           **LOC_FUNCS_ARRS;
+int                   *LOC_FUNCS_ARRS_NUM;
+int                   *LOC_FUNCS_ALGOR_NUM;
+array_inc_item      ***LOC_FUNCS_ARRS_ITEMS;
+
+/** Beýan edilýän faýlda yglan edilen funksiýalaryň maglumatlary **/
+func                  *DEC_FUNCS;
+int                    DEC_FUNCS_NUM;
+func_arg             **DEC_FUNC_ARGS;
 
 /// Goşmaly faýllaryň sanawy
 file_incs             *INCLUDES;
@@ -217,7 +245,6 @@ void free_globs(void)
         free(GLOB_PARENTHS);
     }
 
-
     // Ýasaljak kodda ulanyljak harpl tokenleriň maglumatlarynyň sanawy
 	if (GLOB_STRINGS_NUM)
     {
@@ -255,6 +282,17 @@ void free_globs(void)
         }
         free(FUNC_ARGS);
     }
+
+    if (DEC_FUNCS_NUM)
+    {
+        for (i=0; i<DEC_FUNCS_NUM; ++i)
+        {
+            free(DEC_FUNC_ARGS[i]);
+        }
+        free(DEC_FUNC_ARGS);
+        free(DEC_FUNCS);
+    }
+
 
     if (INCLUDES_NUM)
     {
@@ -362,4 +400,83 @@ void free_locals(void)
         free(LOCAL_ARR_DEFS_ITEMS);
         LOCAL_ARR_DEFS_ITEMS = NULL;
     }
+    free_tmp_fn();
+    free_local_fns();
 }
+
+void free_tmp_fn()
+{
+    if (TMP_FUNC_PARAMS!=NULL)
+    {
+        free(TMP_FUNC_PARAMS);
+        TMP_FUNC_PARAMS = NULL;
+    }
+    if (TMP_FUNC_ALGOR_NUM)
+    {
+        free(TMP_FUNC_ALGOR);
+        TMP_FUNC_ALGOR  = NULL;
+        TMP_FUNC_ALGOR_NUM = 0;
+    }
+    if (TMP_FUNC_ARRS_NUM)
+    {
+        int i, j;
+        for (i=0; i<TMP_FUNC_ARRS_NUM; ++i)
+        {
+            free(TMP_FUNC_ARRS_ITEMS[i]);
+        }
+        free(TMP_FUNC_ARRS_ITEMS);
+        free(TMP_FUNC_ARRS);
+        TMP_FUNC_ARRS  = NULL;
+        TMP_FUNC_ARRS_NUM = 0;
+        TMP_FUNC_ARRS_ITEMS = NULL;
+    }
+    if (TMP_FUNC_VARS_NUM)
+    {
+        free(TMP_FUNC_VARS);
+        TMP_FUNC_VARS  = NULL;
+        TMP_FUNC_VARS_NUM = 0;
+    }
+    --TMP_FUNC_NUM;
+}
+
+
+void free_local_fns()
+{
+    if (LOC_FUNCS_NUM)
+    {
+        int i;  // funksiýanyň nomeri
+        for (i=0; i<LOC_FUNCS_NUM; ++i)
+        {
+            int j, z;   /// j - sanawyň nomeri
+            for (j=0; j<LOC_FUNCS_ARRS_NUM[i]; ++j)
+            {
+                free(LOC_FUNCS_ARRS_ITEMS[i][j]);
+            }
+            free(LOC_FUNCS_ARRS_ITEMS[i]);
+            free(LOC_FUNCS_ALGOR[i]);
+            free(LOC_FUNCS_PARAMS[i]);
+            free(LOC_FUNCS_ARRS[i]);
+            free(LOC_FUNCS_VARS[i]);
+        }
+        free(LOC_FUNCS_ALGOR);
+        LOC_FUNCS_ALGOR = NULL;
+        free(LOC_FUNCS_ALGOR_NUM);
+        LOC_FUNCS_ALGOR_NUM = NULL;
+        free(LOC_FUNCS_ARRS);
+        LOC_FUNCS_ARRS = NULL;
+        free(LOC_FUNCS_ARRS_ITEMS);
+        LOC_FUNCS_ARRS_ITEMS = NULL;
+        free(LOC_FUNCS_ARRS_NUM);
+        LOC_FUNCS_ARRS_NUM = NULL;
+        free(LOC_FUNCS_VARS);
+        LOC_FUNCS_VARS = NULL;
+        free(LOC_FUNCS_VARS_NUM);
+        LOC_FUNCS_VARS_NUM = NULL;
+        free(LOC_FUNCS_PARAMS);
+        LOC_FUNCS_PARAMS = NULL;
+        free(LOC_FUNCS);
+        LOC_FUNCS = NULL;
+        LOC_FUNCS_NUM = 0;
+    }
+}
+
