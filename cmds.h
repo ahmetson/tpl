@@ -25,6 +25,7 @@ extern int CMD_CLASS_LOOP_STTMNT;
 extern int CMD_CLASS_ARR;
 extern int CMD_CLASS_UTYPE;
 extern int CMD_CLASS_FN_DEF;
+extern int CMD_CLASS_CONV_BASIC_TYPES;
 
 #ifndef CONST_CMD_CLASS_UTYPE
 #define CONST_CMD_CLASS_UTYPE  12
@@ -85,7 +86,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 13
+#define CMDS_TYPES_NUM 14
 #endif
 
 #ifndef MAX_CLASS_TYPES

@@ -115,6 +115,7 @@ void tpl(int argc, const char **args)
     //printf("NABELLI IDENTIFIKATORYN TIPLERI HEM BARLANDY\n");
 
     add_utypes_c_code_file();
+    add_conv_basic_type_c_code_file();
 
 	// TPL PROGRAMMADAN ÇYKMALY
 	free_globs();

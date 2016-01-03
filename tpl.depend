@@ -297,7 +297,7 @@
 	"tokens.h"
 	"cmd/array.h"
 
-1451360990 d:\c_source\tpl\cmds.h
+1451775637 d:\c_source\tpl\cmds.h
 	"parenthesis.h"
 	"tokens.h"
 
@@ -361,15 +361,16 @@
 1448220155 d:\c_source\tpl\translator_to_c\attach_glob_vars.h
 	"../main/glob.h"
 
-1450479109 d:\c_source\tpl\translator_to_c.h
+1451783610 d:\c_source\tpl\translator_to_c.h
 	<stdio.h>
+	"cmds.h"
 
-1451533625 d:\c_source\tpl\error.h
+1451777079 d:\c_source\tpl\error.h
 
 1448841741 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1451366665 source:d:\c_source\tpl\cmd\assign.c
+1451785237 source:d:\c_source\tpl\cmd\assign.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -380,7 +381,7 @@
 	"../cmds.h"
 	"../main/inf.h"
 
-1451701103 source:d:\c_source\tpl\cmds.c
+1451781430 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -400,6 +401,7 @@
 	"cmd/array.h"
 	"cmd/user_def_type.h"
 	"cmd/fn_def.h"
+	"cmd/conv_basic_types.h"
 	"algor.h"
 	"dev_debug.h"
 	"error.h"
@@ -417,7 +419,7 @@
 	"dev_debug.h"
 	"main/user_def_type.h"
 
-1451585651 source:d:\c_source\tpl\error.c
+1451777242 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	"tpl.h"
@@ -598,7 +600,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1451532313 source:d:\c_source\tpl\tpl.c
+1451782659 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -615,7 +617,7 @@
 
 1444812339 d:\c_source\tpl\work_with_source.h
 
-1451703012 source:d:\c_source\tpl\translator_to_c.c
+1451783652 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -723,7 +725,7 @@
 	"fn.h"
 	"fn_helpers.h"
 
-1451066081 source:d:\c_source\tpl\parenthesis.c
+1451766432 source:d:\c_source\tpl\parenthesis.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -736,17 +738,17 @@
 	"main/inf.h"
 	"error.h"
 
-1451064838 d:\c_source\tpl\parenthesis.h
+1451766468 d:\c_source\tpl\parenthesis.h
 	<stdio.h>
 	"cmds.h"
 	"tokens.h"
 
-1451066770 source:d:\c_source\tpl\paren\types.c
+1451779827 source:d:\c_source\tpl\paren\types.c
 	"types.h"
 	"../parenthesis.h"
 	"../cmd/array.h"
 
-1451064608 d:\c_source\tpl\paren\types.h
+1451779954 d:\c_source\tpl\paren\types.h
 	"../parenthesis.h"
 
 1446318702 source:d:\c_source\tpl\paren\types\empty.c
@@ -754,7 +756,7 @@
 
 1446318733 d:\c_source\tpl\paren\types\empty.h
 
-1451605938 source:d:\c_source\tpl\cmd\fn_call.c
+1451780236 source:d:\c_source\tpl\cmd\fn_call.c
 	<stdlib.h>
 	<string.h>
 	"../cmds.h"
@@ -762,6 +764,7 @@
 	"../translator_to_c/includes.h"
 	"../main/glob.h"
 	"../error.h"
+	"../paren/types.h"
 
 1449437600 d:\c_source\tpl\cmd\fn_call.h
 	"../fns/fn.h"
@@ -971,7 +974,7 @@
 1450235517 d:\c_source\tpl\cmd\user_def_type.h
 	"../cmds.h"
 
-1451697316 source:d:\c_source\tpl\main\user_def_type.c
+1451782114 source:d:\c_source\tpl\main\user_def_type.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -981,6 +984,7 @@
 	"../error.h"
 	"../pragma/pragma.h"
 	"../token/harpl.h"
+	"conv_basic_types.h"
 
 1450670411 d:\c_source\tpl\main\user_def_type.h
 	"glob.h"
@@ -1039,7 +1043,7 @@
 	"../main/user_def_type.h"
 	"../translator_to_c.h"
 
-1451703818 source:d:\c_source\tpl\fns\3rdparty\std\kabul_et.c
+1451704870 source:d:\c_source\tpl\fns\3rdparty\std\kabul_et.c
 	<stdlib.h>
 	<string.h>
 	"../../fn.h"
@@ -1052,4 +1056,32 @@
 
 1451703839 d:\c_source\tpl\fns\3rdparty\std\kabul_et.h
 	"../../../parenthesis.h"
+
+1451779050 d:\c_source\tpl\cmd\conv_basic_types.h
+	"../cmds.h"
+
+1451785489 source:d:\c_source\tpl\cmd\conv_basic_types.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"conv_basic_types.h"
+	"../paren/types.h"
+	"../main/glob.h"
+	"../error.h"
+
+1451784665 source:d:\c_source\tpl\main\conv_basic_types.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"conv_basic_types.h"
+	"../translator_to_c.h"
+	"../error.h"
+	"../pragma/pragma.h"
+	"../token/harpl.h"
+	<stdio.h>
+	<limits.h>
+	<stdlib.h>
+	<string.h>
+
+1451783624 d:\c_source\tpl\main\conv_basic_types.h
 

@@ -5,6 +5,7 @@
 #define TRANSLATOR_TO_C_H
 
 #include <stdio.h>
+#include "cmds.h"
 
 // file length - 255, command length - 95
 #ifndef MAX_PREP_LEN

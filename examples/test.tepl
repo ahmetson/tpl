@@ -1,17 +1,9 @@
 #b1
-@san a.
-<: san sanlar, harpl mysallar :>shuda tipi.
-
-shuda ulni.
-
-
-(san sident, (1)san sanaw)funk hich_zat ->
-===.
-
-("Adynyzy yazyn we ENTER duwma basyn: ")chap_et.
-
-harpl m.
-m <- ()kabul_et.
-
-("Salam: ", m, "=sGowmy?=s")chap_et.
+san s.
+drob d.
+s <- 123 + 123.
+d <- ((drob)s).
+harpl hl.
+hl <- ((harpl)d).
+(hl)chap_et.
 

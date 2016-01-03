@@ -10,7 +10,7 @@ extern char PARENTHESIS_CLOSE;
 extern char PARENTHESIS_ELEM_SEPARATOR;
 
 #ifndef PARENTHESIS_TYPES
-#define PARENTHESIS_TYPES 3
+#define PARENTHESIS_TYPES 4
 #endif
 
 // Bashga komandalar ya tokenler bolup bilyan skobka

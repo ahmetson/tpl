@@ -7,6 +7,7 @@
 #include "../error.h"
 #include "../pragma/pragma.h"
 #include "../token/harpl.h"
+#include "conv_basic_types.h"
 
 char             *USER_DEF_TYPES_SOURCE_NAME_NO_H = "_tpl_utypes";
 char             *USER_DEF_TYPES_SOURCE_NAME = "_tpl_utypes.h";
@@ -336,6 +337,9 @@ int is_reserved_source_name(char *fname)
     if (strlen(fname)==strlen(USER_DEF_TYPES_SOURCE_NAME) &&
         strncmp(fname, USER_DEF_TYPES_SOURCE_NAME, strlen(USER_DEF_TYPES_SOURCE_NAME))==0)
         return 1;
+    if (strlen(fname)==strlen(CONV_DEF_TYPES_SOURCE_NAME) &&
+        strncmp(fname, CONV_DEF_TYPES_SOURCE_NAME, strlen(CONV_DEF_TYPES_SOURCE_NAME))==0)
+        return 1;
     return 0;
 }
 
@@ -344,6 +348,15 @@ void add_addtn_headers(FILE *f)
     char *line = malloc(MAX_PREP_LEN);
     strncpy(line, "#include \"", strlen("#include \"")+1);
     strncat(line, USER_DEF_TYPES_SOURCE_NAME, strlen(USER_DEF_TYPES_SOURCE_NAME));
+    strncat(line, "\" \n", strlen("\" \n"));
+
+    fputs(line, f);
+
+    free(line);
+
+    line = malloc(MAX_PREP_LEN);
+    strncpy(line, "#include \"", strlen("#include \"")+1);
+    strncat(line, CONV_DEF_TYPES_SOURCE_NAME, strlen(CONV_DEF_TYPES_SOURCE_NAME));
     strncat(line, "\" \n", strlen("\" \n"));
 
     fputs(line, f);
