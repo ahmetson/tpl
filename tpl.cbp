@@ -63,6 +63,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmd/cmp.h" />
+		<Unit filename="cmd/conv_basic_types.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cmd/conv_basic_types.h" />
 		<Unit filename="cmd/ctrl_statement.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -162,6 +166,10 @@
 			<Option compilerVar="CC" />
 			<Option target="default" />
 		</Unit>
+		<Unit filename="main/conv_basic_types.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/conv_basic_types.h" />
 		<Unit filename="main/files.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

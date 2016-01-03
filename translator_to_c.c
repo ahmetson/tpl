@@ -353,6 +353,8 @@ int c_trans_source_add_glob_def_arr(FILE *f)
 // Esasy funksiyanyn bashy yazylyar
 int prepare_main_func(FILE *f)
 {
+    add_conv_basic_prepere_atexit(f);
+
 	char *line = "int main() {\n";
     char *l = NULL;
     int llen = 0;
@@ -366,6 +368,7 @@ int prepare_main_func(FILE *f)
 // Esasy funksiyanyn sonyny taynlayar
 int finishize_main_func(FILE *f)
 {
+    add_conv_basic_free_atexit(f);
     char *line1 = "//, bashga programmanyn bash bolegi gutardy \n\n\n\treturn 1;\n";
     char *line2 = "}\n\n";
     char *l = NULL;

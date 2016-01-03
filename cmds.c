@@ -1,6 +1,3 @@
-/*
-All Command information
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +18,7 @@ All Command information
 #include "cmd/array.h"
 #include "cmd/user_def_type.h"
 #include "cmd/fn_def.h"
+#include "cmd/conv_basic_types.h"
 #include "algor.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -47,6 +45,7 @@ int CMD_CLASS_LOOP_STTMNT   = 10;
 int CMD_CLASS_ARR           = 11;
 int CMD_CLASS_UTYPE         = 12;
 int CMD_CLASS_FN_DEF        = 13;
+int CMD_CLASS_CONV_BASIC_TYPES = 14;
 
 int GLOB = 0;
 int LOCAL = 1;
@@ -64,7 +63,8 @@ is_cmd_item cmd_types[] = {
 	   {is_cmd_loop_sttmnt},
 	   {is_cmd_arr},
 	   {is_cmd_utype},
-	   {is_cmd_fn_def}
+	   {is_cmd_fn_def},
+	   {is_cmd_conv_basic_type}
 };
 
 // Dine debug üçin ulanylyar. Komanda tiplerinin atlary
@@ -81,7 +81,8 @@ char *cmd_classes[] = {
 	"Gaýtalama operatory",
 	"Birsyhly sanaw",
 	"UG bilen baglanyşykly",
-	"Ulanyjynyň funksiýasy"
+	"Ulanyjynyň funksiýasy",
+	"Sada tipini üýtgetme"
 };
 
 // diňe debuglamak üçin
@@ -98,7 +99,8 @@ char *cmd_class_types[][MAX_CLASS_TYPES] = {
 	{"tä", "bolýança"},
 	{"yglanlama", "çatylma"},
 	{"yglanlama", "çatylma"},
-	{"yglanlama", "beýanlama"}
+	{"yglanlama", "beýanlama"},
+	{"sada tipi üýtgetme"}
 };
 
 
@@ -116,7 +118,8 @@ int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_LOGIC_STTMNT = 10;
     {empty_cmd_return_type,         cmd_arr_con_return_type},//CMD_CLASS_ARR = 11;
     {empty_cmd_return_type,         cmd_utype_con_return_type},//CMD_CLASS_UTYPE = 12;
-    {empty_cmd_return_type,         empty_cmd_return_type}//CMD_CLASS_FN_DEF = 13;
+    {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_FN_DEF = 13;
+    {cmd_arr_conv_basic_return_type}    //CMD_CLASS_CONV_BASIC_TYPE = 14;
 };
 
 
@@ -135,7 +138,8 @@ int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd) = {
     {empty_cmd_checking_semantic, empty_cmd_checking_semantic},//CMD_CLASS_LOOP_STTMNT = 10;
     {semantic_cmd_arr_def,        semantic_cmd_arr_con}, //CMD_CLASS_ARR = 11;
     {semantic_cmd_utype_def,      semantic_cmd_utype_con},//CMD_CLASS_UTYPE = 12;
-    {semantic_cmd_fn_def,         semantic_cmd_fn_dec}//CMD_CLASS_FN_DEF = 13;
+    {semantic_cmd_fn_def,         semantic_cmd_fn_dec}, //CMD_CLASS_FN_DEF = 13;
+    {semantic_cmd_conv_basic_type }//CMD_CLASS_CONV_BASIC_TYPE = 14;
 };
 
 // Komandanyň klasy we tipi boýunça semantikasyny barlaýan funksiýalar
@@ -153,7 +157,8 @@ int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
     {MAX_THREE_ITEMS},                                //CMD_CLASS_LOOP_STTMNT  = 10;
     {},                                               //CMD_CLASS_ARR  = 11;
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_UTYPE  = 12;
-    {MAX_FOUR_ITEMS,  MAX_THREE_ITEMS}                //CMD_CLASS_FN_DEF  = 13;
+    {MAX_FOUR_ITEMS,  MAX_THREE_ITEMS},               //CMD_CLASS_FN_DEF  = 13;
+    {MAX_TWO_ITEMS}                                   //CMD_CLASS_CONV_BASIC_TYPES  = 14;
 };
 
 
@@ -172,7 +177,8 @@ void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l
     {cmd_loop_sttmnt_c_code,    cmd_loop_sttmnt_c_code},//CMD_CLASS_LOOP_STTMNT = 10;
     {cmd_arr_def_c_code,        cmd_arr_con_c_code},    //CMD_CLASS_ARR = 11;
     {empty_cmd_c_code,          cmd_utype_con_c_code},  //CMD_CLASS_UTYPE = 12;
-    {cmd_fn_def_c_code,         cmd_fn_dec_c_code}  //CMD_CLASS_FN_DEF = 13;
+    {cmd_fn_def_c_code,         cmd_fn_dec_c_code}, //CMD_CLASS_FN_DEF = 13;
+    {cmd_conv_basic_type_c_code}  //CMD_CLASS_CONV_BASIC_TYPE = 14;
 };
 
 
@@ -994,6 +1000,7 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     //if (is_cmd_not_compl_item_exist(cmd, 0) && !is_cmd_item_can_be_needed(cmd))
                     //{
                     /// C.I.9.a)
+                    //debug_cmd(cmd);
                     printf("SALAM 9");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                     //}

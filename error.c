@@ -94,6 +94,8 @@ int CODE7_GLOB_ARR_MUST_DEF             = 20;
 int CODE7_GLOB_ARR_NOT_MATCH_DATA_TYPE  = 21;
 int CODE7_FN_RET_TYPE_NOT_MATCH         = 22;
 int CODE7_FN_NOT_DEF                    = 23;
+int CODE7_MUST_BE_DEF_TYPE              = 24;
+int CODE7_MUST_RETURN_TYPE              = 25;
 
 /* Ýalňyşlyklaryň tekstleri */
 error_item err_items[] = {
@@ -213,7 +215,11 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {7, 22, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         "Beýan edilýän we yglan edilýän funksiýanyň gaýtarmaly maglumatynyň tipleri gabat gelmedi"},
     {7, 23, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Beýan edilen funksiýanyň yglan edilen görnüşi tapylmady"}
+        "Beýan edilen funksiýanyň yglan edilen görnüşi tapylmady"},
+    {7, 24, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Sada tipdäki birlik bolmaly"},
+    {7, 25, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        "Maglumatyň tipi bolmaly"}
 	//"Komandanyň çep identifikatory öň yglan edilipdi",
 	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
 	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"

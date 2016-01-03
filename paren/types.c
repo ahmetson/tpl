@@ -7,17 +7,20 @@
 int PAREN_TYPE_EMPTY        = 0;
 int PAREN_TYPE_FNS_ARGS     = 1;
 int PAREN_TYPE_DEF_FNS_ARGS = 2;
+int PAREN_TYPE_DEF_TYPE     = 3;
 
 char *PAREN_TYPES_WORDS[] = {
     "Boş",
     "Funksiýanyň argumentleri",
     "Funksiýanyň argumentlerinipň yglan edilmegi"
+    "Komandany başga tipe geçirýär"
 };
 
 int (*PAREN_TYPES[])(parenthesis *paren) = {
     paren_type_is_empty,
     paren_type_is_fns_args,
-    paren_type_is_def_fns_args
+    paren_type_is_def_fns_args,
+    paren_type_is_def_type
 };
 
 int paren_type_is_empty(parenthesis *paren)
@@ -32,6 +35,8 @@ int paren_type_is_empty(parenthesis *paren)
 
 int paren_type_is_fns_args(parenthesis *paren)
 {
+    if (paren_type_is_def_type(paren))
+        return 0;
     if (paren->elems_num)
     {
         parenthesis_elem *pe = get_paren_elems(paren->elems);
@@ -74,6 +79,21 @@ int paren_type_is_def_fns_args(parenthesis *paren)
             return 0;
         paren->type = PAREN_TYPE_DEF_FNS_ARGS;
         return 1;
+    }
+    return 0;
+}
+
+int paren_type_is_def_type(parenthesis *paren)
+{
+    if (paren->elems_num==1)
+    {
+        parenthesis_elem *pe = get_paren_elems(paren->elems);
+        int tmp_c, tmp_t, another = 0;
+        if (pe[0].type==TOKEN_ITEM && pe[0].tok.type_class==TOK_CLASS_DEF_TYPE)
+        {
+            paren->type = PAREN_TYPE_DEF_TYPE;
+            return 1;
+        }
     }
     return 0;
 }

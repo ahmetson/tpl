@@ -8,6 +8,7 @@
 #include "../translator_to_c/includes.h"
 #include "../main/glob.h"
 #include "../error.h"
+#include "../paren/types.h"
 
 int FN_CALL_TYPE_NUM = 0;
 
@@ -25,7 +26,7 @@ int is_cmd_fn_call(command *cmd)
     if (cmd->items_num)
     {
        command_item *fci = get_cmd_item(cmd->items,0);
-        if (fci->type==PAREN_ITEM)
+        if (fci->type==PAREN_ITEM && fci->paren.type!=PAREN_TYPE_DEF_TYPE)
             fn_call_cmd_mod(cmd, 0);
         else
             return 0;
@@ -80,7 +81,8 @@ int semantic_cmd_fn_call(command *cmd)
 
     if (!is_fn_exist(sci->tok.potentional_types[0].value))
     {
-        printf("Fayl:%s Setir: %d, nabelli funksiya yglan edildi", __FILE__, __LINE__);
+        CUR_PART = 7;
+        print_err(CODE7_UNKNOWN_FNS_CALLED, &sci->tok);
         return 0;
     }
     else

@@ -231,7 +231,7 @@ int semantic_cmd_assign(command *cmd)
            (ci->type==PAREN_ITEM &&
             PAREN_RETURN_TYPE[ci->paren.type](&ci->paren, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED))
 		{
-		    command_item *f = get_cmd_item(cmd->items,0);
+		    command_item *f = fci;
             if((f->type==TOKEN_ITEM &&
                return_tok_type(&f->tok, &class1, &type1) &&
                 class1!=TOK_CLASS_UNDEFINED) ||
@@ -241,6 +241,9 @@ int semantic_cmd_assign(command *cmd)
                (f->type==PAREN_ITEM &&
                 PAREN_RETURN_TYPE[f->paren.type](&f->paren, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED))
             {
+                if (class1==TOK_CLASS_DEF_TYPE)
+                    set_def_type_alias_const_data(&class1, &type1);
+
                 if (!(class1==class2 && type1==type2))
                 {
                      printf("BUNAME\n");

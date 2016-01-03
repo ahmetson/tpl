@@ -23,6 +23,7 @@ int PARENTHESIS_CLASS = 3;
 int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, int *ret_type) = {
     empty_paren_return_type,
     paren_fns_args_return_type,
+    empty_paren_return_type,
     empty_paren_return_type
 };
 
