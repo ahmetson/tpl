@@ -20,6 +20,7 @@
 #include "token_types/utype.h"
 #include "token_types/utype_con.h"
 #include "token_types/void.h"
+#include "token_types/comment.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -47,6 +48,7 @@ const int TOK_CLASS_TRIANGLE_BLOCK  = 12;
 const int TOK_CLASS_UTYPE           = 13;
 const int TOK_CLASS_UTYPE_CON       = -2;
 const int TOK_CLASS_VOID            = 15;
+const int TOK_CLASS_COMMENT         = 16;
 
 // Used for debugging
 char *type_classes[] = {
@@ -65,7 +67,8 @@ char *type_classes[] = {
 	"üçburç blok",
 	"Ulanyjyň görnüşi",
 	"Ulanyjyň görnüşine çatylma",
-	"Boş tip"
+	"Boş tip",
+	"Teswir"
 };
 
 
@@ -731,4 +734,77 @@ int is_token_void(token *tok, char *tok_val)
     }
 
 	return found;
+}
+int is_token_comment(token *tok, char *tok_val)
+{
+	/*Go through array of possible types*/
+	int i, complete = 0, len = strlen(tok_val), type;
+	token_type tok_type;
+
+    if (len>0)
+    {
+        if (tok_val[0]!='/')
+            return 0;
+        if (len>1)
+        {
+            if (tok_val[1]=='/')
+            {
+                type     = TOK_CLASS_COMMENT_SINGLE_TYPE;
+                if (len==2)
+                {
+                    complete = 0;
+                }
+                else if (tok_val[len-1]=='\n')
+                {
+                    complete = 1;
+                }
+                else if (tok->potentional_types[0].is_compl)
+                {
+                    return 0;
+                }
+            }
+            else if (tok_val[1]=='*')
+            {
+                type     = TOK_CLASS_COMMENT_BLOCK_TYPE;
+                if (len==2)
+                {
+                    complete = 0;
+                }
+                else if (len>2)
+                {
+                    if (tok_val[len-1]=='*')
+                    {
+                        complete = 0;
+                    }
+                    else if (len>3 && tok_val[len-1]=='/' && tok_val[len-2]=='*')
+                    {
+                        complete = 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            else
+            {
+                return 0;
+            }
+
+            /// Maglumaty tokene salmaly
+            tok_type.type_num = type;							// Number of token type
+            tok_type.type_class = TOK_CLASS_COMMENT;
+            tok_type.need_value = 0;
+            tok_type.is_compl = complete;
+            tok_type.type_must_check = 0;
+            tok_type.parenthesis = 1;
+            tok->is_compl = complete;
+            tok->type_class = TOK_CLASS_COMMENT;
+
+            add_potentional_token_type(tok, tok_type);
+            return 1;
+        }
+    }
+
+	return 0;
 }

@@ -301,7 +301,7 @@
 	"parenthesis.h"
 	"tokens.h"
 
-1451089424 d:\c_source\tpl\tokens.h
+1451798428 d:\c_source\tpl\tokens.h
 	<stdio.h>
 	"token/token_types/def_types.h"
 	"token/token_types/glob.h"
@@ -317,6 +317,7 @@
 	"token/token_types/utype.h"
 	"token/token_types/utype_con.h"
 	"token/token_types/void.h"
+	"token/token_types/comment.h"
 	"fns/fn.h"
 	"token/token_types.h"
 	"token/token_structs.h"
@@ -333,11 +334,11 @@
 1447123310 d:\c_source\tpl\token\token_types\const_data.h
 	"../token_structs.h"
 
-1451089768 d:\c_source\tpl\token\token_types.h
+1451798581 d:\c_source\tpl\token\token_types.h
 	"token_types/ident.h"
 	"token_structs.h"
 
-1451089541 d:\c_source\tpl\token\token_structs.h
+1451798515 d:\c_source\tpl\token\token_structs.h
 
 1451437370 d:\c_source\tpl\main\glob.h
 	"files.h"
@@ -370,7 +371,7 @@
 1448841741 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1451785237 source:d:\c_source\tpl\cmd\assign.c
+1451785504 source:d:\c_source\tpl\cmd\assign.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -407,7 +408,7 @@
 	"error.h"
 	"main/inf.h"
 
-1451153439 source:d:\c_source\tpl\dev_debug.c
+1451799521 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -536,7 +537,7 @@
 
 1441562852 d:\c_source\tpl\token\keywords.h
 
-1451153239 source:d:\c_source\tpl\token\token_types.c
+1451800156 source:d:\c_source\tpl\token\token_types.c
 	<stdio.h>
 	<string.h>
 	<ctype.h>
@@ -554,6 +555,7 @@
 	"token_types/utype.h"
 	"token_types/utype_con.h"
 	"token_types/void.h"
+	"token_types/comment.h"
 	"keywords.h"
 	"token_types.h"
 	"../main/tpl_esc_keys.h"
@@ -586,7 +588,7 @@
 
 1445986091 d:\c_source\tpl\token\token_word.h
 
-1451153712 source:d:\c_source\tpl\tokens.c
+1451799641 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -725,7 +727,7 @@
 	"fn.h"
 	"fn_helpers.h"
 
-1451766432 source:d:\c_source\tpl\parenthesis.c
+1451799684 source:d:\c_source\tpl\parenthesis.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -1084,4 +1086,9 @@
 	<string.h>
 
 1451783624 d:\c_source\tpl\main\conv_basic_types.h
+
+1451798402 d:\c_source\tpl\token\token_types\comment.h
+
+1451798243 source:d:\c_source\tpl\token\token_types\comment.c
+	"comment.h"
 

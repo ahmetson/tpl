@@ -35,7 +35,8 @@ is_token_item tok_types[] = {
 	   {is_token_triangle_block},
 	   {is_token_utype},
 	   {is_token_utype_con},
-	   {is_token_void}
+	   {is_token_void},
+	   {is_token_comment}
 };
 
 
@@ -57,7 +58,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type},                                               // triangle_block
     {empty_tok_return_type, empty_tok_return_type},                                               // utype,
     {get_utype},                                                                                  // utype_con
-    {empty_tok_return_type}                                                                       // void
+    {empty_tok_return_type},                                                                      // void
+    {empty_tok_return_type, empty_tok_return_type}                                                // comment
 };
 
 
@@ -79,7 +81,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char 
     {empty_tok_c_code, empty_tok_c_code},                                        // triangle_block
     {empty_tok_c_code, utype_item_separator_c_code},                             // utype
     {tok_utype_con_c_code},                                                      // utype_con
-    {tok_void_con_c_code}                                                        // void
+    {tok_void_con_c_code},                                                       // void
+    {empty_tok_c_code, empty_tok_c_code}                                         // comment
 };
 
 
@@ -224,7 +227,8 @@ int work_with_token(token *tok, command *cmd)
 // 1. Onki token bar
     if (!is_token_empty(tok) && tok->is_compl)
     {
-        cmd_add_item(cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), *tok);
+        if (tok->type_class!=TOK_CLASS_COMMENT)
+            cmd_add_item(cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), *tok);
         return 1;
     }
     return 0;

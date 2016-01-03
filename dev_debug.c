@@ -165,6 +165,12 @@ void debug_token_type(token_type *tok_type)
         int type_num = tok_type->type_num;
         strncpy(type, TOK_VOID_CHARS[type_num][1], strlen(TOK_VOID_CHARS[type_num][1])+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_VOID)
+    {
+        int type_num = tok_type->type_num;
+        char *c = type_num==TOK_CLASS_COMMENT_SINGLE_TYPE?TOK_CLASS_COMMENT_SINGLE_DEBUG:TOK_CLASS_COMMENT_BLOCK_DEBUG;
+        strncpy(type, c, strlen(c)+1);
+    }
     else
 		strncpy(type, "", strlen("")+1);
 
