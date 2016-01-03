@@ -4,6 +4,7 @@ drob d.
 s <- 123 + 123.
 d <- ((drob)s).
 harpl hl.
-hl <- ((harpl)d).
+hl <- ((harpl)d). // Salam 
 (hl)chap_et.
+/***/
 

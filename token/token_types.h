@@ -24,6 +24,7 @@
  * utype (class num: 13)
  * utype_con (class num: -2)
  * void (class num: 15)
+ * void (class num: 16)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -43,6 +44,7 @@ extern const int TOK_CLASS_TRIANGLE_BLOCK;
 extern const int TOK_CLASS_UTYPE;
 extern const int TOK_CLASS_UTYPE_CON;
 extern const int TOK_CLASS_VOID;
+extern const int TOK_CLASS_COMMENT;
 
 // Debag üçin
 extern char *type_classes[];
@@ -70,5 +72,6 @@ int is_token_triangle_block     (token *tok, char *tok_val);
 int is_token_utype              (token *tok, char *tok_val);
 int is_token_utype_con          (token *tok, char *tok_val);
 int is_token_void               (token *tok, char *tok_val);
+int is_token_comment            (token *tok, char *tok_val);
 
 #endif

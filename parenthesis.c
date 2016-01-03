@@ -169,6 +169,8 @@ void paren_add_element(parenthesis *paren, parenthesis_elem elem)
 int paren_elem_add_token(parenthesis_elem *elem, token tok)
 {
     /// Elementde öňem birlik bardy
+    if (tok.type_class==TOK_CLASS_COMMENT)
+        return 1;
     if (elem->type!=UNKNOWN_ITEM)
     {
         if (elem->type==CMD_ITEM)

@@ -17,6 +17,7 @@
 #include "token/token_types/utype.h"
 #include "token/token_types/utype_con.h"
 #include "token/token_types/void.h"
+#include "token/token_types/comment.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"
