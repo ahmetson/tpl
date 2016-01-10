@@ -26,18 +26,18 @@ extern int TOK_CLASS_CMP_EQLT_TYPE;
 extern int TOK_CLASS_CMP_EQGT_TYPE;
 
 /// Tokenleriň başlap bilýän harplary
-extern char CMP_EQ_CHAR;
-extern char CMP_LT_CHAR;
-extern char CMP_GT_CHAR;
+extern wchar_t CMP_EQ_CHAR;
+extern wchar_t CMP_LT_CHAR;
+extern wchar_t CMP_GT_CHAR;
 
 /// Debug'lamak üçin
-char *CMP_TOK_NUM_WORDS[TOK_CLASS_CMP_TYPES_NUM];
+wchar_t *CMP_TOK_NUM_WORDS[TOK_CLASS_CMP_TYPES_NUM];
 
 // Arifmetiki operatorlar üçin ulanylýan harplar.
 // Ikinji element bolsa, C dilinde, arifmetiki operatorlar üçin ulanylýan harp ekwiwalentleri
-extern char *TOK_CLASS_CMP_CHARS[TOK_CLASS_CMP_TYPES_NUM][2];
+extern wchar_t *TOK_CLASS_CMP_CHARS[TOK_CLASS_CMP_TYPES_NUM][2];
 
 
-void tok_cmp_c_code(token *tok, char **l, int *llen);
+void tok_cmp_c_code(token *tok, wchar_t **l, int *llen);
 
 #endif // TOKEN_TOKEN_TYPES_CMD_H

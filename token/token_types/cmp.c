@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cmp.h"
+#include "../../fns.h"
 
 /** DEŇDIR           =   */
 int TOK_CLASS_CMP_EQ_TYPE = 0;
@@ -20,44 +21,33 @@ int TOK_CLASS_CMP_EQLT_TYPE = 3;
 int TOK_CLASS_CMP_EQGT_TYPE = 4;
 
 /// Tokenleriň başlap bilýän harplary
-char CMP_EQ_CHAR = '=';
-char CMP_LT_CHAR = '<';
-char CMP_GT_CHAR = '>';
+wchar_t CMP_EQ_CHAR = L'=';
+wchar_t CMP_LT_CHAR = L'<';
+wchar_t CMP_GT_CHAR = L'>';
 
 
 
 // Arifmetiki operatorlar üçin ulanylýan harplar.
 // Ikinji element bolsa, C dilinde, arifmetiki operatorlar üçin ulanylýan harp ekwiwalentleri
-char *TOK_CLASS_CMP_CHARS[TOK_CLASS_CMP_TYPES_NUM][2] = {
-    {"=",  "=="},
-    {"<",  "<"},
-    {">",  ">"},
-    {"<=", "<="},
-    {">=", ">="}
+wchar_t *TOK_CLASS_CMP_CHARS[TOK_CLASS_CMP_TYPES_NUM][2] = {
+    {L"=",  L"=="},
+    {L"<",  L"<"},
+    {L">",  L">"},
+    {L"<=", L"<="},
+    {L">=", L">="}
 };
 
 // Debaglamak üçin
-char *CMP_TOK_NUM_WORDS[TOK_CLASS_CMP_TYPES_NUM] = {
-    "deň",
-    "kiçi <",
-    "uly >",
-    "kiçi ýa deň <=",
-    "uly ýa deň >="
+wchar_t *CMP_TOK_NUM_WORDS[TOK_CLASS_CMP_TYPES_NUM] = {
+    L"deň",
+    L"kiçi <",
+    L"uly >",
+    L"kiçi ýa deň <=",
+    L"uly ýa deň >="
 };
 
-void tok_cmp_c_code(token *tok, char **l, int *llen)
+void tok_cmp_c_code(token *tok, wchar_t **l, int *llen)
 {
-
-    *llen += strlen(TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1]);
-    if (!(*llen-strlen(TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1])))
-    {
-        *l = realloc(*l, *llen+1);
-        strncpy(*l, TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1], strlen(TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1])+1);
-    }
-    else
-    {
-        *l = realloc(*l, *llen);
-        strncat(*l, TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1], strlen(TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1]));
-    }
+    wcsadd_on_heap( l, llen, TOK_CLASS_CMP_CHARS[tok->potentional_types[0].type_num][1] );
 }
 

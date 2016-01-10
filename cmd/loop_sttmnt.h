@@ -11,6 +11,6 @@ void cmd_loop_sttmnt_until_mod(command *cmd, int item_num);
 int semantic_cmd_loop_sttmnt(command *cmd);
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_loop_sttmnt_c_code(command *cmd, char **l, int *llen);
+void cmd_loop_sttmnt_c_code(command *cmd, wchar_t **l, int *llen);
 
 #endif // CMD_LOOP_STTMNT_H

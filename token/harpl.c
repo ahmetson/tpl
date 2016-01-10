@@ -10,8 +10,10 @@
 #include "harpl.h"
 #include "../parser.h"
 #include "../error.h"
+#include "../fns.h"
 
-char HARPL_OPENER = '"';
+wchar_t HARPL_OPENER = L'"';
+wchar_t *HARPL_OPENER_STRING = L"L\"";
 
 /**
  * Parserde harplar bilen işleýän bölüm
@@ -22,20 +24,29 @@ token parse_string(FILE *s)
 
     string_prepare(&string_tok);
 
-    while ((CUR_CHAR=fgetc(s))!=EOF)
+    while (1)
     {
+        if( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if( ( CUR_CHAR=fgetwc( s ) )==WEOF )
+                break;
+        }
+
         update_inf();
-        add_char_to_last_string(CUR_CHAR);
+        add_wchar_t_to_last_string(CUR_CHAR);
 
         if (!is_token_string_const_data(&string_tok))
         {
             // Nadogry diyip hat chykarmaly
-            printf("SALAMM");
             print_err(CODE2_STRING_IS_WRONG, &string_tok);
         }
         else if (string_tok.potentional_types[0].is_compl==1)
         {
-            //debug_token(&string_tok);
             return string_tok;
         }
     }
@@ -73,8 +84,9 @@ void string_prepare(token *string_tok)
     // token tipi we klasy, gutarylany gutarylmadyk diyip goyulyar.
     // tokenin maglumaty diyip bolsa, soz maglumata in sonky soz sanynyn adresi baglanyar
 
-    // add_char_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
-    add_char_to_last_string(HARPL_OPENER);
+    // add_wchar_t_to_last_string(c) atly funksiya arkaly gosha dyrnak tokenin ichine goshulyar
+    int len = 0;
+    wcsadd_on_heap(&GLOB_STRINGS[GLOB_STRINGS_NUM-1], &len, HARPL_OPENER_STRING);
 }
 
 /** Ýasaljak programma-da ulanylýan sözleriň sanawy ýene bire köpeldilýär.
@@ -96,7 +108,7 @@ int increment_string_tokens()
 }
 
 
-char *get_string_item(int str_num)
+wchar_t *get_string_item(int str_num)
 {
     return GLOB_STRINGS[str_num];
 }
@@ -104,45 +116,46 @@ char *get_string_item(int str_num)
 
 /** Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
 **/
-int add_char_to_last_string(char c)
+int add_wchar_t_to_last_string(wchar_t c)
 {
     int last = GLOB_STRINGS_NUM-1;
-    long size = 2;
+    long size = sizeof(c)*2;
     if (GLOB_STRINGS[last]!=NULL)
     {
-        size += strlen(GLOB_STRINGS[last]);
+        size += wcslen(GLOB_STRINGS[last])*sizeof(*GLOB_STRINGS[last]);
     }
     GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
     if (GLOB_STRINGS[last]==NULL)
-        printf("Soz uchin yer yasap bolmady\n");
+        printf("Soz uchin yer yasap bolmady: %s\n", __FILE__);
 
-    GLOB_STRINGS[last][size-1] = '\0';
-    GLOB_STRINGS[last][size-2] = c;
+    GLOB_STRINGS[last][size/sizeof(c)-1] = L'\0';
+    GLOB_STRINGS[last][size/sizeof(c)-2] = c;
     return 1;
 }
 
 /** Ýasaljak programma-da ulanylýan söz tokenleriň iň soňky tanalanyna harpy goşýar
 **/
-int add_string_to_last_string(char *str)
+int add_string_to_last_string(wchar_t *str)
 {
     int last = GLOB_STRINGS_NUM-1, size = 0;
 
     if (GLOB_STRINGS[last]!=NULL)
     {
-        size = strlen(GLOB_STRINGS[last]) + strlen(str) + 1;
+        size = wcslen(GLOB_STRINGS[last]) + wcslen(str);
         GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
+
         if (GLOB_STRINGS[last]==NULL)
-            printf("Soz uchin yer yasap bolmady\n");
+            printf("Soz uchin yer yasap bolmady: %s\n", __FILE__);
         else
-            strncat(GLOB_STRINGS[last], str, strlen(str));
+            wcsncat( GLOB_STRINGS[last], str, wcslen(str) );
     }
     else
     {
-        size += strlen(str)+1;
+        size += count_bytes(str)+get_null_size();
         GLOB_STRINGS[last] = realloc(GLOB_STRINGS[last], size);
         if (GLOB_STRINGS[last]==NULL)
-            printf("Soz uchin yer yasap bolmady\n");
-        strncpy(GLOB_STRINGS[last], str, size);
+            printf("Soz uchin yer yasap bolmady: %s\n", __FILE__);
+        wcsncpy( GLOB_STRINGS[last], str, wcslen( str )+1 );
     }
 
     return 1;
@@ -160,18 +173,16 @@ void free_last_string()
 
 /**
  * Ýasaljak programma üçin goşulan iň soňky sözi çalyşýar */
-int change_last_string(char *new_val)
+int change_last_string(wchar_t *new_val)
 {
     int last = GLOB_STRINGS_NUM-1;
-    long size = strlen(new_val)+1;
+    long size = count_bytes( new_val )+get_null_size();
 
-    char *tmp = realloc(GLOB_STRINGS[last], size);
-    if (tmp!=NULL)
-    {
-        GLOB_STRINGS[last] = tmp;
-    }
-    strncpy(GLOB_STRINGS[last], new_val, strlen(new_val)+1);
+    if (GLOB_STRINGS[last]!=NULL)
+        free (GLOB_STRINGS[last]);
+    GLOB_STRINGS[last] = malloc(size);
 
+    wcsncpy(GLOB_STRINGS[last], new_val, wcslen(new_val));
     return 1;
 }
 
@@ -180,12 +191,12 @@ int change_last_string(char *new_val)
 int is_token_string_const_data(token *tok)
 {
     int i;
-    char *tok_val; tok_val = GLOB_STRINGS[GLOB_STRINGS_NUM-1];
+    wchar_t *tok_val; tok_val = GLOB_STRINGS[GLOB_STRINGS_NUM-1];
     if (!(tok->potentional_types[0].type_class==TOK_CLASS_CONST_DATA &&
           tok->potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM))
         return 0;
 
-    int len = strlen(tok_val);
+    int len = wcslen(tok_val);
 
     // Barlamak nämä gerek, diňe Goşa dyrnak bar.
     if (len==1)
@@ -195,7 +206,7 @@ int is_token_string_const_data(token *tok)
     {
         return 0;
     }
-    if (is_string_const_data_compl(tok_val, 0))
+    if (is_string_const_data_compl(tok_val, 1))
     {
         tok->potentional_types[0].is_compl = 1;
         tok->is_compl = 1;
@@ -204,10 +215,10 @@ int is_token_string_const_data(token *tok)
 }
 
 /// adaty sozler uchin after_quote_pos - 1.
-int is_valid_string_const_data(char *tok_val, int after_quote_pos)
+int is_valid_string_const_data(wchar_t *tok_val, int after_quote_pos)
 {
-    int i, len = strlen(tok_val);
-    char escape_quote = 0;
+    int i, len = wcslen(tok_val);
+    wchar_t escape_quote = 0;
     for (i=after_quote_pos; i<len; ++i)
     {
         // ESC belgini açardan soň, azyndan iki sany harp bolmaly
@@ -218,7 +229,7 @@ int is_valid_string_const_data(char *tok_val, int after_quote_pos)
             {
                 return 0;
             }
-            else if (tok_val[i+1]=='"' && i+1==len-1)
+            else if (tok_val[i+1]==L'"' && i+1==len-1)
             {
                 escape_quote = 1;
             }
@@ -229,14 +240,14 @@ int is_valid_string_const_data(char *tok_val, int after_quote_pos)
 }
 
 
-int is_string_const_data_compl(char *tok_val, char onstack)
+int is_string_const_data_compl(wchar_t *tok_val, wchar_t onstack)
 {
-    if (strlen(tok_val)<2)
+    if (wcslen(tok_val)<2)
         return 0;
-    if (tok_val[strlen(tok_val)-1]=='"' && tok_val[strlen(tok_val)-2]!='=')
+    if (tok_val[wcslen(tok_val)-1]==L'"' && tok_val[wcslen(tok_val)-2]!=L'=')
     {
         tpl_ESC_key_to_c_ESC_key(tok_val);
-        if (!onstack)
+        if (!onstack) // on heap
             change_last_string(tok_val);
         return 1;
     }

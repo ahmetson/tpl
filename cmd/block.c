@@ -12,6 +12,7 @@
 #include "block.h"
 #include "../cmds.h"
 #include "../main/glob.h"
+#include "../main/inf.h"
 #include "../error.h"
 #include "../token/token_types/block.h"
 
@@ -58,7 +59,7 @@ int semantic_cmd_block(command *cmd)
 
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_block_c_code(command *cmd, char **l, int *llen)
+void cmd_block_c_code(command *cmd, wchar_t **l, int *llen)
 {
     command_item *e1 = get_cmd_item(cmd->items,0);
     TOK_GET_C_CODE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, l, llen);

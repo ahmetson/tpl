@@ -10,6 +10,6 @@ int is_cmd_logic(command *cmd);
 void cmd_mono_logic_mod(command *cmd, int item_num);
 void cmd_binar_logic_mod(command *cmd, int item_num);
 
-void cmd_logic_c_code(command *cmd, char **l, int *llen);
+void cmd_logic_c_code(command *cmd, wchar_t **l, int *llen);
 
 #endif // CMD_LOGIC_H

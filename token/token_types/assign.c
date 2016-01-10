@@ -13,29 +13,30 @@
 #include <string.h>
 
 #include "assign.h"
+#include "../../fns.h"
 
 // Ulna maglumat yglan etmeli bolan komanda-da ikinji token bolup durmaly.
 // Token bolsa programma dilde belli bolan operator harplary bolyar.
 // Bu operator chep baglanma diyilip okalyar.
-char *LEFT_ASSIGN_TOKEN_VALUE = "<-";
+wchar_t *LEFT_ASSIGN_TOKEN_VALUE = L"<-";
 int   LEFT_ASSIGN_TOK_NUM = 1;
 
-char *RIGHT_ASSIGN_TOKEN_VALUE = "->";
+wchar_t *RIGHT_ASSIGN_TOKEN_VALUE = L"->";
 int   RIGHT_ASSIGN_TOK_NUM = 2;
 
 // DEBUG UCHIN
-char *ASSIGN_TOK_NUM_WORDS[2] = {
-	"to_left <-",
-	"to_right ->"
+wchar_t *ASSIGN_TOK_NUM_WORDS[2] = {
+	L"to_left <-",
+	L"to_right ->"
 };
 
-char *RIGHT_ASSIGN_C_CODES[2] = {"=", "{" };
+wchar_t *RIGHT_ASSIGN_C_CODES[2] = {L"=", L"{" };
 
-void tok_assign_c_code(token *tok, char **l, int *llen)
+void tok_assign_c_code(token *tok, wchar_t **l, int *llen)
 {
-    char *c_code;
+    wchar_t *c_code;
     if (tok->potentional_types[0].type_num==RIGHT_ASSIGN_TOK_NUM &&
-        tok->potentional_types[0].value[0]=='1')
+        tok->potentional_types[0].value[0]==L'1')
     {
         c_code = RIGHT_ASSIGN_C_CODES[1];
     }
@@ -44,19 +45,7 @@ void tok_assign_c_code(token *tok, char **l, int *llen)
         c_code = RIGHT_ASSIGN_C_CODES[0]; // Çep we sag tarapda ülňi bolan baglanmalaryň C kody.
     }
 
-    if (!(*llen))
-    {
-        *llen += strlen(c_code)+1;
-        *l = realloc(*l, *llen);
-        strncpy(*l, c_code, strlen(c_code)+1);
-    }
-    else
-    {
-        *llen = strlen(c_code);
-        *l = realloc(*l, *llen);
-        strncat(*l, c_code, strlen(c_code));
-    }
-
+    wcsadd_on_heap( l, llen, c_code );
 }
 
 

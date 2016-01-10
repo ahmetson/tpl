@@ -5,9 +5,12 @@
 #include <string.h>
 #include "../main/glob.h"
 #include "../main/inf.h"
+#include "../translator_to_c.h"
 #include "../translator_to_c/includes.h"
 #include "../error.h"
 #include "../cmds.h"
+#include "../fns/fn_helpers.h"
+#include "../fns.h"
 #include "array.h"
 #include "def_var.h"
 
@@ -32,13 +35,11 @@ int is_cmd_def_var(command *cmd)
 		return 0;
 	}
 
-	//printf("Birinji token barlanmaly\n");
 	int is_glob = 0;
 	// Birinji token umumy ya maglumat tipi bolup bilyar
 	if (fci->type==TOKEN_ITEM && fci->tok.type_class==TOK_CLASS_GLOB)
 	{
 	    def_var_cmd_mod(cmd, &fci->tok, 0);
-		//debug_cmd(cmd);
 		is_glob = 1;
 	}
 	else if (fci->type==1 && (fci->tok.type_class==TOK_CLASS_DEF_TYPE ||
@@ -94,7 +95,6 @@ int is_cmd_def_var(command *cmd)
 			return 0;
 		}
 	}
-	//printf("Uchunji token barlanmady\n");
 	return 1;
 }
 
@@ -176,7 +176,6 @@ int is_def_arr_cmd(command *cmd)
 **/
 int add_to_def_var_list(command *cmd)
 {
-    //printf("Komanda showly saygaryldy\n");
 	if (!is_def_var_cmd(cmd))
 	{
         // Ulni yglan etme komanda dal
@@ -193,7 +192,6 @@ int add_to_def_var_list(command *cmd)
 **/
 int add_to_def_arr_list(command *cmd)
 {
-    //printf("Komanda showly saygaryldy\n");
 	if (!is_def_arr_cmd(cmd))
 	{
         // Ulni yglan etme komanda dal
@@ -215,14 +213,14 @@ void global_called_vars_add(command *cmd)
         return;
     command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1); // lci - last command item
     int  *fnum = &lci->tok.inf_file_num;
-    char *ident= lci->tok.potentional_types[0].value;
+    wchar_t *ident= lci->tok.potentional_types[0].value;
 
     /// Eger ülňi yglan edilen faýlynda çagyrylýan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
     int i, len;
     for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
     {
-        if ((strlen(GLOBAL_VAR_DEFS[i].name)==strlen(ident) &&
-            strncmp(GLOBAL_VAR_DEFS[i].name, ident, strlen(ident))==0) &&
+        if ((wcslen(GLOBAL_VAR_DEFS[i].name)==wcslen(ident) &&
+            wcsncmp(GLOBAL_VAR_DEFS[i].name, ident, wcslen(ident))==0) &&
             *fnum==GLOBAL_VAR_DEFS[i].inf_file_num)
             return;
     }
@@ -234,14 +232,14 @@ void global_called_vars_add(command *cmd)
         /// Eger eýýäm şeýle ülňi öňem çagyrylan bolsa, onda ikinji gezek goşmak nämä gerek?
         for(i=0; i<cv->num; ++i)
         {
-            if (strlen(cv->ident[i])==strlen(ident) && strncmp(cv->ident[i], ident, strlen(ident)==0))
+            if (wcslen(cv->ident[i])==wcslen(ident) && wcsncmp(cv->ident[i], ident, wcslen(ident)==0))
                 return;
         }
 
         cv->num++;
-        cv->ident = realloc(cv->ident, sizeof(*cv->ident)*cv->num);
+        cv->ident = realloc( cv->ident, sizeof( *cv->ident )*cv->num );
 
-        strncpy(cv->ident[cv->num-1], ident, strlen(ident)+1);
+        wcsncpy(cv->ident[cv->num-1], ident, wcslen( ident )+1 );
     }
     else
     {
@@ -257,7 +255,7 @@ void global_called_vars_add(command *cmd)
         GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident = malloc(sizeof(*GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident));
         GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].num   = 1;
 
-        strncpy(GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident[0], ident, strlen(ident)+1);
+        wcsncpy(GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident[0], ident, wcslen(ident)+1);
     }
 }
 
@@ -295,13 +293,13 @@ void work_with_called_glob_vars()
 
         for(j=0; j<GLOBAL_CALLED_VARS[i].num; ++j)
         {
+            wchar_t *dquote = L"\"", *dot_h = L".h";
             glob_ident *gi = glob_vars_def_get_by_name(GLOBAL_CALLED_VARS[i].ident[j]);
-            char var_def_f[MAX_FILE_LEN] = {0};
-            strncpy(var_def_f, "\"", strlen("\"")+1);
-            strncat(var_def_f, FILES[gi->inf_file_num].name, strlen(FILES[gi->inf_file_num].name));
-            strncat(var_def_f, ".h", strlen(".h"));
-            strncat(var_def_f, "\"", strlen("\""));
-            //printf("%s\n", var_def_f);
+            wchar_t var_def_f[MAX_FILE_LEN] = {0};
+            wcsncpy(var_def_f, dquote, wcslen(dquote)+1);
+            wcsncat(var_def_f, FILES[gi->inf_file_num].name, wcslen(FILES[gi->inf_file_num].name));
+            wcsncat(var_def_f, dot_h, wcslen(dot_h));
+            wcsncat(var_def_f, dquote, wcslen(dquote));
 
             includes_file_add_include(fi, var_def_f);
         }
@@ -316,8 +314,9 @@ void work_with_called_glob_vars()
 
     Bu funksiýa ikinji tapgyry edýär. Sebäbi Ülňiniň yglan edilmegi algoritmi ýazýan funksiýadan başga funksiýa edýär.
 **/
-void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
+void cmd_def_var_as_subcmd_c_code(command *cmd, wchar_t **l, int *llen)
 {
+    wchar_t *space = L" ";
     /** Yglan etme başga komandalaryň birligi boljak bolsa, çagyrylmaly. Şonuň üçin identifikatory ýazylýar */
     /** Eger-de funksiýa yglan etmegiň argumenti hökümnde bolsa, onda tipi hem çap edilmeli*/
     if (TEST==100)
@@ -327,14 +326,11 @@ void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen)
 
         get_type_c_code(t->potentional_types[0].type_class, t->potentional_types[0].type_num, l, llen);
 
-        *llen += strlen(" ");
-        *l = realloc(*l, *llen);
-        strncat(*l, " ", strlen(" "));
+        wcsadd_on_heap( l, llen, space );
     }
     command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1);
     token *t = &lci->tok;
-    TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
-
+    tok_get_c_code(t, l, llen);
 }
 
 
@@ -343,11 +339,10 @@ int semantic_cmd_def_var(command *cmd)
     if (is_inside_fn())
     {
         command_item *ident_item = get_cmd_item(cmd->items, 1);
-        char *ident = ident_item->tok.potentional_types[0].value;
+        wchar_t *ident = ident_item->tok.potentional_types[0].value;
         if (is_ident_used(&ident_item->tok, 3) || is_tmp_fn_ident_used(ident) )
         {
             CUR_PART = 4;
-            printf("IDENT 11");
             print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
 
         }

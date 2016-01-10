@@ -12,26 +12,26 @@
 #include "../semantic.h"
 #include "../cmd/array.h"
 
-extern char CHAR_UNDERSCORE;
-
+extern wchar_t CHAR_UNDERSCORE;
+extern wchar_t TMP_CHAR;
 
 typedef struct{
-    char  (*inc)[MAX_FILE_LEN];
+    wchar_t  (*inc)[MAX_FILE_LEN];
     int    num;
 }file_incs;
 
 typedef struct{
-    char  (*ident)[MAXLEN];
+    wchar_t  (*ident)[MAXLEN];
     int    num;
 }called_var;
 
 extern int             TEST;
 
-extern char            CMD_END;
+extern wchar_t            CMD_END;
 
-extern char            CUR_FILE_NAME[MAX_FILE_LEN];
+extern wchar_t            CUR_FILE_NAME[MAX_FILE_LEN];
 extern int             CUR_FILE_NUM;
-extern char            CUR_CHAR;
+extern wchar_t            CUR_CHAR;
 extern int             CUR_CHAR_POS;
 extern unsigned int    CUR_LINE;
 extern int             CUR_PART;
@@ -52,7 +52,7 @@ extern command_item  **GLOB_SUBCMD_ITEMS_LIST;
 extern unsigned int    GLOB_SUBCMDS_NUM;
 
 // Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
-extern char                  **GLOB_STRINGS;
+extern wchar_t                  **GLOB_STRINGS;
 extern unsigned long           GLOB_STRINGS_NUM;
 
 
@@ -66,7 +66,7 @@ extern int                     GLOB_PARENTHS_NUM;
 /**
  * Programmadaky kodlaryň setirleri.
 **/
-extern char          ***GLOB_SOURCE_CODES;
+extern wchar_t          ***GLOB_SOURCE_CODES;
 
 extern file_item           *FILES;
 
@@ -129,7 +129,7 @@ extern glob_ident          *GLOBAL_VAR_DECS;
 extern int                  GLOBAL_VAR_DECS_NUMS;
 
 /// Global yglan etmeli faýllaryň sanawy
-extern char               **GLOB_DECS_FILES;
+extern wchar_t               **GLOB_DECS_FILES;
 extern int                  GLOB_DECS_FILES_NUM;
 
 /// Ýasaljak kodly faýlda yglan edilen ülňileriň maglumatlarynyň sanawy
@@ -179,10 +179,14 @@ extern int                  GLOB_BLOCK_INCLUDES;
 extern block_inc           *GLOB_BLOCKS;
 extern int                  GLOB_BLOCKS_NUM;
 
+extern char                **PRINTED_STRINGS;
+extern int                 PRINTED_STRINGS_NUM;
+
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);
 void free_locals(void);
 void free_tmp_fn();
 void free_local_fns();
+
 
 #endif // TPL_GLOB_H

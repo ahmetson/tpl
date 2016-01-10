@@ -1,3 +1,18 @@
+#include <string.h>
+#include <stdlib.h>
+#include "user_def_type.h"
+#include "array.h"
+#include "../translator_to_c/includes.h"
+#include "../cmds.h"
+#include "../paren/types.h"
+#include "../parenthesis.h"
+#include "../main/glob.h"
+#include "../main/user_def_type.h"
+#include "../main/inf.h"
+#include "../token/harpl.h"
+#include "../error.h"
+#include "../fns.h"
+
 /** ŞERT #20: Täze tipi yglan edýän komandanyň ähli funksiýalary:
 
     ** Komandany tanaýan funksiýa
@@ -79,18 +94,7 @@
         "Näbelli tip ulanylýar" diýen ýalňyşlyk görkezilýär.
 */
 
-#include <string.h>
-#include <stdlib.h>
-#include "user_def_type.h"
-#include "array.h"
-#include "../translator_to_c/includes.h"
-#include "../cmds.h"
-#include "../paren/types.h"
-#include "../parenthesis.h"
-#include "../main/glob.h"
-#include "../token/harpl.h"
-#include "../error.h"
-#include "../fns.h"
+
 
 /** Ulanyjynyň tipi bilen baglanyşykly (ýagny UG klasly) komandadygyny barlaýar.
 */
@@ -162,7 +166,7 @@ int is_cmd_utype_def(command *cmd)
 {
     command_item *fci = get_cmd_item(cmd->items, 0);
 
-    char type = 0;
+    wchar_t type = 0;
     if (fci->type==TOKEN_ITEM && fci->tok.potentional_types[0].type_class==TOK_CLASS_TRIANGLE_BLOCK &&
                                  fci->tok.potentional_types[0].type_num==  TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
     {
@@ -182,7 +186,6 @@ int is_cmd_utype_def(command *cmd)
             if (is_ident_used(&sci->tok, 0))
             {
                 CUR_PART = 4;
-                printf("IDENT 13");
                 print_err(CODE4_VARS_IDENT_USED, &sci->tok);
             }
             cmd_utype_def_mod(cmd, 1);
@@ -332,7 +335,7 @@ int semantic_cmd_utype_con(command *cmd)
     }
 
     command_item *tci = get_cmd_item(cmd->items, 2);
-    char *item_ident = tci->tok.potentional_types[0].value;
+    wchar_t *item_ident = tci->tok.potentional_types[0].value;
     if (!get_utype_item_addr(tmp_type, item_ident, &tmp_class))
     {
         printf("%s %d setirde: Ugyň çagyrylan birligi duş gelmedi\n", __FILE__, __LINE__);
@@ -355,7 +358,7 @@ int semantic_cmd_utype_def(command *cmd)
 
 /** Faýla degişli kody C koda ýazýar
 */
-void cmd_utype_con_c_code(command *cmd, char **line, int *line_len)
+void cmd_utype_con_c_code(command *cmd, wchar_t **line, int *line_len)
 {
     int ident_pos = 0;
     if (cmd->ns==GLOB)
@@ -372,18 +375,12 @@ void cmd_utype_con_c_code(command *cmd, char **line, int *line_len)
         TOK_GET_C_CODE[fci->tok.potentional_types[0].type_class][fci->tok.potentional_types[0].type_num](&fci->tok, line, line_len);
     }
 
-    char *item_separator = ".";
-    *line_len += strlen(item_separator);
-    *line     = realloc(*line, *line_len);
-    strncat(*line, item_separator, strlen(item_separator));
+    wchar_t *item_separator = L".";
+    wcsadd_on_heap( line, line_len, item_separator );
 
     command_item *sci = get_cmd_item(cmd->items, cmd->items_num-1);
-    char *item_ident = sci->tok.potentional_types[0].value;
-
-    *line_len += strlen(item_ident);
-    *line     = realloc(*line, *line_len);
-    strncat(*line, item_ident, strlen(item_ident));
-
+    wchar_t *item_ident = sci->tok.potentional_types[0].value;
+    wcsadd_on_heap( line, line_len, item_ident );
 }
 
 

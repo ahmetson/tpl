@@ -38,6 +38,6 @@ void cmd_ctrl_sttmnt_else_mod(command *cmd, int item_num);
 int semantic_cmd_ctrl_sttmnt(command *cmd);
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_ctrl_sttmnt_c_code(command *cmd, char **l, int *llen);
+void cmd_ctrl_sttmnt_c_code(command *cmd, wchar_t **l, int *llen);
 
 #endif // CMD_CTRL_STATEMENT_H

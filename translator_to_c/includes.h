@@ -9,7 +9,7 @@
 file_incs *includes_add_new();
 
 // Içinde inklud edýän preprosessor komandasyny ulanmaly faýla, inklud etmeli faýly goşýar
-void includes_file_add_include(file_incs *fi, char *h_source);
+void includes_file_add_include(file_incs *fi, wchar_t *h_source);
 
 // Ýasalan kodlara, #include preprosessory goşulýar
 void translator_to_c_add_includes();

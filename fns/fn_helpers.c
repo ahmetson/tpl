@@ -1,14 +1,17 @@
-/** Funksiýalaryň komandalary bilen işleýän kömekçi faňksiýeler.
-*/
 #include <stdlib.h>
 #include <string.h>
 #include "fn_helpers.h"
+#include "../fns.h"
 #include "../paren/types.h"
 #include "../cmd/fn_def.h"
 #include "../cmd/block.h"
+#include "../cmd/def_var.h"
 #include "../main/glob.h"
 #include "../main/user_def_type.h"
 #include "../translator_to_c.h"
+/** Funksiýalaryň komandalary bilen işleýän kömekçi faňksiýeler.
+*/
+
 
 /** Häzir funksiýa çagyrylýan wagty,
     Parseriň funksiýanyň içini parsing edýänini barlaýar*/
@@ -51,6 +54,9 @@ int is_fn_def(command *cmd)
     Funksiýanyň baş magumatlary girizilýär*/
 void prepare_tmp_fn_data_container(command *cmd)
 {
+    wchar_t *dquote = L"\"",
+            *dot_c  = L".c",
+            *dot_h  = L".h";
     TMP_FUNC_NUM=GLOB_BLOCK_INCLUDES-1;
 
     command_item *fci  = get_cmd_item(cmd->items, 0);
@@ -58,29 +64,29 @@ void prepare_tmp_fn_data_container(command *cmd)
     command_item *ident_ci = get_cmd_item(fci->cmd.items, 1);
     command_item *ret_val_ci  = get_cmd_item(cmd->items, 1);
     int fnum = ident_ci->tok.inf_file_num;
-    char fname[MAX_FILE_LEN] = {0};
-    strncpy(fname, FILES[fnum].c_source, strlen(FILES[fnum].c_source)+1);
+    wchar_t fname[MAX_FILE_LEN] = {0};
+    wcsncpy(fname, FILES[fnum].c_source, wcslen(FILES[fnum].c_source)+1);
     remove_dirnames(fname);
-	remove_ext(fname, ".c");
-    char *fnident = ident_ci->tok.potentional_types[0].value;
-    char fn_lib[MAX_FILE_LEN] = {0};
-    strncpy(fn_lib, "\"", strlen("\""));
-    strncat(fn_lib, FILES[fnum].name, strlen(FILES[fnum].name));
-    strncat(fn_lib, ".h", strlen(".h"));
-    strncat(fn_lib, "\"", strlen("\""));
+	remove_ext(fname, dot_c);
+    wchar_t *fnident = ident_ci->tok.potentional_types[0].value;
+    wchar_t fn_lib[MAX_FILE_LEN] = {0};
+    wcsncpy(fn_lib, dquote, wcslen(dquote));
+    wcsncat(fn_lib, FILES[fnum].name, wcslen(FILES[fnum].name));
+    wcsncat(fn_lib, dot_h, wcslen(dot_h));
+    wcsncat(fn_lib, dquote, wcslen(dquote));
 
-    strncpy(TMP_FUNC.file_name, fname, strlen(fname)+1);
-    strncpy(TMP_FUNC.name, fnident, strlen(fnident)+1);
+    wcsncpy(TMP_FUNC.file_name, fname, wcslen(fname)+1);
+    wcsncpy(TMP_FUNC.name, fnident, wcslen(fnident)+1);
     TMP_FUNC.type_class = FUNC_CLASS_USER_DEF;
     TMP_FUNC.type_num = LOC_FUNCS_NUM;
     TMP_FUNC.args_num = args_ci->paren.elems_num;     // * ýaly argumentleri kabul edýär
-    TMP_FUNC.inf_char = ident_ci->tok.inf_char;
-    TMP_FUNC.inf_char_pos = ident_ci->tok.inf_char_num;
+    TMP_FUNC.inf_wchar_t = ident_ci->tok.inf_wchar_t;
+    TMP_FUNC.inf_wchar_t_pos = ident_ci->tok.inf_wchar_t_num;
     TMP_FUNC.inf_line_pos = ident_ci->tok.inf_line_num;
     TMP_FUNC.return_class = ret_val_ci->tok.type_class;
     TMP_FUNC.return_type = ret_val_ci->tok.potentional_types[0].type_num;
-    strncpy(TMP_FUNC.c_name, fnident, strlen(fnident)+1);
-    strncpy(TMP_FUNC.c_lib, fn_lib, strlen(fn_lib)+1);
+    wcsncpy(TMP_FUNC.c_name, fnident, wcslen(fnident)+1);
+    wcsncpy(TMP_FUNC.c_lib, fn_lib, wcslen(fn_lib)+1);
     TMP_FUNC.make_args_string = make_user_def_fn_args;
 
     // Argumentler
@@ -100,6 +106,10 @@ void prepare_tmp_fn_data_container(command *cmd)
 /** Funksiýa beýan etmelerine täzesini goşýar*/
 void add_fn_dec(command *cmd)
 {
+    wchar_t *dquote = L"\"",
+            *dot_c  = L".c",
+            *dot_h  = L".h";
+
     command_item *fci  = get_cmd_item(cmd->items, 0);
     command_item *args_ci = get_cmd_item(fci->cmd.items, 0);
     command_item *ident_ci = get_cmd_item(fci->cmd.items, 1);
@@ -116,30 +126,30 @@ void add_fn_dec(command *cmd)
 
 
     int fnum = ident_ci->tok.inf_file_num;
-    char fname[MAX_FILE_LEN] = {0};
-    strncpy(fname, FILES[fnum].c_source, strlen(FILES[fnum].c_source)+1);
+    wchar_t fname[MAX_FILE_LEN] = {0};
+    wcsncpy(fname, FILES[fnum].c_source, wcslen(FILES[fnum].c_source)+1);
     remove_dirnames(fname);
-	remove_ext(fname, ".c");
-    char *fnident = ident_ci->tok.potentional_types[0].value;
-    char fn_lib[MAX_FILE_LEN] = {0};
-    strncpy(fn_lib, "\"", strlen("\""));
-    strncat(fn_lib, FILES[fnum].name, strlen(FILES[fnum].name));
-    strncat(fn_lib, ".h", strlen(".h"));
-    strncat(fn_lib, "\"", strlen("\""));
+	remove_ext(fname, dot_c);
+    wchar_t *fnident = ident_ci->tok.potentional_types[0].value;
+    wchar_t fn_lib[MAX_FILE_LEN] = {0};
+    wcsncpy(fn_lib, dquote, wcslen(dquote));
+    wcsncat(fn_lib, FILES[fnum].name, wcslen(FILES[fnum].name));
+    wcsncat(fn_lib, dot_h, wcslen(dot_h));
+    wcsncat(fn_lib, dquote, wcslen(dquote));
 
-    strncpy(DEC_FUNCS[last].file_name, fname, strlen(fname)+1);
-    strncpy(DEC_FUNCS[last].name, fnident, strlen(fnident)+1);
+    wcsncpy(DEC_FUNCS[last].file_name, fname, wcslen(fname)+1);
+    wcsncpy(DEC_FUNCS[last].name, fnident, wcslen(fnident)+1);
     DEC_FUNCS[last].type_class = FUNC_CLASS_USER_DEF;
     DEC_FUNCS[last].type_num = -1;
     DEC_FUNCS[last].args_num = args_ci->paren.elems_num;     // * ýaly argumentleri kabul edýär
-    DEC_FUNCS[last].inf_char = ident_ci->tok.inf_char;
-    DEC_FUNCS[last].inf_char_pos = ident_ci->tok.inf_char_num;
+    DEC_FUNCS[last].inf_wchar_t = ident_ci->tok.inf_wchar_t;
+    DEC_FUNCS[last].inf_wchar_t_pos = ident_ci->tok.inf_wchar_t_num;
     DEC_FUNCS[last].inf_line_pos = ident_ci->tok.inf_line_num;
     DEC_FUNCS[last].file_num     = ident_ci->tok.inf_file_num;
     DEC_FUNCS[last].return_class = ret_val_ci->tok.type_class;
     DEC_FUNCS[last].return_type = ret_val_ci->tok.potentional_types[0].type_num;
-    strncpy(DEC_FUNCS[last].c_name, fname, strlen(fname)+1);
-    strncpy(DEC_FUNCS[last].c_lib, fn_lib, strlen(fn_lib)+1);
+    wcsncpy(DEC_FUNCS[last].c_name, fname, wcslen(fname)+1);
+    wcsncpy(DEC_FUNCS[last].c_lib, fn_lib, wcslen(fn_lib)+1);
     DEC_FUNCS[last].make_args_string = make_user_def_fn_args;
 
     // Argumentler
@@ -169,13 +179,13 @@ void add_fn_dec(command *cmd)
 
 
 /** Identifikatoryň eýýäm beýan edilen funksiýanyň adymydygyny barlaýar*/
-int is_fn_already_dec(char *ident)
+int is_fn_already_dec(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for (i=0; i<DEC_FUNCS_NUM; ++i)
     {
-        if (strlen(DEC_FUNCS[i].name)==len &&
-            strncmp(DEC_FUNCS[i].name, ident, len)==0)
+        if (wcslen(DEC_FUNCS[i].name)==len &&
+            wcsncmp(DEC_FUNCS[i].name, ident, len)==0)
             return 1;
     }
     return 0;
@@ -285,7 +295,6 @@ void move_tmp_fn_data_to_local()
 /** Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.*/
 int add_to_tmp_fn_def_var_list(command *cmd)
 {
-    //printf("Komanda showly saygaryldy\n");
 	if (!is_def_var_cmd(cmd))
 	{
         // Ulni yglan etme komanda dal
@@ -298,7 +307,6 @@ int add_to_tmp_fn_def_var_list(command *cmd)
 /** Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.*/
 int add_to_tmp_fn_def_arr_list(command *cmd)
 {
-    //printf("Komanda showly saygaryldy\n");
 	if (!is_def_arr_cmd(cmd))
 	{
         // Ulni yglan etme komanda dal
@@ -311,7 +319,6 @@ int add_to_tmp_fn_def_arr_list(command *cmd)
 /** Eger komanda ulny yglan etmek bolsa, ulni yglan etmanin sanawynda goshyar.*/
 int add_to_tmp_fn_algor_list(command *cmd)
 {
-    //printf("Komanda showly saygaryldy\n");
     add_to_tmp_fn_algor(cmd);
     return 1;
 }
@@ -321,7 +328,7 @@ int add_to_tmp_fn_algor_list(command *cmd)
 void add_to_tmp_fn_var_def(command *cmd)
 {
     check_semantics(cmd);
-    //debug_cmd(cmd);
+
     int last = TMP_FUNC_VARS_NUM;
     ++TMP_FUNC_VARS_NUM;
     TMP_FUNC_VARS = realloc(TMP_FUNC_VARS, sizeof(*TMP_FUNC_VARS)*TMP_FUNC_VARS_NUM);
@@ -329,21 +336,21 @@ void add_to_tmp_fn_var_def(command *cmd)
     int ident_tok_pos = 1;  //  LOKAL: def_type, ident
 
     command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
-    char *tok_name = ci->tok.potentional_types[0].value;
+    wchar_t *tok_name = ci->tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
 	command_item *prevci = get_cmd_item(cmd->items, ident_tok_pos-1);
 	glob_ident new_def = {
 	    prevci->tok.potentional_types[0].type_class,
 		prevci->tok.potentional_types[0].type_num,
-		"",
+		L"",
 		prevci->tok.inf_file_num,
-        prevci->tok.inf_char_num,
-		prevci->tok.inf_char,
+        prevci->tok.inf_wchar_t_num,
+		prevci->tok.inf_wchar_t,
 		prevci->tok.inf_line_num
 	};
 
-	strncpy(new_def.name, tok_name, strlen(tok_name)+1);
+	wcsncpy(new_def.name, tok_name, wcslen(tok_name)+1);
 
     TMP_FUNC_VARS[last] = new_def;
 }
@@ -368,7 +375,7 @@ void add_to_tmp_fn_arr_def(command *cmd)
 {
     check_semantics(cmd);
     int last = TMP_FUNC_ARRS_NUM;
-    //debug_cmd(cmd);
+
     ++TMP_FUNC_ARRS_NUM;
     TMP_FUNC_ARRS = realloc(TMP_FUNC_ARRS, sizeof(*TMP_FUNC_ARRS)*TMP_FUNC_ARRS_NUM);
     TMP_FUNC_ARRS_ITEMS = realloc(TMP_FUNC_ARRS_ITEMS, sizeof(*TMP_FUNC_ARRS_ITEMS)*TMP_FUNC_ARRS_NUM);
@@ -377,23 +384,23 @@ void add_to_tmp_fn_arr_def(command *cmd)
     int ident_tok_pos = cmd->items_num-1;  // Identifikator - bu komandadaky iň soňky element
 
     command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
-    char *tok_name = ci->tok.potentional_types[0].value;
+    wchar_t *tok_name = ci->tok.potentional_types[0].value;
 
 	command_item *prevci = get_cmd_item(cmd->items, ident_tok_pos-1);
     command_item *yay_ci = get_cmd_item(cmd->items, ident_tok_pos-2);
 
     array_item ai = {
         prevci->tok.inf_file_num,
-        prevci->tok.inf_char_num,
-        prevci->tok.inf_char,
+        prevci->tok.inf_wchar_t_num,
+        prevci->tok.inf_wchar_t,
         prevci->tok.inf_line_num,
-        "",
+        L"",
         yay_ci->paren.elems_num,
         prevci->tok.potentional_types[0].type_class,
 		prevci->tok.potentional_types[0].type_num
     };
 
-	strncpy(ai.ident, tok_name, strlen(tok_name)+1);
+	wcsncpy(ai.ident, tok_name, wcslen(tok_name)+1);
 
     add_to_last_tmp_func_arr_items(cmd);
 
@@ -402,29 +409,29 @@ void add_to_tmp_fn_arr_def(command *cmd)
 
 
 /** Funksiýanyň wagtlaýyn maglumatlarynda eýýäm ülňi ulanylanlygy barlanylýar*/
-int is_tmp_fn_ident_used(char *ident)
+int is_tmp_fn_ident_used(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<TMP_FUNC_VARS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_VARS[i].name;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_VARS[i].name;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
             return 1;
     }
     for(i=0; i<TMP_FUNC_ARRS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
             return 1;
     }
     for (i=0; i<TMP_FUNC.args_num; ++i)
     {
         command_item *ident_item = get_cmd_item(TMP_FUNC_PARAMS[i].items, 1);
-        char *ident_in_tmp = ident_item->tok.potentional_types[0].value;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = ident_item->tok.potentional_types[0].value;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
             return 1;
     }
     return 0;
@@ -432,28 +439,28 @@ int is_tmp_fn_ident_used(char *ident)
 
 
 /** Funksiýa-da yglan edilen ülňi ady däldigi barlanýar*/
-int is_tmp_fn_var_ident_used(char *ident)
+int is_tmp_fn_var_ident_used(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<TMP_FUNC_VARS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_VARS[i].name;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_VARS[i].name;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
             return 1;
     }
     return 0;
 }
 
 /** Funksiýa-da yglan edilen ülňi ady däldigi barlanýar*/
-int is_tmp_fn_arr_ident_used(char *ident)
+int is_tmp_fn_arr_ident_used(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<TMP_FUNC_ARRS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
             return 1;
     }
     return 0;
@@ -461,14 +468,14 @@ int is_tmp_fn_arr_ident_used(char *ident)
 
 
 /** Sanawyň ady boýunça, sanawyň nomerini alýar.*/
-int get_tmp_func_arr_address_by_ident(char *ident, int *type)
+int get_tmp_func_arr_address_by_ident(wchar_t *ident, int *type)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<TMP_FUNC_ARRS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_ARRS[i].ident;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
         {
             *type = i;
             return 1;
@@ -479,14 +486,14 @@ int get_tmp_func_arr_address_by_ident(char *ident, int *type)
 
 
 /** Ülňiniň tipini gaýtarýar*/
-int get_tmp_fn_var_def_value_type(char *ident, int *type_class, int *type_num)
+int get_tmp_fn_var_def_value_type(wchar_t *ident, int *type_class, int *type_num)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<TMP_FUNC_VARS_NUM; ++i)
     {
-        char *ident_in_tmp = TMP_FUNC_VARS[i].name;
-        if (strlen(ident_in_tmp)==len &&
-            strncmp(ident_in_tmp, ident, len)==0)
+        wchar_t *ident_in_tmp = TMP_FUNC_VARS[i].name;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
         {
             *type_class = TMP_FUNC_VARS[i].type_class;
             *type_num   = TMP_FUNC_VARS[i].type_num;
@@ -500,15 +507,15 @@ int get_tmp_fn_var_def_value_type(char *ident, int *type_class, int *type_num)
 
 
 /** Yglanlanan ýa beýanlanan funksiýalaryň identifikatory ulandymy ýa ýokdygynyň jogabyny aýdýar.*/
-int is_fn_name_used(char *ident)
+int is_fn_name_used(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
 
     // Yglanlanan funksiýalaryň arasynda gözlenýär
     for (i=0; i<FUNCS_NUM; ++i)
     {
-        if (strlen(FUNCS[i].name)==len &&
-            strncmp(FUNCS[i].name, ident, len)==0)
+        if (wcslen(FUNCS[i].name)==len &&
+            wcsncmp(FUNCS[i].name, ident, len)==0)
             return 1;
     }
 
@@ -517,15 +524,15 @@ int is_fn_name_used(char *ident)
 
 
 /** Global ülňileriň baş maglumatlaryndan, ady boýunça sanawdaky funksiýanyň nomeri gaýtarylýar*/
-int get_fn_by_ident(char *ident)
+int get_fn_by_ident(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
 
     // Yglanlanan funksiýalaryň arasynda gözlenýär
     for (i=0; i<FUNCS_NUM; ++i)
     {
-        if (strlen(FUNCS[i].name)==len &&
-            strncmp(FUNCS[i].name, ident, len)==0)
+        if (wcslen(FUNCS[i].name)==len &&
+            wcsncmp(FUNCS[i].name, ident, len)==0)
             return i;
     }
 
@@ -576,7 +583,7 @@ void add_to_last_tmp_func_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {TMP_FUNC_ARRS_NUM-1, i, atoi(pes[i].tok.potentional_types[0].value)};
+        array_inc_item add = {TMP_FUNC_ARRS_NUM-1, i, wcstol(pes[i].tok.potentional_types[0].value, NULL, 10)};
 
         (*last)[i] = add;
     }
@@ -594,62 +601,48 @@ void write_to_hsource_loc_fns_proto(FILE *f)
     int i;
     for (i=0; i<LOC_FUNCS_NUM; ++i)
     {
-        char *p = NULL;
+        wchar_t *p = NULL;
         int len = 0;
         get_loc_fn_prototype(i, &p, &len);
 
-        char *end = "; \n";
-        len += strlen(end);
-        p = realloc(p, sizeof(*p)*(len));
-        strncat(p, end, strlen(end));
+        wchar_t *end = L"; \n";
+        wcsadd_on_heap( &p, &len, end );
 
-        fputs(p, f);
+        fputws(p, f);
         free(p);
     }
 }
 
 /** Lokal funksiýanyň nomeri bovunca prototipini ýasaýar*/
-void get_loc_fn_prototype(int n, char **p, int *l)
+void get_loc_fn_prototype(int n, wchar_t **p, int *l)
 {
     if (LOC_FUNCS[n].return_class==TOK_CLASS_VOID)
     {
-        *l = strlen(TOK_VOID_CHARS[TOK_VOID_NUM][2])+1;
-        *p = realloc(*p, sizeof(**p)*(*l));
-        strncpy(*p, TOK_VOID_CHARS[TOK_VOID_NUM][2], strlen(TOK_VOID_CHARS[TOK_VOID_NUM][2])+1);
+        wcsadd_on_heap( p, l, TOK_VOID_CHARS[TOK_VOID_NUM][2] );
     }
     else if (LOC_FUNCS[n].return_class==TOK_CLASS_DEF_TYPE)
     {
-        *l = strlen(def_type_list[LOC_FUNCS[n].return_type].value)+1;
-        *p = realloc(*p, sizeof(**p)*(*l));
-        strncpy(*p, def_type_list[LOC_FUNCS[n].return_type].value, strlen(def_type_list[LOC_FUNCS[n].return_type].value)+1);
+        wcsadd_on_heap( p, l, def_type_list[LOC_FUNCS[n].return_type].value );
     }
     else if (LOC_FUNCS[n].return_class==TOK_CLASS_UTYPE)
     {
-        *l = strlen(USER_DEF_TYPES[LOC_FUNCS[n].return_type].ident)+1;
-        *p = realloc(*p, sizeof(**p)*(*l));
-        strncpy(*p, USER_DEF_TYPES[LOC_FUNCS[n].return_type].ident, strlen(USER_DEF_TYPES[LOC_FUNCS[n].return_type].ident)+1);
+        wcsadd_on_heap( p, l, USER_DEF_TYPES[LOC_FUNCS[n].return_type].ident );
     }
 
-    char *space = " ";
-    *l += strlen(space);
-    *p = realloc(*p, sizeof(**p)*(*l));
-    strncat(*p, space, strlen(space));
+    wchar_t *space = L" ";
+    wcsadd_on_heap( p, l, space );
 
-    *l += strlen(LOC_FUNCS[n].name);
-    *p = realloc(*p, sizeof(**p)*(*l));
-    strncat(*p, LOC_FUNCS[n].name, strlen(LOC_FUNCS[n].name));
+    wcsadd_on_heap( p, l, LOC_FUNCS[n].name );
 
     write_fn_args(n, p, l);
 
 }
 
 /** Funksiýany yglan edilmeginiň argumentleriniň kodly bölegi*/
-void write_fn_args(int n, char **p, int *l)
+void write_fn_args(int n, wchar_t **p, int *l)
 {
-    char *o = "(";
-    *l += strlen(o);
-    *p = realloc(*p, sizeof(**p)*(*l));
-    strncat(*p, o, strlen(o));
+    wchar_t *o = L"(";
+    wcsadd_on_heap( p, l, o );
 
     int i;
     for (i=0; i<LOC_FUNCS[n].args_num; ++i)
@@ -659,21 +652,19 @@ void write_fn_args(int n, char **p, int *l)
         ///
         /// Ülňi ulanylýan bolsa, onda ülňi yglan etmegi dolylygyna tipi bilen ýaly ýazýar
         TEST = 100;
-        CMD_GET_C_CODE[LOC_FUNCS_PARAMS[n][i].cmd_class][LOC_FUNCS_PARAMS[n][i].cmd_type](&LOC_FUNCS_PARAMS[n][i], p, l);
+        cmd_get_c_code( &LOC_FUNCS_PARAMS[n][i], p, l );
         TEST = 0;
+
 
         if (i!=LOC_FUNCS[n].args_num-1)
         {
-            *l += strlen(", ");
-            *p = realloc(*p, *l);
-            strncat(*p, ", ", strlen(" ,"));
+            wchar_t *comma_space = L", ";
+            wcsadd_on_heap( p, l, comma_space );
         }
     }
 
-    char *c = ")";
-    *l += strlen(c);
-    *p = realloc(*p, sizeof(**p)*(*l));
-    strncat(*p, c, strlen(c));
+    wchar_t *c = L")";
+    wcsadd_on_heap( p, l, c );
 }
 
 /** Funksiýanyň bedeniniň kodyny ýazýar*/
@@ -686,15 +677,13 @@ void write_to_csource_loc_fns(FILE *f)
     int i;
     for (i=0; i<LOC_FUNCS_NUM; ++i)
     {
-        char *p = NULL;
+        wchar_t *p = NULL;
         int len = 0;
         get_loc_fn_prototype(i, &p, &len);
-        char *end = "{ \n";
-        len += strlen(end);
-        p = realloc(p, sizeof(*p)*(len));
-        strncat(p, end, strlen(end));
+        wchar_t *end = L"{ \n";
+        wcsadd_on_heap( &p, &len, end );
 
-        fputs(p, f);
+        fputws(p, f);
         free(p);
 
         ++TRANS_C_BLOCK_DEPTH;
@@ -704,14 +693,15 @@ void write_to_csource_loc_fns(FILE *f)
         c_trans_source_fn_add_algor(f, i);
 
         --TRANS_C_BLOCK_DEPTH;
-        fputs("} \n", f);
+        fputws(L"} \n", f);
     }
 }
 
 /** Funksiýanyň içinde yglan edilen ülňiler*/
 void c_trans_source_add_fn_def_var(FILE *f, int fn)
 {
-    char *l = NULL;
+    wchar_t *l = NULL,
+            *space = L" ";
     int llen = 0;
 
 	if (!LOC_FUNCS_VARS_NUM[fn])
@@ -719,7 +709,7 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
         return;
 	}
 
-    char *line1 = "// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan ulniler\n";
+    wchar_t *line1 = L"// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan ulniler\n";
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
 
     int i, type_num;
@@ -728,17 +718,13 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
     for(i=0; i<LOC_FUNCS_VARS_NUM[fn]; ++i)
     {
         int  line_len = 0;
-        char *line = NULL;
+        wchar_t *line = NULL;
         get_type_c_code(LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
 
-        line_len += strlen(" ");
-        line = realloc(line, line_len);
-        strncat(line, " ", strlen(" "));
+        wcsadd_on_heap( &line, &line_len, space );
 
         // Ulninin ady goshulyar
-        line_len += strlen(LOC_FUNCS_VARS[fn][i].name);
-        line = realloc(line, line_len);
-        strncat(line, LOC_FUNCS_VARS[fn][i].name, strlen(LOC_FUNCS_VARS[fn][i].name));
+        wcsadd_on_heap( &line, &line_len, LOC_FUNCS_VARS[fn][i].name );
 
         // Ülňiniň başlangyç maglumatlary goýulýar.
         get_type_init_val_c_code(0, LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
@@ -751,13 +737,14 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
         free(line);
     }
 
-    fputs("\n\n", f);
+    fputws(L"\n\n", f);
 }
 
 /** Funksiýanyň içinde yglan edilen sanawlary goşýar*/
 void c_trans_source_add_fn_def_arr(FILE *f, int fn)
 {
-    char *l = NULL;
+    wchar_t *l = NULL,
+            *space = L" ";
     int llen = 0;
 
 	if (!LOC_FUNCS_ARRS_NUM[fn])
@@ -765,7 +752,7 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
         return ;
 	}
 
-    char *line1 = "// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan sanawlar\n";
+    wchar_t *line1 = L"// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan sanawlar\n";
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
 
     int i, type_num, line_len;
@@ -775,17 +762,13 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
         type_num = LOC_FUNCS_ARRS[fn][i].type_num;
 
         int line_len = 0;
-        char *line = NULL;
+        wchar_t *line = NULL;
         get_type_c_code(LOC_FUNCS_ARRS[fn][i].type_class, LOC_FUNCS_ARRS[fn][i].type_num, &line, &line_len);
 
-        line_len += strlen(" ");
-        line = realloc(line, line_len);
-        strncat(line, " ", strlen(" "));
+        wcsadd_on_heap( &line, &line_len, space );
 
         // Ulninin ady goshulyar
-        line_len += strlen(LOC_FUNCS_ARRS[fn][i].ident);
-        line = realloc(line, line_len);
-        strncat(line, LOC_FUNCS_ARRS[fn][i].ident, strlen(LOC_FUNCS_ARRS[fn][i].ident));
+        wcsadd_on_heap( &line, &line_len, LOC_FUNCS_ARRS[fn][i].ident );
 
         // sanawyň elelemntleri hakda maglumat goşulýar
         TEST = fn;
@@ -799,31 +782,26 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
 
         write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
 
-        //printf("%s global ulna goshulyar\n", line);
-
         free(line);
     }
 
-	fputs("\n\n", f);
+	fputws(L"\n\n", f);
 }
 
 /** Funksiýa yglan edilenmeginiň bedenindäki algoritmler*/
 void c_trans_source_fn_add_algor(FILE *f, int fn)
 {
-    int i, len=0; char *l = NULL;
-    char *putl = NULL;
+    int i, len=0; wchar_t *l = NULL;
+    wchar_t *putl = NULL;
     int putllen = 0;
 
     for (i=0; i<LOC_FUNCS_ALGOR_NUM[fn]; ++i)
     {
-
-        CMD_GET_C_CODE[LOC_FUNCS_ALGOR[fn][i].cmd_class][LOC_FUNCS_ALGOR[fn][i].cmd_type](&LOC_FUNCS_ALGOR[fn][i], &l, &len);
+        cmd_get_c_code( &LOC_FUNCS_ALGOR[fn][i], &l, &len );
         if (!is_open_block_cmd(&LOC_FUNCS_ALGOR[fn][i]) && !is_close_block_cmd(&LOC_FUNCS_ALGOR[fn][i]))
             cmd_wrapper_c_code(&l, &len);
         else
             cmd_block_wrapper_c_code(&l, &len);
-        //debug_cmd(&CUR_ALGOR[i]);
-        //printf("%s\n", l);
 
         /// #7.5)
         if (is_close_block_cmd(&LOC_FUNCS_ALGOR[fn][i]))
@@ -842,7 +820,7 @@ void c_trans_source_fn_add_algor(FILE *f, int fn)
             len = 0;
         }
     }
-    fputs("\n\n", f);
+    fputws(L"\n\n", f);
 }
 
 

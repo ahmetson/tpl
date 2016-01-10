@@ -5,26 +5,32 @@
 #include <string.h>
 
 #include "../../fn.h"
+#include "../../../fns.h"
+#include "../../../translator_to_c.h"
 #include "chap_et.h"
 #include "../../../token/token_types.h"
 #include "../../../token/token_types/const_data.h"
 
 int add_std_chap_et()
 {
+    wchar_t *file_name = L"tpl_std.c",
+            *fn_tpl_name   = L"chap_et",
+            *fn_c_name = L"printf",
+            *c_lib_name = L"<stdio.h>";
     func std_chap_et;
     std_chap_et.file_num = -1;
-    strncpy(std_chap_et.file_name, "tpl_std.c", strlen("tpl_std.c")+1);
-    strncpy(std_chap_et.name, "chap_et", strlen("chap_et")+1);
+    wcsncpy(std_chap_et.file_name, file_name, wcslen(file_name)+1);
+    wcsncpy(std_chap_et.name, fn_tpl_name, wcslen(fn_tpl_name)+1);
     std_chap_et.type_class = FUNC_CLASS_3RD_PARTY;
     std_chap_et.type_num = FUNC_TYPE_STD;
     std_chap_et.args_num = -1;     // * ýaly argumentleri kabul edýär
-    std_chap_et.inf_char = 0;
-    std_chap_et.inf_char_pos = 0;
+    std_chap_et.inf_wchar_t = 0;
+    std_chap_et.inf_wchar_t_pos = 0;
     std_chap_et.inf_line_pos = 0;
     std_chap_et.return_class = TOK_CLASS_CONST_DATA;
     std_chap_et.return_type = INT_CONST_DATA_TOK_NUM;
-    strncpy(std_chap_et.c_name, "printf", strlen("printf")+1);
-    strncpy(std_chap_et.c_lib, "<stdio.h>", strlen("<stdio.h>")+1);
+    wcsncpy(std_chap_et.c_name, fn_c_name, wcslen(fn_c_name)+1);
+    wcsncpy(std_chap_et.c_lib, c_lib_name, wcslen(c_lib_name)+1);
     std_chap_et.make_args_string = make_std_chap_et_args;
     add_func_to_list(std_chap_et);
 
@@ -38,44 +44,32 @@ int add_std_chap_et()
 }
 
 
-void make_std_chap_et_args(parenthesis *paren, char **line, int *llen)
+void make_std_chap_et_args(parenthesis *paren, wchar_t **line, int *llen)
 {
-    char *first = NULL, *second = NULL;
-    int flen = strlen("\"")+1, slen = strlen("")+1;
-    first = realloc(first, flen);
-    second = realloc(second, slen);
-    strncpy(first, "\"", strlen("\"")+1);
-    strncpy(second, "", strlen("")+1);
-    int i;
+    wchar_t *first = NULL,
+            *second = NULL,
+            *dquote = L"\"",
+            *empty = L"",
+            *fplace = L"%ls",
+            *item_separator = L", ";
+    int flen = 0, slen = 0;
 
+    wcsadd_on_heap( &first, &flen, dquote );
+    wcsadd_on_heap( &second, &slen, empty );
+
+    int i;
     for(i=0; i<paren->elems_num; ++i)
     {
         parenthesis_elem *p_es = get_paren_elems(paren->elems);
 
-        flen+=strlen("%s");
-        first = realloc(first, flen);
-        strncat(first, "%s", strlen("%s"));
-        slen+=strlen(", ");
-        second = realloc(second, slen);
-        strncat(second, ", ", strlen(", "));
-        if (p_es[i].type==TOKEN_ITEM)
-            TOK_GET_C_CODE[p_es[i].tok.potentional_types[0].type_class]
-                                [p_es[i].tok.potentional_types[0].type_num](&p_es[i].tok, &second, &slen);
-        else if(p_es[i].type==CMD_ITEM)
-            CMD_GET_C_CODE[p_es[i].cmd.cmd_class]
-                                [p_es[i].cmd.cmd_type](&p_es[i].cmd, &second, &slen);
-
-        //else if(p_es[i].type==PAREN_ITEM)
-         //   tmp = PAREN_GET_C_CODE[p_es[i].paren.type](&p_es[i].paren);
+        wcsadd_on_heap( &first, &flen, fplace );
+        wcsadd_on_heap( &second, &slen, item_separator );
+        paren_item_get_c_code( &p_es[i], &second, &slen );
     }
-    flen += strlen("\"");
-    first = realloc(first, flen);
-    strncat(first, "\"", strlen("\""));
+    wcsadd_on_heap( &first, &flen, dquote );
 
-    *llen += flen + slen;
-    *line = realloc(*line, *llen);
-    strncat(*line, first, strlen(first));
-    strncat(*line, second, strlen(second));
+    wcsadd_on_heap( line, llen, first );
+    wcsadd_on_heap( line, llen, second );
 
     free(first);
     free(second);

@@ -3,6 +3,8 @@
 **/
 #include <stdio.h>																// Make_algol.h fayllar bilen ishleyar
 #include <stdlib.h>
+#include <locale.h>
+#include <wchar.h>
 
 #include "tpl.h"
 #include "translator_to_c.h"															// Yalnyshlykly faylyn we setirin adresleri
@@ -21,16 +23,16 @@
 #define YES_CMD 1
 
 /* TPL şu bölümlerden durýar.*/
-char *parts_names[] = {
-"0. TPL ulgamy",
-"1. Giriş we faýllar bilen işleme",
-"2. Harplar",
-"3. Tokenler",
-"4. Komandalar",
-"5. Algoritm",
-"6. Global sanawlar",
-"7. Semantika",
-"8. C translator"
+wchar_t *parts_names[] = {
+L"0. TPL ulgamy",
+L"1. Giriş we faýllar bilen işleme",
+L"2. Harplar",
+L"3. Tokenler",
+L"4. Komandalar",
+L"5. Algoritm",
+L"6. Global sanawlar",
+L"7. Semantika",
+L"8. C translator"
 };
 
 /* Yalnyshlykly tekstlerin nomerleri */
@@ -101,133 +103,129 @@ int CODE7_MUST_RETURN_TYPE              = 25;
 error_item err_items[] = {
     // 0. ULGAM ********************************************************
     {0, 0, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "TPL'e niýetlenen komandany açyp bolmady"},
+        L"TPL'e niýetlenen komandany açyp bolmady"},
     {0, 1, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "Eýýäm baş faýl ötürdildi"},
+        L"Eýýäm baş faýl ötürdildi"},
     {0, 2, NO_FILE, 0, 0, 0, NO_CMD,
-        "Ýazyljak programmanyň baş faýly tanalmady.\n \
+        L"Ýazyljak programmanyň baş faýly tanalmady.\n \
 Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
     {0, 3, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli. \nBaşga faýllarda yglan edilen bolsa umumy bolmaly"},
+        L"Näbelli ülňi ulanylşy tapyldy. Ülňiler ulanmazdan öň yglan edilmeli. \nBaşga faýllarda yglan edilen bolsa umumy bolmaly"},
     {0, 4, NO_FILE, 0, 0, 0, NO_CMD,
-        "Ülňi üçin faýly tapyp bolmady"},
+        L"Ülňi üçin faýly tapyp bolmady"},
     {0, 5, NO_FILE, 0, 0, 0, NO_CMD,
-        "C translýatorynda faýllary birikdirip bolmady"},
+        L"C translýatorynda faýllary birikdirip bolmady"},
     {0, 6, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "Pragma yglan edilen maglumatlaryň faýlyny açyp bilmedi"},
+        L"Pragma yglan edilen maglumatlaryň faýlyny açyp bilmedi"},
     {0, 7, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
-        "Pragma arkaly görülýän faýllarda diňe yglan etme komandalary bolup bilýär"},
+        L"Pragma arkaly görülýän faýllarda diňe yglan etme komandalary bolup bilýär"},
     // 1. FAÝL ******************************************************
     {1, 0, NO_FILE, 0, 0, 0, NO_CMD,
-        "Kodly faýl gelmedi"},
+        L"Kodly faýl gelmedi"},
     {1, 1, YES_FILE, 0, 0, 0, NO_CMD,
-        "Kodly faýly açmak başartmady"},
+        L"Kodly faýly açmak başartmady"},
     {1, 2, YES_FILE, 0, 0, 0, NO_CMD,
-        "Faýly parsing edip bolmady. Sebäbi TPL-e gerek at hasaplanylýar"},
+        L"Faýly parsing edip bolmady. Sebäbi TPL-e gerek at hasaplanylýar"},
     // 2. HARPLAR (PARSER) ******************************************************
     {2, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Şeýle symboldan harp başlanok"},
+        L"Şeýle symboldan harp başlanok"},
     {2, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Pragma dolylygyna ýazylmady"},
+        L"Pragma dolylygyna ýazylmady"},
     {2, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Pragma tanalmady"},
+        L"Pragma tanalmady"},
     {2, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komandany gutarýan token ýetenok"},
+        L"Komandany gutarýan token ýetenok"},
     {2, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Token gaty uzyn"},
+        L"Token gaty uzyn"},
     {2, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Token gutarylmady"},
+        L"Token gutarylmady"},
     {2, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Söz tokeninde ýalňyşlyk tapyldy"},
+        L"Söz tokeninde ýalňyşlyk tapyldy"},
     {2, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Blogy ýapýan komanda ýetenok"},
+        L"Blogy ýapýan komanda ýetenok"},
     {2, 8, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Pragmalary üçburç bloklaryň içinde çagyrmak bolanok"},
+        L"Pragmalary üçburç bloklaryň içinde çagyrmak bolanok"},
     {2, 9, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Üçburç bloklaryň içinde komandanyň gutarandygyny aňladýan belgi ulanylanok. Onuň üçin birlikleri bölüji belgi ulanylýar"},
+        L"Üçburç bloklaryň içinde komandanyň gutarandygyny aňladýan belgi ulanylanok. Onuň üçin birlikleri bölüji belgi ulanylýar"},
     {2, 10, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Üçburç bloklaryň içinde beýle komandalary ulanmak bolanok"},
+        L"Üçburç bloklaryň içinde beýle komandalary ulanmak bolanok"},
     {2, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Üçburç bloklar boş bolmaly däl"},
+        L"Üçburç bloklar boş bolmaly däl"},
     // 3. TOKENLER ******************************************************
     {3, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Nädogry komanda birligi gabat gelindi"},
+        L"Nädogry komanda birligi gabat gelindi"},
     // 4. KOMANDALAR ******************************************************
     {4, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok"},
+        L"Hiç komandanyň birinji tokeniniň görnüşi şeýle token bolup bilenok"},
     {4, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Kompýuteriň ýadynda ýer ýetmedi"},
+        L"Kompýuteriň ýadynda ýer ýetmedi"},
     {4, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komanda tanalmady"},
+        L"Komanda tanalmady"},
     {4, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Ülňi üçin identifikator eýýäm ulanyldy"},
+        L"Ülňi üçin identifikator eýýäm ulanyldy"},
     {4, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
+        L"Çep we sag tarapdaky komanda birlikleriniň tipleri gabat gelenok"},
     {4, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Funksiýanyň blogynda bolmaly däl komanda gabat geldi"},
+        L"Funksiýanyň blogynda bolmaly däl komanda gabat geldi"},
     // 5. Algoritmler ******************************************************
 	// 6. Global sanawlar ******************************************************
 	// 7. Semantika ******************************************************
     {7, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komandanyň sag tarapky token tipi çep tarapdaky maglumata gabat gelenok"},   // 7.Semantika
+        L"Komandanyň sag tarapky token tipi çep tarapdaky maglumata gabat gelenok"},   // 7.Semantika
     {7, 1, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok"},
+        L"Komandanyň çep tarapky token tipi sag tarapdaky maglumata gabat gelenok"},
     {7, 2, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"},
+        L"Komandanyň sag we çep tarapdaky birlikleriniň tipleri gabat gelenok"},
     {7, 3, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Funksiýanyň argumentleriniň tipi funksiýanyň talap edýän tiplerini gabat gelenok"},
+        L"Funksiýanyň argumentleriniň tipi funksiýanyň talap edýän tiplerini gabat gelenok"},
     {7, 4, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Funksiýanyň argumentleriniň sany funksiýanyň talap edýän argument sanyna gabat gelenok"},
+        L"Funksiýanyň argumentleriniň sany funksiýanyň talap edýän argument sanyna gabat gelenok"},
     {7, 5, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Näbelli funksiýe çagyryldy"},
+        L"Näbelli funksiýe çagyryldy"},
     {7, 6, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Näbelli maglumat ulanyldy"},
+        L"Näbelli maglumat ulanyldy"},
     {7, 7, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "'A'->'B', 'B'->'A' ýagdaýy boldy. TPL'de bu mümkin däl"},
+        L"'A'->'B', 'B'->'A' ýagdaýy boldy. TPL'de bu mümkin däl"},
     {7, 8, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Näbelli global ülňi çagyrldy"},
+        L"Näbelli global ülňi çagyrldy"},
     {7, 9, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Maglumatlara laýyk global ülňi bir ýerlerde yglan edilmeli"},
+        L"Maglumatlara laýyk global ülňi bir ýerlerde yglan edilmeli"},
     {7, 10, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Çep tarapdaky identifikator yglan edilmedi"},
+        L"Çep tarapdaky identifikator yglan edilmedi"},
     {7, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Sag tarapdaky identifikator yglan edilmedi"},
+        L"Sag tarapdaky identifikator yglan edilmedi"},
     {7, 12, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Yglan edilen global ülňiniň we bu ülňiniň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
+        L"Yglan edilen global ülňiniň we bu ülňiniň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
     {7, 13, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Başlangyç 'eger' komandasy ýok"},
+        L"Başlangyç 'eger' komandasy ýok"},
     {7, 14, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Global ülňi bloklaryň içinde yglan edildi.\nGlobal ülňiler diňe faýl derejesinde yglan edilmeli"},
+        L"Global ülňi bloklaryň içinde yglan edildi.\nGlobal ülňiler diňe faýl derejesinde yglan edilmeli"},
     {7, 15, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Blogy açýan komanda ýetenok"},
+        L"Blogy açýan komanda ýetenok"},
     {7, 16, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Birsyhly sanaw, çatylynmadan öň yglan edilmeli"},
+        L"Birsyhly sanaw, çatylynmadan öň yglan edilmeli"},
     {7, 17, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Birsyhly sanawyň çatylan birlige görä içki sanawlary duşanok"},
+        L"Birsyhly sanawyň çatylan birlige görä içki sanawlary duşanok"},
     {7, 18, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Birsyhly sanawyň sanaw birligine çatylyndy. Diňe iň içki sanawlarynyň iň soňky birligine çatylyp bolýar"},
+        L"Birsyhly sanawyň sanaw birligine çatylyndy. Diňe iň içki sanawlarynyň iň soňky birligine çatylyp bolýar"},
     {7, 19, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Birsyhly sanawda saklanylýan birlikleriň möçberi, çatylylan birlikden azyny saklaýar"},
+        L"Birsyhly sanawda saklanylýan birlikleriň möçberi, çatylylan birlikden azyny saklaýar"},
     {7, 20, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Maglumatlara laýyk global birsyhly sanaw bir ýerlerde yglan edilmeli"},
+        L"Maglumatlara laýyk global birsyhly sanaw bir ýerlerde yglan edilmeli"},
     {7, 21, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Yglan edilen global birsyhly sanawyň we bu birsyhly sanawyň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
+        L"Yglan edilen global birsyhly sanawyň we bu birsyhly sanawyň yglan edilen maglumatlarynyň tipleri gabat gelenok"},
     {7, 22, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Beýan edilýän we yglan edilýän funksiýanyň gaýtarmaly maglumatynyň tipleri gabat gelmedi"},
+        L"Beýan edilýän we yglan edilýän funksiýanyň gaýtarmaly maglumatynyň tipleri gabat gelmedi"},
     {7, 23, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Beýan edilen funksiýanyň yglan edilen görnüşi tapylmady"},
+        L"Beýan edilen funksiýanyň yglan edilen görnüşi tapylmady"},
     {7, 24, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Sada tipdäki birlik bolmaly"},
+        L"Sada tipdäki birlik bolmaly"},
     {7, 25, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
-        "Maglumatyň tipi bolmaly"}
-	//"Komandanyň çep identifikatory öň yglan edilipdi",
-	 //"Komandanyň çep identifikatory ulanmazdan ozal yglan edilmeli",
-	 //"Komandanyň sag identifikatory çagyrylmazdan ozal yglan edilmeli"
+        L"Maglumatyň tipi bolmaly"}
     // 8. C transleýtor
 };
 
-/*
- * TPL'iň işlän wagty ýalňyşlyk duşanda, peýdaly maglumatlar çap edilýär.
+/** TPL'iň işlän wagty ýalňyşlyk duşanda, peýdaly maglumatlar çap edilýär.
  *
  * Funksiýanyň içindäki ulanylýan ülňiler:
  * @part - TPL'iň bölümi
@@ -238,31 +236,26 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
 **/
 void print_err(int num, token *tok)
 {
-	printf("\n\nÝALŇYŞLYK #%d.%d\n", CUR_PART, num);								// Yalnyshlyk hakda title
+	printf("%ls #%d.%d\n", L"ÝALŇYŞLYK", CUR_PART, num);								// Yalnyshlyk hakda title
 	error_item *err = get_err_inf(num);
-	if (err->file_num || err->line_num || err->char_num)
+	if (err->file_num || err->line_num || err->wchar_t_num)
 	//if (CUR_PART>=2 && CUR_PART<=7)
 	{
         if (err->file_num)
-            printf("Faýl: '%s'; ", (tok->inf_file_num!=-1)?
-                   FILES[tok->inf_file_num].source : CUR_FILE_NAME);	// Source faylda yalnyshlygyn tapylan yeri,
+            printf("%ls: '%ls'; ", L"Faýl", (tok->inf_file_num!=-1) ?
+                   FILES[tok->inf_file_num].source : CUR_FILE_NAME );	// Source faylda yalnyshlygyn tapylan yeri,
 		if (err->line_num)
         {
-            printf("Setir: %d; ", tok->inf_line_num>-1?tok->inf_line_num:CUR_LINE);
+            printf("Setir: %d; ", tok->inf_line_num>-1 ? tok->inf_line_num : CUR_LINE);
         }
-        if (err->char_num)
-            printf("Harp: '%c'; Setirdäki orny: %d", (tok->inf_char_num>0)?tok->inf_char:CUR_CHAR,
-                                                     (tok->inf_char_num)>0?tok->inf_char_num: CUR_CHAR_POS);
+        if (err->wchar_t_num)
+            printf("Harp: '%lc'; %ls: %d", (tok->inf_wchar_t_num>0) ? tok->inf_wchar_t : CUR_CHAR,
+                                                        L"Setirdäki orny",
+                                                     (tok->inf_wchar_t_num)>0 ? tok->inf_wchar_t_num : CUR_CHAR_POS);
 		printf("\n");													// yalnyshlygyn tapylan yeri
 	}
-	/*
-	if (err->code_line)
-    {
-        printf("\t\n\n");
-        printf("\t%s... şu ýerräkde\n");
-        printf("\t\n\n");
-    }*/
-	printf("%s\n\n", err->msg);	// Yalnyshlyk sozi
+
+	printf("%ls\n\n", err->msg);
 
 	free_globs();
 
@@ -273,15 +266,14 @@ void print_err(int num, token *tok)
 
 
 
-/**  Ýüze çykan ýalňyşlyk kody boýunça, ýalňyşlyk üçin gerekli maglumatlary yzyna gaýtarýar
-**/
+/**  Ýüze çykan ýalňyşlyk kody boýunça, ýalňyşlyk üçin gerekli maglumatlary yzyna gaýtarýar*/
 error_item *get_err_inf(int num)
 {
     int i, items;
     items = sizeof(err_items)/sizeof(err_items[0]);
     for (i=0; i<items; ++i)
     {
-        //printf("HAZIR: %d, SHU WAGT: %d, BARLANYAR:%d, JEMI: %d\n", i, CUR_PART, err_items[i].tpl_part, items);
+        //printf(L"HAZIR: %d, SHU WAGT: %d, BARLANYAR:%d, JEMI: %d\n", i, CUR_PART, err_items[i].tpl_part, items);
         if (err_items[i].tpl_part==CUR_PART && err_items[i].err_code==num)
             return &err_items[i];
     }

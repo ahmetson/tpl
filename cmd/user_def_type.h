@@ -10,6 +10,8 @@
 
 int is_cmd_utype(command *cmd);
 
+int is_cmd_utype_con(command *cmd);
+
 void cmd_utype_con_mod(command *cmd, int item_num);
 void cmd_utype_def_mod(command *cmd, int item_num);
 
@@ -18,6 +20,8 @@ int cmd_utype_con_return_type(command *cmd, int *type_class, int *type_num);
 int semantic_cmd_utype_con(command *cmd);
 int semantic_cmd_utype_def(command *cmd);
 
-void cmd_utype_con_c_code(command *cmd, char **l, int *llen);
+void cmd_utype_con_c_code(command *cmd, wchar_t **l, int *llen);
+
+int is_cmd_utype_def(command *cmd);
 
 #endif // CMD_USER_DEF_TYPE_H

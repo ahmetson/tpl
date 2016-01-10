@@ -13,44 +13,58 @@
 #include "token/harpl.h"
 #include "pragma/pragma.h"
 #include "main/inf.h"
+#include "main/user_def_type.h"
 #include "parenthesis.h"
 #include "algor.h"
 #include "translator_to_c.h"
 #include "error.h"
+#include "dev_debug.h"
 
-char PARSER_DEFAULT_MODE = 0;
-char STRING_PREPARE_MODE = 2;
-char STRING_MODE         = 3;
-char PARENTHESIS_MODE    = 4;
+wchar_t PARSER_DEFAULT_MODE = 0;
+wchar_t STRING_PREPARE_MODE = 2;
+wchar_t STRING_MODE         = 3;
+wchar_t PARENTHESIS_MODE    = 4;
 
 int parse(FILE *source)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 2;
 
-    // Adaty parser komandalary saýgarýar
-	//printf("Parsinge başlandy\n");
-	while((CUR_CHAR=fgetc(source))!=EOF)
+    /** The reaseon why loop is endless - Character that must be recognized
+        can be also previous one. There for in some situations getting character
+        from file doesnt required.
+    */
+	while(1)
 	{
 	    // Maglumatlar üçin
+	    if ( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if ( (CUR_CHAR=fgetwc(source))==WEOF )
+                break;
+        }
 	    update_inf();
 
-	    if(!is_valid_char())
+	    if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
 
         // 2. Pragma modyna geçmeli
-        if(CUR_CHAR==PRAGMA_START_CHAR)
+        if( CUR_CHAR==PRAGMA_START_CHAR )
         {
-            parse_pragma(source);
+            parse_pragma( source );
         }
-        else if (CUR_CHAR==PARENTHESIS_OPEN)
+        else if( CUR_CHAR==PARENTHESIS_OPEN )
         {
             parenthesis par = parse_paren(source);
             cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
 
         }
-        else if (isspace(CUR_CHAR))
+        else if (iswspace(CUR_CHAR))
         {
             continue;
         }
@@ -82,16 +96,15 @@ int parse(FILE *source)
             }
             if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
             {
-                parse_triangle_block_inside(source, &cmd);
+                parse_triangle_block_inside(source);
             }
         }
 
 	}
+
 	// Eger token bar bolsa, diymek komanda salynmandyr
 	if (cmd.items_num)
     {
-        printf("Yalnyshlyk");
-        debug_cmd(&cmd);
         print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
     }
 
@@ -105,8 +118,8 @@ int parse(FILE *source)
         block_inc *bi = get_block_by_inc_num(GLOB_BLOCK_INCLUDES-1);
         inf_tok.inf_file_num = bi->inf_file_num;
         inf_tok.inf_line_num = bi->inf_line_num;
-        inf_tok.inf_char_num = bi->inf_char_num;
-        inf_tok.inf_char     = bi->inf_char;
+        inf_tok.inf_wchar_t_num = bi->inf_wchar_t_num;
+        inf_tok.inf_wchar_t     = bi->inf_wchar_t;
 
         print_err(CODE2_REQUIRED_END_BLOCK, &inf_tok);
     }
@@ -130,10 +143,10 @@ int parse(FILE *source)
 
 
 /** TPL programma diliniň goldaýan harpymy ýa däldigini barlaýar **/
-int is_valid_char()
+int is_valid_wchar_t()
 {
-    return (isspace(CUR_CHAR) ||                                // boshluk
-        isalnum(CUR_CHAR) ||                                    // harp we san
+    return (iswspace(CUR_CHAR) ||                                // boshluk
+        iswalnum(CUR_CHAR) ||                                    // harp we san
         CUR_CHAR==CMD_END ||                                    // .
         CUR_CHAR==PRAGMA_START_CHAR ||                          // #
         CUR_CHAR==PARENTHESIS_OPEN ||                           // (; Ýaýyň açyjysy

@@ -1,4 +1,9 @@
-
+#include "../cmds.h"
+#include "../main/glob.h"
+#include "../main/inf.h"
+#include "ctrl_statement.h"
+#include "../error.h"
+#include "../token/token_types/ctrl_sttmnt.h"
 /** Dolandyryş komandanyň EGER-ÝA-ÝOGSA diýen görnüşi */
 
 /** Komandanyň üç görnüşi bolýar:
@@ -21,11 +26,7 @@
     ŞERT #8: Komandalaryň işleýşi.
 
 */
-#include "../cmds.h"
-#include "../main/glob.h"
-#include "ctrl_statement.h"
-#include "../error.h"
-#include "../token/token_types/ctrl_sttmnt.h"
+
 
 int CMD_CLASS_CTRL_STTMNT_IF = 0;
 int CMD_CLASS_CTRL_STTMNT_IFELSE = 1;
@@ -38,7 +39,7 @@ int is_cmd_ctrl_sttmnt(command *cmd)
 
     command_item *fci = get_cmd_item(cmd->items, 0);
     if (fci->type!=TOKEN_ITEM)
-        return 0;   // elmydama birinji birlik - token - achar sozi bolmaly
+        return 0;   // elmydama birinji birlik - token - awchar_t sozi bolmaly
     if (fci->tok.potentional_types[0].type_class!=TOK_CLASS_CTRL_STTMNT)
         return 0;
 
@@ -181,7 +182,7 @@ int semantic_cmd_ctrl_sttmnt(command *cmd)
 
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_ctrl_sttmnt_c_code(command *cmd, char **l, int *llen)
+void cmd_ctrl_sttmnt_c_code(command *cmd, wchar_t **l, int *llen)
 {
     command_item *e1 = get_cmd_item(cmd->items,0);
     if (e1->type==TOKEN_ITEM)

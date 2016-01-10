@@ -3,6 +3,8 @@
 #include <string.h>
 #include "logic.h"
 #include "../cmds.h"
+#include "../translator_to_c.h"
+#include "../fns.h"
 
 int CMD_LOGIC_BINAR_TYPE = 0;
 int CMD_LOGIC_MONO_TYPE  = 1;
@@ -131,86 +133,42 @@ void cmd_binar_logic_mod(command *cmd, int item_num)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_logic_c_code(command *cmd, char **l, int *llen)
+void cmd_logic_c_code(command *cmd, wchar_t **l, int *llen)
 {
     /** ŞERT #1: Logiki komandalaryň Faýla Ç kody ýazymaly:
         Iki maglumat saklaýan logiki komandalar çep we sag tarapdaky maglumatlaryň daşlarynda ýaý goýulýar,
         Sebäbi komandalar biri biriniň içine salynanda deň derejede bolýalar.
 
         Bir maglumat saklaýan logiki komandalarda çep maglumat ýaýa alynýar */
+    wchar_t *o = L"(",
+            *c = L")";
 
     if (cmd->cmd_type==CMD_LOGIC_MONO_TYPE)
     {
         command_item *e2 = get_cmd_item(cmd->items,1);
-        TOK_GET_C_CODE[e2->tok.potentional_types[0].type_class][e2->tok.potentional_types[0].type_num](&e2->tok, l, llen);
+        cmd_item_get_c_code( e2, l, llen );
 
-        *llen += strlen("(");
-        *l = realloc(*l, *llen);
-        strncat(*l, "(", strlen("("));
+        wcsadd_on_heap( l, llen, o );
 
         command_item *e1 = get_cmd_item(cmd->items,0);
-        if (e1->type==CMD_ITEM)
-        {
-            CMD_GET_C_CODE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, l, llen);
-        }
-        else if (e1->type==PAREN_ITEM)
-        {
-            paren_get_c_code(&e1->paren, l, llen);
-        }
+        cmd_item_get_c_code( e1, l, llen );
 
-        *llen += strlen(")");
-        *l = realloc(*l, *llen);
-        strncat(*l, ")", strlen(")"));
-
+        wcsadd_on_heap( l, llen, c );
     }
     else
     {
-        if (!(*llen))
-        {
-            // Çepe baglanma:
-            *llen += strlen("(")+1;
-            *l = realloc(*l, *llen);
-
-            // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-            strncpy(*l, "(", strlen("(")+1);
-        }
-        else
-        {
-            *llen += strlen("(");
-            *l = realloc(*l, *llen);
-            strncat(*l, "(", strlen("("));
-        }
+        wcsadd_on_heap( l, llen, o );
 
         command_item *e1 = get_cmd_item(cmd->items,0);
-        if (e1->type==CMD_ITEM)
-        {
-            CMD_GET_C_CODE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, l, llen);
-        }
-        else if (e1->type==PAREN_ITEM)
-        {
-            paren_get_c_code(&e1->paren, l, llen);
-        }
-
+        cmd_item_get_c_code( e1, l, llen );
 
         command_item *e2 = get_cmd_item(cmd->items,1);
-        TOK_GET_C_CODE[e2->tok.potentional_types[0].type_class][e2->tok.potentional_types[0].type_num](&e2->tok, l, llen);
-
+        cmd_item_get_c_code(e2, l, llen ); /// Tokeniň Kodyny çap edýär
 
         command_item *e3 = get_cmd_item(cmd->items,0);
-        if (e3->type==CMD_ITEM)
-        {
-            CMD_GET_C_CODE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd, l, llen);
-        }
-        else if (e3->type==PAREN_ITEM)
-        {
-            paren_get_c_code(&e3->paren, l, llen);
-        }
+        cmd_item_get_c_code(e3, l, llen );
 
-        *llen += strlen(")");
-        *l = realloc(*l, *llen);
-        strncat(*l, ")", strlen(")"));
-
+        wcsadd_on_heap( l, llen, c );
     }
-    //printf("%s\n", *l);
 }
 

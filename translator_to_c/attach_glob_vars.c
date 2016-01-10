@@ -23,7 +23,7 @@ int glob_vars_def_files_include_add(glob_ident *gi)
     // Näbelli ülňileriň ulanylan faýly
     file_item *f;
     file_incs *fi;
-    //char var_def_f[MAX_FILE_LEN];
+    //wchar_t var_def_f[MAX_FILE_LEN];
 
     int i;
 
@@ -71,14 +71,15 @@ int glob_vars_def_files_include_add(glob_ident *gi)
     // #1
 
     // 3)
-    char var_def_f[MAX_FILE_LEN] = {0};
-    strncpy(var_def_f, "\"", strlen("\"")+1);
+    wchar_t var_def_f[MAX_FILE_LEN] = {0},
+            *dquote = L"\"";
+    wcsncpy(var_def_f, dquote, wcslen(dquote)+1);
 
     // 4)
-    strncat(var_def_f, f->h_source, strlen(f->h_source));
+    wcsncat(var_def_f, f->h_source, wcslen(f->h_source));
 
     // 5)
-    strncat(var_def_f, "\"", strlen("\""));
+    wcsncat(var_def_f, dquote, wcslen(dquote));
 
     // 6)
     includes_file_add_include(fi, var_def_f);

@@ -1,3 +1,20 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "array.h"
+#include "user_def_type.h"
+#include "../translator_to_c/includes.h"
+#include "../translator_to_c.h"
+#include "../cmds.h"
+#include "../paren/types.h"
+#include "../parenthesis.h"
+#include "../main/glob.h"
+#include "../token/harpl.h"
+#include "../error.h"
+#include "../fns.h"
+#include "../main/user_def_type.h"
+#include "../main/inf.h"
+#include "../fns/fn_helpers.h"
 /** ŞERT #1: Birsyhly sanawlar bilen işlemek:
 
     Birsyhly sanawlaryň iki görnüşi bar:
@@ -256,19 +273,7 @@
     Ýogsa
         Şowsuzlyk gaýtarylýar.
 */
-#include <string.h>
-#include <stdlib.h>
-#include "array.h"
-#include "user_def_type.h"
-#include "../translator_to_c/includes.h"
-#include "../cmds.h"
-#include "../paren/types.h"
-#include "../parenthesis.h"
-#include "../main/glob.h"
-#include "../token/harpl.h"
-#include "../error.h"
-#include "../fns.h"
-#include "../main/user_def_type.h"
+
 
 int CMD_CLASS_ARR_DEF = 0;
 int CMD_CLASS_ARR_CON = 1;
@@ -296,7 +301,6 @@ int is_cmd_arr(command *cmd)
         if (ci->type==PAREN_ITEM && ci->paren.type==PAREN_TYPE_FNS_ARGS && is_param_item_int(&ci->paren))
         {
             ++next_item;
-            //debug_paren(&ci->paren);
             cmd_arr_def_mod(cmd, 0);
         }
         else if ((ci->type==TOKEN_ITEM && ci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT) ||
@@ -469,15 +473,11 @@ void cmd_arr_con_mod(command *cmd, int item_num)
             if (cmd->items_num>item_pos+1)
             {
                 command_item *tci = get_cmd_item(cmd->items, cmd->items_num-1);
-                char *line = NULL;
-                char *separator = "|";
-                len += strlen(separator)+1;
-                line = realloc(line, len);
+                wchar_t *line = NULL,
+                        *separator = L"|";
+                wcsadd_on_heap( &line, &len, separator );
 
-                strncpy(line, separator, strlen(separator)+1);
-
-                TOK_GET_C_CODE[tci->tok.potentional_types[0].type_class][tci->tok.potentional_types[0].type_num]
-                (&tci->tok, &line, &len);
+                tok_get_c_code(&tci->tok, &line, &len);
 
                 add_string_to_last_string(line);
                 free(line);
@@ -492,17 +492,11 @@ void cmd_arr_con_mod(command *cmd, int item_num)
             string_prepare(&string_tok);
             free_last_string();
 
-            char *last = NULL;
+            wchar_t *last = NULL;
 
             command_item *ci = get_cmd_item(cmd->items, cmd->items_num-1);
 
-            TOK_GET_C_CODE[ci->tok.potentional_types[0].type_class][ci->tok.potentional_types[0].type_num]
-                    (&ci->tok, &last, &len);
-/*
-            char *separator = "|";
-            len += strlen(separator);
-            last = realloc(last, len);
-            strncat(last, separator, strlen(separator));*/
+            tok_get_c_code(&ci->tok, &last, &len);
 
             add_string_to_last_string(last);
             free(last);
@@ -531,7 +525,7 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         if (cmd->ns==LOCAL)
             ident_pos = 0;
         command_item *ci = get_cmd_item(cmd->items, ident_pos);
-        char *ident = ci->tok.potentional_types[0].value;
+        wchar_t *ident = ci->tok.potentional_types[0].value;
 
         if (is_inside_fn())
         {
@@ -589,7 +583,7 @@ int semantic_cmd_arr_con(command *cmd)
     command_item *ident_ci = get_cmd_item(cmd->items, ident_num);
     command_item *elems_ci = get_cmd_item(cmd->items, ident_num+1);
 
-    char *elems = get_string_item(elems_ci->tok.potentional_types[0].string_value);
+    wchar_t *elems = get_string_item(elems_ci->tok.potentional_types[0].string_value);
 
     int type = -1, num = -1, utype_addr = -1, utype_item_addr = -1;
     ///
@@ -600,8 +594,9 @@ int semantic_cmd_arr_con(command *cmd)
             type = 3;
             if (!is_utype_arr_item(utype_addr, utype_item_addr))
             {
-                printf("%s %d: Ulanyjynyň ýasan tipiniň sanaw däl ülňisine çatylyndy\n", __FILE__, __LINE__);
-
+                #ifdef TPL_DEBUG_MODE
+                printf("%s %d: %ls", __FILE__, __LINE__, L"Ulanyjynyň ýasan tipiniň sanaw däl ülňisine çatylyndy\n");
+                #endif
             }
             else
             {
@@ -613,7 +608,7 @@ int semantic_cmd_arr_con(command *cmd)
     {
         if (is_inside_fn())
         {
-            char *ident = ident_ci->tok.potentional_types[0].value;
+            wchar_t *ident = ident_ci->tok.potentional_types[0].value;
             if ((cmd->ns==GLOB && !is_ident_used(&ident_ci->tok, 3)) || (cmd->ns==LOCAL && !is_tmp_fn_arr_ident_used(ident)) )
             {
                 CUR_PART = 7;
@@ -664,8 +659,8 @@ int semantic_cmd_arr_con(command *cmd)
     }
 
 
-    char delims = '|';
-    char **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
+    wchar_t delims = L'|';
+    wchar_t **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
     int items_num = 0;
 
     divide_string(elems, delims, &items, &items_num);
@@ -727,8 +722,7 @@ int semantic_cmd_arr_con(command *cmd)
             {
                 aii = &TMP_FUNC_ARRS_ITEMS[num][i];
             }
-
-            if (atoi(items[i])>=aii->elem_num)
+            if (wcstol(items[i], NULL, 10)>=aii->elem_num)
             {
                 if (items_num)
                 {
@@ -763,11 +757,10 @@ int semantic_cmd_arr_def(command *cmd)
     if (is_inside_fn())
     {
         command_item *ident_item = get_cmd_item(cmd->items, 2);
-        char *ident = ident_item->tok.potentional_types[0].value;
+        wchar_t *ident = ident_item->tok.potentional_types[0].value;
         if (is_ident_used(&ident_item->tok, 3) || is_tmp_fn_ident_used(ident) )
         {
             CUR_PART = 4;
-            printf("IDENT 10");
             print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
 
         }
@@ -782,7 +775,7 @@ int semantic_cmd_arr_def(command *cmd)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_arr_con_c_code(command *cmd, char **line, int *line_len)
+void cmd_arr_con_c_code(command *cmd, wchar_t **line, int *line_len)
 {
     int ident_pos = 0;
     if (cmd->ns==GLOB)
@@ -790,41 +783,28 @@ void cmd_arr_con_c_code(command *cmd, char **line, int *line_len)
 
     command_item *fci = get_cmd_item(cmd->items, ident_pos);
 
-    if (fci->type==CMD_ITEM)
-    {
-        CMD_GET_C_CODE[fci->cmd.cmd_class][fci->cmd.cmd_type](&fci->cmd, line, line_len);
-    }
-    else if (fci->type==TOKEN_ITEM)
-    {
-        TOK_GET_C_CODE[fci->tok.potentional_types[0].type_class][fci->tok.potentional_types[0].type_num](&fci->tok, line, line_len);
-    }
+    cmd_item_get_c_code( fci, line, line_len );
 
     command_item *sci = get_cmd_item(cmd->items, cmd->items_num-1);
-    char *elems = get_string_item(sci->tok.potentional_types[0].string_value);
+    wchar_t *elems = get_string_item(sci->tok.potentional_types[0].string_value);
 
-    char delims = '|';
-    char **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
+    wchar_t delims = L'|';
+    wchar_t **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy
     int items_num = 0;
 
     divide_string(elems, delims, &items, &items_num);
 
-    char *o = "[";
-    char *c = "]";
+    wchar_t *o = L"[";
+    wchar_t *c = L"]";
 
     int i;
     for (i=0; i<items_num; ++i)
     {
-        *line_len += strlen(o);
-        *line = realloc(*line, *line_len);
-        strncat(*line, o, strlen(o));
+        wcsadd_on_heap( line, line_len, o );
 
-        *line_len += strlen(items[i]);
-        *line = realloc(*line, *line_len);
-        strncat(*line, items[i], strlen(items[i]));
+        wcsadd_on_heap( line, line_len, items[i] );
 
-        *line_len += strlen(c);
-        *line = realloc(*line, *line_len);
-        strncat(*line, c, strlen(c));
+        wcsadd_on_heap( line, line_len, c );
     }
 
     if (items_num)
@@ -840,7 +820,7 @@ void cmd_arr_con_c_code(command *cmd, char **line, int *line_len)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_arr_def_c_code(command *cmd, char **line, int *line_len)
+void cmd_arr_def_c_code(command *cmd, wchar_t **line, int *line_len)
 {
     if (TEST!=100)
         return;
@@ -850,43 +830,27 @@ void cmd_arr_def_c_code(command *cmd, char **line, int *line_len)
 
     get_type_c_code(type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
 
-    *line_len += strlen(" ");
-    *line = realloc(*line, *line_len);
-    strncat(*line, " ", strlen(" "));
+    wchar_t *space = L" ";
+    wcsadd_on_heap( line, line_len, space );
+
 
     // Ulninin ady goshulyar
-    char *ident = ident_ci->tok.potentional_types[0].value;
-    *line_len += strlen(ident);
-    *line = realloc(*line, *line_len);
-    strncat(*line, ident, strlen(ident));
+    wchar_t *ident = ident_ci->tok.potentional_types[0].value;
+    wcsadd_on_heap( line, line_len, ident );
+
 
     // sanawyň elelemntleri hakda maglumat goşulýar
-    char *o = "[";
-    char *c = "]";
+    wchar_t *o = L"[",
+            *c = L"]";
     int i;
     parenthesis_elem *pe = get_paren_elems(incs_ci->paren.elems);
     for (i=0; i<incs_ci->paren.elems_num; ++i)
     {
-        *line_len += strlen(o);
-        *line = realloc(*line, *line_len);
-        strncat(*line, o, strlen(o));
-
-        char *incs = pe->tok.potentional_types[0].value;
-        *line_len += strlen(incs);
-        *line = realloc(*line, *line_len);
-        strncat(*line, incs, strlen(incs));
-
-        *line_len += strlen(c);
-        *line = realloc(*line, *line_len);
-        strncat(*line, c, strlen(c));
-
+        wchar_t *incs = pe[i].tok.potentional_types[0].value;
+        wcsadd_on_heap( line, line_len, o );
+        wcsadd_on_heap( line, line_len, incs );
+        wcsadd_on_heap( line, line_len, c );
     }
-
-    // Ülňilere başlangyç maglumatlar baglamaly
-    //get_type_init_val_c_code(1, type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
-
-    // Komanda gutardy
-    //get_cmd_end_c_code(&line, &line_len);
 }
 
 
@@ -907,7 +871,7 @@ void add_to_last_loc_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {LOCAL_ARR_DEFS_NUMS-1, i, atoi(pes[i].tok.potentional_types[0].value)};
+        array_inc_item add = {LOCAL_ARR_DEFS_NUMS-1, i, wcstol(pes[i].tok.potentional_types[0].value, NULL, 10)};
 
         (*last)[i] = add;
     }
@@ -930,7 +894,7 @@ void add_to_last_tmp_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {TMP_USER_DEF_TYPES_ARRS_NUMS-1, i, atoi(pes[i].tok.potentional_types[0].value)};
+        array_inc_item add = {TMP_USER_DEF_TYPES_ARRS_NUMS-1, i, wcstol(pes[i].tok.potentional_types[0].value, NULL, 10)};
 
         (*last)[i] = add;
     }
@@ -954,7 +918,7 @@ void add_to_last_glob_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {GLOBAL_ARR_DEFS_NUMS-1, i, atoi(pes[0].tok.potentional_types[0].value)};
+        array_inc_item add = {GLOBAL_ARR_DEFS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
 
         (*last)[i] = add;
     }
@@ -976,19 +940,19 @@ void add_to_last_dec_arr_items(command *cmd)
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {GLOBAL_ARR_DECS_NUMS-1, i, atoi(pes[0].tok.potentional_types[0].value)};
+        array_inc_item add = {GLOBAL_ARR_DECS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
         (*last)[i] = add;
     }
 }
 
-void get_arr_address_by_ident(char *ident, int *type, int *num)
+void get_arr_address_by_ident(wchar_t *ident, int *type, int *num)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
 
     // GLOBAL YGLAN EDILEN SANAWLARYN ARASYNDAN GOZLENILYAR:
     for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
     {
-        if (len==strlen(LOCAL_ARR_DEFS[i].ident) && strncmp(ident, LOCAL_ARR_DEFS[i].ident, len)==0)
+        if (len==wcslen(LOCAL_ARR_DEFS[i].ident) && wcsncmp(ident, LOCAL_ARR_DEFS[i].ident, len)==0)
         {
             *type = 1;
             *num  = i;
@@ -997,7 +961,7 @@ void get_arr_address_by_ident(char *ident, int *type, int *num)
     }
     for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
     {
-        if (len==strlen(GLOBAL_ARR_DEFS[i].ident) && strncmp(ident, GLOBAL_ARR_DEFS[i].ident, len)==0)
+        if (len==wcslen(GLOBAL_ARR_DEFS[i].ident) && wcsncmp(ident, GLOBAL_ARR_DEFS[i].ident, len)==0)
         {
             *type = 0;
             *num  = i;
@@ -1007,7 +971,7 @@ void get_arr_address_by_ident(char *ident, int *type, int *num)
     }
     for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
     {
-        if (len==strlen(GLOBAL_ARR_DECS[i].ident) && strncmp(ident, GLOBAL_ARR_DECS[i].ident, len)==0)
+        if (len==wcslen(GLOBAL_ARR_DECS[i].ident) && wcsncmp(ident, GLOBAL_ARR_DECS[i].ident, len)==0)
         {
             *type = 2;
             *num  = i;
@@ -1026,14 +990,14 @@ void global_called_arrs_add(command *cmd)
         return;
     command_item *ci = get_cmd_item(cmd->items, 1); // lci - last command item
     int  *fnum = &ci->tok.inf_file_num;
-    char *ident= ci->tok.potentional_types[0].value;
+    wchar_t *ident= ci->tok.potentional_types[0].value;
 
     /// Eger ülňi yglan edilen faýlynda çagyrylan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
     int i, len;
     for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
     {
-        if ((strlen(GLOBAL_ARR_DEFS[i].ident)==strlen(ident) &&
-            strncmp(GLOBAL_ARR_DEFS[i].ident, ident, strlen(ident))==0) &&
+        if ((wcslen(GLOBAL_ARR_DEFS[i].ident)==wcslen(ident) &&
+            wcsncmp(GLOBAL_ARR_DEFS[i].ident, ident, wcslen(ident))==0) &&
             *fnum==GLOBAL_ARR_DEFS[i].inf_file_num)
             return;
     }
@@ -1045,14 +1009,14 @@ void global_called_arrs_add(command *cmd)
         /// Eger eýýäm şeýle ülňi öňem çagyrylan bolsa, onda ikinji gezek goşmak nämä gerek?
         for(i=0; i<cv->num; ++i)
         {
-            if (strlen(cv->ident[i])==strlen(ident) && strncmp(cv->ident[i], ident, strlen(ident)==0))
+            if (wcslen(cv->ident[i])==wcslen(ident) && wcsncmp(cv->ident[i], ident, wcslen(ident)==0))
                 return;
         }
 
         cv->num++;
         cv->ident = realloc(cv->ident, sizeof(*cv->ident)*cv->num);
 
-        strncpy(cv->ident[cv->num-1], ident, strlen(ident)+1);
+        wcsncpy( cv->ident[cv->num-1], ident, wcslen( ident )+1 );
     }
     else
     {
@@ -1068,7 +1032,7 @@ void global_called_arrs_add(command *cmd)
         GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].ident = malloc(sizeof(*GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].ident));
         GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].num   = 1;
 
-        strncpy(GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].ident[0], ident, strlen(ident)+1);
+        wcsncpy( GLOBAL_CALLED_ARRS[ GLOBAL_CALLED_ARRS_NUM-1 ].ident[ 0 ], ident, wcslen( ident )+1 );
     }
 }
 
@@ -1088,15 +1052,15 @@ void work_with_called_glob_arrs()
             fi = &INCLUDES[i];
         }
 
+        wchar_t *dquote = L"\"", *dot_h = L".h";
         for(j=0; j<GLOBAL_CALLED_ARRS[i].num; ++j)
         {
             array_item *gi = glob_arrs_def_get_by_name(GLOBAL_CALLED_ARRS[i].ident[j]);
-            char arr_def_f[MAX_FILE_LEN] = {0};
-            strncpy(arr_def_f, "\"", strlen("\"")+1);
-            strncat(arr_def_f, FILES[gi->inf_file_num].name, strlen(FILES[gi->inf_file_num].name));
-            strncat(arr_def_f, ".h", strlen(".h"));
-            strncat(arr_def_f, "\"", strlen("\""));
-            //printf("%s\n", var_def_f);
+            wchar_t arr_def_f[MAX_FILE_LEN] = {0};
+            wcsncpy(arr_def_f, dquote, wcslen(dquote)+1);
+            wcsncat(arr_def_f, FILES[gi->inf_file_num].name, wcslen(FILES[gi->inf_file_num].name));
+            wcsncat(arr_def_f, dot_h, wcslen(dot_h));
+            wcsncat(arr_def_f, dquote, wcslen(dquote));
 
             includes_file_add_include(fi, arr_def_f);
         }
@@ -1104,10 +1068,10 @@ void work_with_called_glob_arrs()
 }
 
 
-void add_arr_elem_inf_c_code(char **line, int *line_len, int arr_type, int arr_num, int max_items)
+void add_arr_elem_inf_c_code(wchar_t **line, int *line_len, int arr_type, int arr_num, int max_items)
 {
-    char *o = "[";
-    char *c = "]";
+    wchar_t *o = L"[";
+    wchar_t *c = L"]";
 
     int i;
     array_inc_item *aii = NULL;
@@ -1130,21 +1094,14 @@ void add_arr_elem_inf_c_code(char **line, int *line_len, int arr_type, int arr_n
 
     for (i=0; i<max_items; ++i)
     {
-        *line_len += strlen(o);
-        *line = realloc(*line, *line_len);
-        strncat(*line, o, strlen(o));
+        wcsadd_on_heap( line, line_len, o );
 
         array_inc_item *aii_e = &aii[i];
-        char val[21]; // SAN tipde maksimum ulanyp boljak sanyn uzynlygy
-        sprintf(val, "%d", aii_e->elem_num);
-        *line_len += strlen(val);
-        *line = realloc(*line, *line_len);
-        strncat(*line, val, strlen(val));
+        wchar_t val[21]; // SAN tipde maksimum ulanyp boljak sanyn uzynlygy
+        swprintf(val, L"%d", aii_e->elem_num);
+        wcsadd_on_heap( line, line_len, val );
 
-        *line_len += strlen(c);
-        *line = realloc(*line, *line_len);
-        strncat(*line, c, strlen(c));
-
+        wcsadd_on_heap( line, line_len, c );
     }
 }
 

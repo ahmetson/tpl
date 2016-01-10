@@ -7,6 +7,6 @@ void assign_cmd_mod(command *cmd, int item_num);
 int semantic_cmd_assign(command *cmd);
 
 // C translator
-void cmd_assign_c_code(command *cmd, char **l, int *len);
+void cmd_assign_c_code(command *cmd, wchar_t **l, int *len);
 
 #endif // CMD_ASSIGN_H

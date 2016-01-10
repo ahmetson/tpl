@@ -8,6 +8,8 @@
 #include "../cmd/user_def_type.h"
 #include "fn.h"
 #include "fn_helpers.h"
+#include "../fns.h"
+#include "../translator_to_c.h"
 
 /** Funksiýe yglan edilende, içinde bolup bilýan komandalar:
     Klasy we tipini görkezmek üçin, sanaw iki basgançakly bolmaly.
@@ -61,13 +63,13 @@ void add_arg_to_last_func(func_arg arg, int pos)
 
     \fnName - gözlemeli funksiýanyň ady
 **/
-int is_fn_exist(char *fn_name)
+int is_fn_exist(wchar_t *fn_name)
 {
     int i, len;
     for (i=0; i<FUNCS_NUM; ++i)
     {
-        len = strlen(fn_name)>strlen(FUNCS[i].name)?strlen(fn_name):strlen(FUNCS[i].name);
-        if (strncmp(fn_name, FUNCS[i].name, len)==0)
+        len = wcslen(fn_name)>wcslen(FUNCS[i].name)?wcslen(fn_name):wcslen(FUNCS[i].name);
+        if (wcsncmp(fn_name, FUNCS[i].name, len)==0)
             return 1;
     }
     return 0;
@@ -80,13 +82,13 @@ int is_fn_exist(char *fn_name)
 
     \fnName - maglumatlary alynmaly funksiýanyň ady
 **/
-func *fn_get_by_name(char *fn_name)
+func *fn_get_by_name(wchar_t *fn_name)
 {
     int i, len;
     for (i=0; i<FUNCS_NUM; ++i)
     {
-        len = strlen(fn_name)>strlen(FUNCS[i].name)?strlen(fn_name):strlen(FUNCS[i].name);
-        if (strncmp(fn_name, FUNCS[i].name, len)==0)
+        len = wcslen(fn_name)>wcslen(FUNCS[i].name)?wcslen(fn_name):wcslen(FUNCS[i].name);
+        if (wcsncmp(fn_name, FUNCS[i].name, len)==0)
         {
             return &FUNCS[i];
         }
@@ -96,40 +98,25 @@ func *fn_get_by_name(char *fn_name)
 }
 
 
-void make_user_def_fn_args(parenthesis *paren, char **line, int *llen)
+void make_user_def_fn_args(parenthesis *paren, wchar_t **line, int *llen)
 {
-    char *args = NULL;
-    int args_len = strlen(" ")+1;
-    args = realloc(args, args_len);
-    strncpy(args, " ", strlen(" ")+1);
+    wchar_t *space = L" ",
+            *dot_space = L", ";
     int i;
+
+    wcsadd_on_heap( line, llen, space );
 
     for(i=0; i<paren->elems_num; ++i)
     {
         parenthesis_elem *p_es = get_paren_elems(paren->elems);
-
-        if (p_es[i].type==TOKEN_ITEM)
-            TOK_GET_C_CODE[p_es[i].tok.potentional_types[0].type_class]
-                                [p_es[i].tok.potentional_types[0].type_num](&p_es[i].tok, &args, &args_len);
-        else if(p_es[i].type==CMD_ITEM)
-            CMD_GET_C_CODE[p_es[i].cmd.cmd_class]
-                                [p_es[i].cmd.cmd_type](&p_es[i].cmd, &args, &args_len);
+        paren_item_get_c_code( &p_es[i], line, llen );
 
         if (i<paren->elems_num-1)
         {
-            args_len+=strlen(", ");
-            args = realloc(args, args_len);
-            strncat(args, ", ", strlen(", "));
+            wcsadd_on_heap( line, llen, dot_space );
         }
 
-        //else if(p_es[i].type==PAREN_ITEM)
-         //   tmp = PAREN_GET_C_CODE[p_es[i].paren.type](&p_es[i].paren);
     }
-    *llen += args_len;
-    *line = realloc(*line, *llen);
-    strncat(*line, args, strlen(args));
-
-    free(args);
 }
 
 

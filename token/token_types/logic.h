@@ -20,19 +20,19 @@ extern int TOK_CLASS_LOGIC_NOT_TYPE;
 
 
 /// Tokenleriň başlap bilýän harplary
-extern char LOGIC_AND_CHAR;
-extern char LOGIC_OR_CHAR;
-extern char LOGIC_NOT_CHAR;
+extern wchar_t LOGIC_AND_CHAR;
+extern wchar_t LOGIC_OR_CHAR;
+extern wchar_t LOGIC_NOT_CHAR;
 
 
 
 // Arifmetiki operatorlar üçin ulanylýan harplar.
 // Ikinji element bolsa, C dilinde, arifmetiki operatorlar üçin ulanylýan harp ekwiwalentleri
-extern char *TOK_CLASS_LOGIC_CHARS[TOK_CLASS_LOGIC_TYPES_NUM][2];
+extern wchar_t *TOK_CLASS_LOGIC_CHARS[TOK_CLASS_LOGIC_TYPES_NUM][2];
 
 // Debaglamak üçin
-extern char *LOGIC_TOK_NUM_WORDS[TOK_CLASS_LOGIC_TYPES_NUM];
+extern wchar_t *LOGIC_TOK_NUM_WORDS[TOK_CLASS_LOGIC_TYPES_NUM];
 
-void tok_logic_c_code(token *tok, char **l, int *llen);
+void tok_logic_c_code(token *tok, wchar_t **l, int *llen);
 
 #endif // TOKEN_TOKEN_TYPES_LOGIC_H

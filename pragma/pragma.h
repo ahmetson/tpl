@@ -9,34 +9,34 @@
 #define PRAGMA_H
 #include "../main/glob.h"
 #ifndef PRAGMA_MAIN_FILE
-#define PRAGMA_MAIN_FILE "b1"
-#define PRAGMA_INCLUDE_GLOB_DEC '@'
-#define PRAGMA_ADDR_QUOTE '"'
-#define PRAGMA_INCLUDE_GLOB_DEC_FILE "@\""
+#define PRAGMA_MAIN_FILE L"b1"
+#define PRAGMA_INCLUDE_GLOB_DEC L'@'
+#define PRAGMA_ADDR_QUOTE L'"'
+#define PRAGMA_INCLUDE_GLOB_DEC_FILE L"@\""
 #define PRAGMAS_NUM 2
 #define MAX_PRAGMA_LEN 3
 #endif // PRAGMA_MAIN_FILE
 
 typedef struct {
-	char name[MAX_PRAGMA_LEN+MAX_FILE_LEN];
+	wchar_t name[MAX_PRAGMA_LEN+MAX_FILE_LEN];
 	int is_compl;
 }pragma;
 
 typedef struct{
-	char name[MAX_PRAGMA_LEN+MAX_FILE_LEN];
+	wchar_t name[MAX_PRAGMA_LEN+MAX_FILE_LEN];
 	void (*act)(pragma *prag);
 }act_pragma_item;
 
 // Pragmalar name harpdan bashlayar
-extern char PRAGMA_START_CHAR;
+extern wchar_t PRAGMA_START_CHAR;
 // Pragmalar name harpdan gutaryar
-extern char PRAGMA_END_CHAR;
+extern wchar_t PRAGMA_END_CHAR;
 
 // Pragma saygaryan parser boluminin kody
-extern char PRAGMA_MODE;
+extern wchar_t PRAGMA_MODE;
 
 // Programmanyn tanayan we ishleyan pragmalarynyn sanawy
-extern char *pragmas[];
+extern wchar_t *pragmas[];
 
 // Parserde pragma bilen işleýän bölüm
 void parse_pragma(FILE *s);

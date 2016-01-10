@@ -32,7 +32,7 @@ void empty_token(token *tok);                                       // 2) boşad
 int  is_token_empty(token *tok);                                    // 3) boşdygyny barlaýar
 
                                                                     // TOKEN:
-int recognize_token(token *tok, char *val);                         // 1)tanalýar,
+int recognize_token(token *tok, wchar_t *val);                         // 1)tanalýar,
 int add_potentional_token_type(token *tok, token_type tok_type);    // 2)içine bolup biljek tipleri goshulyar
 int finishize_token(token *tok);                                    // 3)komanda salmana taýynlanýar
 #include "cmds.h"
@@ -45,8 +45,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
 int empty_tok_return_type(token *tok, int *tok_class, int *tok_num);
 
 
-void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char **l, int *llen);
-void empty_tok_c_code(token *tok, char **l, int *llen);
+void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, wchar_t **l, int *llen);
+void empty_tok_c_code(token *tok, wchar_t **l, int *llen);
 
 token get_empty_tok();
 

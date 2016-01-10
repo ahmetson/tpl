@@ -23,6 +23,8 @@
 #include "dev_debug.h"
 #include "error.h"
 #include "main/inf.h"
+#include "fns/fn_helpers.h"
+#include "fns.h"
 
 // Komandanyň birliginiň nomeri
 const int UNKNOWN_ITEM  = 0;
@@ -163,7 +165,7 @@ int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
 
 
 // Komandalaryň klasy we tipi boýunça, komandanyň tekstini ýazýan funksiýa çagyrylýar.
-void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len) = {
+void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, wchar_t **l, int *len) = {
     {empty_cmd_c_code,          empty_cmd_c_code},
     {cmd_def_var_as_subcmd_c_code, empty_cmd_c_code},   //CMD_CLASS_DEF_VAR = 1;
     {cmd_assign_c_code,         cmd_assign_c_code},     //CMD_CLASS_ASSIGN = 2;
@@ -182,7 +184,7 @@ void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l
 };
 
 
-void init_cmd(command *cmd, char free_items)
+void init_cmd(command *cmd, wchar_t free_items)
 {
 	if (free_items && cmd->items_num)
 	{
@@ -206,7 +208,6 @@ int recognize_cmd(command *cmd)
 	// Komandany saygaryp bolmady ya ol gutarylmadyk
 	if ((cmd->cmd_class<1 && cmd->cmd_type<1) || !cmd->is_compl)
 	{
-		//debug_cmd(cmd);
 		return 0;
     }
 	// Komandany saygaryp boldy
@@ -279,8 +280,7 @@ int work_with_cmd()
 	// Komanda saygarylyp showly gutardy
 	if (!recognize_cmd(&cmd))
 	{
-        printf("SALAM 2");
-		print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
+        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
 	}
 	// Eger komanda funksiyanyn ichinde bolsa,
     //      bolup biljek komandalara barlanyar.
@@ -290,7 +290,6 @@ int work_with_cmd()
     }
     if (is_fn_def(&cmd))
     {
-        //debug_cmd(&cmd);
         check_semantics(&cmd);
         prepare_tmp_fn_data_container(&cmd);
     }
@@ -347,7 +346,7 @@ int empty_cmd_checking_semantic(command *cmd)
     return 0;
 }
 
-void empty_cmd_c_code(command *cmd, char **l, int *len)
+void empty_cmd_c_code(command *cmd, wchar_t **l, int *len)
 {
     return;
 }
@@ -523,8 +522,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     /// #2.3.d.II)
                     if (parse_cmd(cmd)  && cmd->is_compl)
                     {
-                        //printf("KOMANDA AFTER: %d, %d\n", cmd->items, cmd->items_num);
-                        //    debug_cmd(cmd);
                         /// #2.3.d.II.1)
                         init_cmd(&new_subcmd, 0);
                         new_subcmd = *cmd;
@@ -570,8 +567,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                         if (!parse_cmd(cmd))
                         {
                             /// #2.3.d.II.6.a)
-                            //debug_cmd(cmd);
-                            printf("SALAM 51");
                             print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                         }
                         add_to_def_var_list(cmd);
@@ -582,7 +577,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     else
                     {
                         /// #2.3.d.II.7)
-                        printf("SALAM 40");
                         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                     }
                 }
@@ -635,8 +629,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                         free(TMP_CMD_ITEMS_LIST);
                         TMP_CMD_ITEMS_LIST = NULL;
                         /// #2.3.e.ÝII.2)
-                        //debug_cmd(cmd);
-                        printf("SALAM 50");
                         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                     }
                 }
@@ -647,8 +639,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     free(TMP_CMD_ITEMS_LIST);
                     TMP_CMD_ITEMS_LIST = NULL;
                     /// #2.3.e.IÜ)
-                    debug_cmd(cmd);
-                    printf("SALAM 71");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                 }
             }
@@ -716,7 +706,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     free(TMP_CMD_ITEMS_LIST);
                     TMP_CMD_ITEMS_LIST = NULL;
 
-                    printf("SALAM 60");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(lc));
                 }
                 else
@@ -749,10 +738,8 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                     if (!parse_cmd(cmd))
                     {
                         /// #3.1.d.III.1)
-                        printf("SALAM 60");
                         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                     }
-                    //debug_cmd(cmd);
                 }
             }
             else
@@ -778,14 +765,11 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 if (!parse_cmd(lc))
                 {
                     /// #3.1.ä.I)
-                    printf("SALAM 21");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(lc));
                 }
                 else if (!parse_cmd(cmd))
                 {
-                    //debug_cmd(cmd);
-                     /// 1.b.ä.I)
-                    printf("SALAM 22");
+                    /// 1.b.ä.I)
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                 }
                 add_to_def_var_list(lc);
@@ -851,7 +835,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
             if (!parse_cmd(cmd))
             {
                 /// #4.6.a)
-                printf("SALAM 70\n");
                 print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
             }
         }
@@ -862,23 +845,18 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
         {
             if (item_type==TOKEN_ITEM)
             {
-                debug_token(&t);
                 print_err(CODE4_CANT_ADD_TOKEN, &t);
             }
             else if(item_type==CMD_ITEM)
             {
-                debug_cmd(&c);
                 print_err(CODE4_CANT_ADD_TOKEN, (token *)inf_get_last_token(&c));
             }
             else if(item_type==PAREN_ITEM)
             {
-                debug_paren(&p);
                 print_err(CODE4_CANT_ADD_TOKEN, &inf_tok);
             }
         }
-        //if (cmd->items_num==1)
-         //   debug_cmd(cmd);
-        //printf("komanda barlanmana gechmeli\n");
+
         /// C)
 
         if (!parse_cmd(cmd))
@@ -932,7 +910,6 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 /// C.I.4)
                 if (!parse_cmd(cmd))
                 {
-                    printf("SALAM 5");
                     /// C.I.4.a)
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                 }
@@ -956,15 +933,12 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 new_subcmd.items_num = 1;
                 new_subcmd.items = subcmd_items_add(new_subcmd.items_num);
                 put_cmd_item(new_subcmd.items , 0, cmd_tok_item);
-                //debug_cmd(&new_subcmd);
 
                 /// C.I.7)
                 if (!parse_cmd(&new_subcmd))
                 {
                     cmd->items_num++;
-                    //debug_cmd(cmd);
                     /// C.I.7.a)
-                    printf("SALAM 7");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&new_subcmd));
                 }
 
@@ -997,13 +971,8 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
 
                 if (!parse_cmd(cmd))
                 {
-                    //if (is_cmd_not_compl_item_exist(cmd, 0) && !is_cmd_item_can_be_needed(cmd))
-                    //{
                     /// C.I.9.a)
-                    //debug_cmd(cmd);
-                    printf("SALAM 9");
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                    //}
                 }
             }
         }
@@ -1056,9 +1025,7 @@ int subcmd_items_add(unsigned int items_num)
     /// Komandanyň pod sanawynda hökman bir birlik bolaýmaly
     if (!items_num)
     {
-        printf("SALAM 41");
         CUR_PART = 4;
-				//printf("Ichki komandalar uchin yer taplymady\n");
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
     }
     ++GLOB_SUBCMDS_NUM;
@@ -1068,9 +1035,7 @@ int subcmd_items_add(unsigned int items_num)
         GLOB_SUBCMD_ITEMS_LIST = tmp;
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
-        printf("SALAM 11");
         CUR_PART = 4;
-				//printf("Ichki komandalar uchin yer taplymady\n");
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
     }
 
@@ -1087,7 +1052,7 @@ command_item **main_cmd_add(unsigned int items_num)
     /// Komandanyň pod sanawynda hökman bir birlik bolaýmaly
     if (!items_num)
     {
-        printf("SALAM 41");
+        printf("SALAM 41: %s\n", __FILE__);
         CUR_PART = 4;
 
     }
@@ -1096,7 +1061,7 @@ command_item **main_cmd_add(unsigned int items_num)
         MAIN_CMD_ITEMS_LIST = tmp;
     if (tmp==NULL)
     {
-        printf("SALAM YALNYDHLYK\n");
+        printf("SALAM YALNYDHLYK:  %s\n", __FILE__);
     }
 
     return &MAIN_CMD_ITEMS_LIST;
@@ -1135,9 +1100,9 @@ void glob_vars_decl_add(command *cmd)
     glob_ident gi;
     gi.type_class = t1->potentional_types[0].type_class;
     gi.type_num   = t1->potentional_types[0].type_num;
-    strncpy(gi.name, t2->potentional_types[0].value, strlen(t2->potentional_types[0].value)+1);
-    gi.inf_char = t1->inf_char;
-    gi.inf_char_num = t1->inf_char_num;
+    wcsncpy(gi.name, t2->potentional_types[0].value, wcslen(t2->potentional_types[0].value)+1);
+    gi.inf_wchar_t = t1->inf_wchar_t;
+    gi.inf_wchar_t_num = t1->inf_wchar_t_num;
     gi.inf_line_num = t1->inf_line_num;
     gi.inf_file_num = t1->inf_file_num;
 
@@ -1166,9 +1131,9 @@ void glob_arrs_decl_add(command *cmd)
     array_item ai;
     ai.type_class = t1->potentional_types[0].type_class;
     ai.type_num   = t1->potentional_types[0].type_num;
-    strncpy(ai.ident, t2->potentional_types[0].value, strlen(t2->potentional_types[0].value)+1);
-    ai.inf_char = t1->inf_char;
-    ai.inf_char_num = t1->inf_char_num;
+    wcsncpy(ai.ident, t2->potentional_types[0].value, wcslen(t2->potentional_types[0].value)+1);
+    ai.inf_wchar_t = t1->inf_wchar_t;
+    ai.inf_wchar_t_num = t1->inf_wchar_t_num;
     ai.inf_line_num = t1->inf_line_num;
     ai.inf_file_num = t1->inf_file_num;
     ai.incs = yay_ci->paren.elems_num;
@@ -1197,36 +1162,36 @@ void glob_fns_decl_add(command *cmd)
 
 
 
-int is_glob_var_dec_exist(char *ident)
+int is_glob_var_dec_exist(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<GLOBAL_VAR_DECS_NUMS; ++i)
     {
-        if (strlen(GLOBAL_VAR_DECS[i].name)==len && strncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
+        if (wcslen(GLOBAL_VAR_DECS[i].name)==len && wcsncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
             return 1;
     }
     return 0;
 }
 
 
-int is_glob_arr_dec_exist(char *ident)
+int is_glob_arr_dec_exist(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
     {
-        if (strlen(GLOBAL_ARR_DECS[i].ident)==len && strncmp(GLOBAL_ARR_DECS[i].ident, ident, len)==0)
+        if (wcslen(GLOBAL_ARR_DECS[i].ident)==len && wcsncmp(GLOBAL_ARR_DECS[i].ident, ident, len)==0)
             return 1;
     }
     return 0;
 }
 
 
-void get_glob_var_dec_value_type(char *ident, int *c, int *t)
+void get_glob_var_dec_value_type(wchar_t *ident, int *c, int *t)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for(i=0; i<GLOBAL_VAR_DECS_NUMS; ++i)
     {
-        if (strlen(GLOBAL_VAR_DECS[i].name)==len && strncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
+        if (wcslen(GLOBAL_VAR_DECS[i].name)==len && wcsncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
         {
             *c = GLOBAL_VAR_DECS[i].type_class;
             *t = GLOBAL_VAR_DECS[i].type_num;
@@ -1244,8 +1209,8 @@ void  work_with_glob_var_decs()
         if (!is_glob_var_def_exist(GLOBAL_VAR_DECS[j].name))
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = GLOBAL_VAR_DECS[j].inf_char;
-            inf_tok.inf_char_num = GLOBAL_VAR_DECS[j].inf_char_num;
+            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
             inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
             inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_VAR_MUST_DEF, &inf_tok);
@@ -1255,8 +1220,8 @@ void  work_with_glob_var_decs()
         if (!(gi->type_class==GLOBAL_VAR_DECS[j].type_class && gi->type_num==GLOBAL_VAR_DECS[j].type_num))
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = GLOBAL_VAR_DECS[j].inf_char;
-            inf_tok.inf_char_num = GLOBAL_VAR_DECS[j].inf_char_num;
+            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
             inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
             inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_VAR_NOT_MATCH_DATA_TYPE, &inf_tok);
@@ -1272,8 +1237,8 @@ void  work_with_glob_arr_decs()
         if (!is_glob_arr_def_exist(GLOBAL_ARR_DECS[j].ident))
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = GLOBAL_ARR_DECS[j].inf_char;
-            inf_tok.inf_char_num = GLOBAL_ARR_DECS[j].inf_char_num;
+            inf_tok.inf_wchar_t     = GLOBAL_ARR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOBAL_ARR_DECS[j].inf_wchar_t_num;
             inf_tok.inf_line_num = GLOBAL_ARR_DECS[j].inf_line_num;
             inf_tok.inf_file_num = GLOBAL_ARR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_ARR_MUST_DEF, &inf_tok);
@@ -1283,8 +1248,8 @@ void  work_with_glob_arr_decs()
         if (!(gi->type_class==GLOBAL_ARR_DECS[j].type_class && gi->type_num==GLOBAL_ARR_DECS[j].type_num))
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = GLOBAL_VAR_DECS[j].inf_char;
-            inf_tok.inf_char_num = GLOBAL_VAR_DECS[j].inf_char_num;
+            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
             inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
             inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_ARR_NOT_MATCH_DATA_TYPE, &inf_tok);
@@ -1301,8 +1266,8 @@ void work_with_glob_fn_decs()
         if (!is_fn_name_used(DEC_FUNCS[j].name))
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = DEC_FUNCS[j].inf_char;
-            inf_tok.inf_char_num = DEC_FUNCS[j].inf_char_pos;
+            inf_tok.inf_wchar_t     = DEC_FUNCS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = DEC_FUNCS[j].inf_wchar_t_pos;
             inf_tok.inf_line_num = DEC_FUNCS[j].inf_line_pos;
             inf_tok.inf_file_num = DEC_FUNCS[j].file_num;
             print_err(CODE7_FN_NOT_DEF, &inf_tok);
@@ -1314,8 +1279,8 @@ void work_with_glob_fn_decs()
         if (FUNCS[fn].args_num != DEC_FUNCS[j].args_num)
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = DEC_FUNCS[j].inf_char;
-            inf_tok.inf_char_num = DEC_FUNCS[j].inf_char_pos;
+            inf_tok.inf_wchar_t     = DEC_FUNCS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = DEC_FUNCS[j].inf_wchar_t_pos;
             inf_tok.inf_line_num = DEC_FUNCS[j].inf_line_pos;
             inf_tok.inf_file_num = DEC_FUNCS[j].file_num;
             /// Beýan edilýän funksiýa, yglan edilýän funksiýa ýaly deň möçberde argument kabul edenok
@@ -1330,8 +1295,8 @@ void work_with_glob_fn_decs()
                     FUNC_ARGS[fn][i].type_num  !=DEC_FUNC_ARGS[j][i].type_num)
                 {
                     CUR_PART = 7;
-                    inf_tok.inf_char     = DEC_FUNCS[j].inf_char;
-                    inf_tok.inf_char_num = DEC_FUNCS[j].inf_char_pos;
+                    inf_tok.inf_wchar_t     = DEC_FUNCS[j].inf_wchar_t;
+                    inf_tok.inf_wchar_t_num = DEC_FUNCS[j].inf_wchar_t_pos;
                     inf_tok.inf_line_num = DEC_FUNCS[j].inf_line_pos;
                     inf_tok.inf_file_num = DEC_FUNCS[j].file_num;
                     /// Beýan edilýän we yglan edilýän funksiýadaky argumentleriň tipleri gabat gelmedi
@@ -1344,8 +1309,8 @@ void work_with_glob_fn_decs()
             FUNCS[fn].return_type!=DEC_FUNCS[j].return_type)
         {
             CUR_PART = 7;
-            inf_tok.inf_char     = DEC_FUNCS[j].inf_char;
-            inf_tok.inf_char_num = DEC_FUNCS[j].inf_char_pos;
+            inf_tok.inf_wchar_t     = DEC_FUNCS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = DEC_FUNCS[j].inf_wchar_t_pos;
             inf_tok.inf_line_num = DEC_FUNCS[j].inf_line_pos;
             inf_tok.inf_file_num = DEC_FUNCS[j].file_num;
             /// Beýan edilýän we yglan edilýän funksiýanyň gaýtarmaly maglumatynyň tipleri gabat gelmedi
@@ -1355,40 +1320,16 @@ void work_with_glob_fn_decs()
 }
 
 
-void cmd_wrapper_c_code(char **l, int *llen)
+void cmd_wrapper_c_code(wchar_t **l, int *llen)
 {
-    char *cmd_end = "; \n";
-
-
-    *llen += strlen(cmd_end);
-    *l = realloc(*l, *llen);
-
-    if ((*llen-strlen(cmd_end))==0)
-    {
-        *llen += 1;
-        *l = realloc(*l, *llen);
-        strncpy(*l,cmd_end,strlen(cmd_end)+1);
-    }
-    else
-        strncat(*l,cmd_end,strlen(cmd_end));
+    wchar_t *cmd_end = L"; \n";
+    wcsadd_on_heap( l, llen, cmd_end );
 }
 
-void cmd_block_wrapper_c_code(char **l, int *llen)
+void cmd_block_wrapper_c_code(wchar_t **l, int *llen)
 {
-    char *cmd_end = " \n";
-
-
-    *llen += strlen(cmd_end);
-    *l = realloc(*l, *llen);
-
-    if ((*llen-strlen(cmd_end))==0)
-    {
-        *llen += 1;
-        *l = realloc(*l, *llen);
-        strncpy(*l,cmd_end,strlen(cmd_end)+1);
-    }
-    else
-        strncat(*l,cmd_end,strlen(cmd_end));
+    wchar_t *block_end = L" \n";
+    wcsadd_on_heap( l, llen, block_end );
 }
 
 
@@ -1444,7 +1385,7 @@ void put_cmd_item(int cmd_num, int item_num, command_item ci)
 }
 
 
-int is_cmd_not_compl_item_exist(command *cmd, char rec)
+int is_cmd_not_compl_item_exist(command *cmd, wchar_t rec)
 {
     int i;
     for (i=0; i<cmd->items_num; ++i)

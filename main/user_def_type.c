@@ -2,15 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "user_def_type.h"
+#include "inf.h"
+#include "../parser.h"
 #include "../cmd/user_def_type.h"
 #include "../translator_to_c.h"
 #include "../error.h"
 #include "../pragma/pragma.h"
 #include "../token/harpl.h"
+#include "../fns.h"
 #include "conv_basic_types.h"
 
-char             *USER_DEF_TYPES_SOURCE_NAME_NO_H = "_tpl_utypes";
-char             *USER_DEF_TYPES_SOURCE_NAME = "_tpl_utypes.h";
+wchar_t             *USER_DEF_TYPES_SOURCE_NAME_NO_H = L"_tpl_utypes";
+wchar_t             *USER_DEF_TYPES_SOURCE_NAME      = L"_tpl_utypes.h";
 
 utype_type       *USER_DEF_TYPES = NULL;
 utype_item_type **USER_DEF_TYPE_ITEMS = NULL;
@@ -28,13 +31,13 @@ array_item       *TMP_USER_DEF_TYPES_ARRS = NULL;
 int               TMP_USER_DEF_TYPES_ARRS_NUMS = 0;
 
 
-int get_utype_addr(char *ident, int *utype_addr)
+int get_utype_addr(wchar_t *ident, int *utype_addr)
 {
-    int i, len = strlen(ident), utype_len = 0;
+    int i, len = wcslen(ident), utype_len = 0;
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
-        utype_len = strlen(USER_DEF_TYPES[i].ident);
-        if (utype_len==len && strncmp(ident, USER_DEF_TYPES[i].ident, len)==0)
+        utype_len = wcslen(USER_DEF_TYPES[i].ident);
+        if (utype_len==len && wcsncmp(ident, USER_DEF_TYPES[i].ident, len)==0)
         {
             *utype_addr = i;
             return 1;
@@ -44,14 +47,14 @@ int get_utype_addr(char *ident, int *utype_addr)
 }
 
 /// Tapylsa 1, tapylmasa 0-lyk ugradýar.
-int get_utype_item_addr(int utype_num, char *item_ident, int *utype_item_addr)
+int get_utype_item_addr(int utype_num, wchar_t *item_ident, int *utype_item_addr)
 {
-    int i, item_len = strlen(item_ident), utypeitem_len = -1;
+    int i, item_len = wcslen(item_ident), utypeitem_len = -1;
     for (i=0; i<USER_DEF_TYPES[utype_num].items_num; ++i)
     {
-        utypeitem_len = strlen(USER_DEF_TYPE_ITEMS[utype_num][i].ident);
+        utypeitem_len = wcslen(USER_DEF_TYPE_ITEMS[utype_num][i].ident);
         if (item_len==utypeitem_len &&
-            strncmp(item_ident, USER_DEF_TYPE_ITEMS[utype_num][i].ident, item_len)==0)
+            wcsncmp(item_ident, USER_DEF_TYPE_ITEMS[utype_num][i].ident, item_len)==0)
         {
             *utype_item_addr=i;
             return 1;
@@ -156,7 +159,7 @@ int get_utype_item_addr_by_cmd(command *cmd, int *utype_item_addr)
         return 0;
 
     command_item *tci = get_cmd_item(cmd->items, 2);
-    char *item_ident = tci->tok.potentional_types[0].value;
+    wchar_t *item_ident = tci->tok.potentional_types[0].value;
     return get_utype_item_addr(tmp_num, item_ident, utype_item_addr);
 }
 
@@ -182,7 +185,7 @@ int get_utype_item_type_by_cmd(command *cmd, int *ret_class, int *ret_type)
     }
 
     command_item *tci = get_cmd_item(cmd->items, 2);
-    char *item_ident = tci->tok.potentional_types[0].value;
+    wchar_t *item_ident = tci->tok.potentional_types[0].value;
     return get_utype_item_type(utype_num, item_ident, ret_class, ret_type);
 }
 
@@ -198,7 +201,7 @@ int get_utype_item_type_by_cmd(command *cmd, int *ret_class, int *ret_type)
 
     !!
 */
-int get_utype_item_type(int utype_num, char *item_ident, int *ret_class, int *ret_type)
+int get_utype_item_type(int utype_num, wchar_t *item_ident, int *ret_class, int *ret_type)
 {
     int item_num = -1;
     if (!get_utype_item_addr(utype_num, item_ident, &item_num))
@@ -223,12 +226,13 @@ int get_arr_item_type_by_cmd(command *cmd, int *ret_class, int *ret_type)
 
 void add_utypes_c_code_file()
 {
-    char h_path[MAX_FILE_LEN] = {0};
-	strncat(h_path, C_SOURCE_FOLDER, strlen(C_SOURCE_FOLDER));
-	strncat(h_path, "\\", strlen("\\"));
-	strncat(h_path, USER_DEF_TYPES_SOURCE_NAME, strlen(USER_DEF_TYPES_SOURCE_NAME));
+    wchar_t *dquote = L"\\";
+    wchar_t h_path[MAX_FILE_LEN] = {0};
+	wcsncat(h_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
+	wcsncat(h_path, dquote, wcslen(dquote));
+	wcsncat(h_path, USER_DEF_TYPES_SOURCE_NAME, wcslen(USER_DEF_TYPES_SOURCE_NAME));
 
-	FILE *h_source = fopen(h_path, "w");
+	FILE *h_source = _wfopen(h_path, L"w, ccs=UTF-8");
 
 	prepare_h_source(h_source, USER_DEF_TYPES_SOURCE_NAME_NO_H);
 
@@ -243,9 +247,10 @@ void add_utypes_c_code_file()
 void add_utype_define_c_code(FILE *f)
 {
     int i, j, llen = 0, closer_len = 0;
-    char *utype_opener = "typedef struct{\n";
-    char *utype_closer_first = "} ";
-    char *line = NULL;
+    wchar_t *utype_opener = L"typedef struct{\n",
+            *utype_closer_first = L"} ",
+            *space = L" ";
+    wchar_t *line = NULL;
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
         // Tip açýan kodly setir
@@ -254,7 +259,7 @@ void add_utype_define_c_code(FILE *f)
 
         for (j=0; j<USER_DEF_TYPES[i].items_num; ++j)
         {
-            char *elem_line = NULL;
+            wchar_t *elem_line = NULL;
             int   elem_line_len = 0;
 
             /// Birligiň tipi
@@ -265,38 +270,27 @@ void add_utype_define_c_code(FILE *f)
             get_type_c_code(type_class, type_num, &elem_line, &elem_line_len);
 
             /// Birligiň identifikatory
-            elem_line_len += strlen(" ");
-            elem_line = realloc(elem_line, elem_line_len);
-            strncat(elem_line, " ", strlen(" "));
+            wcsadd_on_heap( &elem_line, &elem_line_len, space );
 
-
-            elem_line_len += strlen(USER_DEF_TYPE_ITEMS[i][j].ident);
-            elem_line = realloc(elem_line, elem_line_len);
-            strncat(elem_line, USER_DEF_TYPE_ITEMS[i][j].ident, strlen(USER_DEF_TYPE_ITEMS[i][j].ident));
+            wcsadd_on_heap( &elem_line, &elem_line_len, USER_DEF_TYPE_ITEMS[i][j].ident );
 
             /// Birlik sanaw bolsa, sanawyň içkiligini görkezijiler
             if (USER_DEF_TYPE_ITEMS[i][j].arr_items_addr!=-1)
             {
-                char *o = "[";
-                char *c = "]";
+                wchar_t *o = L"[";
+                wchar_t *c = L"]";
 
                 int z, arr_pos = USER_DEF_TYPE_ITEMS[i][j].arr_items_addr;
                 for (z=0; z<USER_DEF_TYPES_ARRS[i][arr_pos].incs; ++z)
                 {
-                    elem_line_len += strlen(o);
-                    elem_line = realloc(elem_line, elem_line_len);
-                    strncat(elem_line, o, strlen(o));
+                    wcsadd_on_heap( &elem_line, &elem_line_len, o );
 
                     array_inc_item *aii_e = &USER_DEF_TYPES_ARRS_ITEMS[i][arr_pos][z];
-                    char val[21]; // SAN tipde maksimum ulanyp boljak sanyn uzynlygy
-                    sprintf(val, "%d", aii_e->elem_num);
-                    elem_line_len += strlen(val);
-                    elem_line = realloc(elem_line, elem_line_len);
-                    strncat(elem_line, val, strlen(val));
+                    wchar_t val[21]; // SAN tipde maksimum ulanyp boljak sanyn uzynlygy
+                    swprintf(val, L"%d", aii_e->elem_num);
+                    wcsadd_on_heap( &elem_line, &elem_line_len, val );
 
-                    elem_line_len += strlen(c);
-                    elem_line = realloc(elem_line, elem_line_len);
-                    strncat(elem_line, c, strlen(c));
+                    wcsadd_on_heap( &elem_line, &elem_line_len, c );
                 }
 
             }
@@ -312,54 +306,53 @@ void add_utype_define_c_code(FILE *f)
 
         --TRANS_C_BLOCK_DEPTH;
         // Tipi ýapýan kodly setir
-        char *closer = NULL;
-        closer_len = strlen(utype_closer_first)+1;
-        closer = realloc(closer, closer_len);
-        strncpy(closer, utype_closer_first, strlen(utype_closer_first)+1);
-        closer_len += strlen(USER_DEF_TYPES[i].ident);
-        closer = realloc(closer, closer_len);
-        strncat(closer, USER_DEF_TYPES[i].ident, strlen(USER_DEF_TYPES[i].ident));
-        closer_len += strlen("; \n");
-        closer = realloc(closer, closer_len);
-        strncat(closer, "; \n", strlen("; \n"));
+        wchar_t *closer = NULL,
+                *end = L"; \n";
+        closer_len = 0;
+
+        wcsadd_on_heap( &closer, &closer_len, utype_closer_first );
+        wcsadd_on_heap( &closer, &closer_len, USER_DEF_TYPES[i].ident );
+        wcsadd_on_heap( &closer, &closer_len, end );
 
         write_code_line(f, &line, &llen, TRANS_C_BLOCK_DEPTH, closer);
         free(closer);
         closer = NULL;
         closer_len = 0;
         // Owadanlyk we kodyň gowy okalmagy üçin
-        fputs("\n\n", f);
+        fputws(L"\n\n", f);
     }
 }
 
-int is_reserved_source_name(char *fname)
+int is_reserved_source_name(wchar_t *fname)
 {
-    if (strlen(fname)==strlen(USER_DEF_TYPES_SOURCE_NAME) &&
-        strncmp(fname, USER_DEF_TYPES_SOURCE_NAME, strlen(USER_DEF_TYPES_SOURCE_NAME))==0)
+    if (wcslen(fname)==wcslen(USER_DEF_TYPES_SOURCE_NAME) &&
+        wcsncmp(fname, USER_DEF_TYPES_SOURCE_NAME, wcslen(USER_DEF_TYPES_SOURCE_NAME))==0)
         return 1;
-    if (strlen(fname)==strlen(CONV_DEF_TYPES_SOURCE_NAME) &&
-        strncmp(fname, CONV_DEF_TYPES_SOURCE_NAME, strlen(CONV_DEF_TYPES_SOURCE_NAME))==0)
+    if (wcslen(fname)==wcslen(CONV_DEF_TYPES_SOURCE_NAME) &&
+        wcsncmp(fname, CONV_DEF_TYPES_SOURCE_NAME, wcslen(CONV_DEF_TYPES_SOURCE_NAME))==0)
         return 1;
     return 0;
 }
 
 void add_addtn_headers(FILE *f)
 {
-    char *line = malloc(MAX_PREP_LEN);
-    strncpy(line, "#include \"", strlen("#include \"")+1);
-    strncat(line, USER_DEF_TYPES_SOURCE_NAME, strlen(USER_DEF_TYPES_SOURCE_NAME));
-    strncat(line, "\" \n", strlen("\" \n"));
+    wchar_t *line = malloc(MAX_PREP_LEN),
+            *include = L"#include \"",
+            *dquote_space = L"\" \n";
+    wcsncpy(line, include, wcslen(include)+get_null_size());
+    wcsncat(line, USER_DEF_TYPES_SOURCE_NAME, wcslen(USER_DEF_TYPES_SOURCE_NAME));
+    wcsncat(line, dquote_space, wcslen(dquote_space));
 
-    fputs(line, f);
+    fputws(line, f);
 
     free(line);
 
     line = malloc(MAX_PREP_LEN);
-    strncpy(line, "#include \"", strlen("#include \"")+1);
-    strncat(line, CONV_DEF_TYPES_SOURCE_NAME, strlen(CONV_DEF_TYPES_SOURCE_NAME));
-    strncat(line, "\" \n", strlen("\" \n"));
+    wcsncpy(line, include, wcslen(include)+get_null_size());
+    wcsncat(line, CONV_DEF_TYPES_SOURCE_NAME, wcslen(CONV_DEF_TYPES_SOURCE_NAME));
+    wcsncat(line, dquote_space, wcslen(dquote_space));
 
-    fputs(line, f);
+    fputws(line, f);
 
     free(line);
 }
@@ -398,13 +391,22 @@ void parse_triangle_block_inside(FILE *source)
 	item.items = -2;
 
     // Adaty parser komandalary saýgarýar
-	//printf("Parsinge başlandy\n");
-	while((CUR_CHAR=fgetc(source))!=EOF)
+	while(1)
 	{
+	    if( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if( ( CUR_CHAR=fgetwc( source ) )==WEOF )
+                break;
+        }
 	    // Maglumatlar üçin
 	    update_inf();
 
-	    if(!is_valid_char())
+	    if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
 
@@ -419,7 +421,7 @@ void parse_triangle_block_inside(FILE *source)
             cmd_add_item(&item, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
 
         }
-        else if (isspace(CUR_CHAR))
+        else if (iswspace(CUR_CHAR))
         {
             continue;
         }
@@ -523,7 +525,7 @@ void add_to_tmp_triangle_blok_items(command *cmd)
         add.type_class = sci->tok.type_class;
         add.type_num   = sci->tok.potentional_types[0].type_num;
         command_item *tci = get_cmd_item(cmd->items, 2);
-        strncpy(add.ident, tci->tok.potentional_types[0].value, strlen(tci->tok.potentional_types[0].value)+1);
+        wcsncpy(add.ident, tci->tok.potentional_types[0].value, wcslen(tci->tok.potentional_types[0].value)+1);
         add.arr_items_addr = TMP_USER_DEF_TYPES_ARRS_NUMS-1;
     }
     else
@@ -532,7 +534,7 @@ void add_to_tmp_triangle_blok_items(command *cmd)
         add.type_class = fci->tok.type_class;
         add.type_num   = fci->tok.potentional_types[0].type_num;
         command_item *sci = get_cmd_item(cmd->items, 1);
-        strncpy(add.ident, sci->tok.potentional_types[0].value, strlen(sci->tok.potentional_types[0].value)+1);
+        wcsncpy(add.ident, sci->tok.potentional_types[0].value, wcslen(sci->tok.potentional_types[0].value)+1);
         add.arr_items_addr = -1;
     }
 
@@ -554,7 +556,7 @@ void add_new_utype(command *cmd)
     /// Täze tipiň baş maglumatlary
     utype_type ut;
     command_item *sci = get_cmd_item(cmd->items, 1);
-    strncpy(ut.ident, sci->tok.potentional_types[0].value, strlen(sci->tok.potentional_types[0].value)+1);
+    wcsncpy(ut.ident, sci->tok.potentional_types[0].value, wcslen(sci->tok.potentional_types[0].value)+1);
     ut.items_num = TMP_USER_DEF_TYPES_NUM;
 
     USER_DEF_TYPES[last] = ut;
@@ -623,13 +625,13 @@ void free_tmp_user_type()
 }
 
 
-int is_utype_ident(char *ident)
+int is_utype_ident(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
-        if (strlen(USER_DEF_TYPES[i].ident)==len &&
-            strncmp(USER_DEF_TYPES[i].ident, ident, len)==0)
+        if (wcslen(USER_DEF_TYPES[i].ident)==len &&
+            wcsncmp(USER_DEF_TYPES[i].ident, ident, len)==0)
             return 1;
     }
     return 0;

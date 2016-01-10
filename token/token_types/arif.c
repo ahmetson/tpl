@@ -4,55 +4,45 @@
 #include <stdlib.h>
 #include <string.h>
 #include "arif.h"
+#include "../../fns.h"
 
 
 /** GOŞMAK  +   */
 int TOK_CLASS_ARIF_PLUS_TYPE = 0;
-char ARIF_PLUS_CHAR = '+';
+wchar_t ARIF_PLUS_CHAR = L'+';
 
 /** AÝYRMAK -   */
 int TOK_CLASS_ARIF_MINUS_TYPE = 1;
-char ARIF_MINUS_CHAR = '-';
+wchar_t ARIF_MINUS_CHAR = L'-';
 
 /** KÖPELTMEK * */
 int TOK_CLASS_ARIF_MULTI_TYPE = 2;
-char ARIF_MULTI_CHAR = '*';
+wchar_t ARIF_MULTI_CHAR = L'*';
 
 /** BÖLMEK :    */
 int TOK_CLASS_ARIF_DIV_TYPE = 3;
-char ARIF_DIV_CHAR = ':';
+wchar_t ARIF_DIV_CHAR = L':';
 
 
 // Arifmetiki operatorlar üçin ulanylýan harplar.
 // Ikinji element bolsa, C dilinde, arifmetiki operatorlar üçin ulanylýan harp ekwiwalentleri
-char *TOK_CLASS_ARIF_CHARS[TOK_CLASS_ARIF_TYPES_NUM][2] = {
-    {"+", "+"},
-    {"-", "-"},
-    {"*", "*"},
-    {":", "/"}
+wchar_t *TOK_CLASS_ARIF_CHARS[TOK_CLASS_ARIF_TYPES_NUM][2] = {
+    {L"+", L"+"},
+    {L"-", L"-"},
+    {L"*", L"*"},
+    {L":", L"/"}
 };
 
 // Debaglamak üçin
-char *ARIF_TOK_NUM_WORDS[TOK_CLASS_ARIF_TYPES_NUM] = {
-    "Goşmak",
-    "Aýyrmak",
-    "Köpeltmek",
-    "Bölmek"
+wchar_t *ARIF_TOK_NUM_WORDS[TOK_CLASS_ARIF_TYPES_NUM] = {
+    L"Goşmak",
+    L"Aýyrmak",
+    L"Köpeltmek",
+    L"Bölmek"
 };
 
 
-void tok_arif_c_code(token *tok, char **l, int *llen)
+void tok_arif_c_code(token *tok, wchar_t **l, int *llen)
 {
-
-    *llen += strlen(TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1]);
-    if (!(*llen-strlen(TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1])))
-    {
-        *l = realloc(*l, *llen+1);
-        strncpy(*l, TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1], strlen(TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1])+1);
-    }
-    else
-    {
-        *l = realloc(*l, *llen);
-        strncat(*l, TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1], strlen(TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1]));
-    }
+    wcsadd_on_heap( l, llen, TOK_CLASS_ARIF_CHARS[tok->potentional_types[0].type_num][1] );
 }

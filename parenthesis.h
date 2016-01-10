@@ -5,9 +5,9 @@
 #define PARENTHESIS_H
 #include <stdio.h>
 
-extern char PARENTHESIS_OPEN;
-extern char PARENTHESIS_CLOSE;
-extern char PARENTHESIS_ELEM_SEPARATOR;
+extern wchar_t PARENTHESIS_OPEN;
+extern wchar_t PARENTHESIS_CLOSE;
+extern wchar_t PARENTHESIS_ELEM_SEPARATOR;
 
 #ifndef PARENTHESIS_TYPES
 #define PARENTHESIS_TYPES 4
@@ -26,7 +26,7 @@ typedef struct {
     parenthesis paren;
     token   tok;
     command cmd;
-    char type;
+    wchar_t type;
 }parenthesis_elem;
 
 
@@ -55,8 +55,8 @@ parenthesis get_empty_paren();
 
 parenthesis_elem *get_paren_elems(int paren_num);
 
-void paren_get_c_code(parenthesis *p, char **l, int *llen);
+void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen);
 
-int is_paren_not_compl_item_exist(parenthesis *p, char rec);
+int is_paren_not_compl_item_exist(parenthesis *p, wchar_t rec);
 
 #endif

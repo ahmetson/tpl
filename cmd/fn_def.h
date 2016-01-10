@@ -15,7 +15,7 @@ void mod_cmd_by_fn_def(command *cmd, int item_num);
 int semantic_cmd_fn_def(command *cmd);
 int semantic_cmd_fn_dec(command *cmd);
 
-void cmd_fn_def_c_code(command *cmd, char **l, int *llen);
-void cmd_fn_dec_c_code(command *cmd, char **l, int *llen);
+void cmd_fn_def_c_code(command *cmd, wchar_t **l, int *llen);
+void cmd_fn_dec_c_code(command *cmd, wchar_t **l, int *llen);
 
 #endif // CMD_FN_DEF_H

@@ -17,15 +17,15 @@
 typedef struct {
     int tpl_part;       // Ýalňyşlyk TPL'iň niresinde peýda boldy?
     int err_code;       // Ýalňyşlygyň kody
-    char file_num;
-    char line_num;
-    char start_char;
-    char char_num;
-    char code_line;      // Koddaky ýalňyşlygyň duşan ýerini görkezmelimi
-    char *msg;          // Ulanyja düşnükli ýalňyşlygyň teksti
+    wchar_t file_num;
+    wchar_t line_num;
+    wchar_t start_wchar_t;
+    wchar_t wchar_t_num;
+    wchar_t code_line;      // Koddaky ýalňyşlygyň duşan ýerini görkezmelimi
+    wchar_t *msg;          // Ulanyja düşnükli ýalňyşlygyň teksti
 }error_item;
 
-extern char *parts_names[];
+extern wchar_t *parts_names[];
 
 /* Yalnyshlykly tekstlerin nomerleri */
 extern int CODE0_PRAGMA_ACT_NOT_IDENTIFIED;

@@ -7,12 +7,12 @@
 #include "../token_structs.h"
 
 // Sada tiplerin in uzynyn bolup biljeginin uzynlygy
-#define DEF_TYPES_LEN 7
+#define DEF_TYPES_LEN (sizeof(wchar_t)*7)
 
 typedef struct{
-	char tk_name[DEF_TYPES_LEN];
-	char value[DEF_TYPES_LEN];
-	char init_val[DEF_TYPES_LEN];
+	wchar_t tk_name[DEF_TYPES_LEN];
+	wchar_t value[DEF_TYPES_LEN];
+	wchar_t init_val[DEF_TYPES_LEN];
 }def_type;
 
 // Programmada belli bolan tiplerin sany

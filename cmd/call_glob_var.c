@@ -4,8 +4,11 @@
 #include <stdlib.h>
 #include "../main/glob.h"
 #include "../error.h"
+#include "../main/inf.h"
 #include "call_glob_var.h"
 #include "../cmds.h"
+#include "../semantic/compare_token_types.h"
+#include "../fns.h"
 
 int CMD_CALL_GLOB_VAR_TYPE_NUM = 0;
 
@@ -112,25 +115,14 @@ int cmd_call_glob_var_return_type(command *cmd, int *return_class, int *ret_type
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_call_glob_var_c_code(command *cmd, char **line, int *llen)
+void cmd_call_glob_var_c_code(command *cmd, wchar_t **line, int *llen)
 {
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *sci = get_cmd_item(cmd->items,1);
-    token_type *ty = &sci->tok.potentional_types[0];
+    token_type *tt = &sci->tok.potentional_types[0];
 
-    if (!(*llen))
-    {
-        *llen += strlen(ty->value)+1;
-        *line = realloc(*line, *llen);
-        strncat(*line,ty->value,strlen(ty->value)+1);
-    }
-    else
-    {
-        *llen += strlen(ty->value);
-        *line = realloc(*line, *llen);
-        strncat(*line,ty->value,strlen(ty->value));
-    }
-    // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
+    wcsadd_on_heap( line, llen, tt->value );
+
 }
 

@@ -1,5 +1,5 @@
 /*
- * Programmadaky achar sozler
+ * Programmadaky awchar_t sozler
 **/
 #include "token_types/ctrl_sttmnt.h"
 #include "token_types/loop_sttmnt.h"
@@ -7,12 +7,12 @@
 #include "keywords.h"
 
 int MAX_KEYWORDS_NUM = (4) + 1 + (4) + 1;
-char *keywords[] = {
-	"san",					// tipler
-	"harp",
-	"harpl",
-	"drob",
-	"umumy",				// global
+wchar_t *keywords[] = {
+	L"san",					// tipler
+	L"harp",
+	L"harpl",
+	L"drob",
+	L"umumy",				// global
 	IF_WORD,    			// ctrl_sttmnt
 	IFELSE_WORD,
 	ELSE_WORD,

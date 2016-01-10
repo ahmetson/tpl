@@ -11,7 +11,7 @@
 #include "../error.h"
 #include "../dev_debug.h"
 
-int get_var_def_value_type(char *ident, int *type_class, int *type_num, char glob)
+int get_var_def_value_type(wchar_t *ident, int *type_class, int *type_num, wchar_t glob)
 {
     int i, len, num;
     glob_ident *items;
@@ -28,8 +28,8 @@ int get_var_def_value_type(char *ident, int *type_class, int *type_num, char glo
 
     for(i=0; i<num; ++i)
     {
-        len = strlen(ident)>strlen(items[i].name)?strlen(ident):strlen(items[i].name);
-        if (strncmp(items[i].name, ident, len)==0)
+        len = wcslen(ident)>wcslen(items[i].name)?wcslen(ident):wcslen(items[i].name);
+        if (wcsncmp(items[i].name, ident, len)==0)
         {
             *type_class = items[i].type_class;
             *type_num   = items[i].type_num;
