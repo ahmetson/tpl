@@ -11,23 +11,25 @@
 
 // Faýllaryň sanawy
 typedef struct{
-    char source  [MAX_FILE_LEN];         // Original TEPL kodly saýl nirede ýerleşýär
-    char h_source[MAX_FILE_LEN];         // Faýlyň Ç dilindäki kodynyň headeri nirede ýerleşýär
-    char c_source[MAX_FILE_LEN];         // Faýlyň Ç dilindäki kody nirede ýerleşýär
-    char name    [MAX_FILE_LEN];         // Faýlyň ady, öňündäki papkalary we faýl ekstensiesi hasap edilmesiz
+    wchar_t source  [MAX_FILE_LEN];         // Original TEPL kodly saýl nirede ýerleşýär
+    wchar_t h_source[MAX_FILE_LEN];         // Faýlyň Ç dilindäki kodynyň headeri nirede ýerleşýär
+    wchar_t c_source[MAX_FILE_LEN];         // Faýlyň Ç dilindäki kody nirede ýerleşýär
+    wchar_t name    [MAX_FILE_LEN];         // Faýlyň ady, öňündäki papkalary we faýl ekstensiesi hasap edilmesiz
     int  num;
 }file_item;
 
 int add_to_file_list_file();
-int add_to_file_list_source(const char *source);
-int add_to_file_list_name(char *name);
-int add_to_file_list_h_source(char *source);
-int add_to_file_list_c_source(char *source);
+int add_to_file_list_source(const wchar_t *source);
+int add_to_file_list_name(wchar_t *name);
+int add_to_file_list_h_source(wchar_t *source);
+int add_to_file_list_c_source(wchar_t *source);
 
-file_item *get_file_by_name(char *name);
-file_item *get_file_by_tpl_source_name(char *name);
+file_item *get_file_by_name(wchar_t *name);
+file_item *get_file_by_tpl_source_name(wchar_t *name);
 
-int is_glob_defs_file_exist(char *fn);
-void glob_defs_file_add(char fn[MAX_FILE_LEN]);
+int is_glob_defs_file_exist(wchar_t *fn);
+void glob_defs_file_add(wchar_t fn[MAX_FILE_LEN]);
+
+void add_file_info(wchar_t *file_name);
 
 #endif // TPL_FILES_H

@@ -22,10 +22,12 @@ int add_to_def_var_list(command *cmd);
 void global_called_vars_add(command *cmd);
 int cmd_def_var_return_type(command *cmd, int *return_class, int *return_type);
 
+int add_to_def_arr_list(command *cmd);
+
 /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
 void work_with_called_glob_vars();
 
-void cmd_def_var_as_subcmd_c_code(command *cmd, char **l, int *llen);
+void cmd_def_var_as_subcmd_c_code(command *cmd, wchar_t **l, int *llen);
 
 
 int semantic_cmd_def_var(command *cmd);

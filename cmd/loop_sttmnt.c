@@ -26,7 +26,7 @@ int is_cmd_loop_sttmnt(command *cmd)
 
     command_item *fci = get_cmd_item(cmd->items, 0);
     if (fci->type!=TOKEN_ITEM)
-        return 0;   // elmydama birinji birlik - token - achar sozi bolmaly
+        return 0;   // elmydama birinji birlik - token - awchar_t sozi bolmaly
     if (fci->tok.potentional_types[0].type_class!=TOK_CLASS_LOOP_STTMNT)
         return 0;
 
@@ -94,7 +94,7 @@ void cmd_loop_sttmnt_until_mod(command *cmd, int item_num)
 
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_loop_sttmnt_c_code(command *cmd, char **l, int *llen)
+void cmd_loop_sttmnt_c_code(command *cmd, wchar_t **l, int *llen)
 {
     command_item *e1 = get_cmd_item(cmd->items,0);
     if (e1->type==TOKEN_ITEM)

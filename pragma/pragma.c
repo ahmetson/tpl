@@ -6,18 +6,20 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "../cmds.h"
 #include "../parser.h"
 #include "pragma.h"
 #include "../tpl.h"
 #include "../error.h"
 #include "../main/inf.h"
+#include "../main/user_def_type.h"
 #include "../token/harpl.h"
 #include "../fns.h"
 
-char PRAGMA_START_CHAR = '#';
-char PRAGMA_END_CHAR   = '\n';
+wchar_t PRAGMA_START_CHAR = L'#';
+wchar_t PRAGMA_END_CHAR   = L'\n';
 
-char PRAGMA_MODE = 1;
+wchar_t PRAGMA_MODE = 1;
 
 
 act_pragma_item act_pragma_items[] = {
@@ -29,8 +31,9 @@ act_pragma_item act_pragma_items[] = {
 // Pragmany ulanmana tayynlayar.
 void init_pragma(pragma *prag)
 {
+    wchar_t *endstr = L"\0";
 	prag->is_compl = 0;
-	strncpy(prag->name, "\0", strlen("\0")+1);
+	wcsncpy(prag->name, endstr, wcslen(endstr)+1);
 }
 
 
@@ -43,25 +46,35 @@ void parse_pragma(FILE *s)
 	pragma prev_prag; init_pragma(&prev_prag);
 	pragma prag;	  init_pragma(&prag);
 
-    while ((CUR_CHAR=fgetc(s))!=EOF)
+    while (1)
     {
+        if( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if( ( CUR_CHAR=fgetwc( s ) )==WEOF )
+                break;
+        }
+
         update_inf();
 
         if (CUR_CHAR==PRAGMA_END_CHAR)
         {
             // Pragma tanalmady.
-            if (strlen(prev_prag.name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
-            return_last_char(s);
+            if (wcslen(prev_prag.name))  print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
+            return_last_wchar_t();
             return;
         }
-        //else if (isspace(CUR_CHAR))
+        //else if (iswspace(CUR_CHAR))
         //    continue;
         else
         {
-            //printf("Pragma moda gechildi. Indi parser pragmalary saygarmana chalshar.\n");
-            strstrchcat(prag.name, prev_prag.name, CUR_CHAR);
+            wcsstrchcat( prag.name, prev_prag.name, CUR_CHAR );
 
-            if (!recognise_pragma(&prag))
+            if ( !recognise_pragma( &prag ) )
             {
                 // Pragma bilen işlenilip durka ýalňyşlyk çyksa, nireden çykanyny bilmek üçin.
                 inf_add_to_token(&inf_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
@@ -69,11 +82,11 @@ void parse_pragma(FILE *s)
             }
             else
             {
-                //printf("pragma tanaldy, pragma '%s', gutarylanmy: %d\n", prag->name, prag->is_compl);
+                //printf(L"pragma tanaldy, pragma '%s', gutarylanmy: %d\n", prag->name, prag->is_compl);
                 prev_prag = prag;
                 if (prev_prag.is_compl)
                 {
-                    //printf("Onki pragma: '%s', gutarylanmy: %d\n", prev_prag->name, prev_prag->is_compl);
+                    //printf(L"Onki pragma: '%s', gutarylanmy: %d\n", prev_prag->name, prev_prag->is_compl);
                     act_pragma(&prev_prag);
 
                     init_pragma(&prag);
@@ -111,11 +124,11 @@ int recognise_pragma(pragma *prag)
     ///      II)pragma gutarylmadyk diýip bellenilýär.
 
     /// 1)
-    if (strlen(prag->name) && prag->name[0]==PRAGMA_INCLUDE_GLOB_DEC)
+    if ( wcslen(prag->name) && prag->name[0]==PRAGMA_INCLUDE_GLOB_DEC )
     {
-        if (strlen(prag->name)>=2 && prag->name[1]==PRAGMA_ADDR_QUOTE)
+        if (wcslen(prag->name)>=2 && prag->name[1]==PRAGMA_ADDR_QUOTE)
         {
-            if (strlen(prag->name)>=3 && is_valid_string_const_data(prag->name, 2))
+            if (wcslen(prag->name)>=3 && is_valid_string_const_data(prag->name, 2))
             {
                 if  (is_string_const_data_compl(prag->name, 1))
                 {
@@ -138,10 +151,9 @@ int recognise_pragma(pragma *prag)
 
 
     /// 2)
-	// Pragma atlary minimum 2 s=harpdan ybarat bolmaly, bir harp we bir san
-	if (strlen(prag->name) && prag->name[0]=='b')
+	if ( wcslen( prag->name ) && prag->name[0]==L'b' )
 	{
-	    if (strlen(prag->name)==2 && prag->name[1]=='1')
+	    if (wcslen(prag->name)==2 && prag->name[1]==L'1')
         {
             prag->is_compl = 1;
         }
@@ -163,10 +175,9 @@ void act_pragma(pragma *prag)
 	int i;
 	for (i=0; i<PRAGMAS_NUM; ++i)
 	{
-		if (strncmp(act_pragma_items[i].name, prag->name, strlen(act_pragma_items[i].name))==0)
+		if (wcsncmp(act_pragma_items[i].name, prag->name, wcslen(act_pragma_items[i].name))==0)
 		{
 			act_pragma_items[i].act(prag);
-			//printf("ss");
 			CUR_PART = prev_part;
 			return;
 		}
@@ -180,10 +191,10 @@ void act_pragma_main_file(pragma *prag)
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 0;
-	//printf("Fayl chagyryldy\n");
-	if (strlen(MAIN_FILE_NAME)<1)
+
+	if (wcslen(MAIN_FILE_NAME)<1)
 	{
-		strncpy(MAIN_FILE_NAME, CUR_FILE_NAME, strlen(CUR_FILE_NAME)+1);
+		wcsncpy(MAIN_FILE_NAME, CUR_FILE_NAME, wcslen(CUR_FILE_NAME)+1);
 	}
 	else
 	{
@@ -205,9 +216,9 @@ void act_pragma_include_glob_decl_file(pragma *p)
         Ýogsa
             ".Bash faýllarda diňe yglan edilip bolýan komandalar mümkin. Bärde bolsa näbelli komanda ulanylýar diýip aýdylýar.
 	**/
-	char fn[MAX_FILE_LEN] = {0};
+	wchar_t fn[MAX_FILE_LEN] = {0};
 	int i;
-	for(i=2; i<strlen(p->name)-1; ++i)
+	for(i=2; i<wcslen(p->name)-1; ++i)
     {
         fn[i-2] = p->name[i];
     }
@@ -219,7 +230,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
     glob_defs_file_add(fn);
     add_file_info(fn);
 
-	FILE *source = fopen(fn, "r");
+	FILE *source = _wfopen(fn, L"r, ccs=UTF-8");
 
 	if (source==NULL)
 	{
@@ -228,13 +239,23 @@ void act_pragma_include_glob_decl_file(pragma *p)
 	}
 
     // Adaty parser komandalary saýgarýar
-	//printf("Parsinge başlandy\n");
-	while((CUR_CHAR=fgetc(source))!=EOF)
+	while(1)
 	{
+	    if( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if( ( CUR_CHAR=fgetwc( source ) )==WEOF )
+                break;
+        }
+
 	    // Maglumatlar üçin
 	    update_inf();
 
-	    if(!is_valid_char())
+	    if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
         // 2. Pragma modyna geçmeli
@@ -247,7 +268,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
             parenthesis par = parse_paren(source);
             cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
         }
-        else if (isspace(CUR_CHAR))
+        else if (iswspace(CUR_CHAR))
         {
             continue;
         }
@@ -286,7 +307,7 @@ void act_pragma_include_glob_decl_file(pragma *p)
             }
             if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
             {
-                parse_triangle_block_inside(source, &cmd);
+                parse_triangle_block_inside(source);
             }
         }
 

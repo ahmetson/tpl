@@ -32,20 +32,20 @@ typedef struct{
 #include "../parenthesis.h"
 typedef struct{
     int file_num;
-    char file_name[MAX_FILE_LEN];
-    char name[MAX_FILE_LEN];
+    wchar_t file_name[MAX_FILE_LEN];
+    wchar_t name[MAX_FILE_LEN];
     int type_class;
     int type_num;
     int args_num;
     int args;
-    char inf_char;
-    int  inf_char_pos;
+    wchar_t inf_wchar_t;
+    int  inf_wchar_t_pos;
     int  inf_line_pos;
     int  return_class;
     int  return_type;
-    char c_name[MAX_FILE_LEN];
-    char  c_lib[MAX_FILE_LEN];
-    void (*make_args_string)(parenthesis *paren, char **l, int *llen);
+    wchar_t c_name[MAX_FILE_LEN];
+    wchar_t  c_lib[MAX_FILE_LEN];
+    void (*make_args_string)(parenthesis *paren, wchar_t **l, int *llen);
 }func;
 
 void add_func_to_list(func f);
@@ -55,7 +55,7 @@ void add_func_to_list(func f);
 
     \fnName - gözlemeli funksiýanyň ady
 **/
-int is_fn_exist(char *fn_name);
+int is_fn_exist(wchar_t *fn_name);
 
 
 /** Funksiýanyň maglumatlaryny gaýtarýar. Maglumatlaryny gaýtarmaly funksiýa ady boýunça alynýar
@@ -63,7 +63,7 @@ int is_fn_exist(char *fn_name);
 
     \fnName - maglumatlary alynmaly funksiýanyň ady
 **/
-func *fn_get_by_name(char *fn_name);
+func *fn_get_by_name(wchar_t *fn_name);
 
 
 func_arg *get_fn_args(int args_num);
@@ -72,6 +72,6 @@ func_arg *get_fn_args(int args_num);
 void add_arg_to_last_func(func_arg arg, int pos);
 
 
-void make_user_def_fn_args(parenthesis *paren, char **line, int *llen);
+void make_user_def_fn_args(parenthesis *paren, wchar_t **line, int *llen);
 
 #endif // FNS_FN_H

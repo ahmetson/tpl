@@ -1,5 +1,7 @@
 #ifndef CMDS_H
 #define CMDS_H
+#include <wchar.h>
+#include <wctype.h>
 
 // Komandanyn birliginin nomeri
 extern const int UNKNOWN_ITEM;
@@ -58,21 +60,21 @@ struct command{
 	int value_type;
 	int is_compl;
 	int ns;
-	char parenthesis;
-	char inf_file_name[];
+	wchar_t parenthesis;
+	wchar_t inf_file_name[];
 };// Bashga komandalar ya tokenler bolup bilyan komanda
 
 
 #include "parenthesis.h"
 #include "tokens.h"
 struct command_item{
-	char type;				// Ya token (1), ya komanda (2) ýa skobka (3) bolup bilyar
+	wchar_t type;				// Ya token (1), ya komanda (2) ýa skobka (3) bolup bilyar
 	token tok;
 	command cmd;
 	parenthesis paren;
 };
 
-extern void init_cmd(command *cmd, char free_items);
+extern void init_cmd(command *cmd, wchar_t free_items);
 
 extern int recognize_cmd(command *cmd);
 
@@ -128,8 +130,8 @@ int empty_cmd_checking_semantic(command *cmd);
 
 int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES];
 
-void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, char **l, int *len);
-void empty_cmd_c_code(command *cmd, char **l, int *len);
+void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, wchar_t **l, int *len);
+void empty_cmd_c_code(command *cmd, wchar_t **l, int *len);
 
 command get_empty_cmd();
 
@@ -141,21 +143,28 @@ int subcmd_items_add(unsigned int items_num);
 
 int is_glob_decl_support_cmd(command *cmd);
 void glob_vars_decl_add(command *cmd);
-int is_glob_var_dec_exist(char *ident);
-void get_glob_var_dec_value_type(char *ident, int *c, int *t);
-void cmd_wrapper_c_code(char **line, int *llen);
-void cmd_block_wrapper_c_code(char **line, int *llen);
+void glob_arrs_decl_add(command *cmd);
+int is_glob_var_dec_exist(wchar_t *ident);
+void get_glob_var_dec_value_type(wchar_t *ident, int *c, int *t);
+void cmd_wrapper_c_code(wchar_t **line, int *llen);
+void cmd_block_wrapper_c_code(wchar_t **line, int *llen);
 
 command_item *get_cmd_item(int cmd_num, int item_num);
 int change_cmd_items_num(int cmd_num, int new_num);
 void put_cmd_item(int cmd_num, int item_num, command_item ci);
 
-int is_cmd_not_compl_item_exist(command *cmd, char rec);
+int is_cmd_not_compl_item_exist(command *cmd, wchar_t rec);
 
 int is_cmd_item_can_be_needed(command *cmd);
 
-int is_glob_arr_dec_exist(char *ident);
+int is_glob_arr_dec_exist(wchar_t *ident);
 
 void make_cmd_copy(command *cmd, command *cmd_out);
+
+void glob_fns_decl_add(command *cmd);
+
+void  work_with_glob_var_decs();
+void  work_with_glob_arr_decs();
+void work_with_glob_fn_decs();
 
 #endif

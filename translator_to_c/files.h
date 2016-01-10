@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include "../main/main_file.h"
 
-char *get_header_source_by_source(char *s);
-char *get_c_source_by_source(char *s);
+wchar_t *get_header_source_by_source(wchar_t *s);
+wchar_t *get_c_source_by_source(wchar_t *s);
 
-int add_includes_to_source(FILE *s, char (*included_files)[MAX_FILE_LEN], int files_num);
+int add_includes_to_source(FILE *s, wchar_t (*included_files)[MAX_FILE_LEN], int files_num);
 
 #endif

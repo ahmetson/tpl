@@ -9,9 +9,9 @@
 /*
  * Token sözüni pozýar. Başyna bir harp goýýar.
 **/
-int set_token_word_value(char *tok_string, char c)
+int set_token_word_value(wchar_t *tok_string, wchar_t c)
 {
-    empty_string(tok_string, strlen(tok_string));
+    empty_string(tok_string, wcslen(tok_string));
 	tok_string[0] = c;
 	return 1;
 }

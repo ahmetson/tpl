@@ -12,10 +12,11 @@
 #include "user_def_type.h"
 
 int  TEST = 0;
-char CHAR_UNDERSCORE = '_';
+wchar_t CHAR_UNDERSCORE = L'_';
 
 // Global, komandanyň soňyny aňladýar
-char CMD_END = '.';
+wchar_t CMD_END = L'.';
+wchar_t TMP_CHAR = 0;
 
 // Hazirki yasalyp duran komanda
 command         cmd;
@@ -24,9 +25,9 @@ command_item   *MAIN_CMD_ITEMS_LIST;
 
 // Parsing edilip duran faýlyň maglumatlary
 int             CUR_PART;
-char            CUR_FILE_NAME[];
+wchar_t            CUR_FILE_NAME[];
 int             CUR_FILE_NUM;               // Programma-da häzirki faýl näçinji orunda gelýär.
-char            CUR_CHAR;
+wchar_t            CUR_CHAR;
 int             CUR_CHAR_POS;
 unsigned int    CUR_LINE;
 
@@ -48,11 +49,11 @@ unsigned int    GLOB_SUBCMDS_NUM;
 
 
 /** Programmadaky kodlaryň setirleri. **/
-char ***GLOB_SOURCE_CODES;
+wchar_t ***GLOB_SOURCE_CODES;
 
 
 /// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
-char                  **GLOB_STRINGS;
+wchar_t                  **GLOB_STRINGS;
 unsigned long           GLOB_STRINGS_NUM;
 
 /** Ýasaljak programmadaky faýllaryň sanawy **/
@@ -147,7 +148,7 @@ int                 GLOBAL_CALLED_ARRS_NUM;
 
 
 /// Global yglan etmeli faýllaryň sanawy
-char               **GLOB_DECS_FILES;
+wchar_t               **GLOB_DECS_FILES;
 int                  GLOB_DECS_FILES_NUM;
 
 /// Häzirki içine parsing edilip goşulýan birlikli komanda
@@ -164,6 +165,10 @@ int                  GLOB_BLOCK_INCLUDES;
 block_inc           *GLOB_BLOCKS;
 int                  GLOB_BLOCKS_NUM;
 
+
+/// Çap etmek üçin ulanylýar
+char                **PRINTED_STRINGS = NULL;
+int                 PRINTED_STRINGS_NUM = 0;
 
 /** Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar */
 void free_globs(void)

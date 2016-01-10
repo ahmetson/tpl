@@ -25,7 +25,7 @@ is_token_item tok_types[] = {
 	   {is_token_assign},
 	   {is_token_float_const_data},
 	   {is_token_int_const_data},
-	   {is_token_char_const_data},
+	   {is_token_wchar_t_const_data},
 	   {is_token_arif},
 	   {is_token_cmp},
 	   {is_token_logic},
@@ -48,7 +48,7 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // glob
     {get_tok_type_ident_ident_val_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // ident
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // assign
-    {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_char_val_type, get_tok_type_const_data_string_val_type},  // const_data
+    {get_tok_type_const_data_int_val_type, get_tok_type_const_data_float_val_type, get_tok_type_const_data_wchar_t_val_type, get_tok_type_const_data_string_val_type},  // const_data
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // arif
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // cmp
     {empty_tok_return_type, empty_tok_return_type, empty_tok_return_type, empty_tok_return_type}, // logic
@@ -64,14 +64,14 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
 
 
 // Tokeniň klasy we tipi boýunça tokeniň gaýtarmaly maglumatynyň tipini berýän funksiýa çagyrýan sanaw
-void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, char **l, int *llen) =
+void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, wchar_t **l, int *llen) =
 {
     {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // Nabelli
     {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // tip (class num:1)
     {empty_tok_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // glob
     {tok_ident_c_code, empty_tok_c_code, empty_tok_c_code, empty_tok_c_code}, // ident
     {tok_assign_c_code,tok_assign_c_code, tok_assign_c_code, tok_assign_c_code}, // assign
-    {tok_int_c_code,   tok_float_c_code, tok_char_c_code, tok_string_c_code},  // const_data
+    {tok_int_c_code,   tok_float_c_code, tok_wchar_t_c_code, tok_string_c_code},  // const_data
     {tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code,  tok_arif_c_code},  // arif
     {tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code,   tok_cmp_c_code, tok_cmp_c_code},   // cmp
     {tok_logic_c_code, tok_logic_c_code, tok_logic_c_code},                      // logic
@@ -95,14 +95,14 @@ void init_token(token *tok)
 	int i; token_type tok_type;
 
     tok->potentional_types_num = 0;								// Number of recognized types for token
-	//char source_file[MAXLEN];									// source file of token
+	//wchar_t source_file[MAXLEN];									// source file of token
 	tok->type_class = 0;
-	tok->value[0] = '\0';
+	tok->value[0] = L'\0';
 	tok->is_compl = 0;
 	tok->parenthesis = 0;
 
-    tok->inf_char =
-    tok->inf_char_num =
+    tok->inf_wchar_t =
+    tok->inf_wchar_t_num =
     tok->inf_file_num =
     tok->inf_line_num = -1;
 }
@@ -119,7 +119,7 @@ void empty_token(token *tok)
 /** Sözüň token bolup biljegini barlaýar.
   * Eger token bolup bilýän bolsa, @tok ülňä ýasalan tokeni baglaýar
  **/
-int recognize_token(token *tok, char *val)
+int recognize_token(token *tok, wchar_t *val)
 {
 	int i;
 
@@ -128,11 +128,11 @@ int recognize_token(token *tok, char *val)
 	// Token not recognized
 	if (tok->potentional_types_num==0)
 	{
-		//printf("Token not recognized\t(Inputted text:%s)\n", val);
+		//printf(L"Token not recognized\t(Inputted text:%s)\n", val);
 		return 0;
 	}
 
-	//printf("Token Recognized\t(Inputted text:%s)\n", val);
+	//printf(L"Token Recognized\t(Inputted text:%s)\n", val);
 	inf_add_to_token(tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
 	return 1;
 }
@@ -238,36 +238,46 @@ int work_with_token(token *tok, command *cmd)
 token parse_token(FILE *s)
 {
     // Adaty parseriň modynda, tokenleri saýgarmak üçin.
-	char prev_tok_string[CONST_MAX_TOKEN_LEN] = {0};
-	char new_tok_string [CONST_MAX_TOKEN_LEN] = {0};
+	wchar_t prev_tok_string[CONST_MAX_TOKEN_LEN] = {0};
+	wchar_t new_tok_string [CONST_MAX_TOKEN_LEN] = {0};
 	// Bular bolsa, tokenler saýgarylanda, ýatda saklamak üçin
 	token tok;      init_token(&tok);
 	token new_tok;  init_token(&new_tok);
 
-    return_last_char(s);
+    return_last_wchar_t();
 
-    while((CUR_CHAR=fgetc(s))!=EOF)
+    while(1)
 	{
+	    if ( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if ( ( CUR_CHAR=fgetwc( s ) )==WEOF )
+                break;
+        }
+
 	    // Maglumatlar üçin
 	    update_inf();
 
-        if (strlen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN)
+        if (wcslen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN)
                 print_err(CODE2_TOKEN_TOO_BIG, &tok);
 
         // Häzirki harp öňki tokeniň yzy bolsa
-        if ( strstrchcat(new_tok_string, prev_tok_string, CUR_CHAR) &&
+        if ( wcsstrchcat(new_tok_string, prev_tok_string, CUR_CHAR) &&
             !recognize_token(&new_tok, new_tok_string))
         {
             /** DÜZETMELI #1: Eger programmirleme diliniň goldamaýan harpy bolsa, programma onuň bilen näme etmelidigini bilenok.
                               Şonuň üçinem harp tanaýan parserler boýunça barlap ömürlik aýlaw edip durýar.
 
                 ++ Islendik parser çagyrylmazdan öň:
-                1) Eger is_valid_char() diýen funksiýa arkaly, harpyň başga parserleriň başydygy barlanmagy şowly bolsa
+                1) Eger is_valid_wchar_t() diýen funksiýa arkaly, harpyň başga parserleriň başydygy barlanmagy şowly bolsa
                     a) "Nätanyş harp duşdy, token beýle harplardan başlanok" diýip ýalňyş ugradylýar.
             **/
-            return_last_char(s);
+            return_last_wchar_t();
             // Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar
-            //debug_token(&tok);
             finishize_token(&tok);
 
             return tok;
@@ -276,7 +286,7 @@ token parse_token(FILE *s)
         {
             empty_string(prev_tok_string, CONST_MAX_TOKEN_LEN);
             inf_add_to_token(&new_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
-            strncpy(prev_tok_string, new_tok_string, strlen(new_tok_string)+1);
+            wcsncpy(prev_tok_string, new_tok_string, wcslen(new_tok_string)+1);
 
             empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
             tok = new_tok;
@@ -297,7 +307,7 @@ int empty_tok_return_type(token *tok, int *tok_class, int *tok_num)
 }
 
 
-void empty_tok_c_code(token *tok, char **l, int *llen)
+void empty_tok_c_code(token *tok, wchar_t **l, int *llen)
 {
     return;
 }

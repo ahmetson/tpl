@@ -11,7 +11,7 @@
 #define CMD_CONV_AI 3
 #endif // CMD_CONV_TYPES
 
-extern char *conv_c_codes[CMD_CONV_TYPES][3];
+extern wchar_t *conv_c_codes[CMD_CONV_TYPES][3];
 
 int is_cmd_conv_basic_type(command *cmd);
 
@@ -21,7 +21,7 @@ int semantic_cmd_conv_basic_type(command *cmd);
 
 int cmd_arr_conv_basic_return_type(command *cmd, int *type_class, int *type_num);
 
-void cmd_conv_basic_type_c_code(command *cmd, char **l, int *llen);
+void cmd_conv_basic_type_c_code(command *cmd, wchar_t **l, int *llen);
 
 void get_conv_type_num(command *cmd, int *rclass, int *rtype);
 

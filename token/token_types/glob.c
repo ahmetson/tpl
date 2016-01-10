@@ -1,7 +1,7 @@
 /*
  * Programma dilde global maglumatlar uchin ulanylyan maglumatlar
 **/
-
+#include <wchar.h>
 #include "glob.h"
 
 /* token NAMESPACES
@@ -12,6 +12,6 @@
 
 // Global maglumatlar, onunde durant yorite token arkaly tanalyarlar.
 // Token bolsa programma dilde rezerw edilen sozlerin biri
-char *glob_def_string = "@";
+wchar_t *glob_def_string = L"@";
 
-char GLOB_IDENT_OPENER = '@';
+wchar_t GLOB_IDENT_OPENER = L'@';

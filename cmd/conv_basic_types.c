@@ -1,3 +1,13 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "conv_basic_types.h"
+#include "../paren/types.h"
+#include "../main/glob.h"
+#include "../main/inf.h"
+#include "../translator_to_c.h"
+#include "../fns.h"
+#include "../error.h"
 /** Esasy tipdäki maglumatlary başga esasy tipdäki maglumata üýtgedýär */
 /** Gaýtarýan tipi
     Sada tip klasynda, birinji birlikdäki, skobkadanyň içindäki tip
@@ -15,19 +25,13 @@
     Funksiýanyň argumenti hökmünde, komandanyň ikinji birligi goýulýar.
     Funksiýany ýapýan, ÝAÝY GUTARÝAN düwme goýulýar.
 */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "conv_basic_types.h"
-#include "../paren/types.h"
-#include "../main/glob.h"
-#include "../error.h"
 
-char *conv_c_codes[CMD_CONV_TYPES][3] = {
-    {"_tpl_conv_if(",  "_tpl_conv_ic(",  "_tpl_conv_ia("},
-    {"_tpl_conv_fi(",  "_tpl_conv_fc(",  "_tpl_conv_fa("},
-    {"_tpl_conv_ci(",  "_tpl_conv_cf(",  "_tpl_conv_ca("},
-    {"_tpl_conv_ai(",  "_tpl_conv_af(",  "_tpl_conv_ac("}
+
+wchar_t *conv_c_codes[CMD_CONV_TYPES][3] = {
+    {L"_tpl_conv_if(",  L"_tpl_conv_ic(",  L"_tpl_conv_ia("},
+    {L"_tpl_conv_fi(",  L"_tpl_conv_fc(",  L"_tpl_conv_fa("},
+    {L"_tpl_conv_ci(",  L"_tpl_conv_cf(",  L"_tpl_conv_ca("},
+    {L"_tpl_conv_ai(",  L"_tpl_conv_af(",  L"_tpl_conv_ac("}
 };
 
 int is_cmd_conv_basic_type(command *cmd)
@@ -118,49 +122,17 @@ int cmd_arr_conv_basic_return_type(command *cmd, int *type_class, int *type_num)
 
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_conv_basic_type_c_code(command *cmd, char **l, int *llen)
+void cmd_conv_basic_type_c_code(command *cmd, wchar_t **l, int *llen)
 {
     int f, s;
     get_conv_type_num(cmd, &f, &s);
-
-    if (!(*llen))
-    {
-        *llen = strlen(conv_c_codes[f][s])+1;
-        *l = realloc(*l, *llen);
-        strncpy(*l, conv_c_codes[f][s], strlen(conv_c_codes[f][s])+1);
-    }
-    else
-    {
-        *llen += strlen(conv_c_codes[f][s]);
-        *l = realloc(*l, *llen);
-        strncat(*l, conv_c_codes[f][s], strlen(conv_c_codes[f][s]));
-    }
+    wcsadd_on_heap( l, llen, conv_c_codes[f][s] );
 
     command_item *e2 = get_cmd_item(cmd->items,1);
-    int e_type, e_class;
-    if (e2->type==TOKEN_ITEM)
-    {
-        e_class = e2->tok.potentional_types[0].type_class;
-        e_type  = e2->tok.potentional_types[0].type_num;
-        TOK_GET_C_CODE[e_class][e_type](&e2->tok, l, llen);
-    }
-    else if (e2->type==CMD_ITEM)
-    {
-        e_class = e2->cmd.cmd_class;
-        e_type  = e2->cmd.cmd_type;
-        CMD_GET_C_CODE[e_class][e_type](&e2->cmd, l, llen);
-    }
-    else if (e2->type==PAREN_ITEM)
-    {
-        e_class = e2->cmd.cmd_class;
-        e_type  = e2->cmd.cmd_type;
-        paren_get_c_code(&e2->paren, l, llen);
-    }
+    cmd_item_get_c_code( e2, l, llen );
 
-    char *c = ")";
-    *llen += strlen(c);
-    *l = realloc(*l, *llen);
-    strncat(*l, c, strlen(c));
+    wchar_t *c = L")";
+    wcsadd_on_heap( l, llen, c );
 }
 
 
@@ -182,19 +154,6 @@ void get_conv_type_num(command *cmd, int *rclass, int *rtype)
         sci->type==PAREN_ITEM && PAREN_RETURN_TYPE[sci->paren.type](&sci->paren, &sclass, &stype));
     if (sclass==TOK_CLASS_DEF_TYPE)
         set_def_type_alias_const_data(&sclass, &stype);
-/**
-char *conv_c_codes[CMD_CONV_TYPES][3] = {
-    {"_tpl_conv_if(",  "_tpl_conv_ic(",  "_tpl_conv_ia("},
-    {"_tpl_conv_fi(",  "_tpl_conv_fc(",  "_tpl_conv_fa("},
-    {"_tpl_conv_ci(",  "_tpl_conv_cf(",  "_tpl_conv_ca("},
-    {"_tpl_conv_ai(",  "_tpl_conv_af(",  "_tpl_conv_ac("}
-    };
-
-    def_type def_type_list[] = {
-	{"harp", "char", "'\\0'"},
-	{"san", "int", "-1"},
-	{"drob", "double", "-1"},
-	{"harpl", "char *", "\"\""}}*/
 
     if (stype==CHAR_CONST_DATA_TOK_NUM) /// HARP
     {

@@ -11,11 +11,13 @@
 #include "token/harpl.h"
 #include "main/glob.h"
 #include "main/inf.h"
+#include "fns.h"
+#include "translator_to_c.h"
 #include "error.h"
 
-char PARENTHESIS_OPEN = '(';
-char PARENTHESIS_CLOSE= ')';
-char PARENTHESIS_ELEM_SEPARATOR = ',';
+wchar_t PARENTHESIS_OPEN = L'(';
+wchar_t PARENTHESIS_CLOSE= L')';
+wchar_t PARENTHESIS_ELEM_SEPARATOR = L',';
 
 // Komanda = 1, token = 2.
 int PARENTHESIS_CLASS = 3;
@@ -42,15 +44,26 @@ parenthesis parse_paren(FILE *s)
     parenthesis paren = parenthesis_new();
     parenthesis_elem elem = parenthesis_elem_new();
 
-    while ((CUR_CHAR=fgetc(s))!=EOF)
+    while (1)
     {
+        if( TMP_CHAR )
+        {
+            CUR_CHAR = TMP_CHAR;
+            TMP_CHAR = 0;
+        }
+        else
+        {
+            if( ( CUR_CHAR=fgetwc( s ) )==WEOF )
+                break;
+        }
+
         update_inf();
 
-        if(!is_valid_char())
+        if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
         /* Bolmady. Parser ishlanok */
-        if (isspace(CUR_CHAR))
+        if (iswspace(CUR_CHAR))
             continue;
         else if (CUR_CHAR==PARENTHESIS_CLOSE)
         {
@@ -87,8 +100,6 @@ parenthesis parse_paren(FILE *s)
         }
         else
         {
-            //if (CUR_CHAR=='-')
-            //    printf("SSS\n");
             if (elem.type==CMD_ITEM)
                 CUR_CMD = &elem.cmd;
             else
@@ -307,22 +318,14 @@ parenthesis get_empty_paren()
 }
 
 
-void paren_get_c_code(parenthesis *p, char **l, int *llen)
+void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
 {
-    if (!(*llen))
-    {
-        // Çepe baglanma:
-        *llen += strlen("\t")+1;
-        *l = realloc(*l, *llen);
-
-        // Içki funksiýanyň içinde bolany üçin, tab goýulyp blokdadygy görkezilýär.
-        strncpy(*l, "\t", strlen("\t")+1);
-    }
+    wchar_t *tab = L"\t",
+            *o = L"(",
+            *c = L")";
 
     /// ( Ýaý açylýar
-    *llen += strlen("(");
-    *l = realloc(*l, *llen);
-    strncat(*l, "(", strlen("("));
+    wcsadd_on_heap( l, llen, o );
 
     /// ülňiler salynýar
     if (p->type==PAREN_TYPE_FNS_ARGS)
@@ -334,20 +337,13 @@ void paren_get_c_code(parenthesis *p, char **l, int *llen)
             int i;
             for (i=0; i<p->elems_num; ++i)
             {
-                if (p_es[i].type==CMD_ITEM)
-                    CMD_GET_C_CODE[p_es[i].cmd.cmd_class][p_es[i].cmd.cmd_type](&p_es[i].cmd, l, llen);
-                else if (p_es[i].type==TOKEN_ITEM)
-                    TOK_GET_C_CODE[p_es[i].tok.potentional_types[0].type_class][p_es[i].tok.potentional_types[0].type_num](&p_es[i].tok, l, llen);
-                else if (p_es[i].type==PAREN_ITEM)
-                    paren_get_c_code(&p_es[i].paren, l, llen);
+                paren_item_get_c_code( &p_es[i], l, llen );
             }
         }
     }
 
     /// ) Ýaý ýapylýar
-    *llen += strlen(")");
-    *l = realloc(*l, *llen);
-    strncat(*l, ")", strlen(")"));
+    wcsadd_on_heap( l, llen, c );
 }
 
 
@@ -387,7 +383,7 @@ int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType)
 
 
 
-int is_paren_not_compl_item_exist(parenthesis *p, char rec)
+int is_paren_not_compl_item_exist(parenthesis *p, wchar_t rec)
 {
     if (p->elems_num)
     {

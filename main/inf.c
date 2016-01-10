@@ -16,7 +16,7 @@ void inf_add_source_code_last_file()
     if (CUR_FILE_NUM<1)
         return;
 
-    size = sizeof(char ***)*CUR_FILE_NUM;
+    size = sizeof(wchar_t ***)*CUR_FILE_NUM;
     GLOB_SOURCE_CODES = realloc(GLOB_SOURCE_CODES, size);
 
     // Faýlda setiriň goşmaly
@@ -28,13 +28,13 @@ void inf_add_source_code_last_file()
 /**
  * Tokene, onuň faýl bilen baglanyşykly maglumatlary goýulýar.
 **/
-void inf_add_to_token(token *tok, char c, int c_pos, int line)
+void inf_add_to_token(token *tok, wchar_t c, int c_pos, int line)
 {
 
-    if (tok->inf_char_num<1)
+    if (tok->inf_wchar_t_num<1)
     {
-        tok->inf_char = c;
-        tok->inf_char_num = c_pos;
+        tok->inf_wchar_t = c;
+        tok->inf_wchar_t_num = c_pos;
         tok->inf_line_num = line;
         tok->inf_file_num = CUR_FILE_NUM-1;
     }
@@ -52,7 +52,7 @@ void inf_next_line()
 /**
  * Indiki setire geçdi
 **/
-void inf_next_char()
+void inf_next_wchar_t()
 {
     CUR_CHAR_POS++;
 }
@@ -89,8 +89,8 @@ token *inf_get_parens_last_token(parenthesis *par)
 
 void update_inf()
 {
-    if (CUR_CHAR=='\n')
+    if (CUR_CHAR==L'\n')
         inf_next_line();
     else
-        inf_next_char();
+        inf_next_wchar_t();
 }

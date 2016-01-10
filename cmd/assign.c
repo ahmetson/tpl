@@ -15,6 +15,8 @@
 #include "../semantic.h"
 #include "../cmds.h"
 #include "../main/inf.h"
+#include "../fns.h"
+#include "../translator_to_c.h"
 
 /**
  * Chepindaki ulna baglanma
@@ -108,7 +110,6 @@ int is_cmd_assign(command *cmd)
 				return 0;
 			}
 			assign_cmd_mod(cmd, 1);
-			//printf("Birlik baglanmanynky eken\n");
 		}
 		else
 		{
@@ -236,17 +237,22 @@ int semantic_cmd_assign(command *cmd)
                return_tok_type(&f->tok, &class1, &type1) &&
                 class1!=TOK_CLASS_UNDEFINED) ||
                (f->type==CMD_ITEM &&
-               CMD_RETURN_TYPE[f->cmd.cmd_class][f->cmd.cmd_type](&f->cmd,&class1, &type1) &&
+               (CMD_RETURN_TYPE[f->cmd.cmd_class][f->cmd.cmd_type](&f->cmd,&class1, &type1) &&
                 class1!=TOK_CLASS_UNDEFINED) ||
+                f->cmd.cmd_class==CMD_CLASS_DEF_VAR) ||
                (f->type==PAREN_ITEM &&
                 PAREN_RETURN_TYPE[f->paren.type](&f->paren, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED))
             {
+                if ( f->type==CMD_ITEM &&  f->cmd.cmd_class==CMD_CLASS_DEF_VAR)
+                {
+                    command_item *ident_ci = get_cmd_item( f->cmd.items, f->cmd.items_num-1 );
+                    return_tok_type(&ident_ci->tok, &class1, &type1);
+                }
                 if (class1==TOK_CLASS_DEF_TYPE)
                     set_def_type_alias_const_data(&class1, &type1);
 
                 if (!(class1==class2 && type1==type2))
                 {
-                     printf("BUNAME\n");
                      if(f->type==TOKEN_ITEM)
                         print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, &f->tok);
                      if(f->type==CMD_ITEM)
@@ -257,12 +263,11 @@ int semantic_cmd_assign(command *cmd)
             }
             else
             {
-                printf("CHAP EDIL\n");
-                 if(f->type==TOKEN_ITEM)
+                if(f->type==TOKEN_ITEM)
                     print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &f->tok);
-                 if(f->type==CMD_ITEM)
+                if(f->type==CMD_ITEM)
                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&f->cmd));
-                 if(f->type==PAREN_ITEM)
+                if(f->type==PAREN_ITEM)
                     print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&f->paren));
             }
 		}
@@ -287,21 +292,21 @@ int semantic_cmd_assign(command *cmd)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_assign_c_code(command *cmd, char **l, int *llen)
+void cmd_assign_c_code(command *cmd, wchar_t **l, int *llen)
 {
     // Çepe baglanma:
     command_item *first =  get_cmd_item(cmd->items,0);
     command_item *second = get_cmd_item(cmd->items,1);
     command_item *third =  get_cmd_item(cmd->items,2);
 
-    if (second->tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM)
+    if ( second->tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM )
     {
         // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
         // Eger birinji ülňi identifikator bolsa, özi alynýar.
-        if (first->type==CMD_ITEM)
+        if ( first->type==CMD_ITEM )
         {
-            command *c = &first->cmd;
-            CMD_GET_C_CODE[c->cmd_class][c->cmd_type](c, l, llen);
+            command *c = &first->cmd;   /// Ýöne komandana çatylaňda çalt bolar ýaly, gysgaltdyldy
+            CMD_GET_C_CODE[ c->cmd_class ][ c->cmd_type ]( c, l, llen );
         }
         else if (first->type==TOKEN_ITEM)
         {
@@ -310,39 +315,28 @@ void cmd_assign_c_code(command *cmd, char **l, int *llen)
         }
 
         // baglanma ülňiniň c dili üçin warianty goýulýar
-        char *assign_c = " = ";
-
-        *llen += strlen(assign_c);
-        *l = realloc(*l, *llen);
-
-        strncat(*l,assign_c,strlen(assign_c));
+        wchar_t *assign_c = L" = ";
+        wcsncat_on_heap( l, llen, assign_c );
 
         // üçünji ülňi maglumat.
         // Üçünji birlik identifikator bolsa, özüni geçirmeli.
-        if (third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+        if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_IDENT )
         {
-            char *rvalue = third->tok.potentional_types[0].value;
-
-            *llen += strlen(rvalue);
-            *l = realloc(*l, *llen);
-
-            strncat(*l,rvalue,strlen(rvalue));
+            wchar_t *rvalue = third->tok.potentional_types[0].value;
+            wcsncat_on_heap( l, llen, rvalue );
         }
         // Üçünji birlik, konstanta maglumat bolsa, onda gerekli funksiýa arkaly maglumat içine salynýar.
-        else if (third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA)
+        else if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA )
         {
-            char *rvalue = get_const_data_string(&third->tok);
-
-            *llen += strlen(rvalue);
-            *l = realloc(*l, *llen);
-
-            strncat(*l,rvalue,strlen(rvalue));
+            //wchar_t *rvalue = get_const_data_string(&third->tok);
+            //wcsncat_on_heap( l, llen, rvalue );
+            tok_get_c_code( &third->tok, l, llen );
         }
-        else if (third->type==CMD_ITEM)
+        else if ( third->type==CMD_ITEM )
         {
-            CMD_GET_C_CODE[third->cmd.cmd_class][third->cmd.cmd_type](&third->cmd, l, llen);
+            cmd_get_c_code( &third->cmd, l, llen);
         }
-        else if (third->type==PAREN_ITEM)
+        else if ( third->type==PAREN_ITEM )
         {
             paren_get_c_code(&third->paren, l, llen);
         }

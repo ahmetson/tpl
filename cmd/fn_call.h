@@ -25,7 +25,7 @@ int check_fn_args(int argn, int args_num, parenthesis *paren);
 
 
 // C translator
-void cmd_fn_call_c_code(command *cmd, char **l, int *len);
+void cmd_fn_call_c_code(command *cmd, wchar_t **l, int *len);
 
 int cmd_fn_call_return_type(command *cmd, int *return_class, int *return_type);
 

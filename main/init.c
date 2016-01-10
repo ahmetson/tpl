@@ -30,11 +30,12 @@ int source_codes_exist(int argn)
 **/
 int init()
 {
+    wchar_t *empty = L"";
 	// TPL ulgam bölüminden başlanýar
 	CUR_PART = 0;
 
 	// Häzirki  parsing edilýän: faýlyň ady, setiri, harpy
-	strncpy(CUR_FILE_NAME, "", strlen("")+1);
+	wcsncpy(CUR_FILE_NAME, empty, wcslen(empty)+1);
 	CUR_LINE = 0;
 	CUR_CHAR = -1;
 	CUR_CHAR_POS = 0;
@@ -46,7 +47,7 @@ int init()
 
 	// Algoritmler uchin
 	CUR_ALGOR_SIZE = 0;
-	//printf("%d is sizeof cmd, %d is size of cmd type\n", CUR_ALGOR_SIZE), sizeof(command);
+	//printf(L"%d is sizeof cmd, %d is size of cmd type\n", CUR_ALGOR_SIZE), sizeof(command);
 	CUR_ALGOR_ITEMS_NUM = 0;
 	//CUR_ALGOR = malloc(CUR_ALGOR_SIZE);
 

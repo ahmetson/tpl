@@ -1,10 +1,13 @@
-#b1
+﻿ 
 san s.
 drob d.
-s <- 123 + 123.
-d <- ((drob)s).
-harpl hl.
-hl <- ((harpl)d). // Salam 
-(hl)chap_et.
+
 /***/
 
+harp h <- 'h'.
+h <- ((harp)()kabul_et).
+harpl hl <- ( ( harpl )h ).
+(hl)chap_et.
+
+
+#b1

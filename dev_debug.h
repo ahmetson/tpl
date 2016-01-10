@@ -15,7 +15,7 @@ void debug_paren(parenthesis *paren);
 char *get_paren_type(int paren_type);
 
 char *get_type_class(int type_class_num);
-char *get_tok_type_value(token_type *tok_type);
+wchar_t *get_tok_type_value(token_type *tok_type);
 
 char *get_cmd_class(int cmd_class_num);
 

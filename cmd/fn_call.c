@@ -4,11 +4,13 @@
 #include <string.h>
 
 #include "../cmds.h"
+#include "../main/inf.h"
 #include "fn_call.h"
 #include "../translator_to_c/includes.h"
 #include "../main/glob.h"
 #include "../error.h"
 #include "../paren/types.h"
+#include "../fns.h"
 
 int FN_CALL_TYPE_NUM = 0;
 
@@ -71,8 +73,6 @@ int semantic_cmd_fn_call(command *cmd)
     CUR_PART = 7;
     func *f = NULL;
     // KOMANDANYN CHEPE BAGLANMA GORNUSHI UCHIN
-
-    //printf("Chepe baglanyan komandanyn semantikasy barlanmaly\n");
 
     // IKINJI BIRLIK BARLANÝAR
     // IDENTIFIKATOR BOLMALY, FUNKSIÝALARYŇ SANAWYNDA DUŞMALY
@@ -221,30 +221,17 @@ int check_fn_args(int argn, int args_num, parenthesis *paren)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
+void cmd_fn_call_c_code(command *cmd, wchar_t **line, int *llen)
 {
+    wchar_t *paren_o = L"(",
+            *paren_c = L")";
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *sci = get_cmd_item(cmd->items,1);
     func *func_params = fn_get_by_name(sci->tok.potentional_types[0].value);
+    wcsadd_on_heap( line, llen, func_params->c_name );
 
-    if (!(*llen))
-    {
-        *llen += strlen(func_params->c_name)+1;
-        *line = realloc(*line, *llen);
-        strncpy(*line,func_params->c_name,strlen(func_params->c_name)+1);
-    }
-    else
-    {
-        *llen += strlen(func_params->c_name);
-        *line = realloc(*line, *llen);
-        strncat(*line,func_params->c_name,strlen(func_params->c_name));
-    }
-
-    *llen += strlen("(");
-    *line = realloc(*line, *llen);
-    strncat(*line,"(", strlen("("));
-
+    wcsadd_on_heap( line, llen, paren_o );
 
     /** Ýasaljak koddaky funksiýa çagyrylmagynda, argumentleriň C dilindäki analogyny edýär.
 
@@ -257,11 +244,7 @@ void cmd_fn_call_c_code(command *cmd, char **line, int *llen)
     func_params->make_args_string(&fci->paren, line, llen);
 
     // Funksiýany ýapýar
-    *llen += strlen(")");
-    *line = realloc(*line, *llen);
-    strncat(*line,")",strlen(")"));
-
-    // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
+    wcsadd_on_heap( line, llen, paren_c );
 }
 
 
@@ -274,7 +257,7 @@ int cmd_fn_call_return_type(command *cmd, int *return_class, int *return_type)
         return 1;
     }
     command_item *sci = get_cmd_item(cmd->items,1);
-    char *n = sci->tok.potentional_types[0].value;
+    wchar_t *n = sci->tok.potentional_types[0].value;
     if(!is_fn_exist(n))
     {
         *return_class = TOK_CLASS_UNDEFINED;

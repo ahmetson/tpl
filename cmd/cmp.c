@@ -5,7 +5,10 @@
 #include <string.h>
 #include "cmp.h"
 #include "../main/glob.h"
+#include "../main/inf.h"
 #include "../error.h"
+#include "../fns.h"
+#include "../translator_to_c.h"
 
 /**
     Bir görnüşi bolýar.
@@ -58,7 +61,6 @@ int is_cmd_cmp(command *cmd)
 		if (e2->type==TOKEN_ITEM && e2->tok.type_class==TOK_CLASS_CMP)
 		{
 			cmd_cmp_mod(cmd, 1);
-			//printf("Birlik baglanmanynky eken\n");
 		}
 		else
 		{
@@ -138,7 +140,6 @@ int semantic_cmd_cmp(command *cmd)
     {
         if (e1_type!=INT_CONST_DATA_TOK_NUM)
         {
-            printf("SAGBOL 20");
             if (e1->type==TOKEN_ITEM)
                 print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &e1->tok);
             else if(e1->type==CMD_ITEM)
@@ -158,7 +159,6 @@ int semantic_cmd_cmp(command *cmd)
     {
         if (e3_type!=INT_CONST_DATA_TOK_NUM)
         {
-            printf("SAGBOL 21");
             if (e1->type==TOKEN_ITEM)
                 print_err(CODE7_TYPES_NOT_MATCH_RIGHT_DATA, &e1->tok);
             else if(e1->type==CMD_ITEM)
@@ -176,45 +176,18 @@ int semantic_cmd_cmp(command *cmd)
 
 /** Faýla degişli kody C koda ýazýar
 **/
-void cmd_cmp_c_code(command *cmd, char **l, int *llen)
+void cmd_cmp_c_code(command *cmd, wchar_t **l, int *llen)
 {
     // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *e1 = get_cmd_item(cmd->items,0), *e2 = get_cmd_item(cmd->items,1), *e3 = get_cmd_item(cmd->items,2);
-    if (e1->type==CMD_ITEM)
-    {
-        CMD_GET_C_CODE[e1->cmd.cmd_class][e1->cmd.cmd_type](&e1->cmd, l, llen);
-    }
-    else if (e1->type==TOKEN_ITEM)
-    {
-        TOK_GET_C_CODE[e1->tok.potentional_types[0].type_class][e1->tok.potentional_types[0].type_num](&e1->tok, l, llen);
-    }
-    else if (e1->type==PAREN_ITEM)
-    {
-        paren_get_c_code(&e1->paren, l, llen);
-    }
+
+    cmd_item_get_c_code( e1, l, llen );
 
     // baglanma ülňiniň c dili üçin warianty goýulýar
-    char *cmp_c = TOK_CLASS_CMP_CHARS[e2->tok.potentional_types[0].type_num][1];
-    *llen += strlen(cmp_c);
-    *l = realloc(*l, *llen);
-    strncat(*l,cmp_c,strlen(cmp_c));
+    wchar_t *cmp_c = TOK_CLASS_CMP_CHARS[e2->tok.potentional_types[0].type_num][1];
+    wcsadd_on_heap( l, llen, cmp_c );
 
-    if (e3->type==CMD_ITEM)
-    {
-        CMD_GET_C_CODE[e3->cmd.cmd_class][e3->cmd.cmd_type](&e3->cmd, l, llen);
-    }
-    else if (e3->type==TOKEN_ITEM)
-    {
-        TOK_GET_C_CODE[e3->tok.potentional_types[0].type_class][e3->tok.potentional_types[0].type_num](&e3->tok, l, llen);
-    }
-    else if (e3->type==PAREN_ITEM)
-    {
-        paren_get_c_code(&e3->paren, l, llen);
-    }
-    // Üç birligi birikdirip täze setir ýasalýar.
-    // Setire üç birlik we komandany gutaryjy çatylýar.
-    // Setir faýla ýazylan soň, setir üçin berlen ýer boşadylýar.
-    //printf("%s\n", *l);
+    cmd_item_get_c_code( e3, l, llen );
 }
 

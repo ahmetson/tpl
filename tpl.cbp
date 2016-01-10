@@ -170,6 +170,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main/conv_basic_types.h" />
+		<Unit filename="main/englification.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main/englification.h" />
 		<Unit filename="main/files.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
@@ -321,6 +325,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="token/token_types/cmp.h" />
+		<Unit filename="token/token_types/comment.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/token_types/comment.h" />
 		<Unit filename="token/token_types/const_data.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

@@ -14,6 +14,7 @@
 #include "main/inf.h"
 #include "cmd/def_var.h"
 #include "main/user_def_type.h"
+#include "fns/fn_helpers.h"
 
 
 int algor_add_cmd(command add_cmd)
@@ -26,7 +27,6 @@ int algor_add_cmd(command add_cmd)
 	GLOB_SUBCMD_ITEMS_LIST = realloc(GLOB_SUBCMD_ITEMS_LIST, sizeof(**GLOB_SUBCMD_ITEMS_LIST)*GLOB_SUBCMDS_NUM);
     if (GLOB_SUBCMD_ITEMS_LIST==NULL)
     {
-        printf("SALAM 1");
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&add_cmd));
     }
     else
@@ -44,10 +44,6 @@ int algor_add_cmd(command add_cmd)
         }
         add_cmd.items = GLOB_SUBCMDS_NUM-1;
 
-        /*
-        int size = sizeof(cmd);
-        if (cmd.tokens_num>0)
-            size += (cmd.tokens_num * sizeof(token));*/
         // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
         CUR_ALGOR_SIZE += sizeof(*CUR_ALGOR);
         if (CUR_ALGOR_SIZE)
@@ -64,21 +60,20 @@ int algor_add_cmd(command add_cmd)
 }
 
 
-void var_def_add(command *cmd, char glob)
+void var_def_add(command *cmd, wchar_t glob)
 {
     int ident_tok_pos = 2;  // GLOBAL: @, def_type, ident
     if (!glob)
         ident_tok_pos = 1;  //  LOKAL: def_type, ident
 
     command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
-    char *tok_name = ci->tok.potentional_types[0].value;
+    wchar_t *tok_name = ci->tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
 	if (glob)
     {
         if (is_ident_used(&ci->tok, 1))
         {
-            printf("IDENT 0");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -87,7 +82,6 @@ void var_def_add(command *cmd, char glob)
     {
         if (is_ident_used(&ci->tok, 0))
         {
-            printf("IDENT 1");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -96,14 +90,14 @@ void var_def_add(command *cmd, char glob)
 	glob_ident new_def = {
 	    prevci->tok.potentional_types[0].type_class,
 		prevci->tok.potentional_types[0].type_num,
-		"",
+		L"",
 		prevci->tok.inf_file_num,
-        prevci->tok.inf_char_num,
-		prevci->tok.inf_char,
+        prevci->tok.inf_wchar_t_num,
+		prevci->tok.inf_wchar_t,
 		prevci->tok.inf_line_num
 	};
 
-	strncpy(new_def.name, tok_name, strlen(tok_name)+1);
+	wcsncpy( new_def.name, tok_name, wcslen( tok_name )+1 );
 
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
     if (glob)
@@ -121,19 +115,18 @@ void var_def_add(command *cmd, char glob)
 }
 
 
-void arr_def_add(command *cmd, char glob)
+void arr_def_add(command *cmd, wchar_t glob)
 {
     int ident_tok_pos = cmd->items_num-1;  // Identifikator - bu komandadaky iň soňky element
 
     command_item *ci = get_cmd_item(cmd->items, ident_tok_pos);
-    char *tok_name = ci->tok.potentional_types[0].value;
+    wchar_t *tok_name = ci->tok.potentional_types[0].value;
 
 	// Identifikator eyyam yglan edilen eken.
 	if (glob==1)
     {
         if (is_ident_used(&ci->tok, 1))
         {
-            printf("IDENT 2");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -142,7 +135,6 @@ void arr_def_add(command *cmd, char glob)
     {
         if (is_ident_used(&ci->tok, 0))
         {
-            printf("IDENT 4");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
         }
@@ -151,9 +143,6 @@ void arr_def_add(command *cmd, char glob)
     {
         if (is_ident_used(&ci->tok, 2))
         {
-            debug_token(&ci->tok);
-            is_ident_used(&ci->tok, 2);
-
             printf("IDENT 5");
             CUR_PART = 4;
             print_err(CODE4_VARS_IDENT_USED, &ci->tok);
@@ -164,16 +153,16 @@ void arr_def_add(command *cmd, char glob)
 
     array_item ai = {
         prevci->tok.inf_file_num,
-        prevci->tok.inf_char_num,
-        prevci->tok.inf_char,
+        prevci->tok.inf_wchar_t_num,
+        prevci->tok.inf_wchar_t,
         prevci->tok.inf_line_num,
-        "",
+        L"",
         yay_ci->paren.elems_num,
         prevci->tok.potentional_types[0].type_class,
 		prevci->tok.potentional_types[0].type_num
     };
 
-	strncpy(ai.ident, tok_name, strlen(tok_name)+1);
+	wcsncpy( ai.ident, tok_name, wcslen( tok_name )+1 );
 
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
     if (glob==1)
@@ -214,8 +203,8 @@ void arr_def_add(command *cmd, char glob)
 
 
 // Lokal fayllar uchin
-char loc_head_file[] = ".h";
-char loc_source_file[] = ".c";
+wchar_t loc_head_file[] = L".h";
+wchar_t loc_source_file[] = L".c";
 
 int is_glob_def_var_in_cur()
 {
@@ -239,13 +228,13 @@ int is_glob_def_arr_in_cur()
 	return 0;
 }
 
-int is_glob_arr_def_exist(char *name)
+int is_glob_arr_def_exist(wchar_t *name)
 {
     int i, len;
     for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
     {
-        len = strlen(name)>strlen(GLOBAL_ARR_DEFS[i].ident)?strlen(name):strlen(GLOBAL_ARR_DEFS[i].ident);
-        if (strncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        len = wcslen(name)>wcslen(GLOBAL_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOBAL_ARR_DEFS[i].ident);
+        if (wcsncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
         {
             return 1;
         }
@@ -253,13 +242,13 @@ int is_glob_arr_def_exist(char *name)
     return 0;
 }
 
-int is_glob_var_def_exist(char *name)
+int is_glob_var_def_exist(wchar_t *name)
 {
     int i, len;
     for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
     {
-        len = strlen(name)>strlen(GLOBAL_VAR_DEFS[i].name)?strlen(name):strlen(GLOBAL_VAR_DEFS[i].name);
-        if (strncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
+        len = wcslen(name)>wcslen(GLOBAL_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOBAL_VAR_DEFS[i].name);
+        if (wcsncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
         {
             return 1;
         }
@@ -268,13 +257,13 @@ int is_glob_var_def_exist(char *name)
 }
 
 
-int is_local_var_def_exist(char *name)
+int is_local_var_def_exist(wchar_t *name)
 {
-    int i, len = strlen(name);
+    int i, len = wcslen(name);
     for (i=0; i<LOCAL_VAR_DEFS_NUMS; ++i)
     {
-        if (strlen(LOCAL_VAR_DEFS[i].name)==len &&
-            strncmp(LOCAL_VAR_DEFS[i].name, name, len)==0)
+        if (wcslen(LOCAL_VAR_DEFS[i].name)==len &&
+            wcsncmp(LOCAL_VAR_DEFS[i].name, name, len)==0)
         {
             return 1;
         }
@@ -282,13 +271,13 @@ int is_local_var_def_exist(char *name)
     return 0;
 }
 
-int is_local_arr_def_exist(char *name)
+int is_local_arr_def_exist(wchar_t *name)
 {
     int i, len;
     for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
     {
-        len = strlen(name)>strlen(LOCAL_ARR_DEFS[i].ident)?strlen(name):strlen(LOCAL_ARR_DEFS[i].ident);
-        if (strncmp(LOCAL_ARR_DEFS[i].ident, name, len)==0)
+        len = wcslen(name)>wcslen(LOCAL_ARR_DEFS[i].ident)?wcslen(name):wcslen(LOCAL_ARR_DEFS[i].ident);
+        if (wcsncmp(LOCAL_ARR_DEFS[i].ident, name, len)==0)
         {
             return 1;
         }
@@ -296,7 +285,7 @@ int is_local_arr_def_exist(char *name)
     return 0;
 }
 
-int is_var_def_exist(char *ident)
+int is_var_def_exist(wchar_t *ident)
 {
     if (is_glob_var_def_exist(ident) ||
         is_glob_var_dec_exist(ident) ||
@@ -304,7 +293,7 @@ int is_var_def_exist(char *ident)
         return 1;
 }
 
-int is_arr_def_exist(char *ident)
+int is_arr_def_exist(wchar_t *ident)
 {
     if (is_glob_arr_def_exist(ident) ||
         is_glob_arr_dec_exist(ident) ||
@@ -314,9 +303,9 @@ int is_arr_def_exist(char *ident)
 
 /** Ulninin ady boyuncha onun on yglan edilendigini barlayar.
 **/
-int is_ident_used(token *t, char except_code)
+int is_ident_used(token *t, wchar_t except_code)
 {
-    char *ident = t->potentional_types[0].value;
+    wchar_t *ident = t->potentional_types[0].value;
 
     /// Ähli bolup biljek identifikatorlaryň bölümlerinde barlamaly.
     ///     Ülňileriň adymy, funksiýalaryň adymy, açar sözlerimi we ş.m.
@@ -357,16 +346,15 @@ int is_ident_used(token *t, char except_code)
 }
 
 
-glob_ident *glob_vars_def_get_by_name(char *name)
+glob_ident *glob_vars_def_get_by_name(wchar_t *name)
 {
     int i, len;
     glob_ident *ret;
     for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
     {
-        //printf("%d: check <%s> that defined <%s>\n, current <%s> defined in <%s>\n", USER_VAR_DEFS_NUM, ident, f, USER_VAR_DEFS[i].ident, USER_VAR_DEFS[i].file_name);
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
-        len = strlen(name)>strlen(GLOBAL_VAR_DEFS[i].name)?strlen(name):strlen(GLOBAL_VAR_DEFS[i].name);
-        if (strncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
+        len = wcslen(name)>wcslen(GLOBAL_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOBAL_VAR_DEFS[i].name);
+        if (wcsncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
         {
             ret = &GLOBAL_VAR_DEFS[i];
             break;
@@ -376,16 +364,15 @@ glob_ident *glob_vars_def_get_by_name(char *name)
 }
 
 
-array_item *glob_arrs_def_get_by_name(char *name)
+array_item *glob_arrs_def_get_by_name(wchar_t *name)
 {
     int i, len;
     array_item *ret;
     for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
     {
-        //printf("%d: check <%s> that defined <%s>\n, current <%s> defined in <%s>\n", USER_VAR_DEFS_NUM, ident, f, USER_VAR_DEFS[i].ident, USER_VAR_DEFS[i].file_name);
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
-        len = strlen(name)>strlen(GLOBAL_ARR_DEFS[i].ident)?strlen(name):strlen(GLOBAL_ARR_DEFS[i].ident);
-        if (strncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        len = wcslen(name)>wcslen(GLOBAL_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOBAL_ARR_DEFS[i].ident);
+        if (wcsncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
         {
             ret = &GLOBAL_ARR_DEFS[i];
             break;
@@ -451,8 +438,8 @@ void open_block(command *cmd)
     }
     bi.inf_file_num = inf_tok->inf_file_num;   // Blok açýan bloklaryň birinji tokeni elmydama token birligi bolýar
     bi.inf_line_num = inf_tok->inf_line_num;
-    bi.inf_char_num = inf_tok->inf_char_num;
-    bi.inf_char = inf_tok->inf_char;
+    bi.inf_wchar_t_num = inf_tok->inf_wchar_t_num;
+    bi.inf_wchar_t = inf_tok->inf_wchar_t;
 
     GLOB_BLOCKS[GLOB_BLOCKS_NUM-1] = bi;
 
@@ -477,13 +464,13 @@ block_inc *get_block_by_inc_num(int inc_num)
 
 }
 
-int is_tmp_triangle_block_item_ident(char *ident)
+int is_tmp_triangle_block_item_ident(wchar_t *ident)
 {
-    int i, len = strlen(ident);
+    int i, len = wcslen(ident);
     for (i=0; i<TMP_USER_DEF_TYPES_NUM; ++i)
     {
-        if (strlen(TMP_USER_DEF_TYPE_ITEMS[i].ident)==len &&
-            strncmp(TMP_USER_DEF_TYPE_ITEMS[i].ident, ident, len)==0)
+        if (wcslen(TMP_USER_DEF_TYPE_ITEMS[i].ident)==len &&
+            wcsncmp(TMP_USER_DEF_TYPE_ITEMS[i].ident, ident, len)==0)
         {
             return 1;
         }

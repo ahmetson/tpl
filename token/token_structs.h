@@ -3,6 +3,8 @@
 #ifndef TOKEN_STRUCTS_H
 #define TOKEN_STRUCTS_H
 
+#include <wchar.h>
+
 #ifndef TOKEN_CLASSES_NUM
 #define TOKEN_CLASSES_NUM 17
 #endif
@@ -26,47 +28,47 @@
 typedef struct{
 	int                     type_num;
 	int                     type_class;
-	char                    need_value;	        // token must contain value
-	char                    value[MAXLEN];
-	char                    tok_value_type;     // Default - char*
-	char                    is_compl;		    // Is token completed
-	char                    type_must_check;
-	char                    parenthesis;
+	wchar_t                    need_value;	        // token must contain value
+	wchar_t                    value[MAXLEN];
+	wchar_t                    tok_value_type;     // Default - wchar_t*
+	wchar_t                    is_compl;		    // Is token completed
+	wchar_t                    type_must_check;
+	wchar_t                    parenthesis;
 	int                    string_value;
 }token_type;
 
 // Token uchin
 typedef struct{
 	int  ns;													// Namespace of token: 0-global, 1-local_file
-	//char *klas;												// Class of token type
+	//wchar_t *klas;												// Class of token type
 	token_type potentional_types[TOKEN_TYPES_NUM];		// Potentional types of token
 	int potentional_types_num;									// Number of recognized types for token
-	//char source_file[MAXLEN];									// source file of token
-	char value[MAXLEN];
+	//wchar_t source_file[MAXLEN];									// source file of token
+	wchar_t value[MAXLEN];
 	int is_compl;
 	int type_class;
     int required_type_num;
 	int required_type_class;
 	int inf_line_num;
 	int inf_file_num;
-	int inf_char_num;
-	char parenthesis;
-	char inf_char;
+	int inf_wchar_t_num;
+	wchar_t parenthesis;
+	wchar_t inf_wchar_t;
 }token;
 
 typedef struct{
     int type_class;
     int type_num;
-    char name[MAXLEN];
+    wchar_t name[MAXLEN];
     int inf_file_num;
-    int inf_char_num;
-    char inf_char;
+    int inf_wchar_t_num;
+    wchar_t inf_wchar_t;
     int inf_line_num;
 }glob_ident;
 
 // Her tokenin tipi uchin funksiyalar
 typedef struct{
-	int (*is_token) (token *tok, char*token_val);
+	int (*is_token) (token *tok, wchar_t*token_val);
 }is_token_item;
 
 

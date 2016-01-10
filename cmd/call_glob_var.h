@@ -10,6 +10,6 @@ int is_cmd_call_glob_var(command *c);
 void cmd_call_glob_var_mod(command *cmd, int item_num);
 int semantic_cmd_call_glob_var(command *cmd);
 int cmd_call_glob_var_return_type(command *cmd, int *return_class, int *ret_type);
-void cmd_call_glob_var_c_code(command *cmd, char **line, int *llen);
+void cmd_call_glob_var_c_code(command *cmd, wchar_t **line, int *llen);
 
 #endif // CMD_CALL_GLOB_VAR_H

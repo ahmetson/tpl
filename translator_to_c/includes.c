@@ -1,6 +1,7 @@
 /** Ýasaljak kodda #inçlude preprosessor komandasy bilen işleýän ähli funksiýalar we maglumatlar
  *
 **/
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "includes.h"
@@ -22,7 +23,7 @@ file_incs *includes_add_new()
 
 
 // Içinde inklud edýän preprosessor komandasyny ulanmaly faýla, inklud etmeli faýly goşýar
-void includes_file_add_include(file_incs *fi, char *h_source)
+void includes_file_add_include(file_incs *fi, wchar_t *h_source)
 {
     int i, len;
     // 1) Eger eýýäm goşulmaly faýl inklud etmeli faýllaryň sanawyna goşulan bolsa,
@@ -35,8 +36,8 @@ void includes_file_add_include(file_incs *fi, char *h_source)
     {
         for(i=0; i<fi->num; ++i)
         {
-            len = (strlen(h_source)>strlen(fi->inc[i]))?strlen(h_source):strlen(fi->inc[i]);
-            if (strncmp(h_source, fi->inc[i], len)==0)
+            len = (wcslen(h_source)>wcslen(fi->inc[i]))?wcslen(h_source):wcslen(fi->inc[i]);
+            if (wcsncmp(h_source, fi->inc[i], len)==0)
                 // 1.a)
                 return;
         }
@@ -50,9 +51,9 @@ void includes_file_add_include(file_incs *fi, char *h_source)
     // 1.b)
     fi->num++;
 
-    fi->inc = realloc(fi->inc, sizeof(char[MAX_FILE_LEN])*fi->num);
+    fi->inc = realloc(fi->inc, sizeof(wchar_t[MAX_FILE_LEN])*fi->num);
 
-    strncpy(fi->inc[fi->num-1], h_source, strlen(h_source)+1);
+    wcsncpy(fi->inc[fi->num-1], h_source, wcslen(h_source)+1);
 }
 
 
@@ -73,7 +74,7 @@ void translator_to_c_add_includes()
     {
         if (INCLUDES[i].num)
         {
-            FILE *s = fopen(FILES[i].c_source, "r+");
+            FILE *s = _wfopen(FILES[i].c_source, L"r+, ccs=UTF-8");
             add_includes_to_source(s, INCLUDES[i].inc, INCLUDES[i].num);
 
             fclose(s);

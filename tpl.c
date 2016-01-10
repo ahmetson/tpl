@@ -12,12 +12,14 @@
 #include "tpl.h"
 #include "main/init.h"
 #include "main/user_def_type.h"
+#include "main/conv_basic_types.h"
 #include "work_with_source.h"
 #include "dev_debug.h"
 #include "error.h"
 #include "semantic/compare_token_types.h"
 #include "semantic.h"
 #include "translator_to_c/includes.h"
+#include "cmd/def_var.h"
 
 /** ŞERT #1: Ülňiler global we lokal görnüşe öwrülmeli.
     Ülňiler ulanmazyldan öň, yglan edilmeli.
@@ -57,11 +59,11 @@ void tpl(int argc, const char **args)
 	// Kodly faýl bolmasa, TPL işlänok
 	source_codes_exist(argc);
 
-    //printf("Fayllaryn sany: %d, <%s>\n", argc, args[1]);
 	// Inisializasiýa
 	init();
 
 	// HER BERLEN KODLY FAÝLYŇ ALGORITMLERI ÝASALÝAR
+
 	work_with_sources(argc, args);
 
     if (GLOBAL_VAR_DECS_NUMS)
@@ -78,7 +80,7 @@ void tpl(int argc, const char **args)
     }
 
 	// Ýasalan programmanyň baş faýly tanalmaly
-	if (!strlen(MAIN_FILE_NAME))
+	if (!wcslen(MAIN_FILE_NAME))
 	{
 		print_err(CODE0_NOT_FOUND_MAIN_FILE, &inf_tok);
 	}
@@ -109,10 +111,10 @@ void tpl(int argc, const char **args)
     */
     if (INCLUDES_NUM)
     {
-        //printf("%d\n", INCLUDES_NUM);
+        //printf(L"%d\n", INCLUDES_NUM);
         translator_to_c_add_includes();
     }
-    //printf("NABELLI IDENTIFIKATORYN TIPLERI HEM BARLANDY\n");
+    //printf(L"NABELLI IDENTIFIKATORYN TIPLERI HEM BARLANDY\n");
 
     add_utypes_c_code_file();
     add_conv_basic_type_c_code_file();

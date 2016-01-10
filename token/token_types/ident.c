@@ -4,13 +4,13 @@
 #include <string.h>
 #include "ident.h"
 #include "../../main/glob.h"
+#include "../../fns/fn_helpers.h"
+#include "../../fns.h"
 #include "../../semantic/compare_token_types.h"
 
 // token type: <class> <number>
 int get_tok_type_ident_ident_val_type(token *tok, int *tok_class, int *tok_type)
 {
-
-    //debug_token(tok);
     if (is_inside_fn())
     {
         if (is_tmp_fn_var_ident_used(tok->potentional_types[0].value))
@@ -55,18 +55,8 @@ int get_tok_type_ident_ident_val_type(token *tok, int *tok_class, int *tok_type)
 
 /** Tokeniň C kodyny gaýtarýar.
 **/
-void tok_ident_c_code(token *tok, char **l, int *llen)
+void tok_ident_c_code(token *tok, wchar_t **l, int *llen)
 {
-    if (!(*llen))
-    {
-        *llen += strlen(tok->potentional_types[0].value)+1;
-        *l = realloc(*l, *llen);
-        strncpy(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value)+1);
-    }
-    else
-    {
-        *llen += strlen(tok->potentional_types[0].value);
-        *l = realloc(*l, *llen);
-        strncat(*l, tok->potentional_types[0].value, strlen(tok->potentional_types[0].value));
-    }
+    wchar_t *val = tok->potentional_types[0].value;
+    wcsadd_on_heap( l, llen, val );
 }

@@ -11,7 +11,7 @@ void cmd_block_close_mod(command *cmd, int item_num);
 int semantic_cmd_block(command *cmd);
 
 /** Faýla degişli kody C koda ýazýar **/
-void cmd_block_c_code(command *cmd, char **l, int *llen);
+void cmd_block_c_code(command *cmd, wchar_t **l, int *llen);
 
 
 #endif // CMD_BLOCK_H

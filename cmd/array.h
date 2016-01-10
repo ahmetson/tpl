@@ -8,10 +8,10 @@ extern int CMD_CLASS_ARR_CON;
 
 typedef struct{
     int inf_file_num;
-    int inf_char_num;
-    char inf_char;
+    int inf_wchar_t_num;
+    wchar_t inf_wchar_t;
     int inf_line_num;
-    char ident[MAXLEN];
+    wchar_t ident[MAXLEN];
     int  incs;
     int  type_class;
     int  type_num;
@@ -33,21 +33,21 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num);
 int semantic_cmd_arr_con(command *cmd);
 int semantic_cmd_arr_def(command *cmd);
 
-void cmd_arr_con_c_code(command *cmd, char **l, int *llen);
-void cmd_arr_def_c_code(command *cmd, char **line, int *line_len);
+void cmd_arr_con_c_code(command *cmd, wchar_t **l, int *llen);
+void cmd_arr_def_c_code(command *cmd, wchar_t **line, int *line_len);
 
 void add_to_last_glob_arr_items(command *cmd);
 void add_to_last_loc_arr_items(command *cmd);
 void add_to_last_dec_arr_items(command *cmd);
 void add_to_last_tmp_arr_items(command *cmd);
 
-void get_arr_address_by_ident(char *ident, int *type, int *num);
+void get_arr_address_by_ident(wchar_t *ident, int *type, int *num);
 
 void global_called_arrs_add(command *cmd);
 
 /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
 void work_with_called_glob_arrs();
 
-void add_arr_elem_inf_c_code(char **line, int *line_len, int arr_type, int arr_num, int max_items);
+void add_arr_elem_inf_c_code(wchar_t **line, int *line_len, int arr_type, int arr_num, int max_items);
 
 #endif // CMD_ARRAY_H

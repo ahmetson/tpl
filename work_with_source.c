@@ -8,6 +8,7 @@
 #include "tpl.h"
 #include "main/glob.h"
 #include "main/user_def_type.h"
+#include "main/files.h"
 #include "cmds.h"
 #include "parser.h"
 #include "algor.h"
@@ -29,17 +30,18 @@ void work_with_sources(int argc, const char **args)
 
     for (i=1; i<argc; ++i)
 	{
-		//printf("Parsing etmeli: '%s'\n", args[i]);
 		// Häzirki parserlenýän kodly faýlyň ady
-        add_file_info(args[i]);
+		wchar_t source[MAX_FILE_LEN] = {0};
+        mbstowcs( source, args[i], strlen(args[i]) );
+        add_file_info(source);
 
-		if (is_reserved_source_name((char *)args[i]))
+		if (is_reserved_source_name(source))
         {
             CUR_PART = 1;
             print_err(CODE1_FILE_NAME_RESERVED, &inf_tok);
         }
 		includes_add_new();
-        strncpy(CUR_FILE_NAME, args[i], strlen(args[i])+1);
+        wcsncpy(CUR_FILE_NAME, source, wcslen(source)+1);
 
 		work_with_source(args[i]);
 	}
@@ -54,7 +56,7 @@ void work_with_sources(int argc, const char **args)
 **/
 int work_with_source(const char *parse_file_name)
 {
-	FILE *source = fopen(parse_file_name, "r");
+	FILE *source = fopen(parse_file_name, "r, ccs=UTF-8");
 
 	if (source==NULL)
 	{

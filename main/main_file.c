@@ -10,10 +10,10 @@
 #include "../translator_to_c/includes.h"
 
 // Ýasaljak programmanyň baş faýlynyň ady
-char MAIN_FILE_NAME[];
+wchar_t MAIN_FILE_NAME[];
 // Baş faýlda başga faýllaryň algoritmlerini saklaýan funksiýalaryň we faýllaryň sanawy
 int  MAIN_FILE_INCLUDES_NUM;
-char (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
+wchar_t (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 
 
 /**
@@ -21,29 +21,29 @@ char (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 **/
 int add_addtn_file_fns()
 {
-    FILE *s = fopen(get_c_source_by_source(MAIN_FILE_NAME), "r+");
+    FILE *s = _wfopen(get_c_source_by_source(MAIN_FILE_NAME), L"r+");
     int i, j;
 	int len = 1,        // Harplaryň sany
         c_len = 1,      // Birinji teswirdäki harplaryň sany, funksiýalaryň yglan edilen faýllaryny goýmak üçin
         c2_len=1;       // Ikinji teswirdäki harplaryň sany, funksiýalary, algoritmiň soňuna goýmak üçin.
 
-	char c,             // Goýmaly kodyň ýerleri üç harpdan ybarat
-         prev_c = '\0', // belgiler bilen bellenýär.
-         prev_c2 = '\0',
+	wchar_t c,             // Goýmaly kodyň ýerleri üç harpdan ybarat
+         prev_c = L'\0', // belgiler bilen bellenýär.
+         prev_c2 = L'\0',
          cmode = 0;     // häzir ýasalan kodyň haýsy bölegindediginiň statusy
 
-	char *l = malloc(len);
-	char *ct = malloc(c_len);       // Birinji teswiriň zolagy: //.
-	char *ct2 = malloc(c2_len);     // Ikinj teswir zolagy: //,
+	wchar_t *l = malloc(len);
+	wchar_t *ct = malloc(c_len);       // Birinji teswiriň zolagy: //.
+	wchar_t *ct2 = malloc(c2_len);     // Ikinj teswir zolagy: //,
 
-	while ((c=fgetc(s))!=EOF)
+	while ((c=fgetwc(s))!=EOF)
 	{
 		// Ikinji teswir zolagyna düşüldi, diýmek baş blok gutarypdyr: //,
-        if (prev_c=='/' && prev_c2=='/' && c==',')
+        if (prev_c==L'/' && prev_c2==L'/' && c==L',')
 		{
-			l[len-1] = '\0';
+			l[len-1] = L'\0';
 			len--;
-			l[len-1] = '\0';
+			l[len-1] = L'\0';
 			len--;
 
 			cmode = 3;      // Ikinji teswir zolagyna geçmeli
@@ -52,7 +52,7 @@ int add_addtn_file_fns()
 		// IKINJI TESWIR ZOLAGY
 		else if (cmode==3)
 		{
-		    if (c=='\n')
+		    if (c==L'\n')
 			{
 				cmode=4;    // Funksiýalary häzirki ýasalan koda goşýan bölüme geçilýär.
 				continue;
@@ -75,8 +75,8 @@ int add_addtn_file_fns()
 		else if(cmode==4)
         {
             // Header goşmalary gutarandygy bellenilýär.
-            char *end_of_headers = "//, bash blok gutardy\n\t//  Programmanyn bashga bolekleri yerine yetirilmeli\n";
-            for(i=0; i<strlen(end_of_headers); ++i)
+            wchar_t *end_of_headers = L"//, bash blok gutardy\n\t//  Programmanyn bashga bolekleri yerine yetirilmeli\n";
+            for(i=0; i<wcslen(end_of_headers); ++i)
             {
 
                l[len-1] = end_of_headers[i];
@@ -101,17 +101,19 @@ int add_addtn_file_fns()
 
             // Prototipler baş faýlda çagyrylýar, olaryň yglan edilen faýly baş faýla inklud edilmeli faýllaryň
             // sanawyna goşulýar
+		    wchar_t *tab = L"\t",
+                    *space_nl  = L" \n",
+                    *dquote = L"\"";
 		    for(i=0; i<MAIN_FILE_INCLUDES_NUM; ++i)
             {
+                //printf(L"Goshmaly:%s %d\n", included_files[i], files_num);
+                wchar_t putme[MAX_FILE_LEN+20] = {0};
+                wcsncpy(putme, tab, wcslen(tab)+1);
+                wcsncat(putme, MAIN_FILE_INCLUDES[i][1], wcslen(MAIN_FILE_INCLUDES[i][1]));
 
-                //printf("Goshmaly:%s %d\n", included_files[i], files_num);
-                char putme[MAX_FILE_LEN+20] = {0};
-                strncpy(putme, "\t", strlen("\t")+1);
-                strncat(putme, MAIN_FILE_INCLUDES[i][1], strlen(MAIN_FILE_INCLUDES[i][1]));
 
-
-                strncat(putme, " \n", strlen(" \n"));
-                for(j=0; j<strlen(putme); ++j)
+                wcsncat(putme, space_nl, wcslen(space_nl));
+                for(j=0; j<wcslen(putme); ++j)
                 {
                     l[len-1] =
                     putme[j];
@@ -121,11 +123,11 @@ int add_addtn_file_fns()
                 }
 
                 // 3)
-                char var_def_f[MAX_FILE_LEN] = {0};
-                strncpy(var_def_f, "\"", strlen("\"")+1);
-                strncat(var_def_f, MAIN_FILE_INCLUDES[i][0], strlen(MAIN_FILE_INCLUDES[i][0]));
-                strncat(var_def_f, "\"", strlen("\""));
-                //printf("%s\n", var_def_f);
+                wchar_t var_def_f[MAX_FILE_LEN] = {0};
+                wcsncpy(var_def_f, dquote, wcslen(dquote)+1);
+                wcsncat(var_def_f, MAIN_FILE_INCLUDES[i][0], wcslen(MAIN_FILE_INCLUDES[i][0]));
+                wcsncat(var_def_f, dquote, wcslen(dquote));
+                //printf(L"%s\n", var_def_f);
 
                 includes_file_add_include(fi, var_def_f);
             }
@@ -134,10 +136,10 @@ int add_addtn_file_fns()
 
         }
 	}
-	l[len-1] = '\0';
+	l[len-1] = L'\0';
 	fseek(s, 0, SEEK_SET);
-	fwrite(l, sizeof(char), strlen(l), s);
-	//printf("%s\n", l);
+	fwrite(l, sizeof(wchar_t), wcslen(l), s);
+	//printf(L"%s\n", l);
 
 	free(l);
 	free(ct);
