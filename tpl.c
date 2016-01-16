@@ -8,119 +8,41 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <locale.h>
 
 #include "tpl.h"
 #include "main/init.h"
-#include "main/user_def_type.h"
-#include "main/conv_basic_types.h"
 #include "work_with_source.h"
+#include "translator_to_c.h"
 #include "dev_debug.h"
 #include "error.h"
-#include "semantic/compare_token_types.h"
 #include "semantic.h"
-#include "translator_to_c/includes.h"
-#include "cmd/def_var.h"
-
-/** ŞERT #1: Ülňiler global we lokal görnüşe öwrülmeli.
-    Ülňiler ulanmazyldan öň, yglan edilmeli.
-
-    *1) Global yglan edilip garaşylan ülňileriň sanawy bolýar. Sanawyň tipi: token.
-    *1) Global yglan edilen ülňileriň sanawy bolýar. Sanawyň tipi: token.
-    *2) Global ülňileri yglan edilen faýllaryň sanawy bolýar.
-
-    *3) Pragma global ülňileriň yglab edilen faýlyny okaýan komanda goşulýar.
-        a) Eger faýl öň goşulan faýllaryň arasynda bar bolsa (is_glob_defs_file_exist())
-            I) Pragma gutarýar.
-           ýogsa
-            II) glob_defs_file_add() funksiýasy arkaly çagyrylan faýllaryň sanawyna goşulýar.
-    *4)  Faýlyň içinde diňe lokal yglan edilen ülňileriň komandalry bolup bilýär.
-
-    5) Eger komanda parsing edilen soň global ülňiniň yglan edilmesi diýip tanalsa
-        a) Eger global yglan edilen ülňileriň arasynda şeýle atly ülňi bar bolsa (is_glob_var_def_exist())
-            I) "Eýýäm yglan ediljek global ülňi, başga ýerde yglan edilipdir" diýip hat görkezilýär.
-        b) Ýogsa
-            I) Global ülňileriň sanawyna goşulýar. (glob_var_def_add())
-
-    6) Täze komanda ýasalýar: Global ülňi çagyrylmagy (Nirede identifikator ulanyp bolýan bolsa, şol ýerde global ülňini çagyrsaň bolýar).
-        Täze komandanyň tipini gaýtarýan funksiýa, is_glob_var_dec_exist() funksiýasy arkaly, ýok bolsa soň is_glob_var_def_exist()
-        atly funksiýasy arkaly öň yglan edildimi ýa ýokdugy barlanýar.
-        Eger yglan edilmedik bolsa, onda
-            ýalňyşlyk görkezilýär.
-
-    7) Parserler işläp gutaran soň, semantika barlanýan ýerde:
-        Eger global ülňiniň maglumatlary yglan edilen sanaw boş bolmasa
-            global ülňiniň maglumatlaryny global yglan edilen ülňileriň arasynda barlygy görülýär.
-**/
-
 
 
 void tpl(int argc, const char **args)
 {
-	// Kodly faýl bolmasa, TPL işlänok
+    /// Kompýuterdäki ähli zatlar türkmen dilini harplaryny tanar ýaly.
+    char *tk = setlocale(LC_ALL, ".1250");
+    /// Türkmen harplaryny PROMPT'a çykarar ýaly.
+    system("chcp 65001 > nul");
+
+	/// TPL kodly faýllar hökman argumentler bilen berilmeli.
 	source_codes_exist(argc);
 
-	// Inisializasiýa
+	/// TPL programma işe girişmäne taýynlanýar.
+	/// Global ülňiler ötürdilýär.
 	init();
 
-	// HER BERLEN KODLY FAÝLYŇ ALGORITMLERI ÝASALÝAR
-
+	/// HER BERLEN KODLY FAÝLYŇ ALGORITMLERI ÝASALÝAR
 	work_with_sources(argc, args);
 
-    if (GLOBAL_VAR_DECS_NUMS)
-    {
-        work_with_glob_var_decs();
-    }
-    if (GLOBAL_ARR_DECS_NUMS)
-    {
-        work_with_glob_arr_decs();
-    }
-    if (DEC_FUNCS_NUM)
-    {
-        work_with_glob_fn_decs();
-    }
+    /// Hemme TPL kodly faýllar barlanan soň, biri-biriniň arasyndaky näsazlyklara barlanylýar.
+    work_with_semantic();
 
-	// Ýasalan programmanyň baş faýly tanalmaly
-	if (!wcslen(MAIN_FILE_NAME))
-	{
-		print_err(CODE0_NOT_FOUND_MAIN_FILE, &inf_tok);
-	}
+    /// Ähli TPL proýektine degişli bolan goşmaça C dilindäki kodlary goşýar
+    work_with_translator_whole_project();
 
-    // Eger ýasaljak programma birnäçe ýasalan kodlarda algoritmlerden düzülen bolsa,
-    // Hemme ýasaljak kodlardaky algoritmler ýerine ýetiriler ýaly,
-    // Baş ýasalan koddaky algoritmleriň soňlarynda, galan ýasalan kodlaryň
-    // Algoritmlerini saklaýan funksiýalar (ýasalan kodly faýlyň adyna gabat gelýär)
-    // çagyrylmaly
-    if (MAIN_FILE_INCLUDES_NUM)
-    {
-        if (!add_addtn_file_fns())
-            print_err(CODE0_INCLUDES_CANT_ADD, &inf_tok);
-    }
-
-    /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
-    work_with_called_glob_vars();
-    work_with_called_glob_arrs();
-
-
-    /// ŞERT BÖLÜMI: TRANSLATOR TO Ç
-    /// ŞERT: Eger ýasalan kodlara #inklude preprosessor komandasyny ulanmaly bolsa, #inklud preprosessorynyň maglumatlary ýasalan
-    ///       kodlara salynýar.
-    /** ŞERT #3: Eger haýsy bolsada bir faýlda ulanylýan birlikleriň biri global yglan edilen ülňileri çagyrýan bolsa
-                Onda faýlda ülňiniň yglan edilen faýlyna inklud etmeli
-
-        TPL funksiýada, parsing işläp bolan soň,
-    */
-    if (INCLUDES_NUM)
-    {
-        //printf(L"%d\n", INCLUDES_NUM);
-        translator_to_c_add_includes();
-    }
-    //printf(L"NABELLI IDENTIFIKATORYN TIPLERI HEM BARLANDY\n");
-
-    add_utypes_c_code_file();
-    add_conv_basic_type_c_code_file();
-
-	// TPL PROGRAMMADAN ÇYKMALY
-	free_globs();
+	/// TPL PROGRAMMADAN ÇYKMALY
 	printf("OK!\n");
 }
 

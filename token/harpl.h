@@ -21,4 +21,7 @@ void  string_prepare(token *string_toke);
 
 int is_valid_string_const_data(wchar_t *str, int after_quote_pos);
 int is_string_const_data_compl(wchar_t *tok_val, wchar_t onstack);
+
+int parser_mode_string( FILE *s, command *cmd );
+
 #endif // TOKEN_HARPL_H

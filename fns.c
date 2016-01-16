@@ -1,6 +1,4 @@
-/*
-Additonal functions
-*/
+/** Additonal functions*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -308,3 +306,24 @@ int wcsadd_on_heap( wchar_t **mem, int *memlen, wchar_t *add )
     return wcsncat_on_heap( mem, memlen, add );
 }
 
+
+/** wcsncpy funksiýanyň has gysgaldyp ýazyljak görnüşi. Hem-de goraglyrak görnüşi
+    d - ýazylmaly ýeri
+    s - ýazylmaly faýlyň özi
+*/
+int wcscpys( wchar_t *d, wchar_t *s )
+{
+    /// Öz özüňe maglumat ýazmak nämä gerek.
+    if ( d==s )
+        return 1;
+
+    return ( int )wcsncpy( d, s, wcslen( s )+1 );
+}
+
+
+/** Iki sany sözleriň biri birine dürs gabat gelýänini barlaýar.*/
+int is_wcseq( wchar_t *s1, wchar_t *s2 )
+{
+    return  wcslen( s1 )==wcslen( s2 ) &&
+            wcsncmp( s1, s2, wcslen( s1 ) )==0;
+}

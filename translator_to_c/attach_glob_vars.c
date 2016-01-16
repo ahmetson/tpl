@@ -34,7 +34,7 @@ int glob_vars_def_files_include_add(glob_ident *gi)
     // ALGORITMLER
     // Her näbelli yglan edilen ülňi boýunça:
     //  1)Näbelli ülňiniň çagyrylan faýlynyň ady boýunça faýlyň maglumatlarynyň adresi alynýar. (2-nji ülňä <-)
-    //  2)Eger içine inklud etmeli faýllaryň sanawynda ülňiniň çagyrylan faýlynyň ady ýok bolsa (GLOBAL INKLUD ÜLŇI)
+    //  2)Eger içine inklud etmeli faýllaryň sanawynda ülňiniň çagyrylan faýlynyň ady ýok bolsa (GLOB INKLUD ÜLŇI)
     //      a) Ülňiniň çagyrylan faýl ady boýunça, täze faýly inkludlara goşulmaly.
     //         inkludlara täze faýly goşýan funksiýa, goşulan faýlyň adresini gaýtarýar (1-nji ülňi <-)
     //    Ýogsa

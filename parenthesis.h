@@ -59,4 +59,6 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen);
 
 int is_paren_not_compl_item_exist(parenthesis *p, wchar_t rec);
 
+int parser_mode_paren( FILE *source, command *cmd );
+
 #endif

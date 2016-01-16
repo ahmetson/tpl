@@ -5,7 +5,8 @@
 #define TPL_FILES_H
 
 #ifndef MAX_FILE_LEN
-#define MAX_FILE_LEN  255
+#include <limits.h>
+#define MAX_FILE_LEN  PATH_MAX
 #define MAX_TOKEN_LEN 32
 #endif
 

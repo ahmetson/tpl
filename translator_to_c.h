@@ -46,7 +46,7 @@ int finishize_void_func(FILE *f);
 int c_trans_source_add_algor(FILE *f, int main_file);
 
 // Lokal faylyn algoritmlerini yasayar
-int work_with_translator(wchar_t main_file);
+int work_with_translator();
 
 int c_trans_write_file_fn_prototype(FILE *f_h, wchar_t *fn_name);
 int c_trans_write_file_fn_open(FILE *f_h, wchar_t *fn_name);
@@ -63,5 +63,8 @@ void tok_get_c_code( token *t, wchar_t **mem, int *memlen );
 void cmd_get_c_code( command *cmd, wchar_t **mem, int *memlen );
 void cmd_item_get_c_code( command_item *ci, wchar_t **mem, int *memlen );
 void paren_item_get_c_code( parenthesis_elem *pe, wchar_t **mem, int *memlen );
+
+
+void work_with_translator_whole_project();
 
 #endif

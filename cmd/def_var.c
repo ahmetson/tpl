@@ -217,17 +217,17 @@ void global_called_vars_add(command *cmd)
 
     /// Eger ülňi yglan edilen faýlynda çagyrylýan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
     int i, len;
-    for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+    for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
     {
-        if ((wcslen(GLOBAL_VAR_DEFS[i].name)==wcslen(ident) &&
-            wcsncmp(GLOBAL_VAR_DEFS[i].name, ident, wcslen(ident))==0) &&
-            *fnum==GLOBAL_VAR_DEFS[i].inf_file_num)
+        if ((wcslen(GLOB_VAR_DEFS[i].name)==wcslen(ident) &&
+            wcsncmp(GLOB_VAR_DEFS[i].name, ident, wcslen(ident))==0) &&
+            *fnum==GLOB_VAR_DEFS[i].inf_file_num)
             return;
     }
 
-    if (*fnum+1<=GLOBAL_CALLED_VARS_NUM)
+    if (*fnum+1<=GLOB_CALLED_VARS_NUM)
     {
-        called_var *cv = &GLOBAL_CALLED_VARS[*fnum];
+        called_var *cv = &GLOB_CALLED_VARS[*fnum];
 
         /// Eger eýýäm şeýle ülňi öňem çagyrylan bolsa, onda ikinji gezek goşmak nämä gerek?
         for(i=0; i<cv->num; ++i)
@@ -245,17 +245,17 @@ void global_called_vars_add(command *cmd)
     {
         /// Eger çagyrylan ülňiniň faýlynda intäk hiç hili ülňi çagyrylmadyk bolsa
         /// Ýasaljak kody çagyrylan ülňileri bolan faýllaryň sanawyna goşulýar
-        ++GLOBAL_CALLED_VARS_NUM;
+        ++GLOB_CALLED_VARS_NUM;
 
-        GLOBAL_CALLED_VARS = realloc(GLOBAL_CALLED_VARS, sizeof(*GLOBAL_CALLED_VARS)*GLOBAL_CALLED_VARS_NUM);
+        GLOB_CALLED_VARS = realloc(GLOB_CALLED_VARS, sizeof(*GLOB_CALLED_VARS)*GLOB_CALLED_VARS_NUM);
         called_var newf;
         newf.ident = NULL;
         newf.num   = 0;
-        GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1] = newf;
-        GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident = malloc(sizeof(*GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident));
-        GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].num   = 1;
+        GLOB_CALLED_VARS[GLOB_CALLED_VARS_NUM-1] = newf;
+        GLOB_CALLED_VARS[GLOB_CALLED_VARS_NUM-1].ident = malloc(sizeof(*GLOB_CALLED_VARS[GLOB_CALLED_VARS_NUM-1].ident));
+        GLOB_CALLED_VARS[GLOB_CALLED_VARS_NUM-1].num   = 1;
 
-        wcsncpy(GLOBAL_CALLED_VARS[GLOBAL_CALLED_VARS_NUM-1].ident[0], ident, wcslen(ident)+1);
+        wcsncpy(GLOB_CALLED_VARS[GLOB_CALLED_VARS_NUM-1].ident[0], ident, wcslen(ident)+1);
     }
 }
 
@@ -280,7 +280,7 @@ void work_with_called_glob_vars()
 {
     int i, j;
     file_incs *fi = NULL;
-    for (i=0; i<GLOBAL_CALLED_VARS_NUM; ++i)
+    for (i=0; i<GLOB_CALLED_VARS_NUM; ++i)
     {
         if (i+1>INCLUDES_NUM)
         {
@@ -291,10 +291,10 @@ void work_with_called_glob_vars()
             fi = &INCLUDES[i];
         }
 
-        for(j=0; j<GLOBAL_CALLED_VARS[i].num; ++j)
+        for(j=0; j<GLOB_CALLED_VARS[i].num; ++j)
         {
             wchar_t *dquote = L"\"", *dot_h = L".h";
-            glob_ident *gi = glob_vars_def_get_by_name(GLOBAL_CALLED_VARS[i].ident[j]);
+            glob_ident *gi = glob_vars_def_get_by_name(GLOB_CALLED_VARS[i].ident[j]);
             wchar_t var_def_f[MAX_FILE_LEN] = {0};
             wcsncpy(var_def_f, dquote, wcslen(dquote)+1);
             wcsncat(var_def_f, FILES[gi->inf_file_num].name, wcslen(FILES[gi->inf_file_num].name));

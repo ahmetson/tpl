@@ -5,10 +5,7 @@
 #define FNS_FN_H
 
 #include "../tokens.h"
-
-#ifndef MAX_FILE_LEN
-#define MAX_FILE_LEN 255
-#endif
+#include "../main/files.h"
 
 #ifndef FN_ARGS_MULTIPLE
 #define FN_ARGS_MULTIPLE -1

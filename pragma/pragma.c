@@ -28,6 +28,16 @@ act_pragma_item act_pragma_items[] = {
 };
 
 
+int parser_mode_pragma( FILE *source )
+{
+    if( CUR_CHAR!=PRAGMA_START_CHAR )
+        return 0;
+
+    parse_pragma( source );
+    return 1;
+}
+
+
 // Pragmany ulanmana tayynlayar.
 void init_pragma(pragma *prag)
 {
@@ -37,8 +47,7 @@ void init_pragma(pragma *prag)
 }
 
 
-/**
- * Pragma bilen işleýän parseriň bölümi
+/** Pragma bilen işleýän parseriň bölümi
 **/
 void parse_pragma(FILE *s)
 {
@@ -241,84 +250,47 @@ void act_pragma_include_glob_decl_file(pragma *p)
     // Adaty parser komandalary saýgarýar
 	while(1)
 	{
-	    if( TMP_CHAR )
-        {
-            CUR_CHAR = TMP_CHAR;
-            TMP_CHAR = 0;
-        }
-        else
-        {
-            if( ( CUR_CHAR=fgetwc( source ) )==WEOF )
-                break;
-        }
+	    if ( !process_char( source ) )
+            break;
 
-	    // Maglumatlar üçin
-	    update_inf();
-
-	    if(!is_valid_wchar_t())
-            print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
-
-        // 2. Pragma modyna geçmeli
-        if(CUR_CHAR==PRAGMA_START_CHAR)
+	    if ( !iswspace( CUR_CHAR )               &&
+             !parser_mode_pragma( source )       &&
+             !parser_mode_paren( source, &cmd )  &&
+             !parser_mode_string( source, &cmd ) &&
+             !parser_mode_end_cmd( source ) )
         {
-            parse_pragma(source);
-        }
-        else if (CUR_CHAR==PARENTHESIS_OPEN)
-        {
-            parenthesis par = parse_paren(source);
-            cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
-        }
-        else if (iswspace(CUR_CHAR))
-        {
-            continue;
-        }
-        else if (CUR_CHAR==HARPL_OPENER )
-        {
-            token tok = parse_string(source);
-            tok.inf_file_num = CUR_FILE_NUM-1;
-            if (!work_with_token(&tok, &cmd))
+            if (CUR_CHAR==CMD_END)
             {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
+                if ( !is_glob_decl_support_cmd( &cmd ) )
+                    print_err(CODE0_UNSUPPORT_INCLUDE_FILE_CMD, (token *)inf_get_last_token(&cmd));
+                else
+                {
+                    glob_vars_decl_add(&cmd);
+                    glob_arrs_decl_add(&cmd);
+                    glob_fns_decl_add(&cmd);
+                }
+                init_cmd( &cmd, 0);
             }
-        }
-        else if (CUR_CHAR==CMD_END)
-        {
-            //work_with_token(&tok, prev_tok_string);
-            //work_with_cmd();
-            if (!is_glob_decl_support_cmd(&cmd))
-                print_err(CODE0_UNSUPPORT_INCLUDE_FILE_CMD, (token *)inf_get_last_token(&cmd));
             else
             {
-                glob_vars_decl_add(&cmd);
-                glob_arrs_decl_add(&cmd);
-                glob_fns_decl_add(&cmd);
-            }
-            init_cmd(&cmd, 0);
-        }
-        else
-        {
-            token tok = parse_token(source);
-            tok.inf_file_num = CUR_FILE_NUM-1;
-            if (!work_with_token(&tok, &cmd))
-            {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
-            }
-            if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
-            {
-                parse_triangle_block_inside(source);
+                token tok = parse_token(source);
+                tok.inf_file_num = CUR_FILE_NUM-1;
+                work_with_token( &tok, &cmd );
+                if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
+                {
+                    parse_triangle_block_inside(source);
+                }
             }
         }
 
 	}
 	// Eger token bar bolsa, diymek komanda salynmandyr
-	if (cmd.items_num)  print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
+	if ( cmd.items_num )
+        print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
 
     fclose(source);
 
 	free_locals();
-	CUR_PART = prev_part;
     CUR_LINE = 1;
     CUR_CHAR_POS = 1;
 

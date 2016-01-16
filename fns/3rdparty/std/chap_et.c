@@ -14,7 +14,7 @@
 int add_std_chap_et()
 {
     wchar_t *file_name = L"tpl_std.c",
-            *fn_tpl_name   = L"chap_et",
+            *fn_tpl_name   = L"çap_et",
             *fn_c_name = L"printf",
             *c_lib_name = L"<stdio.h>";
     func std_chap_et;

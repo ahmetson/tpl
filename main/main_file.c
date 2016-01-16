@@ -8,6 +8,7 @@
 #include "main_file.h"
 #include "files.h"
 #include "../translator_to_c/includes.h"
+#include "../translator_to_c/files.h"
 
 // Ýasaljak programmanyň baş faýlynyň ady
 wchar_t MAIN_FILE_NAME[];

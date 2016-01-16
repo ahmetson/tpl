@@ -38,7 +38,7 @@ int finishize_token(token *tok);                                    // 3)komanda
 #include "cmds.h"
 int cmd_add_tok(token tok, command *cmd);                          // 4)Komanda salynýar
 
-int work_with_token(token *tok, command *cmd);
+void work_with_token(token *tok, command *cmd);
 token parse_token(FILE *s);
 
 int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *tok_class, int *tok_num);
