@@ -1,6 +1,4 @@
-/**
- * 1. Kodly fayllary harplar boyuncha parsing edyan bolum
-**/
+/** 1. Kodly fayllary harplar boyuncha parsing edyan bolum*/
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -9,6 +7,7 @@
 #include "main/glob.h"
 #include "main/user_def_type.h"
 #include "main/files.h"
+#include "fns.h"
 #include "cmds.h"
 #include "parser.h"
 #include "algor.h"
@@ -18,57 +17,65 @@
 #include "error.h"
 
 
-/**
- * Kodly faýllary parserleýär.
- *
- * @argc - kodly faýllaryň sany
- * @args - kodly faýllaryň salgylarynyň sanawy
+/** TPL kodly faýllary ýekäm ýekäm açyp, parsere berýär.
+    Parser işläp bolan soň bolsa, faýldan galan zibili arassalaýar
+ * @n - kodly faýllaryň sany
+ * @file_paths - kodly faýllaryň salgylarynyň sanawy
 **/
-void work_with_sources(int argc, const char **args)
+void work_with_sources( int n, const char **file_paths )
 {
     int i;
 
-    for (i=1; i<argc; ++i)
+    for ( i=1; i<n; ++i )
 	{
-		// Häzirki parserlenýän kodly faýlyň ady
+		/// TPL programda wide character bilen işlenilýär
 		wchar_t source[MAX_FILE_LEN] = {0};
-        mbstowcs( source, args[i], strlen(args[i]) );
-        add_file_info(source);
+        mbstowcs( source, file_paths[ i ], strlen( file_paths[i]) );
 
-		if (is_reserved_source_name(source))
-        {
-            CUR_PART = 1;
-            print_err(CODE1_FILE_NAME_RESERVED, &inf_tok);
-        }
+        /// Faýlyň maglumatlary we şolara görä C kodynda talap ediljek faýl atlary taýýarlanylýar.
+        add_file_info( source );
+        /// Soňky kodlardaky yglan edilen maglumatlary ulanmak üçin.
 		includes_add_new();
-        wcsncpy(CUR_FILE_NAME, source, wcslen(source)+1);
 
-		work_with_source(args[i]);
+        wcscpys( CUR_FILE_NAME, source );
+
+        check_for_reserved_file_name( source );
+
+		work_with_source( file_paths[ i ] );
 	}
 
 }
 
 
-/**
- * Faýly parserleýär.
- *
- * @parse_file_name - parserlenmeli faýlyň salgysy
+/** TPL kodly faýly açyp, parsere berýär.
+    Parser işläp bolan soň bolsa, faýldan galan zibili arassalaýar
+    @parseFileName - parserlenmeli faýlyň salgysy
 **/
-int work_with_source(const char *parse_file_name)
+void work_with_source( const char *file_path )
 {
-	FILE *source = fopen(parse_file_name, "r, ccs=UTF-8");
+	FILE *source = fopen( file_path, "r, ccs=UTF-8");
 
-	if (source==NULL)
+	if ( source==NULL )
 	{
 		CUR_PART = 1;
 		print_err(CODE1_FILE_CANT_OPEN, &inf_tok);
 	}
-
 	// 2-nji TPL-in bolumine gechildi
-	parse(source);
+	parse( source );
 
-	fclose(source);
-	return 1;
+	fclose( source );
 }
 
+
+/** Eger TPL üçin ýasalan faýlyň ady, TPL programyň özi üçin ulanýan faýlynyň ady bolsa
+    programdan çykmaly
+*/
+void check_for_reserved_file_name( wchar_t *file_path )
+{
+    if ( is_reserved_source_name( file_path ) )
+    {
+        CUR_PART = 1;
+        print_err( CODE1_FILE_NAME_RESERVED, &inf_tok );
+    }
+}
 

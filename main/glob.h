@@ -121,12 +121,12 @@ extern int                  INCLUDES_NUM;
 extern int                  COMPARE_IDENTS_NUM;*/
 
 /// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
-extern glob_ident          *GLOBAL_VAR_DEFS;
-extern int                  GLOBAL_VAR_DEFS_NUMS;
+extern glob_ident          *GLOB_VAR_DEFS;
+extern int                  GLOB_VAR_DEFS_NUMS;
 
 /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
-extern glob_ident          *GLOBAL_VAR_DECS;
-extern int                  GLOBAL_VAR_DECS_NUMS;
+extern glob_ident          *GLOB_VAR_DECS;
+extern int                  GLOB_VAR_DECS_NUMS;
 
 /// Global yglan etmeli faýllaryň sanawy
 extern wchar_t               **GLOB_DECS_FILES;
@@ -138,20 +138,20 @@ extern int                  LOCAL_VAR_DEFS_NUMS;
 
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
-extern called_var          *GLOBAL_CALLED_VARS;
-extern int                  GLOBAL_CALLED_VARS_NUM;
+extern called_var          *GLOB_CALLED_VARS;
+extern int                  GLOB_CALLED_VARS_NUM;
 
 /// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
-extern array_item          *GLOBAL_ARR_DEFS;
-extern int                  GLOBAL_ARR_DEFS_NUMS;
+extern array_item          *GLOB_ARR_DEFS;
+extern int                  GLOB_ARR_DEFS_NUMS;
 
 /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen birsyhly sanawlaryň maglumatlarynyň sanawy
-extern array_inc_item     **GLOBAL_ARR_DEFS_ITEMS;
+extern array_inc_item     **GLOB_ARR_DEFS_ITEMS;
 
-extern array_item          *GLOBAL_ARR_DECS;
-extern int                  GLOBAL_ARR_DECS_NUMS;
+extern array_item          *GLOB_ARR_DECS;
+extern int                  GLOB_ARR_DECS_NUMS;
 
-extern array_inc_item     **GLOBAL_ARR_DECS_ITEMS;
+extern array_inc_item     **GLOB_ARR_DECS_ITEMS;
 
 /// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
 extern array_item          *LOCAL_ARR_DEFS;
@@ -162,8 +162,8 @@ extern array_inc_item     **LOCAL_ARR_DEFS_ITEMS;
 
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
-extern called_var         *GLOBAL_CALLED_ARRS;
-extern int                 GLOBAL_CALLED_ARRS_NUM;
+extern called_var         *GLOB_CALLED_ARRS;
+extern int                 GLOB_CALLED_ARRS_NUM;
 
 
 /// Häzirki içine parsing edilip goşulýan birlikli komanda

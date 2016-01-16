@@ -1,10 +1,7 @@
-/*
- * Algoritmli fayly yasayan funksiya
-**/
+/** Algoritmli fayly yasayan funksiya */
 #ifndef ALGOR_H
 #define ALGOR_H
 
-#define MAX_FILE_LEN 255
 #define MAX_TOKEN_LEN 32
 
 #include "cmds.h"

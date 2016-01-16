@@ -25,8 +25,7 @@ void inf_add_source_code_last_file()
 
 
 
-/**
- * Tokene, onuň faýl bilen baglanyşykly maglumatlary goýulýar.
+/** Tokene, onuň faýl bilen baglanyşykly maglumatlary goýulýar.
 **/
 void inf_add_to_token(token *tok, wchar_t c, int c_pos, int line)
 {
@@ -87,10 +86,11 @@ token *inf_get_parens_last_token(parenthesis *par)
     return &inf_tok;
 }
 
-void update_inf()
+int update_inf()
 {
     if (CUR_CHAR==L'\n')
         inf_next_line();
     else
         inf_next_wchar_t();
+    return 1;
 }

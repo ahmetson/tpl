@@ -56,28 +56,28 @@
 */
 
 /** TAÝYNLYK:
-    GLOBAL global yglan edilen sanawlaryň sanawy bolýar:
+    GLOB global yglan edilen sanawlaryň sanawy bolýar:
         Sanaw: identifikatordan, içki elementleriň sanyndan, elementiň tipinden, elementiň tipiniň klasyndan durýar.
 
-    GLOBAL global yglan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
+    GLOB global yglan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
         Sanaw: iki içkiligi bolup durýar:
             Birinji içikilik, sanawyň özüni aňladýar.
             Ikinji içkilik, sanawyň içindäki elementleriniň maglumatlaryny saklaýar.
         Sanaw: özüniň içikliginiň nomerini, we içinde näçe element barlygynyň sanyny saklaýar.
 
-    GLOBAL lokal yglan edilen sanawlaryň sanawy bolýar:
+    GLOB lokal yglan edilen sanawlaryň sanawy bolýar:
         Sanaw: identifikatordan, içki elementleriň sanyndan, elementiň tipinden, elementiň tipiniň klasyndan durýar.
 
-    GLOBAL lokal yglan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
+    GLOB lokal yglan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
         Sanaw: iki içkiligi bolup durýar:
             Birinji içikilik, sanawyň özüni aňladýar.
             Ikinji içkilik, sanawyň içindäki elementleriniň maglumatlaryny saklaýar.
         Sanaw: özüniň içikliginiň nomerini, we içinde näçe element barlygynyň sanyny saklaýar.
 
-    GLOBAL global beýan edilen sanawlaryň sanawy bolýar:
+    GLOB global beýan edilen sanawlaryň sanawy bolýar:
         Sanaw: identifikatordan, içki elementleriň sanyndan, elementiň tipinden, elementiň tipiniň klasyndan durýar.
 
-    GLOBAL global beýan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
+    GLOB global beýan edilen sanawlaryň içkiligini saklaýan sanaw bolýar:
         Sanaw: iki içkiligi bolup durýar:
             Birinji içikilik, sanawyň özüni aňladýar.
             Ikinji içkilik, sanawyň içindäki elementleriniň maglumatlaryny saklaýar.
@@ -87,7 +87,7 @@
     ** HEMME FAÝLLAR PARSING EDILIP BOLANSOŇ
     Eger beýan edilen birsyhly sanawlar bar bolsa,
         HER beýan edilen birsyhly sanaw boýunça:
-            Her GLOBAL yglan edilen birsyhly sanawlar boýunça
+            Her GLOB yglan edilen birsyhly sanawlar boýunça
                 Eger beýan edilen sanawyň identifikatory, tipi, tipiniň klasy, içkiliginiň sany global yglan edileniňki bilen gabat gelse
                     Her içkiligiň sany boýunça:
                         Eger global beýan edilen sanawyň içkiliginiň sany we beýan edilen içkiligiň içindäki elementleriň sanlary deň bolmasa
@@ -545,7 +545,7 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         array_item *ai  = NULL;
         if (type==0)
         {
-            ai = &GLOBAL_ARR_DEFS[num];
+            ai = &GLOB_ARR_DEFS[num];
         }
         else if (type==4)
         {
@@ -557,7 +557,7 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         }
         else
         {
-            ai = &GLOBAL_ARR_DECS[num];
+            ai = &GLOB_ARR_DECS[num];
         }
 
 
@@ -636,8 +636,8 @@ int semantic_cmd_arr_con(command *cmd)
     array_item *ai = NULL;
     if (type==0)
     {
-        // GLOBAL YGLAN EDILEN SANAW EKEN
-        ai = &GLOBAL_ARR_DEFS[num];
+        // GLOB YGLAN EDILEN SANAW EKEN
+        ai = &GLOB_ARR_DEFS[num];
     }
     else if (type==1)
     {
@@ -647,7 +647,7 @@ int semantic_cmd_arr_con(command *cmd)
     else if (type==2)
     {
         // BASHGA KODLY FAYLDA YGLAN EDILEN SANAW EKEN
-        ai = &GLOBAL_ARR_DECS[num];
+        ai = &GLOB_ARR_DECS[num];
     }
     else if (type==3)
     {
@@ -701,8 +701,8 @@ int semantic_cmd_arr_con(command *cmd)
             array_inc_item *aii = NULL;
             if (type==0)
             {
-                // GLOBAL YGLAN EDILEN SANAW EKEN
-                aii = &GLOBAL_ARR_DEFS_ITEMS[num][i];
+                // GLOB YGLAN EDILEN SANAW EKEN
+                aii = &GLOB_ARR_DEFS_ITEMS[num][i];
             }
             else if (type==1)
             {
@@ -712,7 +712,7 @@ int semantic_cmd_arr_con(command *cmd)
             else if (type==2)
             {
                 // BASHGA KODLY FAYLDA YGLAN EDILEN SANAW EKEN
-                aii = &GLOBAL_ARR_DECS_ITEMS[num][i];
+                aii = &GLOB_ARR_DECS_ITEMS[num][i];
             }
             else if (type==3)
             {
@@ -911,14 +911,14 @@ void add_to_last_glob_arr_items(command *cmd)
 
     int i;
 
-    GLOBAL_ARR_DEFS_ITEMS[GLOBAL_ARR_DEFS_NUMS-1] = realloc(GLOBAL_ARR_DEFS_ITEMS[GLOBAL_ARR_DEFS_NUMS-1], sizeof(**GLOBAL_ARR_DEFS_ITEMS)*p->elems_num);
-    array_inc_item **last = &GLOBAL_ARR_DEFS_ITEMS[GLOBAL_ARR_DEFS_NUMS-1];
+    GLOB_ARR_DEFS_ITEMS[GLOB_ARR_DEFS_NUMS-1] = realloc(GLOB_ARR_DEFS_ITEMS[GLOB_ARR_DEFS_NUMS-1], sizeof(**GLOB_ARR_DEFS_ITEMS)*p->elems_num);
+    array_inc_item **last = &GLOB_ARR_DEFS_ITEMS[GLOB_ARR_DEFS_NUMS-1];
 
     parenthesis_elem *pes = get_paren_elems(p->elems);
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {GLOBAL_ARR_DEFS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
+        array_inc_item add = {GLOB_ARR_DEFS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
 
         (*last)[i] = add;
     }
@@ -933,14 +933,14 @@ void add_to_last_dec_arr_items(command *cmd)
 
     int i;
 
-    GLOBAL_ARR_DECS_ITEMS[GLOBAL_ARR_DECS_NUMS-1] = realloc(GLOBAL_ARR_DECS_ITEMS[GLOBAL_ARR_DECS_NUMS-1], sizeof(**GLOBAL_ARR_DECS_ITEMS)*p->elems_num);
-    array_inc_item **last = &GLOBAL_ARR_DECS_ITEMS[GLOBAL_ARR_DECS_NUMS-1];
+    GLOB_ARR_DECS_ITEMS[GLOB_ARR_DECS_NUMS-1] = realloc(GLOB_ARR_DECS_ITEMS[GLOB_ARR_DECS_NUMS-1], sizeof(**GLOB_ARR_DECS_ITEMS)*p->elems_num);
+    array_inc_item **last = &GLOB_ARR_DECS_ITEMS[GLOB_ARR_DECS_NUMS-1];
 
     parenthesis_elem *pes = get_paren_elems(p->elems);
 
     for(i=0; i<p->elems_num; ++i)
     {
-        array_inc_item add = {GLOBAL_ARR_DECS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
+        array_inc_item add = {GLOB_ARR_DECS_NUMS-1, i, wcstol(pes[0].tok.potentional_types[0].value, NULL, 10)};
         (*last)[i] = add;
     }
 }
@@ -949,7 +949,7 @@ void get_arr_address_by_ident(wchar_t *ident, int *type, int *num)
 {
     int i, len = wcslen(ident);
 
-    // GLOBAL YGLAN EDILEN SANAWLARYN ARASYNDAN GOZLENILYAR:
+    // GLOB YGLAN EDILEN SANAWLARYN ARASYNDAN GOZLENILYAR:
     for (i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
     {
         if (len==wcslen(LOCAL_ARR_DEFS[i].ident) && wcsncmp(ident, LOCAL_ARR_DEFS[i].ident, len)==0)
@@ -959,9 +959,9 @@ void get_arr_address_by_ident(wchar_t *ident, int *type, int *num)
             return;
         }
     }
-    for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    for (i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
     {
-        if (len==wcslen(GLOBAL_ARR_DEFS[i].ident) && wcsncmp(ident, GLOBAL_ARR_DEFS[i].ident, len)==0)
+        if (len==wcslen(GLOB_ARR_DEFS[i].ident) && wcsncmp(ident, GLOB_ARR_DEFS[i].ident, len)==0)
         {
             *type = 0;
             *num  = i;
@@ -969,9 +969,9 @@ void get_arr_address_by_ident(wchar_t *ident, int *type, int *num)
         }
 
     }
-    for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
+    for (i=0; i<GLOB_ARR_DECS_NUMS; ++i)
     {
-        if (len==wcslen(GLOBAL_ARR_DECS[i].ident) && wcsncmp(ident, GLOBAL_ARR_DECS[i].ident, len)==0)
+        if (len==wcslen(GLOB_ARR_DECS[i].ident) && wcsncmp(ident, GLOB_ARR_DECS[i].ident, len)==0)
         {
             *type = 2;
             *num  = i;
@@ -994,17 +994,17 @@ void global_called_arrs_add(command *cmd)
 
     /// Eger ülňi yglan edilen faýlynda çagyrylan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
     int i, len;
-    for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
     {
-        if ((wcslen(GLOBAL_ARR_DEFS[i].ident)==wcslen(ident) &&
-            wcsncmp(GLOBAL_ARR_DEFS[i].ident, ident, wcslen(ident))==0) &&
-            *fnum==GLOBAL_ARR_DEFS[i].inf_file_num)
+        if ((wcslen(GLOB_ARR_DEFS[i].ident)==wcslen(ident) &&
+            wcsncmp(GLOB_ARR_DEFS[i].ident, ident, wcslen(ident))==0) &&
+            *fnum==GLOB_ARR_DEFS[i].inf_file_num)
             return;
     }
 
-    if (*fnum+1<=GLOBAL_CALLED_ARRS_NUM)
+    if (*fnum+1<=GLOB_CALLED_ARRS_NUM)
     {
-        called_var *cv = &GLOBAL_CALLED_ARRS[*fnum];
+        called_var *cv = &GLOB_CALLED_ARRS[*fnum];
 
         /// Eger eýýäm şeýle ülňi öňem çagyrylan bolsa, onda ikinji gezek goşmak nämä gerek?
         for(i=0; i<cv->num; ++i)
@@ -1022,17 +1022,17 @@ void global_called_arrs_add(command *cmd)
     {
         /// Eger çagyrylan ülňiniň faýlynda intäk hiç hili ülňi çagyrylmadyk bolsa
         /// Ýasaljak kody çagyrylan ülňileri bolan faýllaryň sanawyna goşulýar
-        ++GLOBAL_CALLED_ARRS_NUM;
+        ++GLOB_CALLED_ARRS_NUM;
 
-        GLOBAL_CALLED_ARRS = realloc(GLOBAL_CALLED_ARRS, sizeof(*GLOBAL_CALLED_ARRS)*GLOBAL_CALLED_ARRS_NUM);
+        GLOB_CALLED_ARRS = realloc(GLOB_CALLED_ARRS, sizeof(*GLOB_CALLED_ARRS)*GLOB_CALLED_ARRS_NUM);
         called_var newf;
         newf.ident = NULL;
         newf.num   = 0;
-        GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1] = newf;
-        GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].ident = malloc(sizeof(*GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].ident));
-        GLOBAL_CALLED_ARRS[GLOBAL_CALLED_ARRS_NUM-1].num   = 1;
+        GLOB_CALLED_ARRS[GLOB_CALLED_ARRS_NUM-1] = newf;
+        GLOB_CALLED_ARRS[GLOB_CALLED_ARRS_NUM-1].ident = malloc(sizeof(*GLOB_CALLED_ARRS[GLOB_CALLED_ARRS_NUM-1].ident));
+        GLOB_CALLED_ARRS[GLOB_CALLED_ARRS_NUM-1].num   = 1;
 
-        wcsncpy( GLOBAL_CALLED_ARRS[ GLOBAL_CALLED_ARRS_NUM-1 ].ident[ 0 ], ident, wcslen( ident )+1 );
+        wcsncpy( GLOB_CALLED_ARRS[ GLOB_CALLED_ARRS_NUM-1 ].ident[ 0 ], ident, wcslen( ident )+1 );
     }
 }
 
@@ -1041,7 +1041,7 @@ void work_with_called_glob_arrs()
 {
     int i, j;
     file_incs *fi = NULL;
-    for (i=0; i<GLOBAL_CALLED_ARRS_NUM; ++i)
+    for (i=0; i<GLOB_CALLED_ARRS_NUM; ++i)
     {
         if (i+1>INCLUDES_NUM)
         {
@@ -1053,9 +1053,9 @@ void work_with_called_glob_arrs()
         }
 
         wchar_t *dquote = L"\"", *dot_h = L".h";
-        for(j=0; j<GLOBAL_CALLED_ARRS[i].num; ++j)
+        for(j=0; j<GLOB_CALLED_ARRS[i].num; ++j)
         {
-            array_item *gi = glob_arrs_def_get_by_name(GLOBAL_CALLED_ARRS[i].ident[j]);
+            array_item *gi = glob_arrs_def_get_by_name(GLOB_CALLED_ARRS[i].ident[j]);
             wchar_t arr_def_f[MAX_FILE_LEN] = {0};
             wcsncpy(arr_def_f, dquote, wcslen(dquote)+1);
             wcsncat(arr_def_f, FILES[gi->inf_file_num].name, wcslen(FILES[gi->inf_file_num].name));
@@ -1077,7 +1077,7 @@ void add_arr_elem_inf_c_code(wchar_t **line, int *line_len, int arr_type, int ar
     array_inc_item *aii = NULL;
     if (arr_type==0)
     {
-        aii = GLOBAL_ARR_DEFS_ITEMS[arr_num];
+        aii = GLOB_ARR_DEFS_ITEMS[arr_num];
     }
     else if (arr_type==1)
     {
@@ -1085,7 +1085,7 @@ void add_arr_elem_inf_c_code(wchar_t **line, int *line_len, int arr_type, int ar
     }
     else if (arr_type==2)
     {
-        aii = GLOBAL_ARR_DECS_ITEMS[arr_num];
+        aii = GLOB_ARR_DECS_ITEMS[arr_num];
     }
     else if (arr_type==4)
     {

@@ -6,6 +6,7 @@
 #include <string.h>
 #include "includes.h"
 #include "files.h"
+#include "../fns.h"
 
 // Içine inklud edýän preprosessor komandasyny ulanmaly faýllaryň sanyny ýene birine köpledýär
 file_incs *includes_add_new()
@@ -16,6 +17,7 @@ file_incs *includes_add_new()
     file_incs fi;
     fi.inc = NULL;
     fi.num = 0;
+
     INCLUDES[INCLUDES_NUM-1] = fi;
 
     return &INCLUDES[INCLUDES_NUM-1];
@@ -23,22 +25,21 @@ file_incs *includes_add_new()
 
 
 // Içinde inklud edýän preprosessor komandasyny ulanmaly faýla, inklud etmeli faýly goşýar
-void includes_file_add_include(file_incs *fi, wchar_t *h_source)
+void includes_file_add_include( file_incs *fi, wchar_t *h_source )
 {
-    int i, len;
-    // 1) Eger eýýäm goşulmaly faýl inklud etmeli faýllaryň sanawyna goşulan bolsa,
+    int i;
+    /** 1) Eger eýýäm goşulmaly faýl inklud etmeli faýllaryň sanawyna goşulan bolsa,
     //      a) onda faýl goşulanok.
     //    Ýogsa
-    //      b) faýl goşulýar
+    //      b) faýl goşulýar*/
 
-    // 1)
-    if (fi->num)
+    /** 1)*/
+    if ( fi->num )
     {
-        for(i=0; i<fi->num; ++i)
+        for( i=0; i<fi->num; ++i )
         {
-            len = (wcslen(h_source)>wcslen(fi->inc[i]))?wcslen(h_source):wcslen(fi->inc[i]);
-            if (wcsncmp(h_source, fi->inc[i], len)==0)
-                // 1.a)
+            if ( is_wcseq( h_source, fi->inc[ i ] ) )
+                /// 1.a)
                 return;
         }
     }
@@ -48,35 +49,28 @@ void includes_file_add_include(file_incs *fi, wchar_t *h_source)
         fi->inc = NULL;
     }
 
-    // 1.b)
+    /** 1.b)*/
     fi->num++;
 
-    fi->inc = realloc(fi->inc, sizeof(wchar_t[MAX_FILE_LEN])*fi->num);
+    fi->inc = realloc( fi->inc, sizeof( wchar_t[ MAX_FILE_LEN ] )*fi->num );
 
-    wcsncpy(fi->inc[fi->num-1], h_source, wcslen(h_source)+1);
+    wcscpys( fi->inc[ fi->num-1 ], h_source );
 }
 
 
 
-/// Ýasalan kodlara, #include preprosessory goşulýar
+/** Ýasalan kodlara, #include preprosessory goşulýar*/
 void translator_to_c_add_includes()
 {
-    // ÜLŇILER
-    //   Içine komandany goşmaly faýlyň adresi (1-nji ülňi)
-    // Içine inklud komandany goşmaly her faýl boýunça
-    //   1) Eger içine inklud etmeli faýllaryň sany boş bolmasa
-    //      a) Içine inklud komandany goşmaly faýl açylýar. (1-nji ülňi <-)
-    //      b) add_includes_to_source diýen funksiýa çagyrylyp, ähli goşmaly inkludlar, ýasalan koda salynýar.
-    //      ç) açylan papka ýapylýar.
-
     int i;
     for(i=0; i<INCLUDES_NUM; ++i)
     {
+        /** Faýla inklud etmeli. */
         if (INCLUDES[i].num)
         {
-            FILE *s = _wfopen(FILES[i].c_source, L"r+, ccs=UTF-8");
+            /** Diýmek inkludlar ýazylýar */
+            FILE *s = _wfopen( FILES[i].c_source, L"r+, ccs=UTF-8" );
             add_includes_to_source(s, INCLUDES[i].inc, INCLUDES[i].num);
-
             fclose(s);
         }
     }

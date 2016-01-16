@@ -17,8 +17,8 @@ int get_var_def_value_type(wchar_t *ident, int *type_class, int *type_num, wchar
     glob_ident *items;
     if (glob)
     {
-        num = GLOBAL_VAR_DEFS_NUMS;
-        items = GLOBAL_VAR_DEFS;
+        num = GLOB_VAR_DEFS_NUMS;
+        items = GLOB_VAR_DEFS;
     }
     else
     {

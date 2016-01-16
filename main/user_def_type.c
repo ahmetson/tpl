@@ -391,39 +391,22 @@ void parse_triangle_block_inside(FILE *source)
 	item.items = -2;
 
     // Adaty parser komandalary saýgarýar
-	while(1)
+	while( 1 )
 	{
-	    if( TMP_CHAR )
-        {
-            CUR_CHAR = TMP_CHAR;
-            TMP_CHAR = 0;
-        }
-        else
-        {
-            if( ( CUR_CHAR=fgetwc( source ) )==WEOF )
-                break;
-        }
-	    // Maglumatlar üçin
-	    update_inf();
+	    if ( !process_char( source ) )
+            break;
 
-	    if(!is_valid_wchar_t())
-            print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
-
-
-        // 2. Pragma modyna geçmeli
-        if(CUR_CHAR==PRAGMA_START_CHAR)
-        {
-            print_err(CODE2_PRAGMA_NOT_SUPPORT_IN_TRIANGLE_BLOCK, &inf_tok);
-        }
-        else if (CUR_CHAR==PARENTHESIS_OPEN)
-        {
-            parenthesis par = parse_paren(source);
-            cmd_add_item(&item, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
-
-        }
-        else if (iswspace(CUR_CHAR))
+        if ( iswspace(CUR_CHAR) ||
+             parser_mode_paren( source, &item ) ||
+             parser_mode_string( source, &item ) )
         {
             continue;
+        }
+
+        // 2. Pragma modyna geçmeli
+        if( CUR_CHAR==PRAGMA_START_CHAR )
+        {
+            print_err(CODE2_PRAGMA_NOT_SUPPORT_IN_TRIANGLE_BLOCK, &inf_tok);
         }
         else if (CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR)
         {
@@ -441,15 +424,6 @@ void parse_triangle_block_inside(FILE *source)
             TMP_CMD_ITEMS_LIST = NULL;
             init_cmd(&item, 0);
             item.items = -2;
-        }
-        else if (CUR_CHAR==HARPL_OPENER )
-        {
-            token tok = parse_string(source);
-            if (!work_with_token(&tok, &item))
-            {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
-            }
         }
         else if (CUR_CHAR==CMD_END)
         {
@@ -478,10 +452,9 @@ void parse_triangle_block_inside(FILE *source)
                 exit_triangle_block_parser();
                 return ;
             }
-            else if (!work_with_token(&tok, &item))
+            else
             {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
+                work_with_token( &tok, &item );
             }
         }
 

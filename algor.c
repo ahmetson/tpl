@@ -62,7 +62,7 @@ int algor_add_cmd(command add_cmd)
 
 void var_def_add(command *cmd, wchar_t glob)
 {
-    int ident_tok_pos = 2;  // GLOBAL: @, def_type, ident
+    int ident_tok_pos = 2;  // GLOB: @, def_type, ident
     if (!glob)
         ident_tok_pos = 1;  //  LOKAL: def_type, ident
 
@@ -102,9 +102,9 @@ void var_def_add(command *cmd, wchar_t glob)
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
     if (glob)
     {
-        ++GLOBAL_VAR_DEFS_NUMS;
-        GLOBAL_VAR_DEFS = realloc(GLOBAL_VAR_DEFS, sizeof(*GLOBAL_VAR_DEFS)*GLOBAL_VAR_DEFS_NUMS);
-        GLOBAL_VAR_DEFS[GLOBAL_VAR_DEFS_NUMS-1] = new_def;
+        ++GLOB_VAR_DEFS_NUMS;
+        GLOB_VAR_DEFS = realloc(GLOB_VAR_DEFS, sizeof(*GLOB_VAR_DEFS)*GLOB_VAR_DEFS_NUMS);
+        GLOB_VAR_DEFS[GLOB_VAR_DEFS_NUMS-1] = new_def;
     }
     else
     {
@@ -167,12 +167,12 @@ void arr_def_add(command *cmd, wchar_t glob)
     // Taze gosuljak komandanyn gowrumi, kuchadaky eyelenen gowrume goshulyar
     if (glob==1)
     {
-        ++GLOBAL_ARR_DEFS_NUMS;
-        GLOBAL_ARR_DEFS = realloc(GLOBAL_VAR_DEFS, sizeof(*GLOBAL_ARR_DEFS)*GLOBAL_ARR_DEFS_NUMS);
-        GLOBAL_ARR_DEFS[GLOBAL_ARR_DEFS_NUMS-1] = ai;
+        ++GLOB_ARR_DEFS_NUMS;
+        GLOB_ARR_DEFS = realloc(GLOB_VAR_DEFS, sizeof(*GLOB_ARR_DEFS)*GLOB_ARR_DEFS_NUMS);
+        GLOB_ARR_DEFS[GLOB_ARR_DEFS_NUMS-1] = ai;
 
-        GLOBAL_ARR_DEFS_ITEMS = realloc(GLOBAL_ARR_DEFS_ITEMS, sizeof(*GLOBAL_ARR_DEFS_ITEMS)*GLOBAL_ARR_DEFS_NUMS);
-        GLOBAL_ARR_DEFS_ITEMS[GLOBAL_ARR_DEFS_NUMS-1] = NULL;
+        GLOB_ARR_DEFS_ITEMS = realloc(GLOB_ARR_DEFS_ITEMS, sizeof(*GLOB_ARR_DEFS_ITEMS)*GLOB_ARR_DEFS_NUMS);
+        GLOB_ARR_DEFS_ITEMS[GLOB_ARR_DEFS_NUMS-1] = NULL;
 
         add_to_last_glob_arr_items(cmd);
     }
@@ -209,9 +209,9 @@ wchar_t loc_source_file[] = L".c";
 int is_glob_def_var_in_cur()
 {
 	int i;
-	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 			return 1;
 	}
 	return 0;
@@ -220,9 +220,9 @@ int is_glob_def_var_in_cur()
 int is_glob_def_arr_in_cur()
 {
 	int i;
-	for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 			return 1;
 	}
 	return 0;
@@ -231,10 +231,10 @@ int is_glob_def_arr_in_cur()
 int is_glob_arr_def_exist(wchar_t *name)
 {
     int i, len;
-    for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    for (i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
     {
-        len = wcslen(name)>wcslen(GLOBAL_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOBAL_ARR_DEFS[i].ident);
-        if (wcsncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        len = wcslen(name)>wcslen(GLOB_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOB_ARR_DEFS[i].ident);
+        if (wcsncmp(GLOB_ARR_DEFS[i].ident, name, len)==0)
         {
             return 1;
         }
@@ -245,10 +245,10 @@ int is_glob_arr_def_exist(wchar_t *name)
 int is_glob_var_def_exist(wchar_t *name)
 {
     int i, len;
-    for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+    for (i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
     {
-        len = wcslen(name)>wcslen(GLOBAL_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOBAL_VAR_DEFS[i].name);
-        if (wcsncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
+        len = wcslen(name)>wcslen(GLOB_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOB_VAR_DEFS[i].name);
+        if (wcsncmp(GLOB_VAR_DEFS[i].name, name, len)==0)
         {
             return 1;
         }
@@ -301,7 +301,7 @@ int is_arr_def_exist(wchar_t *ident)
         return 1;
 }
 
-/** Ulninin ady boyuncha onun on yglan edilendigini barlayar.
+/** Ulninin ady boýuncha onun on yglan edilendigini barlayar.
 **/
 int is_ident_used(token *t, wchar_t except_code)
 {
@@ -350,13 +350,13 @@ glob_ident *glob_vars_def_get_by_name(wchar_t *name)
 {
     int i, len;
     glob_ident *ret;
-    for (i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+    for (i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
     {
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
-        len = wcslen(name)>wcslen(GLOBAL_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOBAL_VAR_DEFS[i].name);
-        if (wcsncmp(GLOBAL_VAR_DEFS[i].name, name, len)==0)
+        len = wcslen(name)>wcslen(GLOB_VAR_DEFS[i].name)?wcslen(name):wcslen(GLOB_VAR_DEFS[i].name);
+        if (wcsncmp(GLOB_VAR_DEFS[i].name, name, len)==0)
         {
-            ret = &GLOBAL_VAR_DEFS[i];
+            ret = &GLOB_VAR_DEFS[i];
             break;
         }
     }
@@ -368,13 +368,13 @@ array_item *glob_arrs_def_get_by_name(wchar_t *name)
 {
     int i, len;
     array_item *ret;
-    for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+    for (i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
     {
         // Lokal ülňiler üçin, funksiýanyň ady gabat gelmeli.
-        len = wcslen(name)>wcslen(GLOBAL_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOBAL_ARR_DEFS[i].ident);
-        if (wcsncmp(GLOBAL_ARR_DEFS[i].ident, name, len)==0)
+        len = wcslen(name)>wcslen(GLOB_ARR_DEFS[i].ident)?wcslen(name):wcslen(GLOB_ARR_DEFS[i].ident);
+        if (wcsncmp(GLOB_ARR_DEFS[i].ident, name, len)==0)
         {
-            ret = &GLOBAL_ARR_DEFS[i];
+            ret = &GLOB_ARR_DEFS[i];
             break;
         }
     }

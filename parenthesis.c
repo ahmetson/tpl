@@ -30,6 +30,17 @@ int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, 
 };
 
 
+int parser_mode_paren( FILE *source, command *cmd )
+{
+    if( CUR_CHAR!=PARENTHESIS_OPEN )
+        return 0;
+    parenthesis par = parse_paren( source );
+    cmd_add_item( cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok() );
+
+    return 1;
+}
+
+
 /** Parserde skobka duşan wagty, içindäki elementler bilen işleýän bölüm
 
     \mode - eger skobka gutarsa, parseri adaty tokeni saýgarmana itermek üçin.

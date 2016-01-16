@@ -1088,8 +1088,8 @@ void glob_vars_decl_add(command *cmd)
         CUR_PART = 0;
         print_err(CODE0_UNSUPPORT_INCLUDE_FILE_CMD, (token *)inf_get_last_token(cmd));
     }
-    ++GLOBAL_VAR_DECS_NUMS;
-    GLOBAL_VAR_DECS = realloc(GLOBAL_VAR_DECS, sizeof(*GLOBAL_VAR_DECS)*GLOBAL_VAR_DECS_NUMS);
+    ++GLOB_VAR_DECS_NUMS;
+    GLOB_VAR_DECS = realloc(GLOB_VAR_DECS, sizeof(*GLOB_VAR_DECS)*GLOB_VAR_DECS_NUMS);
 
     command_item *fci = get_cmd_item(cmd->items, 0);
     command_item *sci = get_cmd_item(cmd->items, 1);
@@ -1106,7 +1106,7 @@ void glob_vars_decl_add(command *cmd)
     gi.inf_line_num = t1->inf_line_num;
     gi.inf_file_num = t1->inf_file_num;
 
-    GLOBAL_VAR_DECS[GLOBAL_VAR_DECS_NUMS-1] = gi;
+    GLOB_VAR_DECS[GLOB_VAR_DECS_NUMS-1] = gi;
 }
 
 void glob_arrs_decl_add(command *cmd)
@@ -1118,8 +1118,8 @@ void glob_arrs_decl_add(command *cmd)
         CUR_PART = 0;
         print_err(CODE0_UNSUPPORT_INCLUDE_FILE_CMD, (token *)inf_get_last_token(cmd));
     }
-    ++GLOBAL_ARR_DECS_NUMS;
-    GLOBAL_ARR_DECS = realloc(GLOBAL_ARR_DECS, sizeof(*GLOBAL_ARR_DECS)*GLOBAL_ARR_DECS_NUMS);
+    ++GLOB_ARR_DECS_NUMS;
+    GLOB_ARR_DECS = realloc(GLOB_ARR_DECS, sizeof(*GLOB_ARR_DECS)*GLOB_ARR_DECS_NUMS);
 
     command_item *type_ci = get_cmd_item(cmd->items, cmd->items_num-2);
     command_item *ident_ci = get_cmd_item(cmd->items, cmd->items_num-1);
@@ -1138,10 +1138,10 @@ void glob_arrs_decl_add(command *cmd)
     ai.inf_file_num = t1->inf_file_num;
     ai.incs = yay_ci->paren.elems_num;
 
-    GLOBAL_ARR_DECS[GLOBAL_ARR_DECS_NUMS-1] = ai;
+    GLOB_ARR_DECS[GLOB_ARR_DECS_NUMS-1] = ai;
 
-    GLOBAL_ARR_DECS_ITEMS = realloc(GLOBAL_ARR_DECS_ITEMS, sizeof(*GLOBAL_ARR_DECS_ITEMS)*GLOBAL_ARR_DECS_NUMS);
-    GLOBAL_ARR_DECS_ITEMS[GLOBAL_ARR_DECS_NUMS-1] = NULL;
+    GLOB_ARR_DECS_ITEMS = realloc(GLOB_ARR_DECS_ITEMS, sizeof(*GLOB_ARR_DECS_ITEMS)*GLOB_ARR_DECS_NUMS);
+    GLOB_ARR_DECS_ITEMS[GLOB_ARR_DECS_NUMS-1] = NULL;
 
     add_to_last_dec_arr_items(cmd);
 }
@@ -1165,9 +1165,9 @@ void glob_fns_decl_add(command *cmd)
 int is_glob_var_dec_exist(wchar_t *ident)
 {
     int i, len = wcslen(ident);
-    for(i=0; i<GLOBAL_VAR_DECS_NUMS; ++i)
+    for(i=0; i<GLOB_VAR_DECS_NUMS; ++i)
     {
-        if (wcslen(GLOBAL_VAR_DECS[i].name)==len && wcsncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
+        if (wcslen(GLOB_VAR_DECS[i].name)==len && wcsncmp(GLOB_VAR_DECS[i].name, ident, len)==0)
             return 1;
     }
     return 0;
@@ -1177,9 +1177,9 @@ int is_glob_var_dec_exist(wchar_t *ident)
 int is_glob_arr_dec_exist(wchar_t *ident)
 {
     int i, len = wcslen(ident);
-    for(i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
+    for(i=0; i<GLOB_ARR_DECS_NUMS; ++i)
     {
-        if (wcslen(GLOBAL_ARR_DECS[i].ident)==len && wcsncmp(GLOBAL_ARR_DECS[i].ident, ident, len)==0)
+        if (wcslen(GLOB_ARR_DECS[i].ident)==len && wcsncmp(GLOB_ARR_DECS[i].ident, ident, len)==0)
             return 1;
     }
     return 0;
@@ -1189,12 +1189,12 @@ int is_glob_arr_dec_exist(wchar_t *ident)
 void get_glob_var_dec_value_type(wchar_t *ident, int *c, int *t)
 {
     int i, len = wcslen(ident);
-    for(i=0; i<GLOBAL_VAR_DECS_NUMS; ++i)
+    for(i=0; i<GLOB_VAR_DECS_NUMS; ++i)
     {
-        if (wcslen(GLOBAL_VAR_DECS[i].name)==len && wcsncmp(GLOBAL_VAR_DECS[i].name, ident, len)==0)
+        if (wcslen(GLOB_VAR_DECS[i].name)==len && wcsncmp(GLOB_VAR_DECS[i].name, ident, len)==0)
         {
-            *c = GLOBAL_VAR_DECS[i].type_class;
-            *t = GLOBAL_VAR_DECS[i].type_num;
+            *c = GLOB_VAR_DECS[i].type_class;
+            *t = GLOB_VAR_DECS[i].type_num;
             return;
         }
     }
@@ -1204,26 +1204,26 @@ void get_glob_var_dec_value_type(wchar_t *ident, int *c, int *t)
 void  work_with_glob_var_decs()
 {
     int j, len;
-    for (j=0; j<GLOBAL_VAR_DECS_NUMS; ++j)
+    for (j=0; j<GLOB_VAR_DECS_NUMS; ++j)
     {
-        if (!is_glob_var_def_exist(GLOBAL_VAR_DECS[j].name))
+        if (!is_glob_var_def_exist(GLOB_VAR_DECS[j].name))
         {
             CUR_PART = 7;
-            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
-            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
-            inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
-            inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
+            inf_tok.inf_wchar_t     = GLOB_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOB_VAR_DECS[j].inf_wchar_t_num;
+            inf_tok.inf_line_num = GLOB_VAR_DECS[j].inf_line_num;
+            inf_tok.inf_file_num = GLOB_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_VAR_MUST_DEF, &inf_tok);
         }
         /// Yglan edilen we maglumaty yglan edilen global ülňileriň tipleri gabat gelmeli
-        glob_ident *gi = glob_vars_def_get_by_name(GLOBAL_VAR_DECS[j].name);
-        if (!(gi->type_class==GLOBAL_VAR_DECS[j].type_class && gi->type_num==GLOBAL_VAR_DECS[j].type_num))
+        glob_ident *gi = glob_vars_def_get_by_name(GLOB_VAR_DECS[j].name);
+        if (!(gi->type_class==GLOB_VAR_DECS[j].type_class && gi->type_num==GLOB_VAR_DECS[j].type_num))
         {
             CUR_PART = 7;
-            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
-            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
-            inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
-            inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
+            inf_tok.inf_wchar_t     = GLOB_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOB_VAR_DECS[j].inf_wchar_t_num;
+            inf_tok.inf_line_num = GLOB_VAR_DECS[j].inf_line_num;
+            inf_tok.inf_file_num = GLOB_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_VAR_NOT_MATCH_DATA_TYPE, &inf_tok);
         }
     }
@@ -1232,26 +1232,26 @@ void  work_with_glob_var_decs()
 void  work_with_glob_arr_decs()
 {
     int j, len;
-    for (j=0; j<GLOBAL_ARR_DECS_NUMS; ++j)
+    for (j=0; j<GLOB_ARR_DECS_NUMS; ++j)
     {
-        if (!is_glob_arr_def_exist(GLOBAL_ARR_DECS[j].ident))
+        if (!is_glob_arr_def_exist(GLOB_ARR_DECS[j].ident))
         {
             CUR_PART = 7;
-            inf_tok.inf_wchar_t     = GLOBAL_ARR_DECS[j].inf_wchar_t;
-            inf_tok.inf_wchar_t_num = GLOBAL_ARR_DECS[j].inf_wchar_t_num;
-            inf_tok.inf_line_num = GLOBAL_ARR_DECS[j].inf_line_num;
-            inf_tok.inf_file_num = GLOBAL_ARR_DECS[j].inf_file_num;
+            inf_tok.inf_wchar_t     = GLOB_ARR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOB_ARR_DECS[j].inf_wchar_t_num;
+            inf_tok.inf_line_num = GLOB_ARR_DECS[j].inf_line_num;
+            inf_tok.inf_file_num = GLOB_ARR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_ARR_MUST_DEF, &inf_tok);
         }
         /// Yglan edilen we maglumaty yglan edilen global ülňileriň tipleri gabat gelmeli
-        array_item *gi = glob_arrs_def_get_by_name(GLOBAL_VAR_DECS[j].name);
-        if (!(gi->type_class==GLOBAL_ARR_DECS[j].type_class && gi->type_num==GLOBAL_ARR_DECS[j].type_num))
+        array_item *gi = glob_arrs_def_get_by_name(GLOB_VAR_DECS[j].name);
+        if (!(gi->type_class==GLOB_ARR_DECS[j].type_class && gi->type_num==GLOB_ARR_DECS[j].type_num))
         {
             CUR_PART = 7;
-            inf_tok.inf_wchar_t     = GLOBAL_VAR_DECS[j].inf_wchar_t;
-            inf_tok.inf_wchar_t_num = GLOBAL_VAR_DECS[j].inf_wchar_t_num;
-            inf_tok.inf_line_num = GLOBAL_VAR_DECS[j].inf_line_num;
-            inf_tok.inf_file_num = GLOBAL_VAR_DECS[j].inf_file_num;
+            inf_tok.inf_wchar_t     = GLOB_VAR_DECS[j].inf_wchar_t;
+            inf_tok.inf_wchar_t_num = GLOB_VAR_DECS[j].inf_wchar_t_num;
+            inf_tok.inf_line_num = GLOB_VAR_DECS[j].inf_line_num;
+            inf_tok.inf_file_num = GLOB_VAR_DECS[j].inf_file_num;
             print_err(CODE7_GLOB_ARR_NOT_MATCH_DATA_TYPE, &inf_tok);
         }
     }
@@ -1273,7 +1273,7 @@ void work_with_glob_fn_decs()
             print_err(CODE7_FN_NOT_DEF, &inf_tok);
         }
         /// Yglan edilen we maglumaty yglan edilen funksiýalaryň kabul edýän argumentleri deň bolmaly
-        array_item *gi = glob_arrs_def_get_by_name(GLOBAL_VAR_DECS[j].name);
+        array_item *gi = glob_arrs_def_get_by_name(GLOB_VAR_DECS[j].name);
         /// Yglan edilen şol bir identifikatorly funksiýanyň nomeri
         int fn = get_fn_by_ident(DEC_FUNCS[j].name);
         if (FUNCS[fn].args_num != DEC_FUNCS[j].args_num)

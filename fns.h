@@ -49,4 +49,8 @@ int wcsadd_on_heap( wchar_t **mem, int *memlen, wchar_t *add );
 int realloc_wchar_heap( wchar_t **mem, int *memlen, wchar_t *add );
 int realloc_wchar_null_heap( wchar_t **mem, int *memlen );
 
+
+int wcscpys( wchar_t *d, wchar_t *s );
+int is_wcseq( wchar_t *s1, wchar_t *s2 );
+
 #endif

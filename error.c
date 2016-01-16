@@ -257,8 +257,6 @@ void print_err(int num, token *tok)
 
 	printf("%ls\n\n", err->msg);
 
-	free_globs();
-
 	sys_rmdir(C_SOURCE_FOLDER);
 
 	exit(num);

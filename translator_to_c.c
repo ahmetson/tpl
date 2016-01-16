@@ -12,7 +12,9 @@
 #include "cmd/ctrl_statement.h"
 #include "cmd/block.h"
 #include "cmd/fn_def.h"
+#include "cmd/def_var.h"
 #include "translator_to_c.h"
+#include "translator_to_c/includes.h"
 #include "main/user_def_type.h"
 #include "main/conv_basic_types.h"
 #include "fns/fn_helpers.h"
@@ -156,21 +158,21 @@ int c_trans_header_add_glob_def_var(FILE *f)
     int llen = 0;
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
-	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
             line_len = 0;
 			wchar_t *line = NULL;
             wcsadd_on_heap( &line, &line_len, extern_str );
 
 			// Ulninin tipi goshulyar
-			get_type_c_code(GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
+			get_type_c_code(GLOB_VAR_DEFS[i].type_class, GLOB_VAR_DEFS[i].type_num, &line, &line_len);
 
             wcsadd_on_heap( &line, &line_len, space );
 
 			// Ulninin ady goshulyar
-			wcsadd_on_heap( &line, &line_len, GLOBAL_VAR_DEFS[i].name );
+			wcsadd_on_heap( &line, &line_len, GLOB_VAR_DEFS[i].name );
 
             get_cmd_end_c_code(&line, &line_len);
 
@@ -199,26 +201,26 @@ int c_trans_header_add_glob_def_arr(FILE *f)
     int llen = 0;
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
-	for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = GLOBAL_ARR_DEFS[i].type_num;
+			type_num = GLOB_ARR_DEFS[i].type_num;
 
             line_len = 0;
 			wchar_t *line = NULL;
 			wcsadd_on_heap( &line, &line_len, extern_str );
 
 			// Ulninin tipi goshulyar
-            get_type_c_code(GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
+            get_type_c_code(GLOB_ARR_DEFS[i].type_class, GLOB_ARR_DEFS[i].type_num, &line, &line_len);
 
             wcsadd_on_heap( &line, &line_len, space );
 
 			// Ulninin ady goshulyar
-			wcsadd_on_heap( &line, &line_len, GLOBAL_ARR_DEFS[i].ident );
+			wcsadd_on_heap( &line, &line_len, GLOB_ARR_DEFS[i].ident );
 
 			/** Elementler hakda maglumat goşulýar */
-            add_arr_elem_inf_c_code( &line, &line_len, 0, i, GLOBAL_ARR_DEFS[i].incs);
+            add_arr_elem_inf_c_code( &line, &line_len, 0, i, GLOB_ARR_DEFS[i].incs);
 
 			// Komanda gutardy
             get_cmd_end_c_code( &line, &line_len );
@@ -246,25 +248,25 @@ int c_trans_source_add_glob_def_var(FILE *f)
     int llen = 0;
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
-	for(i=0; i<GLOBAL_VAR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_VAR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
-			type_num = GLOBAL_VAR_DEFS[i].type_num;
+			type_num = GLOB_VAR_DEFS[i].type_num;
 
             line_len = 0;
 			wchar_t *line = NULL;
 
 			// Ulninin tipi
-			get_type_c_code(GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
+			get_type_c_code(GLOB_VAR_DEFS[i].type_class, GLOB_VAR_DEFS[i].type_num, &line, &line_len);
 
             wcsadd_on_heap( &line, &line_len, space );
 
 			// Ulninin ady goshulyar
-            wcsadd_on_heap( &line, &line_len, GLOBAL_VAR_DEFS[i].name );
+            wcsadd_on_heap( &line, &line_len, GLOB_VAR_DEFS[i].name );
 
 			// Ülňilere başlangyç maglumatlar baglamaly
-            get_type_init_val_c_code(0, GLOBAL_VAR_DEFS[i].type_class, GLOBAL_VAR_DEFS[i].type_num, &line, &line_len);
+            get_type_init_val_c_code(0, GLOB_VAR_DEFS[i].type_class, GLOB_VAR_DEFS[i].type_num, &line, &line_len);
 
             // Ülňileriň başlangyç maglumatlary
             //wcsadd_on_heap( &line, &line_len, def_type_list[type_num].init_val );
@@ -295,26 +297,26 @@ int c_trans_source_add_glob_def_arr(FILE *f)
     int llen = 0;
     write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
-	for(i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+	for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
 	{
-		if (GLOBAL_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
+		if (GLOB_ARR_DEFS[i].inf_file_num==CUR_FILE_NUM-1)
 		{
             line_len = 0;
 			wchar_t *line = NULL;
 
 			// Ulninin tipi
-            get_type_c_code(GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
+            get_type_c_code(GLOB_ARR_DEFS[i].type_class, GLOB_ARR_DEFS[i].type_num, &line, &line_len);
 
             wcsadd_on_heap( &line, &line_len, space );
 
 			// Ulninin ady goshulyar
-            wcsadd_on_heap( &line, &line_len, GLOBAL_ARR_DEFS[i].ident );
+            wcsadd_on_heap( &line, &line_len, GLOB_ARR_DEFS[i].ident );
 
             // sanawyň elelemntleri hakda maglumat goşulýar
-            add_arr_elem_inf_c_code(&line, &line_len, 0, i, GLOBAL_ARR_DEFS[i].incs);
+            add_arr_elem_inf_c_code(&line, &line_len, 0, i, GLOB_ARR_DEFS[i].incs);
 
 			// Ülňilere başlangyç maglumatlar baglamaly
-            get_type_init_val_c_code(1, GLOBAL_ARR_DEFS[i].type_class, GLOBAL_ARR_DEFS[i].type_num, &line, &line_len);
+            get_type_init_val_c_code(1, GLOB_ARR_DEFS[i].type_class, GLOB_ARR_DEFS[i].type_num, &line, &line_len);
 
             // Komandany soňlaýan bölüm
             get_cmd_end_c_code(&line, &line_len);
@@ -564,12 +566,15 @@ int c_trans_source_add_loc_def_arr(FILE *f, wchar_t main_file)
 }
 // Lokal fayla degishli bolan ahli maglumatlary fayla terjime edyar
 // @main_file - Lokal fayl bash faylmy?
-int work_with_translator(wchar_t main_file)
+int work_with_translator()
 {
-    wchar_t *dot_h = L".h";
-    file_item *fi = get_file_by_tpl_source_name(CUR_FILE_NAME);
-    wchar_t f_name[MAX_FILE_LEN] = {0};
-    wcsncpy(f_name, CUR_FILE_NAME, wcslen(CUR_FILE_NAME)+1);
+    wchar_t *dot_h = L".h",
+            main_file;
+    file_item *fi = &FILES[ CUR_FILE_NUM ];
+
+
+    wchar_t f_name[ MAX_FILE_LEN ] = {0};
+    wcscpys( f_name, CUR_FILE_NAME );
 
 	// Fayllar achylyar:
 	FILE *c_source = _wfopen(fi->c_source, L"w, ccs=UTF-8");
@@ -579,11 +584,6 @@ int work_with_translator(wchar_t main_file)
 	prepare_h_source(h_source, fi->name);
 	prepare_c_source(c_source, wcsncat( fi->name, dot_h, wcslen( dot_h ) ) );
 
-/*// Fayllar yapylyar
-	fclose(c_source);
-	fclose(h_source);
-
-	return 1;*/
 
 	if (is_glob_def_var_in_cur())
 	{
@@ -597,11 +597,9 @@ int work_with_translator(wchar_t main_file)
     }
 
 	// Baş faýl bolsa, ýasalmaly sahypa main funksiýa ýazylmaly
-	if ( wcslen( MAIN_FILE_NAME )==wcslen( CUR_FILE_NAME ) &&
-	    !wcsncmp( MAIN_FILE_NAME, CUR_FILE_NAME, wcslen( MAIN_FILE_NAME ) ) )
+	if ( is_wcseq( MAIN_FILE_NAME, CUR_FILE_NAME ) )
 	{
 		main_file = 1;
-
 		// Bash sahypada esasy funksiya achylyar.
 		prepare_main_func( c_source );
 	}
@@ -905,6 +903,27 @@ void tok_get_c_code( token *t, wchar_t **mem, int *memlen )
 void cmd_get_c_code( command *cmd, wchar_t **mem, int *memlen )
 {
     CMD_GET_C_CODE[ cmd->cmd_class ][ cmd->cmd_type ]( cmd, mem, memlen );
+}
+
+
+
+void work_with_translator_whole_project()
+{
+    /// Ýasalan kodda çagyrylan global ülňileriň yglan edilen .h faýlynyň çagyrylan ýerinde inklud etmeli
+    work_with_called_glob_vars();
+    work_with_called_glob_arrs();
+
+    /** C kodly faýlynda başga C kodly faýlynda yglan edilen global ülňi ýa funksiýa ulanylyp biliner.
+    Mümkin ulanylan maglumatyň ulanylan faýlyndan soňky faýlynda bolup biliner. Şonuň üçin
+    Ulanylan kodly faýlynda prototipiň yglan edilen faýly goşulýar.*/
+    if (INCLUDES_NUM)
+    {
+        translator_to_c_add_includes();
+    }
+
+    /// Hemme ýasaýlan C projektlere gerek, goşmaça TPL programmanyň öz faýllary hem goşulýar.
+    add_utypes_c_code_file();
+    add_conv_basic_type_c_code_file();
 }
 
 

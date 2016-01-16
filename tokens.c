@@ -220,26 +220,22 @@ int is_token_empty(token *tok)
 	return !tok->potentional_types_num;
 }
 
-/** Token gutaran soň, komanda geçirilmeli.
-**/
-int work_with_token(token *tok, command *cmd)
+/** Token gutaran soň, komanda geçirilmeli. */
+void work_with_token(token *tok, command *cmd)
 {
-// 1. Onki token bar
-    if (!is_token_empty(tok) && tok->is_compl)
+    if ( !is_token_empty(tok) && tok->is_compl )
     {
         if (tok->type_class!=TOK_CLASS_COMMENT)
             cmd_add_item(cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), *tok);
-        return 1;
     }
-    return 0;
 }
 
 
 token parse_token(FILE *s)
 {
     // Adaty parseriň modynda, tokenleri saýgarmak üçin.
-	wchar_t prev_tok_string[CONST_MAX_TOKEN_LEN] = {0};
-	wchar_t new_tok_string [CONST_MAX_TOKEN_LEN] = {0};
+	wchar_t prev_tok_string[MAX_TOKEN_LEN] = {0};
+	wchar_t new_tok_string [MAX_TOKEN_LEN] = {0};
 	// Bular bolsa, tokenler saýgarylanda, ýatda saklamak üçin
 	token tok;      init_token(&tok);
 	token new_tok;  init_token(&new_tok);
@@ -262,7 +258,7 @@ token parse_token(FILE *s)
 	    // Maglumatlar üçin
 	    update_inf();
 
-        if (wcslen(prev_tok_string)+1 >= CONST_MAX_TOKEN_LEN)
+        if (wcslen(prev_tok_string)+1 >= MAX_TOKEN_LEN)
                 print_err(CODE2_TOKEN_TOO_BIG, &tok);
 
         // Häzirki harp öňki tokeniň yzy bolsa
@@ -284,11 +280,11 @@ token parse_token(FILE *s)
         }
         else
         {
-            empty_string(prev_tok_string, CONST_MAX_TOKEN_LEN);
+            empty_string(prev_tok_string, MAX_TOKEN_LEN);
             inf_add_to_token(&new_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
-            wcsncpy(prev_tok_string, new_tok_string, wcslen(new_tok_string)+1);
+            wcscpys( prev_tok_string, new_tok_string );
 
-            empty_string(new_tok_string, CONST_MAX_TOKEN_LEN);
+            empty_string(new_tok_string, MAX_TOKEN_LEN);
             tok = new_tok;
             init_token(&new_tok);
         }

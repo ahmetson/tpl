@@ -34,66 +34,25 @@ int parse(FILE *source)
         can be also previous one. There for in some situations getting character
         from file doesnt required.
     */
-	while(1)
+	while( 1 )
 	{
-	    // Maglumatlar üçin
-	    if ( TMP_CHAR )
-        {
-            CUR_CHAR = TMP_CHAR;
-            TMP_CHAR = 0;
-        }
-        else
-        {
-            if ( (CUR_CHAR=fgetwc(source))==WEOF )
-                break;
-        }
-	    update_inf();
+	    /** Indiki harpy alýar.
+            Parser boýunça umumy kömek üçin gerek bolan maglumatlary üýtgedýär*/
+	    if ( !process_char( source ) )
+            break;
 
-	    if(!is_valid_wchar_t())
-            print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
-
-
-        // 2. Pragma modyna geçmeli
-        if( CUR_CHAR==PRAGMA_START_CHAR )
+        if ( !iswspace( CUR_CHAR ) &&
+             !parser_mode_pragma( source ) &&
+             !parser_mode_paren( source, &cmd ) &&
+             !parser_mode_string( source, &cmd ) &&
+             !parser_mode_end_cmd( source ) )
         {
-            parse_pragma( source );
-        }
-        else if( CUR_CHAR==PARENTHESIS_OPEN )
-        {
-            parenthesis par = parse_paren(source);
-            cmd_add_item(&cmd, PAREN_ITEM, par, get_empty_cmd(), get_empty_tok());
-
-        }
-        else if (iswspace(CUR_CHAR))
-        {
-            continue;
-        }
-        else if (CUR_CHAR==HARPL_OPENER )
-        {
-            token tok = parse_string(source);
-            if (!work_with_token(&tok, &cmd))
-            {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
-            }
-        }
-        else if (CUR_CHAR==CMD_END)
-        {
-            //work_with_token(&tok, prev_tok_string);
-            work_with_cmd();
-            init_cmd(&cmd, 0);
-        }
-        else
-        {
+            /** PARSERIŇ TOKEN MODASYNDA */
             CUR_CMD = &cmd;
-            token tok = parse_token(source);
-            // Komanda goşulýar
+            token tok = parse_token( source );
 
-            if (!work_with_token(&tok, &cmd))
-            {
-                // TODO
-                // Yalnyshlyk peyda boldy, komanda tokeni goshup bolmady
-            }
+            work_with_token( &tok, &cmd );
+
             if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
             {
                 parse_triangle_block_inside(source);
@@ -103,7 +62,7 @@ int parse(FILE *source)
 	}
 
 	// Eger token bar bolsa, diymek komanda salynmandyr
-	if (cmd.items_num)
+	if ( cmd.items_num )
     {
         print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
     }
@@ -131,7 +90,7 @@ int parse(FILE *source)
     }
 
 	// TRANSLATOR TO C: algoritmi faýla ýazýar
-	work_with_translator('1');
+	work_with_translator();
 
 
 	free_locals();
@@ -171,3 +130,58 @@ int is_valid_wchar_t()
         CUR_CHAR==TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[0][0]);  /// Ulanyjy TIPI BILEN BAGLY OPERATORLAR; birlik bölüji
 }
 
+
+/** Parserlemeli harpy ötürýär.
+    Eger ötürdilmeli harp bar bolsa, şony, ýa-da
+    Faýldan indiki harpy ötürýär.
+
+    Eger faýlyň soňunya ýetilse, şowsuzlyk, ýa-da
+    şowlylyk gaýtarýar.
+*/
+int process_char( FILE *source )
+{
+    int success = set_cur_char( source ) && update_inf();
+    /** TPL goldaýan harpy bolmasa, program togtadylýar */
+    if ( success && !is_valid_wchar_t() )
+    {
+        CUR_PART = 2;
+        print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
+    }
+    return success;
+}
+
+
+/** Eger eýýäm barlanmaly harp bar bolsa, şol harp ulanylýar.
+    Ýogsa faýldan indiki harp alynýar.
+
+    Eger faýl gutarsa, onda
+        0 gaýtarýar
+    Ýogsa
+        1 gaýtarýar.
+*/
+int set_cur_char( FILE *source )
+{
+    if ( TMP_CHAR )
+    {
+        CUR_CHAR = TMP_CHAR;
+        TMP_CHAR = 0;
+    }
+    else
+    {
+        if ( (CUR_CHAR=fgetwc(source))==WEOF )
+            return 0;
+    }
+    return 1;
+}
+
+
+
+int parser_mode_end_cmd( FILE *s)
+{
+    if ( CUR_CHAR!=CMD_END )
+        return 0;
+
+    work_with_cmd();
+    init_cmd(&cmd, 0);
+    return 1;
+}

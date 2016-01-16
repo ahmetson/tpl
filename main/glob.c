@@ -104,12 +104,12 @@ file_incs             *INCLUDES;
 int                    INCLUDES_NUM;
 
 /// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
-glob_ident          *GLOBAL_VAR_DEFS;
-int                  GLOBAL_VAR_DEFS_NUMS;
+glob_ident          *GLOB_VAR_DEFS;
+int                  GLOB_VAR_DEFS_NUMS;
 
 /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
-glob_ident          *GLOBAL_VAR_DECS;
-int                  GLOBAL_VAR_DECS_NUMS;
+glob_ident          *GLOB_VAR_DECS;
+int                  GLOB_VAR_DECS_NUMS;
 
 /// Ýasaljak kodly faýlda yglan edilen ülňileriň maglumatlarynyň sanawy
 glob_ident          *LOCAL_VAR_DEFS;
@@ -117,21 +117,21 @@ int                  LOCAL_VAR_DEFS_NUMS;
 
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
-called_var         *GLOBAL_CALLED_VARS;
-int                 GLOBAL_CALLED_VARS_NUM;
+called_var         *GLOB_CALLED_VARS;
+int                 GLOB_CALLED_VARS_NUM;
 
 
 /// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
-array_item          *GLOBAL_ARR_DEFS;
-int                  GLOBAL_ARR_DEFS_NUMS;
+array_item          *GLOB_ARR_DEFS;
+int                  GLOB_ARR_DEFS_NUMS;
 
 /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen birsyhly sanawlaryň maglumatlarynyň sanawy
-array_inc_item     **GLOBAL_ARR_DEFS_ITEMS;
+array_inc_item     **GLOB_ARR_DEFS_ITEMS;
 
-array_item          *GLOBAL_ARR_DECS;
-int                  GLOBAL_ARR_DECS_NUMS;
+array_item          *GLOB_ARR_DECS;
+int                  GLOB_ARR_DECS_NUMS;
 
-array_inc_item     **GLOBAL_ARR_DECS_ITEMS;
+array_inc_item     **GLOB_ARR_DECS_ITEMS;
 
 
 /// Ýasaljak programma boýunça global yglan edilen birsyhly sanawlaryň sanawy
@@ -143,8 +143,8 @@ int                  LOCAL_ARR_DEFS_NUMS;
 
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
-called_var         *GLOBAL_CALLED_ARRS;
-int                 GLOBAL_CALLED_ARRS_NUM;
+called_var         *GLOB_CALLED_ARRS;
+int                 GLOB_CALLED_ARRS_NUM;
 
 
 /// Global yglan etmeli faýllaryň sanawy
@@ -203,28 +203,28 @@ void free_globs(void)
     }
     free_tmp_user_type();
 
-    if (GLOBAL_CALLED_ARRS_NUM)
+    if (GLOB_CALLED_ARRS_NUM)
     {
-        for(i=0; i<GLOBAL_CALLED_ARRS_NUM; ++i)
+        for(i=0; i<GLOB_CALLED_ARRS_NUM; ++i)
         {
-            if (GLOBAL_CALLED_ARRS[i].num)
+            if (GLOB_CALLED_ARRS[i].num)
             {
-                free(GLOBAL_CALLED_ARRS[i].ident);
+                free(GLOB_CALLED_ARRS[i].ident);
             }
         }
-        free(GLOBAL_CALLED_ARRS);
+        free(GLOB_CALLED_ARRS);
     }
 
-    if (GLOBAL_CALLED_VARS_NUM)
+    if (GLOB_CALLED_VARS_NUM)
     {
-        for(i=0; i<GLOBAL_CALLED_VARS_NUM; ++i)
+        for(i=0; i<GLOB_CALLED_VARS_NUM; ++i)
         {
-            if(GLOBAL_CALLED_VARS[i].num)
+            if(GLOB_CALLED_VARS[i].num)
             {
-                free(GLOBAL_CALLED_VARS[i].ident);
+                free(GLOB_CALLED_VARS[i].ident);
             }
         }
-        free(GLOBAL_CALLED_VARS);
+        free(GLOB_CALLED_VARS);
     }
 
     // Komandanyň içindäki bolup biljek komandalaryň birlikleri üçin ýerler boşadylýar
@@ -310,37 +310,37 @@ void free_globs(void)
     }
 
     /// Ýasaljak programma boýunça global yglan edilen ülňileriň sanawy
-    if (GLOBAL_VAR_DEFS_NUMS)
-        free(GLOBAL_VAR_DEFS);
-    if (GLOBAL_ARR_DEFS_NUMS)
+    if (GLOB_VAR_DEFS_NUMS)
+        free(GLOB_VAR_DEFS);
+    if (GLOB_ARR_DEFS_NUMS)
     {
-        free(GLOBAL_ARR_DEFS);
+        free(GLOB_ARR_DEFS);
         int i;
-        for (i=0; i<GLOBAL_ARR_DEFS_NUMS; ++i)
+        for (i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
         {
-            if (GLOBAL_ARR_DEFS_ITEMS[i]!=NULL)
+            if (GLOB_ARR_DEFS_ITEMS[i]!=NULL)
             {
-                free(GLOBAL_ARR_DEFS_ITEMS[i]);
+                free(GLOB_ARR_DEFS_ITEMS[i]);
             }
         }
-        free(GLOBAL_ARR_DEFS_ITEMS);
+        free(GLOB_ARR_DEFS_ITEMS);
     }
 
     /// Ýasaljak programma boýunça soň çagyrylyp bilinjek global yglan edilen ülňileriň maglumatlarynyň sanawy
-    if (GLOBAL_VAR_DECS_NUMS)
-        free(GLOBAL_VAR_DECS);
-    if (GLOBAL_ARR_DECS_NUMS)
+    if (GLOB_VAR_DECS_NUMS)
+        free(GLOB_VAR_DECS);
+    if (GLOB_ARR_DECS_NUMS)
     {
-        free(GLOBAL_ARR_DECS);
+        free(GLOB_ARR_DECS);
         int i;
-        for (i=0; i<GLOBAL_ARR_DECS_NUMS; ++i)
+        for (i=0; i<GLOB_ARR_DECS_NUMS; ++i)
         {
-            if (GLOBAL_ARR_DECS_ITEMS[i]!=NULL)
+            if (GLOB_ARR_DECS_ITEMS[i]!=NULL)
             {
-                free(GLOBAL_ARR_DECS_ITEMS[i]);
+                free(GLOB_ARR_DECS_ITEMS[i]);
             }
         }
-        free(GLOBAL_ARR_DECS_ITEMS);
+        free(GLOB_ARR_DECS_ITEMS);
     }
 
     /// Global yglan etmeli faýllaryň sanawy

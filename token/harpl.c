@@ -15,10 +15,18 @@
 wchar_t HARPL_OPENER = L'"';
 wchar_t *HARPL_OPENER_STRING = L"L\"";
 
-/**
- * Parserde harplar bilen işleýän bölüm
+int parser_mode_string( FILE *source, command *cmd )
+{
+    if (CUR_CHAR!=HARPL_OPENER )
+        return 0;
+    token tok = parse_string( source );
+    work_with_token( &tok, cmd );
+    return 1;
+}
+
+/** Parserde harplar bilen işleýän bölüm
 **/
-token parse_string(FILE *s)
+token parse_string( FILE *s )
 {
     token string_tok;
 
