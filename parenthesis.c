@@ -9,6 +9,7 @@
 #include "paren/types.h"
 #include "parser.h"
 #include "token/harpl.h"
+#include "tpl.h"
 #include "main/glob.h"
 #include "main/inf.h"
 #include "fns.h"
@@ -58,18 +59,8 @@ parenthesis parse_paren(FILE *s)
 
     while (1)
     {
-        if( TMP_CHAR )
-        {
-            CUR_CHAR = TMP_CHAR;
-            TMP_CHAR = 0;
-        }
-        else
-        {
-            if( ( CUR_CHAR=fgetwc( s ) )==WEOF )
-                break;
-        }
-
-        update_inf();
+        if ( !process_char( s, CHECK_VALID_CHAR ) )
+            break;
 
         if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
@@ -342,7 +333,7 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
     /// ülňiler salynýar
     if (p->type==PAREN_TYPE_FNS_ARGS)
     {
-        if (p->elems_num)
+        if ( p->elems_num )
         {
             parenthesis_elem *p_es = get_paren_elems(p->elems);
 
@@ -352,6 +343,11 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
                 paren_item_get_c_code( &p_es[i], l, llen );
             }
         }
+    }
+    else if ( !p->type && p->elems_num==1 )
+    {
+        parenthesis_elem *p_es = get_paren_elems(p->elems);
+        paren_item_get_c_code( &p_es[0], l, llen );
     }
 
     /// ) Ýaý ýapylýar
@@ -368,7 +364,7 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
     \return - ýaýyň içindäki birligiň tipini ötürdip boldumy ýa ýoklugynyň statusyny gaýtarýar */
 int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType)
 {
-    if (p->type==PAREN_TYPE_FNS_ARGS && p->elems_num==1)
+    if ( !p->type && p->elems_num==1)
     {
         parenthesis_elem *p_es = get_paren_elems(p->elems);
 

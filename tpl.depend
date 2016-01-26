@@ -387,7 +387,7 @@
 	"../fns.h"
 	"../translator_to_c.h"
 
-1453777224 source:d:\c_source\tpl\cmds.c
+1453779019 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -415,7 +415,7 @@
 	"fns/fn_helpers.h"
 	"fns.h"
 
-1453775845 source:d:\c_source\tpl\dev_debug.c
+1453779167 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -656,14 +656,14 @@
 
 1452929067 d:\c_source\tpl\work_with_source.h
 
-1453778829 source:d:\c_source\tpl\translator_to_c.c
+1453786034 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"fns.h"
-	"cmds.h"
 	"algor.h"
+	"cmds.h"
 	"cmd/ctrl_statement.h"
 	"cmd/block.h"
 	"cmd/fn_def.h"
@@ -672,6 +672,7 @@
 	"translator_to_c/includes.h"
 	"main/user_def_type.h"
 	"main/conv_basic_types.h"
+	"token/helpers.h"
 	"fns/fn_helpers.h"
 	"fns/3rdparty/std/kabul_et.h"
 
@@ -745,7 +746,7 @@
 
 1453697185 d:\c_source\tpl\main\tpl_esc_keys.h
 
-1453697803 source:d:\c_source\tpl\token\harpl.c
+1453786212 source:d:\c_source\tpl\token\harpl.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -782,7 +783,7 @@
 	"../fns.h"
 	"../translator_to_c.h"
 
-1453620054 source:d:\c_source\tpl\parenthesis.c
+1453786929 source:d:\c_source\tpl\parenthesis.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -791,6 +792,7 @@
 	"paren/types.h"
 	"parser.h"
 	"token/harpl.h"
+	"tpl.h"
 	"main/glob.h"
 	"main/inf.h"
 	"fns.h"
@@ -803,7 +805,7 @@
 	"cmds.h"
 	"tokens.h"
 
-1452017415 source:d:\c_source\tpl\paren\types.c
+1453784941 source:d:\c_source\tpl\paren\types.c
 	"types.h"
 	"../parenthesis.h"
 	"../cmd/array.h"
@@ -832,7 +834,7 @@
 	"../fns/fn.h"
 	"../cmds.h"
 
-1452734166 source:d:\c_source\tpl\fns\3rdparty\std\chap_et.c
+1453785736 source:d:\c_source\tpl\fns\3rdparty\std\chap_et.c
 	<stdlib.h>
 	<string.h>
 	"../../fn.h"

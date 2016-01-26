@@ -973,6 +973,7 @@ int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
                 if (!parse_cmd(cmd))
                 {
                     /// C.I.9.a)
+                    debug_cmd(cmd);
                     print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
                 }
             }

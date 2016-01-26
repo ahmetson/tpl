@@ -7,8 +7,8 @@
 
 #include "tpl.h"
 #include "fns.h"
-#include "cmds.h"
 #include "algor.h"
+#include "cmds.h"
 #include "cmd/ctrl_statement.h"
 #include "cmd/block.h"
 #include "cmd/fn_def.h"
@@ -17,6 +17,7 @@
 #include "translator_to_c/includes.h"
 #include "main/user_def_type.h"
 #include "main/conv_basic_types.h"
+#include "token/helpers.h"
 #include "fns/fn_helpers.h"
 #include "fns/3rdparty/std/kabul_et.h"
 
@@ -898,7 +899,7 @@ void paren_item_get_c_code( parenthesis_elem *pe, wchar_t **mem, int *memlen )
 
 void tok_get_c_code( token *t, wchar_t **mem, int *memlen )
 {
-    TOK_GET_C_CODE[ t->type_class ][ t->potentional_types[0].type_num ]( t, mem, memlen );
+    TOK_GET_C_CODE[ get_token_type_class( t ) ][ get_token_type( t ) ]( t, mem, memlen );
 }
 void cmd_get_c_code( command *cmd, wchar_t **mem, int *memlen )
 {

@@ -29,14 +29,14 @@ int parser_mode_string( FILE *source, command *cmd )
 /** Parserden harplary tanaýan bölüm */
 token parse_string( FILE *s )
 {
-    token string_tok;
-    set_token_string_params(&string_tok);
-
     /** Harplaryň näçe sany simboldan durjagy näbelli bolany üçin,
         HEAP'de global sanawda ýatda saklanylýar.
 
         Global HEAP'däki sanawa täze harplyk üçin ýer ýasalýar*/
     increment_string_tokens();
+
+    token string_tok;
+    set_token_string_params(&string_tok);
 
     /** C dilinde HARPL goşa dyrnak bilen başlamaly.
     Şonuň üçin goşa dyrnagy ötürýär*/
@@ -70,6 +70,7 @@ void set_token_string_params(token *string_tok)
     inf_add_to_token(string_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
 
     string_tok->is_compl = 0;
+    string_tok->potentional_types_num = 0;
     string_tok->type_class = TOK_CLASS_CONST_DATA;
 
     token_type tok_type;
