@@ -58,10 +58,9 @@ void make_std_chap_et_args(parenthesis *paren, wchar_t **line, int *llen)
     wcsadd_on_heap( &second, &slen, empty );
 
     int i;
+    parenthesis_elem *p_es = get_paren_elems(paren->elems);
     for(i=0; i<paren->elems_num; ++i)
     {
-        parenthesis_elem *p_es = get_paren_elems(paren->elems);
-
         wcsadd_on_heap( &first, &flen, fplace );
         wcsadd_on_heap( &second, &slen, item_separator );
         paren_item_get_c_code( &p_es[i], &second, &slen );

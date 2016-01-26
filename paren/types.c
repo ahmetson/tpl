@@ -83,6 +83,7 @@ int paren_type_is_def_fns_args(parenthesis *paren)
     return 0;
 }
 
+/** Funksiýanyň yglan edilende argumentleriniň maglumatlaryny görkezýär*/
 int paren_type_is_def_type(parenthesis *paren)
 {
     if (paren->elems_num==1)

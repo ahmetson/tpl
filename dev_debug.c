@@ -224,7 +224,7 @@ void debug_paren(parenthesis *paren)
     print_tabs(DEV_ITEMS_STEPS);
 	printf("%ls", L"ÝAÝYŇ MAGLUMATLARY------------------------------\n");
 	print_tabs(DEV_ITEMS_STEPS);
-	printf("'%s' %ls\n", paren_type, L"görnüşindäki ýaý" );
+	printf("'%ls' %ls\n", paren_type, L"görnüşindäki ýaý" );
 	print_tabs(DEV_ITEMS_STEPS);
 	printf("%ls: %d", paren->elems_num, L"Birlikleriniň sany" );
 	if (paren->elems_num>0)
