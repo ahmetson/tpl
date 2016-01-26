@@ -13,5 +13,8 @@ extern wchar_t *TOK_VOID_CHARS[TOK_VOID_NUMS][3];
 
 void tok_void_con_c_code(token *tok, wchar_t **l, int *llen);
 
+int is_token_void               (token *tok, wchar_t *tok_val);
+
+
 #endif // TOKEN_TOKEN_TYPES_VOID_H
 

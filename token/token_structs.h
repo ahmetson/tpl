@@ -66,10 +66,6 @@ typedef struct{
     int inf_line_num;
 }glob_ident;
 
-// Her tokenin tipi uchin funksiyalar
-typedef struct{
-	int (*is_token) (token *tok, wchar_t*token_val);
-}is_token_item;
 
 
 #endif

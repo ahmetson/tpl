@@ -15,10 +15,12 @@ extern int   LEFT_ASSIGN_TOK_NUM;
 extern wchar_t *RIGHT_ASSIGN_TOKEN_VALUE;
 extern int   RIGHT_ASSIGN_TOK_NUM;
 
-// DEBUG UCHIN
-extern wchar_t *ASSIGN_TOK_NUM_WORDS[2];
-
-extern wchar_t *RIGHT_ASSIGN_C_CODES[2];
+extern wchar_t *TOK_CLASS_ASSIGN_CHARS[2][2];
 
 void tok_assign_c_code(token *tok, wchar_t **l, int *llen);
+
+int is_token_assign             (token *tok, wchar_t *tok_val);
+int is_token_var_left_assign    (token *tok, wchar_t *tok_val);
+int is_token_var_rigtht_assign  (token *tok, wchar_t *tok_val);
+
 #endif

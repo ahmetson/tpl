@@ -21,5 +21,7 @@ extern const int DEF_TYPES_NUM;
 // tiplering atlarynyn spisogy
 extern def_type def_type_list[];
 
+int is_token_def_type           (token *tok, wchar_t *tok_val);
+
 
 #endif

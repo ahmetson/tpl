@@ -20,4 +20,7 @@ extern wchar_t *TOK_CLASS_LOOP_STTMNT_WORDS[TOK_CLASS_LOOP_STTMNT_NUM];
 
 void tok_loop_sttmnt_c_code(token *tok, wchar_t **l, int *llen);
 
+int is_token_loop_sttmnt        (token *tok, wchar_t *tok_val);
+
+
 #endif // TOKEN_TOKEN_TYPES_LOOP_STTMNT_H

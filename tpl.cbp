@@ -286,6 +286,10 @@
 		<Unit filename="token/harpl.h">
 			<Option target="default" />
 		</Unit>
+		<Unit filename="token/helpers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="token/helpers.h" />
 		<Unit filename="token/keywords.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />

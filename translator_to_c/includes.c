@@ -54,7 +54,7 @@ void includes_file_add_include( file_incs *fi, wchar_t *h_source )
 
     fi->inc = realloc( fi->inc, sizeof( wchar_t[ MAX_FILE_LEN ] )*fi->num );
 
-    wcscpys( fi->inc[ fi->num-1 ], h_source );
+    wcsncpys( fi->inc[ fi->num-1 ], h_source );
 }
 
 

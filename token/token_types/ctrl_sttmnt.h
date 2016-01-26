@@ -24,4 +24,7 @@ extern wchar_t *TOK_CLASS_CTRL_STTMNT_WORDS[TOK_CLASS_CTRL_STTMNT_NUM];
 
 void tok_ctrl_sttmnt_c_code(token *tok, wchar_t **l, int *llen);
 
+int is_token_ctrl_sttmnt        (token *tok, wchar_t *tok_val);
+
+
 #endif // TOKEN_TOKEN_TYPES_CTRL_STTMNT_H

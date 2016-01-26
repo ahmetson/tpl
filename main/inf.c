@@ -94,3 +94,11 @@ int update_inf()
         inf_next_wchar_t();
     return 1;
 }
+
+
+/** Maglumatlar üçin ulanylan ülňiler täze faýl üçin taýynlanýar*/
+void free_inf()
+{
+    CUR_LINE = 1;
+    CUR_CHAR_POS = 1;
+}

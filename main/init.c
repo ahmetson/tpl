@@ -38,7 +38,7 @@ int init()
 	CUR_ALGOR_ITEMS_NUM =
 	CUR_FILE_NUM = 0;
 	CUR_CHAR = -1;
-	wcscpys( CUR_FILE_NAME, empty );
+	wcsncpys( CUR_FILE_NAME, empty );
 	/// Maglumatlary çap edýän funksiýa
 	init_token(&inf_tok);
 

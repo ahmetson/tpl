@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "user_def_type.h"
+#include "../tpl.h"
 #include "inf.h"
 #include "../parser.h"
 #include "../cmd/user_def_type.h"
@@ -393,7 +394,7 @@ void parse_triangle_block_inside(FILE *source)
     // Adaty parser komandalary saýgarýar
 	while( 1 )
 	{
-	    if ( !process_char( source ) )
+	    if ( !process_char( source, CHECK_VALID_CHAR ) )
             break;
 
         if ( iswspace(CUR_CHAR) ||

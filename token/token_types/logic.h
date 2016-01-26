@@ -35,4 +35,7 @@ extern wchar_t *LOGIC_TOK_NUM_WORDS[TOK_CLASS_LOGIC_TYPES_NUM];
 
 void tok_logic_c_code(token *tok, wchar_t **l, int *llen);
 
+int is_token_logic              (token *tok, wchar_t *tok_val);
+
+
 #endif // TOKEN_TOKEN_TYPES_LOGIC_H

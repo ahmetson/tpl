@@ -46,32 +46,7 @@ extern const int TOK_CLASS_UTYPE_CON;
 extern const int TOK_CLASS_VOID;
 extern const int TOK_CLASS_COMMENT;
 
-// Debag üçin
-extern char *type_classes[];
-
-// Funksiyalar token uchin strukturalary talap edyaler
-#include "token_structs.h"
-
-// tokenleri tanayan funksiyalar
-int is_token_def_type           (token *tok, wchar_t *tok_val);
-int is_token_def_glob           (token *tok, wchar_t *tok_val);
-int is_token_ident              (token *tok, wchar_t *tok_val);
-int is_token_assign             (token *tok, wchar_t *tok_val);
-int is_token_var_left_assign    (token *tok, wchar_t *tok_val);
-int is_token_var_rigtht_assign  (token *tok, wchar_t *tok_val);
-int is_token_int_const_data     (token *tok, wchar_t *tok_val);
-int is_token_float_const_data   (token *tok, wchar_t *tok_val);
-int is_token_wchar_t_const_data    (token *tok, wchar_t *tok_val);
-int is_token_arif               (token *tok, wchar_t *tok_val);
-int is_token_cmp                (token *tok, wchar_t *tok_val);
-int is_token_logic              (token *tok, wchar_t *tok_val);
-int is_token_ctrl_sttmnt        (token *tok, wchar_t *tok_val);
-int is_token_block              (token *tok, wchar_t *tok_val);
-int is_token_loop_sttmnt        (token *tok, wchar_t *tok_val);
-int is_token_triangle_block     (token *tok, wchar_t *tok_val);
-int is_token_utype              (token *tok, wchar_t *tok_val);
-int is_token_utype_con          (token *tok, wchar_t *tok_val);
-int is_token_void               (token *tok, wchar_t *tok_val);
-int is_token_comment            (token *tok, wchar_t *tok_val);
+/// Debag üçin
+extern char *dev_type_class_names[];
 
 #endif

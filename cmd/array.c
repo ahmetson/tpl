@@ -479,7 +479,7 @@ void cmd_arr_con_mod(command *cmd, int item_num)
 
                 tok_get_c_code(&tci->tok, &line, &len);
 
-                add_string_to_last_string(line);
+                last_glob_str_conc_str(line);
                 free(line);
 
                 cmd->items_num--;
@@ -489,8 +489,8 @@ void cmd_arr_con_mod(command *cmd, int item_num)
         else
         {
             token string_tok;
-            string_prepare(&string_tok);
-            free_last_string();
+            set_token_string_params(&string_tok);
+            last_glob_str_free();
 
             wchar_t *last = NULL;
 
@@ -498,7 +498,7 @@ void cmd_arr_con_mod(command *cmd, int item_num)
 
             tok_get_c_code(&ci->tok, &last, &len);
 
-            add_string_to_last_string(last);
+            last_glob_str_conc_str(last);
             free(last);
 
             string_tok.is_compl = 1;
@@ -583,7 +583,7 @@ int semantic_cmd_arr_con(command *cmd)
     command_item *ident_ci = get_cmd_item(cmd->items, ident_num);
     command_item *elems_ci = get_cmd_item(cmd->items, ident_num+1);
 
-    wchar_t *elems = get_string_item(elems_ci->tok.potentional_types[0].string_value);
+    wchar_t *elems = get_glob_str_by_index(elems_ci->tok.potentional_types[0].string_value);
 
     int type = -1, num = -1, utype_addr = -1, utype_item_addr = -1;
     ///
@@ -786,7 +786,7 @@ void cmd_arr_con_c_code(command *cmd, wchar_t **line, int *line_len)
     cmd_item_get_c_code( fci, line, line_len );
 
     command_item *sci = get_cmd_item(cmd->items, cmd->items_num-1);
-    wchar_t *elems = get_string_item(sci->tok.potentional_types[0].string_value);
+    wchar_t *elems = get_glob_str_by_index(sci->tok.potentional_types[0].string_value);
 
     wchar_t delims = L'|';
     wchar_t **items = NULL; // INT tipdäki maglumatlaryň bolup biljek ulylygy

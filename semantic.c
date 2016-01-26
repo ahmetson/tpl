@@ -54,3 +54,40 @@ void work_with_semantic()
 }
 
 
+
+/** Parsing edilen soň semantikany barlaýar.
+    Barlanmaly işler:
+        1. Parsingden soň komandalar boş bolmaly.
+        2. Blok içkiligi bolmaly däl*/
+void check_semantics_after_parsing(command *cmd)
+{
+    /// Eger token bar bolsa, diymek komanda salynmandyr
+	if ( cmd->items_num )
+    {
+        print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(cmd));
+    }
+
+    if (GLOB_BLOCK_INCLUDES)
+    {
+        /** Blok açylan soň, içindäki komandalar üçin bloklaryň basgançagy ulalýar.
+            Emma açylan blogyň ýapylýan bölümi ýok bolany üçin, blok açylýan komandanyň maglumatlaryny
+            ulanyja görkezmeli. Görkezmek üçin bolsa, komandanyň maglumatlary içindeliginiň sanawyndan alynýar.
+
+            Alynmak üçin bolsa GLOB_BLOCK_INCLUDES-1 sany ulanylýar. */
+        block_inc *bi = get_block_by_inc_num(GLOB_BLOCK_INCLUDES-1);
+        inf_tok.inf_file_num = bi->inf_file_num;
+        inf_tok.inf_line_num = bi->inf_line_num;
+        inf_tok.inf_wchar_t_num = bi->inf_wchar_t_num;
+        inf_tok.inf_wchar_t     = bi->inf_wchar_t;
+
+        print_err(CODE2_REQUIRED_END_BLOCK, &inf_tok);
+    }
+    /// Indiki faýl parsing edilende bloklar üçin maglumatlara gerek bolýar
+    if (GLOB_BLOCKS_NUM)
+    {
+        GLOB_BLOCKS_NUM = 0;
+        free(GLOB_BLOCKS);
+        GLOB_BLOCKS = NULL;
+    }
+}
+

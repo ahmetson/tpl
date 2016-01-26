@@ -4,17 +4,13 @@
 #ifndef GLOB_H
 #define GLOB_H
 #include <wchar.h>
-
-/* token NAMESPACES
- *
- * glob
- * loc
-**/
+#include "../token_structs.h"
 
 extern wchar_t GLOB_IDENT_OPENER;
 
-// Global maglumatlar, onunde durant yorite token arkaly tanalyarlar.
-// Token bolsa programma dilde rezerw edilen sozlerin biri
 extern wchar_t *glob_def_string;
+
+int is_token_def_glob           (token *tok, wchar_t *tok_val);
+
 
 #endif

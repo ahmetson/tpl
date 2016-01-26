@@ -20,4 +20,7 @@ int get_utype(token *tok, int *tok_class, int *tok_type);
 
 void utype_item_separator_c_code(token *tok, wchar_t **l, int *llen);
 
+int is_token_utype              (token *tok, wchar_t *tok_val);
+
+
 #endif // TOKEN_TOKEN_TYPES_UTYPE_H
