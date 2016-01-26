@@ -109,19 +109,19 @@ void debug_token_type(token_type *tok_type)
 		wcsncpy(type, def_type_list[tok_type->type_num].tk_name, wcslen(def_type_list[tok_type->type_num].tk_name)+1);
 	else if (tok_type->type_class==TOK_CLASS_ASSIGN)
 	{
-		wcsncpy(type, ASSIGN_TOK_NUM_WORDS[tok_type->type_num], wcslen(ASSIGN_TOK_NUM_WORDS[tok_type->type_num])+1);
+		wcsncpys( type, TOK_CLASS_ASSIGN_CHARS[ tok_type->type_num ][ 1 ] );
 	}
 	else if (tok_type->type_class==TOK_CLASS_CONST_DATA)
     {
-        wcsncpy(type, CONST_DATA_TOK_NUM_WORDS[tok_type->type_num], wcslen(CONST_DATA_TOK_NUM_WORDS[tok_type->type_num])+1);
+        wcsncpys( type, CONST_DATA_TOK_NUM_WORDS[ tok_type->type_num ] );
     }
     else if (tok_type->type_class==TOK_CLASS_ARIF)
     {
-        wcsncpy(type, ARIF_TOK_NUM_WORDS[tok_type->type_num], wcslen(ARIF_TOK_NUM_WORDS[tok_type->type_num])+1);
+        wcsncpys( type, TOK_CLASS_ARIF_CHARS[tok_type->type_num][2] );
     }
     else if (tok_type->type_class==TOK_CLASS_CMP)
     {
-        wcsncpy(type, CMP_TOK_NUM_WORDS[tok_type->type_num], wcslen(CMP_TOK_NUM_WORDS[tok_type->type_num])+1);
+        wcsncpys(type, TOK_CLASS_CMP_CHARS[tok_type->type_num][2] );
     }
     else if (tok_type->type_class==TOK_CLASS_LOGIC)
     {
@@ -133,7 +133,7 @@ void debug_token_type(token_type *tok_type)
     }
     else if (tok_type->type_class==TOK_CLASS_BLOCK)
     {
-        wcsncpy(type, TOK_CLASS_BLOCK_WORDS[tok_type->type_num], wcslen(TOK_CLASS_BLOCK_WORDS[tok_type->type_num])+1);
+        wcsncpys( type, TOK_CLASS_BLOCK_CHARS[tok_type->type_num][2] );
     }
     else if (tok_type->type_class==TOK_CLASS_LOOP_STTMNT)
     {
@@ -187,7 +187,7 @@ wchar_t *get_tok_type_value(token_type *tok_type)
 {
     if (tok_type->type_class==TOK_CLASS_CONST_DATA && tok_type->type_num==STRING_CONST_DATA_TOK_NUM)
     {
-        return (wchar_t *)get_string_item(tok_type->string_value);
+        return (wchar_t *)get_glob_str_by_index(tok_type->string_value);
     }
     return tok_type->value;
 };
@@ -195,7 +195,7 @@ wchar_t *get_tok_type_value(token_type *tok_type)
 char *get_type_class(int type_class_num)
 {
 	if (type_class_num>0)
-		return type_classes[type_class_num];
+		return dev_type_class_names[type_class_num];
 	return "Unknown";
 }
 

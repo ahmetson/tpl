@@ -6,6 +6,11 @@
 
 #define CONST_TPL_ESC_KEYS 5
 
+#ifndef ESCAPE_IN_CHR
+#define ESCAPE_IN_CHR 1
+#define ESCAPE_IN_STR 0
+#endif
+
 extern wchar_t TPL_ESC_KEYS_LIST[CONST_TPL_ESC_KEYS][2];
 
 extern short int TPL_ESC_KEY_MAX_LEN;

@@ -13,6 +13,7 @@
 #include "main/inf.h"
 #include "fns.h"
 #include "translator_to_c.h"
+#include "token/helpers.h"
 #include "error.h"
 
 wchar_t PARENTHESIS_OPEN = L'(';

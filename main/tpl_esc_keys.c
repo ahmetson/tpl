@@ -25,10 +25,10 @@ wchar_t      TPL_ESC_KEY_C_OPENER = L'\\';
 **/
 int is_tpl_ESC_key(wchar_t ESC_key, wchar_t type)
 {
-    // Harplaryň arasynda dyrnagy we
-    // goşa dyrnagy harp ýaly ulansoň bolýar
-    if ((type==1 && ESC_key==L'"') ||
-        (type==0 && ESC_key==L'\''))
+    /** Harplaryň arasynda dyrnagy we
+        goşa dyrnagy harp ýaly ulansoň bolýar*/
+    if( ( type==ESCAPE_IN_CHR && ESC_key==L'"' ) ||
+        ( type==ESCAPE_IN_STR && ESC_key==L'\'' ) )
         return 0;
 
     int i;

@@ -37,7 +37,7 @@ void work_with_sources( int n, const char **file_paths )
         /// Soňky kodlardaky yglan edilen maglumatlary ulanmak üçin.
 		includes_add_new();
 
-        wcscpys( CUR_FILE_NAME, source );
+        wcsncpys( CUR_FILE_NAME, source );
 
         check_for_reserved_file_name( source );
 

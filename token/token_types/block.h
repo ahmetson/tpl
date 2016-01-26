@@ -9,10 +9,12 @@
 
 extern int TOK_CLASS_BLOCK_CLOSE_NUM;
 
-extern wchar_t *TOK_CLASS_BLOCK_CHARS[TOK_CLASS_BLOCK_NUM][2];
-extern wchar_t *TOK_CLASS_BLOCK_WORDS[TOK_CLASS_BLOCK_NUM];
+extern wchar_t *TOK_CLASS_BLOCK_CHARS[TOK_CLASS_BLOCK_NUM][3];
 
 void tok_block_c_code(token *tok, wchar_t **l, int *llen);
+
+int is_token_block              (token *tok, wchar_t *tok_val);
+
 
 #endif // TOKEN_TOKEN_TYPES_BLOCK_H
 

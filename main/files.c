@@ -11,7 +11,7 @@
 #include "../translator_to_c.h"
 
 /** Programma-da ulanylýan faýllaryň sanawyna ýene täze faýl goşulýar.*/
-int add_to_file_list_file()
+int files_list_add_new()
 {
     ++CUR_FILE_NUM;
 
@@ -40,16 +40,14 @@ int add_to_file_list_file()
 
 
 /** Programma-da ulanylýan faýllaryň sanawynda, häzirki işlenilýän faýlyň ady goşulýar.*/
-int add_to_file_list_source(const wchar_t *source)
+int add_last_file_tpl_source_inf(const wchar_t *source)
 {
-    wcsncpy(FILES[CUR_FILE_NUM-1].source, source, wcslen(source)+1);
+    wcsncpys( FILES[ CUR_FILE_NUM-1 ].source, (wchar_t *)source );
     return 1;
 }
 
 
-/**
- * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ady, ekstensiýesiz.
-**/
+/** Programma-da ulanylýan faýllaryň sanawynda, faýlyň ady, ekstensiýesiz.*/
 int add_to_file_list_name(wchar_t *name)
 {
     wcsncpy(FILES[CUR_FILE_NUM-1].name, name, wcslen(name)+1);
@@ -60,7 +58,7 @@ int add_to_file_list_name(wchar_t *name)
 /**
  * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Headeriniň salgysy.
 **/
-int add_to_file_list_h_source(wchar_t *source)
+int add_last_file_h_source_inf(wchar_t *source)
 {
     wcsncpy(FILES[CUR_FILE_NUM-1].h_source, source, wcslen(source)+1);
     return 1;
@@ -70,7 +68,7 @@ int add_to_file_list_h_source(wchar_t *source)
 /**
  * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Kodynyň salgysy.
 **/
-int add_to_file_list_c_source(wchar_t *source)
+int add_last_file_c_source_inf(wchar_t *source)
 {
     wcsncpy(FILES[CUR_FILE_NUM-1].c_source, source, wcslen(source)+1);
     return 1;
@@ -105,7 +103,7 @@ file_item *get_file_by_tpl_source_name(wchar_t *name)
 
 
 
-int is_glob_defs_file_exist(wchar_t *fn)
+int is_dec_file_exist(wchar_t *fn)
 {
     int i;
     for(i=0; i<GLOB_DECS_FILES_NUM; ++i)
@@ -117,25 +115,28 @@ int is_glob_defs_file_exist(wchar_t *fn)
 }
 
 
-void glob_defs_file_add(wchar_t fn[MAX_FILE_LEN])
+void dec_files_add_new( wchar_t fn[ MAX_FILE_LEN ] )
 {
     ++GLOB_DECS_FILES_NUM;
 
-    GLOB_DECS_FILES = realloc(GLOB_DECS_FILES, sizeof(*GLOB_DECS_FILES)*GLOB_DECS_FILES_NUM);
-    GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1] = NULL;
-    GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1] = realloc(GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1], MAX_FILE_LEN);
-    wcsncpy(GLOB_DECS_FILES[GLOB_DECS_FILES_NUM-1], fn, wcslen(fn)+1);
+    #define LAST ( GLOB_DECS_FILES_NUM-1 )
+    GLOB_DECS_FILES = realloc( GLOB_DECS_FILES, sizeof( *GLOB_DECS_FILES )*GLOB_DECS_FILES_NUM );
+    GLOB_DECS_FILES[ LAST ] = NULL;
+    GLOB_DECS_FILES[ LAST ] = realloc( GLOB_DECS_FILES[ LAST ], MAX_FILE_LEN );
+    wcsncpys( GLOB_DECS_FILES[ LAST ], fn );
+
+    #undef LAST
 }
 
 void add_file_info(wchar_t *file_name)
 {
     wchar_t *dquote = L"\\", *dot_h = L".h", *dot_c = L".c", *dot_tpl = L".tepl";
 
-    wchar_t f_name[MAX_FILE_LEN] = {0};// = CUR_FILE_NAME;
-	wcsncpy(f_name, file_name, wcslen(file_name)+1);
+    wchar_t f_name[ MAX_FILE_LEN ] = {0};// = CUR_FILE_NAME;
+	wcsncpys( f_name, file_name );
 
-    add_to_file_list_file();                // Ýasalmaly programmanyň faýllarynyň sanawyna,
-    add_to_file_list_source(f_name);
+    files_list_add_new();                // Ýasalmaly programmanyň faýllarynyň sanawyna,
+    add_last_file_tpl_source_inf(f_name);
 
 	remove_dirnames(f_name);
 	remove_ext(f_name, dot_tpl);
@@ -155,6 +156,6 @@ void add_file_info(wchar_t *file_name)
 	wcsncat(c_path, dot_c, wcslen(dot_c));
 
 	// Fayllar achylyar:
-	add_to_file_list_h_source(h_path);
-	add_to_file_list_c_source(c_path);
+	add_last_file_h_source_inf(h_path);
+	add_last_file_c_source_inf(c_path);
 }

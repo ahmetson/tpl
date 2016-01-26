@@ -570,11 +570,11 @@ int work_with_translator()
 {
     wchar_t *dot_h = L".h",
             main_file;
-    file_item *fi = &FILES[ CUR_FILE_NUM ];
+    file_item *fi = &FILES[ CUR_FILE_NUM-1 ];
 
 
     wchar_t f_name[ MAX_FILE_LEN ] = {0};
-    wcscpys( f_name, CUR_FILE_NAME );
+    wcsncpys( f_name, CUR_FILE_NAME );
 
 	// Fayllar achylyar:
 	FILE *c_source = _wfopen(fi->c_source, L"w, ccs=UTF-8");

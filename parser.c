@@ -1,6 +1,4 @@
-/*
- * 2. Kodly faylyn harplary boyuncha gechip token emele getiryar
-**/
+/** 2. Kodly faylyn harplary boyuncha gechip token emele getiryar*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +14,7 @@
 #include "main/user_def_type.h"
 #include "parenthesis.h"
 #include "algor.h"
+#include "semantic.h"
 #include "translator_to_c.h"
 #include "error.h"
 #include "dev_debug.h"
@@ -32,13 +31,12 @@ int parse(FILE *source)
 
     /** The reaseon why loop is endless - Character that must be recognized
         can be also previous one. There for in some situations getting character
-        from file doesnt required.
-    */
+        from file doesnt required.*/
 	while( 1 )
 	{
 	    /** Indiki harpy alýar.
             Parser boýunça umumy kömek üçin gerek bolan maglumatlary üýtgedýär*/
-	    if ( !process_char( source ) )
+	    if ( !process_char( source, CHECK_VALID_CHAR ) )
             break;
 
         if ( !iswspace( CUR_CHAR ) &&
@@ -61,42 +59,15 @@ int parse(FILE *source)
 
 	}
 
-	// Eger token bar bolsa, diymek komanda salynmandyr
-	if ( cmd.items_num )
-    {
-        print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
-    }
+	check_semantics_after_parsing(&cmd);
 
-    if (GLOB_BLOCK_INCLUDES)
-    {
-        /** Blok açylan soň, içindäki komandalar üçin bloklaryň basgançagy ulalýar.
-            Emma açylan blogyň ýapylýan bölümi ýok bolany üçin, blok açylýan komandanyň maglumatlaryny
-            ulanyja görkezmeli. Görkezmek üçin bolsa, komandanyň maglumatlary içindeliginiň sanawyndan alynýar.
-
-            Alynmak üçin bolsa GLOB_BLOCK_INCLUDES-1 sany ulanylýar. */
-        block_inc *bi = get_block_by_inc_num(GLOB_BLOCK_INCLUDES-1);
-        inf_tok.inf_file_num = bi->inf_file_num;
-        inf_tok.inf_line_num = bi->inf_line_num;
-        inf_tok.inf_wchar_t_num = bi->inf_wchar_t_num;
-        inf_tok.inf_wchar_t     = bi->inf_wchar_t;
-
-        print_err(CODE2_REQUIRED_END_BLOCK, &inf_tok);
-    }
-    if (GLOB_BLOCKS_NUM)
-    {
-        GLOB_BLOCKS_NUM = 0;
-        free(GLOB_BLOCKS);
-        GLOB_BLOCKS = NULL;
-    }
-
-	// TRANSLATOR TO C: algoritmi faýla ýazýar
+	/// TRANSLATOR TO C: algoritmi faýla ýazýar
 	work_with_translator();
 
-
+    free_inf();
 	free_locals();
 	CUR_PART = prev_part;
-    CUR_LINE = 1;
-    CUR_CHAR_POS = 1;
+
     return 1;
 }
 
@@ -112,22 +83,23 @@ int is_valid_wchar_t()
         CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR ||                 // ,; Skobkanyň içindäki elementleri aýyryjy
         CUR_CHAR==PARENTHESIS_CLOSE ||                          // ); Ýaýyň ýapyjysy
         CUR_CHAR==HARPL_OPENER ||                               // "
-        CUR_CHAR==LEFT_ASSIGN_TOKEN_VALUE[0] ||                 // <
+        CUR_CHAR==TOK_CLASS_ASSIGN_CHARS[0][0][0] ||               // <
+        CUR_CHAR==TOK_CLASS_ASSIGN_CHARS[1][0][1] ||               // >
         CUR_CHAR==CHAR_CONST_DATA_OPENER ||                     // '
         CUR_CHAR==CHAR_MINUS ||                                 // -
         CUR_CHAR==CHAR_UNDERSCORE ||                            // _; drob sanlar başlap bilýär
         CUR_CHAR==GLOB_IDENT_OPENER ||                          // @; global ülňileriň birinji harpy
-        CUR_CHAR==ARIF_PLUS_CHAR  ||                            /// ARIFMETIKI OPERATORLAR: +
-        CUR_CHAR==ARIF_MINUS_CHAR ||                            // -; aýyrmak
-        CUR_CHAR==ARIF_MULTI_CHAR ||                            // *; köpeltmek
-        CUR_CHAR==ARIF_DIV_CHAR   ||                            // :; bölmek
-        CUR_CHAR==CMP_EQ_CHAR   ||                              /// DEŇEŞDIRME OPERATORLAR: =
-        CUR_CHAR==CMP_LT_CHAR   ||                              // <; kiçi
-        CUR_CHAR==CMP_GT_CHAR   ||                              // >; uly
+        CUR_CHAR==TOK_CLASS_ARIF_CHARS[0][0][0] ||                 /// ARIFMETIKI OPERATORLAR: +
+        CUR_CHAR==TOK_CLASS_ARIF_CHARS[1][0][0] ||                 // -; aýyrmak
+        CUR_CHAR==TOK_CLASS_ARIF_CHARS[2][0][0] ||                 // *; köpeltmek
+        CUR_CHAR==TOK_CLASS_ARIF_CHARS[3][0][0] ||                 // :; bölmek
+        CUR_CHAR==TOK_CLASS_CMP_CHARS[0][0][0]   ||                              /// DEŇEŞDIRME OPERATORLAR: =
+        CUR_CHAR==TOK_CLASS_CMP_CHARS[1][0][0]   ||                              // <; kiçi
+        CUR_CHAR==TOK_CLASS_CMP_CHARS[2][0][0]   ||                              // >; uly
         CUR_CHAR==LOGIC_AND_CHAR  ||                            /// LOGIKI OPERATORLAR: &
         CUR_CHAR==LOGIC_OR_CHAR   ||                            // ?; ýa
         CUR_CHAR==LOGIC_NOT_CHAR  ||                            // !; däl bolsa
-        CUR_CHAR==TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[0][0]);  /// Ulanyjy TIPI BILEN BAGLY OPERATORLAR; birlik bölüji
+        CUR_CHAR==TOK_CLASS_UTYPE_ITEM_SEPARATOR_CHARS[0][0] );  /// Ulanyjy TIPI BILEN BAGLY OPERATORLAR; birlik bölüji
 }
 
 
@@ -138,7 +110,7 @@ int is_valid_wchar_t()
     Eger faýlyň soňunya ýetilse, şowsuzlyk, ýa-da
     şowlylyk gaýtarýar.
 */
-int process_char( FILE *source )
+int process_char( FILE *source, char check_char )
 {
     int success = set_cur_char( source ) && update_inf();
     /** TPL goldaýan harpy bolmasa, program togtadylýar */
@@ -184,4 +156,15 @@ int parser_mode_end_cmd( FILE *s)
     work_with_cmd();
     init_cmd(&cmd, 0);
     return 1;
+}
+
+
+
+/** Parser indiki harpy barlamaz */
+void prevent_from_parsing_file()
+{
+    /** Indiki parsing edilmeli harpy,
+        ýene-de şu harpdan başla.
+    */
+    TMP_CHAR = CUR_CHAR;
 }

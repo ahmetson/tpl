@@ -16,5 +16,6 @@ void inf_next_wchar_t();
 token *inf_get_last_token(command *cmd);
 token *inf_get_parens_last_token(parenthesis *par);
 
+void free_inf();
 
 #endif // MAIN_INF_H

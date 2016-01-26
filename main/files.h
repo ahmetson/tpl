@@ -19,17 +19,17 @@ typedef struct{
     int  num;
 }file_item;
 
-int add_to_file_list_file();
-int add_to_file_list_source(const wchar_t *source);
+int files_list_add_new();
+int add_last_file_tpl_source_inf(const wchar_t *source);
 int add_to_file_list_name(wchar_t *name);
-int add_to_file_list_h_source(wchar_t *source);
-int add_to_file_list_c_source(wchar_t *source);
+int add_last_file_h_source_inf(wchar_t *source);
+int add_last_file_c_source_inf(wchar_t *source);
 
 file_item *get_file_by_name(wchar_t *name);
 file_item *get_file_by_tpl_source_name(wchar_t *name);
 
-int is_glob_defs_file_exist(wchar_t *fn);
-void glob_defs_file_add(wchar_t fn[MAX_FILE_LEN]);
+int is_dec_file_exist(wchar_t *fn);
+void dec_files_add_new(wchar_t fn[MAX_FILE_LEN]);
 
 void add_file_info(wchar_t *file_name);
 

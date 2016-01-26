@@ -22,14 +22,19 @@
  * @from_len  - number of wchar_tacters of first string
  * @to_len    - number of wchar_tacters of final string
 **/
-int wcsstrchcat(wchar_t *to, wchar_t *from, wchar_t c)
+void wcsstrchcat( wchar_t *to, wchar_t *from, wchar_t c )
 {
-    wcsncpy(to, from, wcslen(from)+1);
+    wcsncpys( to, from );
 
-	to[wcslen(to)+1] = L'\0';	        		// Sonky \0 bire suyshirilyar
-	to[wcslen(to)] = c;
+    str_add_char( to, c );
+}
 
-	return 1;
+
+/** Söziň soňuna harpy goşýar*/
+void str_add_char( wchar_t *to, wchar_t c )
+{
+    to[ wcslen( to )+1 ] = L'\0';	        		// Sonky \0 bire suyshirilyar
+	to[ wcslen( to ) ] = c;
 }
 
 /* Checks first occurance of substring in string started from offset
@@ -157,16 +162,6 @@ wchar_t *empty_string(wchar_t *f, int len)
 }
 
 
-
-void return_last_wchar_t()
-{
-    /** Indiki parsing edilmeli harpy,
-        ýene-de şu harpdan başla.
-    */
-    TMP_CHAR = CUR_CHAR;
-}
-
-
 void divide_string(wchar_t *source, wchar_t d, wchar_t ***out, int *its)
 {
     int i;
@@ -247,6 +242,8 @@ void string_helper_remove_dquotes(wchar_t *unquoted, wchar_t *with_quotes)
 
 int count_bytes( wchar_t *wstr )
 {
+    if ( wstr==NULL )
+        return 0;
     if ( !wcslen( wstr ) )
     {
         return sizeof( *wstr );
@@ -311,7 +308,7 @@ int wcsadd_on_heap( wchar_t **mem, int *memlen, wchar_t *add )
     d - ýazylmaly ýeri
     s - ýazylmaly faýlyň özi
 */
-int wcscpys( wchar_t *d, wchar_t *s )
+int wcsncpys( wchar_t *d, wchar_t *s )
 {
     /// Öz özüňe maglumat ýazmak nämä gerek.
     if ( d==s )

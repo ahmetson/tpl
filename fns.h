@@ -3,10 +3,14 @@
 #include <stdio.h>
 
 // Concatinate string with wchar_t and put them to @to
-int wcsstrchcat(wchar_t *to, wchar_t *from, wchar_t c);
+void wcsstrchcat( wchar_t *to, wchar_t *from, wchar_t c );
+
+void str_add_char( wchar_t *to, wchar_t c );
 
 // Checks first occurance of substring in string started from offset
 int wcsstr_by_offset(const wchar_t *string, const wchar_t*sub, unsigned int offset);
+
+void str_add_char( wchar_t *to, wchar_t c );
 
 
 // SISTEMA BILEN ISHLEYAN ULNILER
@@ -30,8 +34,6 @@ wchar_t *empty_string(wchar_t *f, int len);
 wchar_t *remove_dirnames(wchar_t *f);
 wchar_t *remove_ext(wchar_t *f, wchar_t *e);
 
-void return_last_wchar_t();
-
 void divide_string(wchar_t *source, wchar_t d, wchar_t ***out, int *items);
 
 /** Harplyň daşynda duran goşa dyrnaklary aýyryp, yzyna gaýtarýar.
@@ -50,7 +52,7 @@ int realloc_wchar_heap( wchar_t **mem, int *memlen, wchar_t *add );
 int realloc_wchar_null_heap( wchar_t **mem, int *memlen );
 
 
-int wcscpys( wchar_t *d, wchar_t *s );
+int wcsncpys( wchar_t *d, wchar_t *s );
 int is_wcseq( wchar_t *s1, wchar_t *s2 );
 
 #endif
