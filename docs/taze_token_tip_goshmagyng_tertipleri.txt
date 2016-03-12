@@ -1,0 +1,61 @@
+﻿1) token/token_structs.h  Setir:15
+
+	TOKEN_TYPES_NUM ýene bir sana ulaldylyar. 
+Eger goşulan tipiň token klasynda bolup biljek token görnüşleri maksimum bir token klasy boýunça ulanyp bolýan token görnüşlerinden uly bolsa
+	TOKEN_MAX_TYPES_NUM ýene bir san ulaldylýar.
+
+
+2)tokens.c            Setir:21
+is_token_item tok_types[] diyen tokenin tipini barlayan funksiyalaryn sanawyna goshulyan tokeni tanajak funksiyanyn ady goshulyar. Eger is_token_item tok_types[]'da tokeniň tipiniň klasyny tanaýan funksiýanyň ady bar bolsa, onda funksiýanyň ady goşulanok.
+
+3) token/token_types.h    Setir:36
+is_token_* diyip bashlayan funksiyalaryn sanawyna taze funksiyanyn prototipi goshulyar. Goşulýan funksiýa token üçin berlen harplar sanawyna görä tokeni tanaýar.
+
+
+4) token/token_types.c    Setir: Faýlyň iň soňunda
+Täze goşuljak tokeni tanaýan funksiýa yglan edilýär, emma içine hiç zat ýazylanok.
+
+5) token/token_types/[täze token tipiniň klasyna degişli faýllarda]                
+Täze tipiň maglumatlary girizilýär.
+Mysal üçin: şol sanda-da goşulýan token tipiň nomeri, konstantasy, funksiya arkaly nadip tanalmalydygy hakda maglumatlar we goşulýan token tipiň haýsy komandalarda, olaryň haýsy ýerinde duşup bilýändigi hakda maglumatlar teswire ýazylyp girizilýär.
+
+
+6) token/token_types.c    Setir: in soňky yglan edilen funksiýa
+(2) tapgyrda edilen funksiya, taze goshulan tokenin maglumatlaryny saklayan fayl boyuncha yazylyar.
+
+
+7) token/token_types/[täze token tipiniň klasyna degişli faýllarda]
+Eger token maglumat gaýtarýan bolsa,
+Täze tokeniň gaýtarýan maglumatlarynyň tipini berýän funksiýa yglan edilýär.
+	
+
+
+8) tokens.c 		Setir: 38
+TOK_RETURN_TYPE atly tokeniň klasy we tipi boýunça tanaýan funksiýasynyň tipini gaýtarýan funksiýany berýän sanawa tokeniň gaýtarýan maglumatynyň tipini gaýtarýan funksiýa goşulýar.
+Eger token tip gaýtarmaýan bolsa, näbelli tip gaýtarýan funksiýalaryň adresleri goýulýar.
+
+
+9) Tokene degişli faýlda Setir: iň soňunda
+Tokeniň C koduny gaýtarýan funksiýa yglan edilýär.
+
+10) Tokens.c 		Setir: 45
+TOK_GET_C_CODE sanawa, tokeniň C koduny gaýtarýan funksiýa goşulýar.
+
+11) Parser.c 		Setir: 97
+is_valid_char() funksiýada, eger tokeniň harpylary öň duşmadyk bolsa, programmanyň tanaýan harplarynyň sanawyna goşulmaly.
+
+
+///////////BOLDY, INDI TOKEN TIPI GIRIZILEN////////////////////
+
+TOKENIŇ GÖRNÜŞINIŇ DEBAGLAMAK ÜÇIN FUNKSIÝALARYŇ SAÝGARMAGY.
+
+
+1) dev_debug.c                   SETIR: 107
+void degub_token_type() funksiyada, eger token gornushinin klasy we birnache bolup biljek tipi bolsa, onda:
+	funksiyanyn ichinde bolup biljek tipinin sozi ulanyja gorkeziler yaly kod goshulyar.
+
+
+///////////BOLDY, INDO TOKEN TIPI DEBUG EDILENDE GORKEZILYAR/////////
+
+ŞU TOKENIŇ TIPI BILEN IŞLEÝÄN KOMANDALARY DÜZMELI ÝA ÖŇKI KOMANDALARY ÜÝTGETMELI.
+

@@ -88,7 +88,6 @@ float _tpl_conv_if(int s)\n\
 }\n\
 wchar_t _tpl_conv_ic(int s)\n\
 {\n\
-    /// Diňe iň soňky bir baýty gerek\n\
     int delete_bits = (sizeof(s)-1)*8;\n\
     int s2 = s<<delete_bits; // Iň kiçi baýtdan öňküleri nollaýas\n\
         s2 = s>>delete_bits; // Iň kiçi baýty yza geçirýäs\n\
@@ -198,22 +197,22 @@ void add_conv_basic_free_atexit(FILE *f)
     wchar_t *line = L"atexit(_tpl_free_tmp_str);";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+    write_code_line(f, &l, &llen , line);
 }
 
 void add_conv_basic_prepere_atexit(FILE *f)
 {
-    wchar_t *line = L"/**Sada tipleri konwertlemek uchin*/\n#include <stdlib.h>\n";
+    wchar_t *line = L"#include <stdlib.h>\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+    write_code_line(f, &l, &llen , line);
 }
 
 void add_turkmen_locale_support_lib(FILE *f)
 {
-    wchar_t *line = L"/**Turkmen dilini goldamak ucin*/\n#include <locale.h>\n";
+    wchar_t *line = L"#include <locale.h>\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+    write_code_line(f, &l, &llen , line);
 }
 

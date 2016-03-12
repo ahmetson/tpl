@@ -145,7 +145,7 @@ int is_cmd_utype_con(command *cmd)
             return 0;
         }
     }
-    /** Ikinji element: IDENT görnüşdäki token bolmaly*/
+    /** Üçünji element: IDENT görnüşdäki token bolmaly*/
     if (cmd->items_num>2)
     {
         command_item *tci = get_cmd_item(cmd->items, 2);

@@ -1,0 +1,12 @@
+﻿1)
+"komandalar_we_ulanyp_bilyan_token_birliklerinin_tipleri.txt" içindäki her bir komanda boýunça, täze goşulan tipiň nirede duş gelýän bolsa, şonyň ady sanawa goşulýar.
+
+2) 
+Token tipiň goşulan komandasynyň degişli faýly açylmaly. Faýlda komandany tanaýan funksiýada, goşulan token tipiniň degişli bolan komanda birliginiň bölümine, token tipi tanaýan bölüm goýulýar. (Eger gerek bolsa)
+
+3) 
+Token tipiň goşulan komandasynyň degişli faýly açylmaly. Faýlda komandany tananlygy sebäpli maglumatlaryny üýtgedýän funksiýada, goşulan token tipiniň degişli bolan komanda birligininiň bölümi gabat gelse, häzirki goşulan tipe görä, komanda maglumatlary üýtgedilýär.
+
+
+4)Faýl: translator_to_c.c	Setir: 550
+Algoritmi ýasaljak faýla salynýan ýerde, token tipiniň goşulan komandasyny goşýan funksiýada, goşulan token tipi üçin goýulmaly tekst alynar ýaly edilýär.

@@ -1,6 +1,4 @@
-/*
- * Translyator, yagny C kodyny yasamak bilen ishleyan funksiyalar
-**/
+/** Translyator, yagny C kodyny yasamak bilen ishleyan funksiyalar */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,14 +18,13 @@
 #include "token/helpers.h"
 #include "fns/fn_helpers.h"
 #include "fns/3rdparty/std/kabul_et.h"
-
+// C kod nirede saklanyar?
+wchar_t *C_SOURCE_FOLDER = L"c:\\\\c_by_tpl";
 
 /** ŞERT #7: Ýasalýan kodda: içki komandalaryň, enelerinden bir TAB saga süýşürilip tämiz görkezilmeli.
 
     1) Ýasalýan kodyň häzir haýsy blogyň içindeliginiň basgançagyny görkezýän global ülňi bolýar.
     Adatça ol 0-njy derejede bolýar.
-    2) Funksiýa berlen basgançagyň sanynyň möçberinde '\t' harplary, berlen tekste goşýär.
-    (write_tabs_c_code(FILE *f, wchar_t **l, int *llen, int tabs_num))
 
     3) Her kodly setiri ýasaljak koda ýazýan funksiýadan öň write_tabs_c_code() funksiýasy çagyrylýar.
 
@@ -40,19 +37,13 @@
         (Meselem Main funksiýasy, ýa kodly faýllaryň baş funksiýalary çagyrylanda)
             Içindeliginiň basgançagy bir san ulalýar.
     7) Eger ýasalýan koda ýazýan funksiýa, C dilindäki blogy ýapýan bolsa, onda funksiýa çagyrylan soň
-            Içindeliginiň basgançagy bir san kiçelýär.
-
-*/
+            Içindeliginiň basgançagy bir san kiçelýär.*/
 
 int TRANS_C_BLOCK_DEPTH = 0;
 
 /** Kodly setiri ýazýar. Eger kodly setir blogyň içinde bolsa, onda öňünden TAB goýýar */
-void write_code_line(FILE *f, wchar_t **l, int *llen, int tabs_num, wchar_t *code)
+void write_code_line(FILE *f, wchar_t **l, int *llen, wchar_t *code)
 {
-    /// Öňünden TAB goýýar.
-
-    write_tabs_c_code(l, llen, tabs_num);
-
     wcsadd_on_heap(l, llen, code);
     fputws(*l, f);
 
@@ -61,36 +52,14 @@ void write_code_line(FILE *f, wchar_t **l, int *llen, int tabs_num, wchar_t *cod
     *llen = 0;
 }
 
-/** Berlen kodly ýazga, içindeliginiň basgançagyna görä, '\t' goýýar */
-void write_tabs_c_code(wchar_t **l, int *llen, int tabs_num)
-{
-    wchar_t *tab = L"\t",
-            *str = NULL;
-    if (!tabs_num)
-        return;
 
-    int i,
-        len = 0;
-    for (i=0; i<tabs_num; ++i)
-    {
-        wcsadd_on_heap( &str, &len, tab );
-    }
-
-    // Ýasaljak faýla ýazmaly
-    wcsadd_on_heap( l, llen, str );
-
-    free(str);
-}
-// C kod nirede saklanyar?
-wchar_t *C_SOURCE_FOLDER = L"c:\\\\c_by_tpl";
 // Header fayly ulanmaga tayynlayar
 int prepare_h_source(FILE *f, wchar_t *f_name)
 {
     wchar_t *ifndef = L"#ifndef ",
             *no_dot_h = L"_H \n",
             *define = L"#define ";
-    wchar_t *fline = L"//Created by HEADER TPL.\n";
-    wchar_t *sline = L"//TPL author: Medet Atabayev.\n";
+
     wchar_t *line3 = malloc( MAX_PREP_LEN );
         wcsncpy( line3, ifndef, wcslen( ifndef )+1 );
         wcsncat( line3, f_name, wcslen( f_name ) );
@@ -104,10 +73,8 @@ int prepare_h_source(FILE *f, wchar_t *f_name)
     wchar_t *l = NULL;
     int llen = 0;
 
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, sline);
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line3);
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line4);
+    write_code_line(f, &l, &llen , line3);
+    write_code_line(f, &l, &llen , line4);
 
 	free(line3);
 	free(line4);
@@ -122,8 +89,6 @@ int prepare_c_source(FILE *f, wchar_t *h_source)
 {
     wchar_t *include = L"#include \"",
             *dquote_endl = L"\" \n";
-    wchar_t *fline = L"//Created by TPL.\n";
-    wchar_t *sline = L"//TPL author: Medet Atabayev.\n";
     wchar_t *line3 = malloc( MAX_PREP_LEN );
         wcsncpy( line3, include, wcslen( include )+1 );
         wcsncat( line3, h_source, wcslen( h_source) );
@@ -132,9 +97,7 @@ int prepare_c_source(FILE *f, wchar_t *h_source)
     wchar_t *l = NULL;
     int llen = 0;
 
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, sline);
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line3);
+    write_code_line(f, &l, &llen , line3);
 
     add_addtn_headers(f);
 
@@ -151,13 +114,10 @@ int c_trans_header_add_glob_def_var(FILE *f)
 
 	int type_num;
 
-	wchar_t *fline = L"// Global yglan edilen ulniler.\n";
-
     wchar_t *l = NULL,
             *extern_str = L"extern ",
             *space = L" ";
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
 	for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
 	{
@@ -177,7 +137,7 @@ int c_trans_header_add_glob_def_var(FILE *f)
 
             get_cmd_end_c_code(&line, &line_len);
 
-            write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+            write_code_line(f, &l, &llen , line);
 
 			free(line);
 		}
@@ -194,13 +154,11 @@ int c_trans_header_add_glob_def_arr(FILE *f)
 
 	int type_num;
 
-	wchar_t *fline = L"// Global yglan edilen birsyhly sanawlar.\n";
 
     wchar_t *l = NULL,
             *extern_str = L"extern ",
             *space = L" ";
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
 	for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
 	{
@@ -226,7 +184,7 @@ int c_trans_header_add_glob_def_arr(FILE *f)
 			// Komanda gutardy
             get_cmd_end_c_code( &line, &line_len );
 
-            write_code_line( f, &l, &llen, TRANS_C_BLOCK_DEPTH, line );
+            write_code_line( f, &l, &llen , line );
 
 			free( line );
 		}
@@ -242,12 +200,9 @@ int c_trans_source_add_glob_def_var(FILE *f)
 
 	int type_num;
 
-	wchar_t *fline = L"// Global yglan edilen ulniler.\n";
-
 	wchar_t *l = NULL,
             *space = L" ";
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
 	for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
 	{
@@ -275,7 +230,7 @@ int c_trans_source_add_glob_def_var(FILE *f)
 			// Komanda gutardy
             get_cmd_end_c_code(&line, &line_len);
 
-            write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+            write_code_line(f, &l, &llen , line);
 
 			line_len = 100;
 
@@ -283,20 +238,15 @@ int c_trans_source_add_glob_def_var(FILE *f)
 		}
 	}
 
-	fputws(L"\n\n", f);
-
 	return 1;
 }
 int c_trans_source_add_glob_def_arr(FILE *f)
 {
 	int i, line_len;
 
-	wchar_t *fline = L"// Global yglan edilen birsyhly sanawlar.\n";
-
 	wchar_t *l = NULL,
             *space = L" ";
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, fline);
 
 	for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
 	{
@@ -322,7 +272,7 @@ int c_trans_source_add_glob_def_arr(FILE *f)
             // Komandany soňlaýan bölüm
             get_cmd_end_c_code(&line, &line_len);
 
-            write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+            write_code_line(f, &l, &llen , line);
 
 			free(line);
 		}
@@ -342,10 +292,7 @@ int prepare_main_func(FILE *f)
 \tsystem(\"chcp 65001 > nul\");\n\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
-
-    /// #7.6
-    ++TRANS_C_BLOCK_DEPTH;
+    write_code_line(f, &l, &llen , line);
 
 	return 1;
 }
@@ -353,16 +300,13 @@ int prepare_main_func(FILE *f)
 int finishize_main_func(FILE *f)
 {
     add_conv_basic_free_atexit(f);
-    wchar_t *line1 = L"//, bashga programmanyn bash bolegi gutardy \n\n\n\treturn 1;\n";
+    wchar_t *line1 = L"\n\n\treturn 1;\n";
     wchar_t *line2 = L"}\n\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
+    write_code_line(f, &l, &llen , line1);
 
-    /// #7.7
-    --TRANS_C_BLOCK_DEPTH;
-
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line2);
+    write_code_line(f, &l, &llen , line2);
 
 	return 1;
 }
@@ -373,10 +317,7 @@ int finishize_void_func(FILE *f)
     wchar_t *l = NULL;
     int llen = 0;
 
-    /// #7.7
-    --TRANS_C_BLOCK_DEPTH;
-
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
+    write_code_line(f, &l, &llen , line1);
 
 	return 1;
 }
@@ -387,7 +328,7 @@ int finishize_h_source(FILE *f)
     wchar_t *l = NULL;
     int llen = 0;
 
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
+    write_code_line(f, &l, &llen , line1);
 
 	return 1;
 }
@@ -400,10 +341,6 @@ int c_trans_source_add_loc_def_var(FILE *f, wchar_t main_file)
 
 	if (main_file)
 	{
-        wchar_t *line1 = L"// Dine main funksiyanyn ichinde ulanyp bolyan ulniler\n";
-
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
-
 		int i, type_num;
 		long line_len;
 
@@ -425,20 +362,13 @@ int c_trans_source_add_loc_def_var(FILE *f, wchar_t main_file)
 			// Komanda gutardy
 			get_cmd_end_c_code( &line, &line_len );
 
-			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+			write_code_line(f, &l, &llen , line);
 
 			free(line);
 		}
-
-		fputws(L"\n\n", f);
-
 	}
 	else
 	{
-	    wchar_t *line1 = L"// Dine hazirki faylyn ichinde ulanylyp bolynyan ulniler\n";
-
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
-
 		int i, type_num, len;
 		long line_len;
 
@@ -465,9 +395,7 @@ int c_trans_source_add_loc_def_var(FILE *f, wchar_t main_file)
 			get_cmd_end_c_code(&line, &line_len);
 
 			//printf(L"%s global ulna goshulyar\n", line);
-			write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
-
-			fputws(L"\n\n", f);
+			write_code_line(f, &l, &llen , line);
 
 			free(line);
 		}
@@ -483,10 +411,6 @@ int c_trans_source_add_loc_def_arr(FILE *f, wchar_t main_file)
 
 	if (main_file)
 	{
-        wchar_t *line1 = L"// Dine main funksiyanyn ichinde ulanyp bolyan sanawlar\n";
-
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
-
 		int i, type_num, line_len;
 
         for(i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
@@ -511,10 +435,9 @@ int c_trans_source_add_loc_def_arr(FILE *f, wchar_t main_file)
             // Komanda gutardy
 			get_cmd_end_c_code(&line, &line_len);
 
-            write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+            write_code_line(f, &l, &llen , line);
 
 			//printf(L"%s global ulna goshulyar\n", line);
-
 			free(line);
 		}
 
@@ -523,12 +446,7 @@ int c_trans_source_add_loc_def_arr(FILE *f, wchar_t main_file)
 	}
 	else
 	{
-	    wchar_t *line1 = L"// Dine hazirki faylyn ichinde ulanylyp bolynyan ulniler\n";
-
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
-
 		int i, type_num, len, line_len;
-
 
 		for(i=0; i<LOCAL_ARR_DEFS_NUMS; ++i)
         {
@@ -554,7 +472,7 @@ int c_trans_source_add_loc_def_arr(FILE *f, wchar_t main_file)
 			get_cmd_end_c_code(&line, &line_len);
 
 
-            write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+            write_code_line(f, &l, &llen, line);
 
 			//printf(L"%s global ulna goshulyar\n", line);
 			line_len = 0;
@@ -692,7 +610,7 @@ int c_trans_write_file_fn_prototype(FILE *f_h, wchar_t *fn_name)
     wcsadd_on_heap( &line, &size, end );
 
     /// Ýasaljak koda ýazylýar
-    write_code_line(f_h, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+    write_code_line(f_h, &l, &llen , line);
 
     free(line);
 
@@ -721,10 +639,7 @@ int c_trans_write_file_fn_open(FILE *f_h, wchar_t *fn_name)
     wcsadd_on_heap( &line, &size, end );
 
     /// Ýasaljak koda ýazylýar
-    write_code_line(f_h, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
-
-    /// #7.6
-    ++TRANS_C_BLOCK_DEPTH;
+    write_code_line(f_h, &l, &llen , line);
 
     free(line);
 
@@ -748,15 +663,7 @@ int c_trans_source_add_algor(FILE *f, int main_file)
         else
             cmd_block_wrapper_c_code(&l, &len);
 
-        /// #7.5)
-        if (is_close_block_cmd(&CUR_ALGOR[i]))
-            --TRANS_C_BLOCK_DEPTH;
-
-        write_code_line(f, &putl, &putllen, TRANS_C_BLOCK_DEPTH, l);
-
-        /// #7.4)
-        if (is_open_block_cmd(&CUR_ALGOR[i]))
-            ++TRANS_C_BLOCK_DEPTH;
+        write_code_line(f, &putl, &putllen , l);
 
         if (l!=NULL)
         {
@@ -765,8 +672,6 @@ int c_trans_source_add_algor(FILE *f, int main_file)
             len = 0;
         }
     }
-    fputws(L"\n\n", f);
-
     return 1;
 }
 
@@ -824,7 +729,6 @@ void get_type_c_code(int type_class, int type_num, wchar_t **l, int *llen)
     {
         wcsadd_on_heap( l, llen, USER_DEF_TYPES[type_num].ident );
     }
-
 }
 
 

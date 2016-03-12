@@ -1,5 +1,4 @@
-/** Ýaýlaryň tipleri bilen işleýän funksiýalar we maglumatlar
-**/
+/** Ýaýlaryň tipleri bilen işleýän funksiýalar we maglumatlar*/
 #include "types.h"
 #include "../parenthesis.h"
 #include "../cmd/array.h"
@@ -8,6 +7,7 @@ int PAREN_TYPE_EMPTY        = 0;
 int PAREN_TYPE_FNS_ARGS     = 1;
 int PAREN_TYPE_DEF_FNS_ARGS = 2;
 int PAREN_TYPE_DEF_TYPE     = 3;
+
 
 char *PAREN_TYPES_WORDS[] = {
     "Boş",

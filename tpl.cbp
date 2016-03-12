@@ -220,19 +220,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main/user_def_type.h" />
-		<Unit filename="other.c">
-			<Option compilerVar="CC" />
-			<Option target="default" />
-		</Unit>
 		<Unit filename="paren/types.c">
 			<Option compilerVar="CC" />
 			<Option target="default" />
 		</Unit>
 		<Unit filename="paren/types.h">
-			<Option target="default" />
-		</Unit>
-		<Unit filename="paren/types/empty.c">
-			<Option compilerVar="CC" />
 			<Option target="default" />
 		</Unit>
 		<Unit filename="paren/types/empty.h">

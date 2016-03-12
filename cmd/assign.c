@@ -253,7 +253,6 @@ int semantic_cmd_assign(command *cmd)
 
                 if (!(class1==class2 && type1==type2))
                 {
-                    debug_cmd(&f->cmd);
                      if(f->type==TOKEN_ITEM)
                         print_err(CODE7_TYPES_NOT_MATCH_BOTH_IDENT, &f->tok);
                      if(f->type==CMD_ITEM)
