@@ -1,6 +1,4 @@
-/** Funksiýalar bilen işleýär
- *
-**/
+/** Funksiýalar bilen işleýär*/
 #include <stdlib.h>
 #include <string.h>
 

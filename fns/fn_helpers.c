@@ -9,12 +9,8 @@
 #include "../main/glob.h"
 #include "../main/user_def_type.h"
 #include "../translator_to_c.h"
-/** Funksiýalaryň komandalary bilen işleýän kömekçi faňksiýeler.
-*/
 
-
-/** Häzir funksiýa çagyrylýan wagty,
-    Parseriň funksiýanyň içini parsing edýänini barlaýar*/
+/** Häzir funksiýa çagyrylýan wagty, Parseriň funksiýanyň içini parsing edýänini barlaýar*/
 int is_inside_fn()
 {
     if (TMP_FUNC_NUM!=-1 && TMP_FUNC_NUM==GLOB_BLOCK_INCLUDES-1)
@@ -686,13 +682,10 @@ void write_to_csource_loc_fns(FILE *f)
         fputws(p, f);
         free(p);
 
-        ++TRANS_C_BLOCK_DEPTH;
-
         c_trans_source_add_fn_def_var(f, i);
         c_trans_source_add_fn_def_arr(f, i);
         c_trans_source_fn_add_algor(f, i);
 
-        --TRANS_C_BLOCK_DEPTH;
         fputws(L"} \n", f);
     }
 }
@@ -708,9 +701,6 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
 	{
         return;
 	}
-
-    wchar_t *line1 = L"// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan ulniler\n";
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
 
     int i, type_num;
     long line_len;
@@ -732,12 +722,10 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
         // Komanda gutardy
         get_cmd_end_c_code(&line, &line_len);
 
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+        write_code_line(f, &l, &llen , line);
 
         free(line);
     }
-
-    fputws(L"\n\n", f);
 }
 
 /** Funksiýanyň içinde yglan edilen sanawlary goşýar*/
@@ -751,9 +739,6 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
 	{
         return ;
 	}
-
-    wchar_t *line1 = L"// Dine yglan edilen funksiyanyn ichinde ulanyp bolyan sanawlar\n";
-    write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line1);
 
     int i, type_num, line_len;
 
@@ -780,12 +765,10 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
         // Komanda gutardy
         get_cmd_end_c_code(&line, &line_len);
 
-        write_code_line(f, &l, &llen, TRANS_C_BLOCK_DEPTH, line);
+        write_code_line(f, &l, &llen , line);
 
         free(line);
     }
-
-	fputws(L"\n\n", f);
 }
 
 /** Funksiýa yglan edilenmeginiň bedenindäki algoritmler*/
@@ -803,15 +786,7 @@ void c_trans_source_fn_add_algor(FILE *f, int fn)
         else
             cmd_block_wrapper_c_code(&l, &len);
 
-        /// #7.5)
-        if (is_close_block_cmd(&LOC_FUNCS_ALGOR[fn][i]))
-            --TRANS_C_BLOCK_DEPTH;
-
-        write_code_line(f, &putl, &putllen, TRANS_C_BLOCK_DEPTH, l);
-
-        /// #7.4)
-        if (is_open_block_cmd(&LOC_FUNCS_ALGOR[fn][i]))
-            ++TRANS_C_BLOCK_DEPTH;
+        write_code_line(f, &putl, &putllen , l);
 
         if (l!=NULL)
         {
@@ -820,7 +795,6 @@ void c_trans_source_fn_add_algor(FILE *f, int fn)
             len = 0;
         }
     }
-    fputws(L"\n\n", f);
 }
 
 

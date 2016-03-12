@@ -1,6 +1,4 @@
-/*
- * Algoritmli fayly yasayan funksiya
-**/
+/** Algoritmli fayly yasayan funksiya*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,0 +1,104 @@
+﻿1) cmd/          
+Taze komandanyn maglumatlaryny we teswirde dokumentasiyasyny saklayan .c we .h fayllar goshulyar.
+
+2) cmds.h            Setir:86
+	CMDS_TYPES_NUM ýene bir san ulalmaly.
+Eger komandanyň tipi eýýäm yglan edilen komanda klasyna goşulyp, komanda klasynda bolup biljek komanda tipleriniň sany maksimum bolup biljek tiplerden uly bolsa, onda
+	MAX_CLASS_TYPES ýene bir san ulalmaly.
+	
+
+3) cmds.c            Setir:31
+   cmds.h    	     Setir:21
+Taze komandanyn klasynyn  nomeri has amatly bolar yaly konstantalary goyulyar.
+
+
+4) cmds.c    	     Setir:94
+CMD_MAX_ITEMS sanawda täze goşuljak komandanyň içinde maksimum näçe 
+birlikleriň bolup biljeginiň sany goyulyar.
+
+
+5) cmds.c                     Setir:41
+is_cmd_item cmd_types[] sanawa komandany tanajak funksiya pointer berilyar.
+
+
+6) cmds.c			Setir: Başyndaky #inçlude komandalaryň ýanynda
+Täze goşulan komandanyň maglumatlarynyň .h faýly goşulýar
+
+
+7) ýasalan .h faýlda          Setir:Onki komanda degishli funksiyalardan son
+Komandany tanajak funksiyanyn prototipi yasalyar.
+Ol int maglumaty gaytaryp, command-a pointeri kabul etmeli
+
+
+
+8) ýasalan .c faýlda	      Setir: Onki komanda degishli funksiyalardan son
+Hazirki komandany saygaryan funksiya yglan edilmeli
+
+
+10) cmds.h                    Setir: Onki komanda degishli funksiya-da komandanyn ichinde komandany uytgedyan funksiyanyn prototipi ýasalýar.
+
+
+11) cmds.c 	Setir: Onki komanda degishli funksiya-da komandanyn in sonuna
+Hazirki komandany saygaryan funksiyada komandanyn maglumatlaryny uytgedyan funksiya çagyrytmaly.
+
+
+12) ýasalan .c faýlda  	 Setir: faýlyň ahyrynda
+Eger komandanyň semantikasyny barlamak bolýan bolsa
+	komandanyň semantikasyny barlaýan funksiýa yglan edilýär.
+
+13) ýasalan .h faýlda	 Setir: 5
+Eger komandanyň semantikasyny barlamak bolýan bolsa
+	komandanyň semantikasyny barlaýan funksiýanyň prototipi yglan edilýär.
+
+14) cmds.c	Setir: 84
+Eger komandanyň semantikasyny barlamak bolýan bolsa
+	CMD_CHECK_SEMANTICS sanawyna, şu komandanyň semantikalaryny barlaýan funksiýa goşulýar.
+Ýa
+	Hiç hili semantika barlamaýan funksiýa, sanawa komandanyň nomerine görä goýulýar.
+
+
+15) komandanyň .c faýlynda Setir: Iň soňunda
+Eger komanda maglumatynyň tipini gaýtarýan bolsa,
+Komandanyň gaýtarýan maglumatynyň tipini berýän funksiýa yglan edilýär.
+
+
+16) komandanyň .h faýlynda Setir: Iň soňunda
+Eger komanda maglumatynyň tipini gaýtarýan bolsa,
+Komandanyň gaýtarýan maglumatynyň tipini berýän funksiýanyň prototipi yglan edilýär.
+
+17) cmds.c		Setir: 64
+Eger komanda maglumatynyň tipini gaýtarýan bolsa,
+	Komandanyň klasy we tipi boýunça, komandanyň tipini gaýtarýan funksiýalaryň sanawyna, täze komandanyň gaýtarýan maglumatynyň tipini berýän funksiýa goşulýar.
+ýogsa
+	CMD_RETURN_TYPE sanawda, goşulan komandanyň deregine hiç zat gaýtarýan funksiýa görkeziji
+gaýtarylýar.
+
+
+18) Komanda degişli faýllarda  Setir: iň soňy
+Komandanyň C kodyny gaýtarýan funksiýa yglan edilýär
+
+19) cmds.c		Setir: 83
+CMD_GET_C_CODE sanawa, komandanyň Ç kodyny gaýtarýan funksiýa goşulýar.
+
+20) translator_to_c.c   Setir: 695
+is_open_bloçk() we is_çlose_bloçk() funksiýalarynda,
+Eger komanda blok açýan bolsa, açýan bloklaryň sanawyna goşulýar.
+Eger komanda blok ýapýan bolsa, ýapýan bloklaryň sanawyna goşulýar.
+
+
+
+///////////BOLDY, INDI KOMANDA GIRIZILEN////////////////////
+
+KOMANDANYN GORNUSHININ DEBUGLAMAK UCHIN FUNKSIYALARYN SAYGARMAGY.
+
+1) cmds.c			SETIR: 42
+char *cmd_classes[] sanawa, hazirki komanda gornushinin klasynyn ady goshulyar
+
+2) cmds.c                       SETIR:48
+char *cmd_class_types[][] sanawa, hazirki komanda gornushinin tipleri goshulyar.
+
+3) dev_debug.c                   SETIR: 13
+void degub_cmd() funksiyada, taze komandanyn gornushi dogry peyda bolmayan bolsa, dogry peyda bolar yaly etmeli.
+
+
+///////////BOLDY, INDO KOMANDANYN GORNUSHI DEBUG EDILENDE GORKEZILYAR/////////

@@ -1,7 +1,5 @@
-/*
- * Kompilyatoryn (Has takygy programma dilinin ozi bilen bagly komandalara - pragma diyilyar.)
- * Pragmalar bilen ishleyan we gerekli maglumatlar
-**/
+/** Kompilyatoryn (Has takygy programma dilinin ozi bilen bagly komandalara - pragma diyilyar.)
+    Pragmalar bilen ishleyan we gerekli maglumatlar*/
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

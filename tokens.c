@@ -1,6 +1,4 @@
-/*
- * Tokenler bilen işleýän bölüm
-**/
+/** Tokenler bilen işleýän bölüm*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

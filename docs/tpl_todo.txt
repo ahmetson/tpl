@@ -1,0 +1,72 @@
+﻿wagtlaýyn funksiýanyň ülňileriniň we sanawlarynyň maglumatlaryny edil lokal ülňiler we sanawlarynyň görnüşinde edilmeli.
+
+Ülňileriň semantikasyny we sanawlaryň semantikasyny barlaýan funksiýa-da eger funksiýa-da bolsa, funksiýanyň wagtlaýyn ülňileriniň we sanawlarynyň maglumatlaryny hem barlanar ýaly etmeli.
+
+Wagtlaýyn we lokal funksiýalaryň maglumatlaryna goşulýan data'ny komanda görnüşden täze görnüşlerine öwrülmeli.
+
+
+
+***
+
+Funksiýalaryň yglan etmeiginiň C kodyny ýazmaly.
+
+***
+
+Funksiýalary beýan edip bolar ýaly etmeli... Beýanlanmagynyň semantikasy bilen işlemeli
+
+***
+
+Funksiýa çatylýan komandany bilen işlemeli.
+
+Başga TPL faýllarda çagyrylanda, funksiýanyň yglan edilen faýlyny içine inklud edilmeli.
+
+
+*** FUNKSIÝALAR BILEN IŞ GUTARÝAR.
+
+
+
+*** (ülňi)KABUL_ET funksiýasy yglan edilmeli.
+
+*** () adaty tipleri biri birine getirme ýerine ýetirilmeli.
+
+*** teswirler ýerine ýetirilmeli.
+
+**** TPL DILINIŇ 1 WERSIÝASY GUTARDY
+
+
+
+*** programçyň dokumentasýasy, içindäki ähli funksiýalaryň atlary, häsiýeti, we umumy kodyň içki ulgamy beýan edilýär.
+
+*** ulanyjynyň dokumentasiýasy: programmanyň umumy gurluşy, ähli funksiýalarynyň, tokenleriniň we komandalarynyň manualy ýazylýar.
+
+*** ulanyjynyň programmirleme dilini öwredýän sahypasy ýazylýar. (Eýýäm kompýuterde bolmaly).
+
+*** DOKUMENTASÝASYNYŇ 1 WERSIÝASY GUTARDY
+
+
+
+*** TEXT EDITOR + SYNTAX HIGHLIGHTER.
+
+*** C dilinde programmany ýasaýan Goşmaça programma ýasalýar.
+
+*** ÜÇ programmany + Dokumentasýany kompýutere ötürdip taýyn zady ulanar ýaly etmeli.
+
+*** PROGRAMMALAR BILEN IŞLER GUTARDY.
+
+
+
+*** Algoritmler baza tapmaly.
+
+*** Saýtyň dizaýnyny we konseptini düzmeli.
+
+*** Içindäki tekstlerini düzmeli.
+
+*** Saýty düzmeli.
+
+*** Domen almaly.
+
+*** SAÝT WE DOMEN DÜZÜLDI.
+
+
+*** TAÝYN GUTARDY.
+

@@ -12,16 +12,12 @@
 #define MAX_PREP_LEN 350
 #endif
 
-// C kod nirede saklanyar?
+/// C kod nirede saklanyar?
 extern wchar_t *C_SOURCE_FOLDER;
 
-extern int TRANS_C_BLOCK_DEPTH;
-
-/** Berlen kodly ýazga, içindeliginiň basgançagyna görä, '\t' goýýar */
-void write_tabs_c_code(wchar_t **l, int *llen, int tabs_num);
 
 /** Kodly setiri ýazýar. Eger kodly setir blogyň içinde bolsa, onda öňünden TAB goýýar */
-void write_code_line(FILE *f, wchar_t **l, int *llen, int tabs_num, wchar_t *code);
+void write_code_line(FILE *f, wchar_t **l, int *llen, wchar_t *code);
 
 // Header fayly ulanmaga tayynlayar
 int prepare_h_source(FILE *f, wchar_t *f_name);

@@ -1,0 +1,40 @@
+﻿Tipler TPL-iň içinde.
+Tipler Global bolup, bir ýerde yglan edilen soň, geljek ähli kodlarda we kodly faýllarda ulanylyp bilinýär.
+
+Tipler bilen baglanyşykly iki sany komanda bar:
+	1) Olary yglan etmek
+	2) Tipiň elementine çatylmak.
+
+1 - nji komanda görnüşi:
+	TPL dilinde formasy:
+		<: 
+			[yaylar] tip ident,
+			[yaylar] tip ident.
+		 :>ident.
+
+	C dilindäki formasy:
+		typedef struct {
+			tip ident [yaylar];
+			tip ident [yaylar];
+		}ident;
+
+2 - nji komanda görnüşi:
+	TPL dilindäki formasy:
+		ident "açar".
+		ident "açar" sanaw_sany.
+
+	C dilindäki formasy:
+		ident "achar". // Ikinji birlik - HARPL görnüşde bolmaly.
+
+
+<: 
+harpl login,
+harpl açar_söz.
+ :>ulanyjy_taýp.
+
+(2)ulanyjy_taýp ulanyjylar.
+
+ulanyjylar 0 "login" <- "admin".
+ulanyjylar 0 "açar_söz" <- "asd12345".
+ulanyjylar 1 "login" <- "adaty".
+ulanyjylar 1 "açar_söz" <- "güljany_söýýän".

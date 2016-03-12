@@ -255,8 +255,7 @@ void add_utype_define_c_code(FILE *f)
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
         // Tip açýan kodly setir
-        write_code_line(f, &line, &llen, TRANS_C_BLOCK_DEPTH, utype_opener);
-        ++TRANS_C_BLOCK_DEPTH;
+        write_code_line(f, &line, &llen , utype_opener);
 
         for (j=0; j<USER_DEF_TYPES[i].items_num; ++j)
         {
@@ -299,13 +298,12 @@ void add_utype_define_c_code(FILE *f)
             /// Birligi gutaryjy
             get_cmd_end_c_code(&elem_line, &elem_line_len);
 
-            write_code_line(f, &line, &llen, TRANS_C_BLOCK_DEPTH, elem_line);
+            write_code_line(f, &line, &llen , elem_line);
             free(elem_line);
             elem_line = NULL;
             elem_line_len = 0;
         }
 
-        --TRANS_C_BLOCK_DEPTH;
         // Tipi ýapýan kodly setir
         wchar_t *closer = NULL,
                 *end = L"; \n";
@@ -315,7 +313,7 @@ void add_utype_define_c_code(FILE *f)
         wcsadd_on_heap( &closer, &closer_len, USER_DEF_TYPES[i].ident );
         wcsadd_on_heap( &closer, &closer_len, end );
 
-        write_code_line(f, &line, &llen, TRANS_C_BLOCK_DEPTH, closer);
+        write_code_line(f, &line, &llen , closer);
         free(closer);
         closer = NULL;
         closer_len = 0;
@@ -604,8 +602,7 @@ int is_utype_ident(wchar_t *ident)
     int i, len = wcslen(ident);
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
-        if (wcslen(USER_DEF_TYPES[i].ident)==len &&
-            wcsncmp(USER_DEF_TYPES[i].ident, ident, len)==0)
+        if ( is_wcseq( USER_DEF_TYPES[i].ident, ident ) )
             return 1;
     }
     return 0;
