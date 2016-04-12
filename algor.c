@@ -385,7 +385,7 @@ array_item *glob_arrs_def_get_by_name(wchar_t *name)
 void work_with_blocks(command *cmd)
 {
     //if ((cmd.cmd_class==CTRL_STATEMENT))
-    if (cmd->is_compl)
+    if ( parse_cmd(cmd) && cmd->is_compl)
     {
         /// Eger komanda blogy ýapýan bolsa
         if (is_close_block_cmd(cmd))
@@ -403,8 +403,8 @@ void work_with_blocks(command *cmd)
 
         if (is_close_block_cmd(cmd) || is_open_block_cmd(cmd))
         {
-            work_with_cmd();
-            init_cmd(cmd, 0);
+            work_with_cmd( cmd );
+            init_cmd( cmd, 0 );
         }
 
     }

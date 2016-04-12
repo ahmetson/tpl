@@ -117,9 +117,8 @@ int is_tok_in_list(cmd_token *list_tok, token *tok);
 int add_to_cmd(command *cmd, int type, token tok, parenthesis paren, command subcmd);
 
 // Komandalar bilen ishleyan bolum
-int work_with_cmd();
+int work_with_cmd( command *cmd );
 
-int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t);
 
 int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd_class, int *cmd_type);
 int empty_cmd_return_type(command *cmd, int *cmd_class, int *cmd_type);
@@ -166,5 +165,25 @@ void glob_fns_decl_add(command *cmd);
 void  work_with_glob_var_decs();
 void  work_with_glob_arr_decs();
 void work_with_glob_fn_decs();
+
+
+int    *get_op_positions(command *cmd);
+int     get_op_prior(int cmd_items, int op_position);
+
+int    get_mem_for_cmd_items();
+
+void    move_cmd_items ( int orig_pos, int start_pos, command *cmd );
+
+void find_most_prior_op( command *cmd, int *op_positions, int *pos, int *lvl );
+int is_op_require_left_data( int pos );
+int is_op_require_right_data( int pos );
+
+void    minimize_operands( command *cmd, int *op_positions );
+void    move_cmd_items ( int orig_pos, int start_pos, command *cmd );
+int     make_subcmd_from_op(command *cmd, int *op_position);
+int is_cmd_item_op( command_item *ci );
+
+int     get_prev_op_pos( int *pos, int cur_pos );
+int     get_next_op_pos( int *pos, int cur_pos );
 
 #endif

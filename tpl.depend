@@ -268,7 +268,7 @@
 	"translator_to_c.h"
 	"error.h"
 
-1453866767 source:d:\c_source\tpl\algor.c
+1460458422 source:d:\c_source\tpl\algor.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -295,7 +295,7 @@
 	"tokens.h"
 	"cmd/array.h"
 
-1452200500 d:\c_source\tpl\cmds.h
+1460460884 d:\c_source\tpl\cmds.h
 	<wchar.h>
 	<wctype.h>
 	"parenthesis.h"
@@ -369,7 +369,7 @@
 	<stdio.h>
 	"cmds.h"
 
-1452313911 d:\c_source\tpl\error.h
+1460458663 d:\c_source\tpl\error.h
 
 1452017589 d:\c_source\tpl\dev_debug.h
 	"algor.h"
@@ -387,13 +387,14 @@
 	"../fns.h"
 	"../translator_to_c.h"
 
-1454241116 source:d:\c_source\tpl\cmds.c
+1460494971 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	"tpl.h"
 	"cmds.h"
 	"token/token_types.h"
+	"token/helpers.h"
 	"cmd/assign.h"
 	"cmd/def_var.h"
 	"cmd/fn_call.h"
@@ -408,6 +409,7 @@
 	"cmd/user_def_type.h"
 	"cmd/fn_def.h"
 	"cmd/conv_basic_types.h"
+	"paren/types.h"
 	"algor.h"
 	"dev_debug.h"
 	"error.h"
@@ -415,7 +417,7 @@
 	"fns/fn_helpers.h"
 	"fns.h"
 
-1453779167 source:d:\c_source\tpl\dev_debug.c
+1460459344 source:d:\c_source\tpl\dev_debug.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -428,7 +430,7 @@
 	"main/user_def_type.h"
 	"token/harpl.h"
 
-1452926611 source:d:\c_source\tpl\error.c
+1460458690 source:d:\c_source\tpl\error.c
 	<stdio.h>
 	<stdlib.h>
 	<locale.h>
@@ -456,7 +458,7 @@
 	"tpl.h"
 	<stdlib.h>
 
-1453769360 source:d:\c_source\tpl\main\files.c
+1459590947 source:d:\c_source\tpl\main\files.c
 	<stdlib.h>
 	<string.h>
 	"files.h"
@@ -484,7 +486,7 @@
 	"../translator_to_c.h"
 	"../fns/3rdparty/std.h"
 
-1452930328 source:d:\c_source\tpl\main\main_file.c
+1459590946 source:d:\c_source\tpl\main\main_file.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -496,7 +498,7 @@
 
 1452018491 source:d:\c_source\tpl\other.c
 
-1453775199 source:d:\c_source\tpl\parser.c
+1460458411 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -624,7 +626,7 @@
 
 1451884916 d:\c_source\tpl\token\token_word.h
 
-1453929096 source:d:\c_source\tpl\tokens.c
+1460097717 source:d:\c_source\tpl\tokens.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -656,7 +658,7 @@
 
 1452929067 d:\c_source\tpl\work_with_source.h
 
-1453786034 source:d:\c_source\tpl\translator_to_c.c
+1457788844 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -726,7 +728,7 @@
 1452200389 d:\c_source\tpl\cmd\def_var.h
 	"../cmds.h"
 
-1452927816 source:d:\c_source\tpl\cmd\def_var.c
+1460456389 source:d:\c_source\tpl\cmd\def_var.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -746,7 +748,7 @@
 
 1453697185 d:\c_source\tpl\main\tpl_esc_keys.h
 
-1453786212 source:d:\c_source\tpl\token\harpl.c
+1457789656 source:d:\c_source\tpl\token\harpl.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -783,7 +785,7 @@
 	"../fns.h"
 	"../translator_to_c.h"
 
-1453786929 source:d:\c_source\tpl\parenthesis.c
+1460459124 source:d:\c_source\tpl\parenthesis.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -1038,7 +1040,7 @@
 1453624124 d:\c_source\tpl\token\token_types\loop_sttmnt.h
 	"../token_structs.h"
 
-1454243521 source:d:\c_source\tpl\cmd\array.c
+1460363033 source:d:\c_source\tpl\cmd\array.c
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
@@ -1070,7 +1072,7 @@
 	"../../tokens.h"
 	"../../fns.h"
 
-1453932804 source:d:\c_source\tpl\cmd\user_def_type.c
+1459591245 source:d:\c_source\tpl\cmd\user_def_type.c
 	<string.h>
 	<stdlib.h>
 	"user_def_type.h"
@@ -1089,7 +1091,7 @@
 1452199752 d:\c_source\tpl\cmd\user_def_type.h
 	"../cmds.h"
 
-1457788214 source:d:\c_source\tpl\main\user_def_type.c
+1460363045 source:d:\c_source\tpl\main\user_def_type.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -1133,7 +1135,7 @@
 	"../../tokens.h"
 	"../../fns.h"
 
-1453624173 d:\c_source\tpl\token\token_types\void.h
+1460099466 d:\c_source\tpl\token\token_types\void.h
 	"../token_structs.h"
 
 1453624058 source:d:\c_source\tpl\token\token_types\void.c
@@ -1144,7 +1146,7 @@
 	"../../tokens.h"
 	"../../fns.h"
 
-1452398902 source:d:\c_source\tpl\cmd\fn_def.c
+1460099887 source:d:\c_source\tpl\cmd\fn_def.c
 	<stdlib.h>
 	<string.h>
 	"fn_def.h"
@@ -1162,7 +1164,7 @@
 1452200673 d:\c_source\tpl\fns\fn_helpers.h
 	"../cmds.h"
 
-1457788483 source:d:\c_source\tpl\fns\fn_helpers.c
+1460099969 source:d:\c_source\tpl\fns\fn_helpers.c
 	<stdlib.h>
 	<string.h>
 	"fn_helpers.h"

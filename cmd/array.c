@@ -15,6 +15,9 @@
 #include "../main/user_def_type.h"
 #include "../main/inf.h"
 #include "../fns/fn_helpers.h"
+
+int swprintf (wchar_t*, const wchar_t*, ...);
+
 /** ŞERT #1: Birsyhly sanawlar bilen işlemek:
 
     Birsyhly sanawlaryň iki görnüşi bar:

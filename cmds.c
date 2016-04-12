@@ -5,6 +5,7 @@
 #include "tpl.h"
 #include "cmds.h"
 #include "token/token_types.h"
+#include "token/helpers.h"
 #include "cmd/assign.h"
 #include "cmd/def_var.h"
 #include "cmd/fn_call.h"
@@ -19,6 +20,7 @@
 #include "cmd/user_def_type.h"
 #include "cmd/fn_def.h"
 #include "cmd/conv_basic_types.h"
+#include "paren/types.h"
 #include "algor.h"
 #include "dev_debug.h"
 #include "error.h"
@@ -202,18 +204,6 @@ void init_cmd(command *cmd, wchar_t free_items)
 
 }
 
-
-int recognize_cmd(command *cmd)
-{
-	// Komandany saygaryp bolmady ya ol gutarylmadyk
-	if ((cmd->cmd_class<1 && cmd->cmd_type<1) || !cmd->is_compl)
-	{
-		return 0;
-    }
-	// Komandany saygaryp boldy
-	return 1;
-}
-
 /** Tokeni saygarylyar */
 int parse_cmd(command *cmd)
 {
@@ -235,15 +225,6 @@ int parse_cmd(command *cmd)
 **/
 int add_to_cmd(command *cmd, int type, token tok, parenthesis paren, command subcmd)
 {
-	// Komanda-da gaty kan tokenler bar
-	if ((cmd->cmd_class!=CMD_CLASS_ARR &&
-        !(cmd->cmd_class==CMD_CLASS_CALL_GLOB_VAR &&
-          type==TOKEN_ITEM && tok.type_class==TOK_CLASS_CONST_DATA &&
-          tok.potentional_types[0].type_num==INT_CONST_DATA_TOK_NUM)
-        ) && cmd->is_compl && cmd->items_num==CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type])
-    {
-		return 0;
-    }
 	command_item cmd_item = {};
 	cmd_item.type = type;
 	if (type==TOKEN_ITEM)
@@ -257,6 +238,8 @@ int add_to_cmd(command *cmd, int type, token tok, parenthesis paren, command sub
 	if (change_cmd_items_num(cmd->items, cmd->items_num))
     {
         put_cmd_item(cmd->items, cmd->items_num-1, cmd_item);
+        /// Komanda - blok bolsa üýtgetmeli maglumatlary ýerine ýetirýän funksiýa çagyrmaly
+        work_with_blocks(cmd);
         return 1;
     }
     else
@@ -266,35 +249,34 @@ int add_to_cmd(command *cmd, int type, token tok, parenthesis paren, command sub
 }
 
 // Komandalar bilen ishleyan bolum
-int work_with_cmd()
+int work_with_cmd( command *cmd )
 {
 	// Hazir TPL-in fayly komandalar bilen ishleyan boluminde
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
 
-    if (!cmd.items_num)
+    if (!cmd->items_num)
         return 0;
 
     // TODO
     // KOMANDA gutarylmadyk bolsa, yalnyshlyk haty komanda gutarylmady diyip gaytaryar
 	// Komanda saygarylyp showly gutardy
-	if (!recognize_cmd(&cmd))
+	if (!recognize_cmd( cmd ) )
 	{
-	    debug_cmd(&cmd);
-        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&cmd));
+        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token( cmd ) );
 	}
 	// Eger komanda funksiyanyn ichinde bolsa,
     //      bolup biljek komandalara barlanyar.
-	if (is_inside_fn() && is_unvalid_inside_fn_cmd(&cmd))
+	if (is_inside_fn() && is_unvalid_inside_fn_cmd( cmd ) )
     {
-        print_err(CODE4_UNSUPPORT_CMD_INSIDE_FN, (token *)inf_get_last_token(&cmd));
+        print_err(CODE4_UNSUPPORT_CMD_INSIDE_FN, (token *)inf_get_last_token( cmd ) );
     }
-    if (is_fn_def(&cmd))
+    if (is_fn_def( cmd ))
     {
-        check_semantics(&cmd);
-        prepare_tmp_fn_data_container(&cmd);
+        check_semantics( cmd );
+        prepare_tmp_fn_data_container( cmd );
     }
-    else if (is_fn_close_cmd(&cmd))
+    else if (is_fn_close_cmd( cmd ))
     {
         move_tmp_fn_data_to_local();
         CUR_PART = prev_part;
@@ -302,21 +284,22 @@ int work_with_cmd()
     }
     if (is_inside_fn())
     {
-        if (!(cmd.cmd_class==CMD_CLASS_FN_DEF &&
-             cmd.cmd_type ==CMD_FN_DEF_TYPE )&& !add_to_tmp_fn_def_var_list(&cmd) && !add_to_tmp_fn_def_arr_list(&cmd))
+        if ( !( cmd->cmd_class==CMD_CLASS_FN_DEF &&
+                cmd->cmd_type ==CMD_FN_DEF_TYPE )&& !add_to_tmp_fn_def_var_list( cmd ) && !add_to_tmp_fn_def_arr_list( cmd ) )
         {
-            add_to_tmp_fn_algor(&cmd);
+            add_to_tmp_fn_algor( cmd );
         }
     }
     else
     {
-        if (!add_to_def_var_list(&cmd) && !add_to_def_arr_list(&cmd) && !(cmd.cmd_class==CMD_CLASS_UTYPE && cmd.cmd_type==CMD_UTYPE_DEF_TYPE) ) // Komanda ulnini yglan etme dal eken
+        if (!add_to_def_var_list( cmd ) && !add_to_def_arr_list( cmd ) &&
+            !( cmd->cmd_class==CMD_CLASS_UTYPE && cmd->cmd_type==CMD_UTYPE_DEF_TYPE ) ) // Komanda ulnini yglan etme dal eken
         {
-            global_called_vars_add(&cmd);
-            global_called_arrs_add(&cmd);
+            global_called_vars_add( cmd );
+            global_called_arrs_add( cmd );
             // Komandany algoritme goshulyar
 
-            algor_add_cmd(cmd);
+            algor_add_cmd( *cmd );
         }
     }
     // Eger komanda funksiyany bashlayan bolsa.
@@ -351,643 +334,6 @@ void empty_cmd_c_code(command *cmd, wchar_t **l, int *len)
 {
     return;
 }
-
-
-/** Komandanyň içine birlik goşýar
-**/
-int cmd_add_item(command *cmd, int item_type, parenthesis p, command c, token t)
-{
-
-    /** 1) (Maksimum näçe elementi bardygy näbelli komandalary hasap etmeseň)
-           Eger komanda-da maksimum bolup biljek birlikler bolsa Ýa-da
-           Eger komandanyň öňki birligi gutarylmadyk bolsa, onda
-            a) Eger öňki birlik token bolsa
-                I) Komanda ýasap, öňki we häzirki birlik içine salynýar.
-                II) Eger ýasalan komanda ýasalmasa, onda
-                    1) Komanda tanalmady diýen ýalňyşlyk görkezilýär
-                III) Eger täze komanda ýasalmasa, onda
-                    1) Öňki token nädogry diýen ýalňyşlyk görkezilýär.
-            b) Eger öňki birlik komanda bolsa
-                I) Komandanyň birlikleriniň içine goşmaly birlik salynýar.
-                II) Eger birlik goşulansoň, komanda tanalmasa
-                    2) "Öňki birlik nädogry" diýen ýalňyşlyk görkezilýär.
-        Ýogsa
-            c) Eger komanda birlik goşulsa we komanda tanalmasa, onda
-                I) Eger komanda, goşulmadyk birlikden başga özbaşdak manyny aňladýan we gutarylan bolsa
-                    1) Täze komanda ýasalýar.
-                    2) Öňki komanda, täze komandanyň birligi diýilip salynýar.
-                    3) Goşulmaly birlik, komandanyň ikinji birligi diýilýär.
-                    4) Eger täze komanda tanalmasa, onda
-                        a) "Komandany tanap bolmady" diýen ýalňyşlyk görkezilýär.
-                Ýogsa, eger komanda, goşulmadyk birlikden başga özbaşdak many aňladýan we gutarYLMADYK bolsa
-                    5) Täze komanda ýasalýar.
-                    6) Täze komandanyň birinji birligi diýilip goşulmaly birlik goýulýar.
-                    7) Eger täze komanda tanalmasa
-                        a) "Komandany tanap bolmady" diýen ýalňyşlyk görkezilýär.
-                    8) Täze komanda, öňki komanda goşulýar.
-                    9) Eger täze komanda goşulan soň, öňki komanda tanalmasa
-                        a) "Komandany tanap bolmady" diýen ýalňyşlyk görkezilýär.
-    */
-
-    int prev_part = CUR_PART;
-	CUR_PART = 4;
-
-	if (item_type==TOKEN_ITEM && t.is_compl==0)
-    {
-        CUR_PART = 2;
-        print_err(CODE2_PREV_TOKEN_INCORRECT, &t);
-    }
-
-	/// 1)
-	//if (cmd->cmd_class!=CMD_CLASS_ARR && !(cmd->cmd_class==CMD_CLASS_CALL_GLOB_VAR && item_type==TOKEN_ITEM && t.type_class==TOK_CLASS_CONST_DATA && t.potentional_types[0].type_num==INT_CONST_DATA_TOK_NUM) ||
-    // (cmd->items_num!=0 && !is_cmd_item_compl(get_cmd_item(cmd->items, cmd->items_num-1))))
-
-	if (((cmd->cmd_class!=CMD_CLASS_ARR && !(cmd->cmd_class==CMD_CLASS_CALL_GLOB_VAR && item_type==TOKEN_ITEM && t.type_class==TOK_CLASS_CONST_DATA && t.potentional_types[0].type_num==INT_CONST_DATA_TOK_NUM))
-        && cmd->items_num>=CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type]) || (cmd->items_num!=0 && !is_cmd_item_compl(get_cmd_item(cmd->items, cmd->items_num-1))) )
-    {
-        int last = cmd->items_num-1;
-
-        /// 1.a)
-        command_item *lci = get_cmd_item(cmd->items, last);
-        if (lci->type==TOKEN_ITEM || lci->type==PAREN_ITEM)
-        {
-            token tmp_tok;
-            parenthesis tmp_paren;
-            if (item_type==TOKEN_ITEM)
-            {
-                tmp_tok = lci->tok;
-            }
-            else
-                tmp_paren = lci->paren;
-            /** ŞERT #2: Çepden saga, sagdan çepe gidýän komandalary saklaýan komandany ýasamaly:
-                         1.a.I) - /// 1.a.III) aralygy alýar.
-                        Eger soňky birlik token bolsa
-                            1)Wagtlaýyn komanda ýasalýar (Wagtlaýyn komandanyň birliklerini kuçada saklajak wagtlaýyn ýer ýasalýar).
-                            2)Soňky birlik bilen täze birlik alynyp wagtlaýyn komanda goşulýar.
-                            3)Eger wagtlaýyn komanda tanalsa
-                                a)sub-komanda ýasalayp, wagtlaýyn komandanyň parametrlerini alýar.
-                                b)sub-komanda komandanyň soňky birliginiň deregine goýulýar.
-                                ç)wagtlaýyn komandanyň birlikleri üçin goýlan kuçadaky ýer pozulýär.
-                                d)eger komandanyň soňky birligi çalyşylan soň tanalmasa
-                                    I)komandanyň öňki birligi ýene tokene öwrülýär.
-                                    II)eger komanda özbaşdak many aňladýan bolsa
-                                        1)soňky ulanylan sub-komandanyň parametrlerine komandanyň ähli parametrleri göçürilýär.
-                                        2)komanda arassalanýar.
-                                        3)komandanyň iki birligi bar diýilýär.
-                                        4)Birinji birlige sub-komanda goýulýar
-                                        5)Ikinji birlige goşulmaly birlik goýulýar.
-                                        6)Eger komanda tanalmasa
-                                            a)wagtlaýyn komandanyň birlikleri üçin goýlan kuçadaky ýer pozulýär.
-                                            b)"Ýalňyşlyk #51"
-                                    ýogsa
-                                        7)"Ýalňyşlyk #40".
-                            Ýogsa
-                                e)eger komanda özbaşdak many aňladýan bolsa
-                                    I)täze sub-komanda ýasalýar.
-                                    II)sub-komandanyň parametrleri diýip komandanyň ähli parametrleri göçürilýär.
-                                    III)komanda arassalanýar.
-                                    IÝ)komandanyň iki birligi bar diýilýär.
-                                    Ý)Birinji birlige sub-komanda goýulýar
-                                    ÝI)Ikinji birlige goşulmaly birlik goýulýar.
-                                    ÝII)Eger komanda tanalmasa
-                                        1)wagtlaýyn komandanyň birlikleri üçin goýlan kuçadaky ýer pozulýär.
-                                        2)"Ýalňyşlyk #50"
-                                 ýogsa
-                                    ÝIII)wagtlaýyn komandanyň birlikleri üçin goýlan kuçadaky ýer pozulýär.
-                                    IÜ)"Ýalňyşlyk #51"
-
-                */
-
-            /// #2.1)
-            command tmpcmd;
-            init_cmd(&tmpcmd, 0);
-            tmpcmd.items_num = 2;
-            tmpcmd.items = -2;
-            change_cmd_items_num(-2, tmpcmd.items_num);
-
-            /// #2.2)
-            put_cmd_item(tmpcmd.items, 0, *lci);
-
-            command_item ci;
-            ci.type = item_type;
-            if (item_type==TOKEN_ITEM)
-                ci.tok  = t;
-            else
-                ci.paren  = p;
-            put_cmd_item(tmpcmd.items, 1, ci);
-
-            /// #2.3)
-            if (parse_cmd(&tmpcmd))
-            {
-                /// #2.3.a)
-                command new_subcmd;
-                init_cmd(&new_subcmd, 0);
-                new_subcmd = tmpcmd;
-
-                new_subcmd.items = subcmd_items_add(new_subcmd.items_num);
-                int i;
-                for(i=0; i<new_subcmd.items_num; ++i)
-                {
-                    put_cmd_item(new_subcmd.items, i,  *get_cmd_item(tmpcmd.items, i));
-                }
-
-                add_to_def_var_list(&new_subcmd);
-                add_to_def_arr_list(&new_subcmd);
-                global_called_vars_add(&new_subcmd);
-                global_called_arrs_add(&new_subcmd);
-
-                /// #2.3.b)
-                command_item last_c;
-                last_c.type = CMD_ITEM;
-                last_c.cmd  = new_subcmd;
-
-                put_cmd_item(cmd->items, last, last_c);
-
-                /// #2.3.ç)
-                free(TMP_CMD_ITEMS_LIST);
-                TMP_CMD_ITEMS_LIST = NULL;
-
-                /// #2.3.d)
-                if (!parse_cmd(cmd))
-                {
-                    /// #2.3.d.I)
-                    lci->type = item_type;
-                    if (item_type==TOKEN_ITEM)
-                    {
-                        lci->tok=tmp_tok;
-                    }
-                    else
-                        lci->paren = tmp_paren;
-                    lci->cmd = get_empty_cmd();
-
-                    /// #2.3.d.II)
-                    if (parse_cmd(cmd)  && cmd->is_compl)
-                    {
-                        /// #2.3.d.II.1)
-                        init_cmd(&new_subcmd, 0);
-                        new_subcmd = *cmd;
-                        new_subcmd.items = subcmd_items_add(new_subcmd.items_num);
-                        int i;
-                        for(i=0; i<new_subcmd.items_num; ++i)
-                        {
-                            put_cmd_item(new_subcmd.items, i, *get_cmd_item(cmd->items, i));
-                        }
-
-                        add_to_def_var_list(&new_subcmd);
-                        add_to_def_arr_list(&new_subcmd);
-                        global_called_vars_add(&new_subcmd);
-                        global_called_arrs_add(&new_subcmd);
-
-                        /// #2.3.d.II.2)
-                        int tmp_items_num = cmd->items;
-                        init_cmd(cmd, 0);
-
-                        /// #2.3.d.II.3)
-                        cmd->items_num = 2;
-                        cmd->items = tmp_items_num;
-                        change_cmd_items_num(cmd->items, cmd->items_num);
-
-                        /// #2.3.d.II.4)
-                        command_item ci1;
-                        ci1.type = CMD_ITEM;
-                        ci1.cmd  = new_subcmd;
-                        put_cmd_item(cmd->items , 0, ci1);
-
-                        /// #2.3.d.II.5)
-                        command_item ci2;
-                        ci2.type = item_type;
-                        if(item_type==TOKEN_ITEM)
-                            ci2.tok = t;
-                        else if(item_type==CMD_ITEM)
-                            ci2.cmd = c;
-                        else if(item_type==PAREN_ITEM)
-                            ci2.paren = p;
-                        put_cmd_item(cmd->items , 1, ci2);
-
-                        /// #2.3.d.II.6)
-                        if (!parse_cmd(cmd))
-                        {
-                            /// #2.3.d.II.6.a)
-                            print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                        }
-                        add_to_def_var_list(cmd);
-                        add_to_def_arr_list(cmd);
-                        global_called_vars_add(cmd);
-                        global_called_arrs_add(cmd);
-                    }
-                    else
-                    {
-                        /// #2.3.d.II.7)
-                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                    }
-                }
-            }
-            else
-            {
-                /// #2.3.e)
-                if (cmd->items_num && cmd->is_compl)
-                {
-                    /// #2.3.e.I)
-                    command subcmd;
-
-                    /// #2.3.e.II)
-                    subcmd = *cmd;
-                    subcmd.items = subcmd_items_add(subcmd.items_num);
-                    int i;
-                    for(i=0; i<subcmd.items_num; ++i)
-                    {
-                        put_cmd_item(subcmd.items , i, *get_cmd_item(cmd->items, i));
-                    }
-
-                    /// #2.3.e.III)
-                    int tmp_items_num = cmd->items;
-                    init_cmd(cmd, 0);
-
-                    /// #2.3.e.IÝ)
-                    cmd->items_num = 2;
-                    cmd->items = tmp_items_num;
-                    change_cmd_items_num(cmd->items, cmd->items_num);
-
-                    /// #2.3.e.Ý)
-                    command_item ci1;
-                    ci1.type = CMD_ITEM;
-                    ci1.cmd  = subcmd;
-                    put_cmd_item(cmd->items , 0, ci1);
-                    /// #2.3.e.ÝI)
-                    command_item ci2;
-                    ci2.type = item_type;
-                    if(item_type==TOKEN_ITEM)
-                        ci2.tok = t;
-                    else if(item_type==CMD_ITEM)
-                        ci2.cmd = c;
-                    else if(item_type==PAREN_ITEM)
-                        ci2.paren = p;
-                    put_cmd_item(cmd->items , 1, ci2);
-                    /// #2.3.e.ÝII)
-                    if (!parse_cmd(cmd))
-                    {
-                        /// #2.3.e.ÝII.1)
-                        free(TMP_CMD_ITEMS_LIST);
-                        TMP_CMD_ITEMS_LIST = NULL;
-                        /// #2.3.e.ÝII.2)
-                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                    }
-                }
-                /// Komanda özbaşdak manyny aňladanok. Häzirki durşyna
-                else
-                {
-                    /// #2.3.e.ÝIII)
-                    free(TMP_CMD_ITEMS_LIST);
-                    TMP_CMD_ITEMS_LIST = NULL;
-                    /// #2.3.e.IÜ)
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                }
-            }
-        }
-        /// 1.b)
-        else if(lci->type==CMD_ITEM)
-        {
-
-            /** ŞERT #3: Dört we ondanam kän komandany saklaýan komanda tanalar ýaly edilýär.
-                         Onuň üçin, iň soňky komanda täze komandanyň bölegi bölegine öwrülýär.
-                #3.1)Eger iň soňky birlik gutarylan bolsa, onda
-                    #3.1.a)Täze komanda ýasalýar.
-                    #3.1.b)Komanda iň soňky birlik geçirilýär.
-                    #3.1.ç)Täze komandanyň ikinji birligi diýip goşulmaly obýek geçirilýär.
-                    #3.1.d)Eger täze komanda tanalmasa
-                        #3.1.d.I)"Komanda tanalmady" diýen ýalňyşlyk görkezilýär.
-                    Ýogsa
-                        #3.1.d.II)Täze komanda iň soňky birligiň deregine goýulýar.
-                        #3.1.d.III)Eger komanda iň soňky birligi üýtgän soň tanalmasa
-                            #3.1.d.III.1) "Komanda tanalmady" diýen ýalňyşlyk görkezilýär
-                Ýogsa eger token gutarylmadyk bolsa
-                ** öňki şertiň 1.b) bölümini alýar **
-                    #3.1.e)iň soňky birlige goşulmaly birlik goşulýar.
-                    #3.1.ä)Eger iň soňky birlik tanalmasa
-                        #3.1.ä.I)"Komanda tanalmady" diýen ýalňyşlyk görkezilýär.
-            */
-            command *lc = &lci->cmd;
-            if (lc->is_compl && lc->items_num)
-            {
-                /// #3.1.a)
-                command newlc; init_cmd(&newlc, 0);
-                newlc.items_num = 2;
-                newlc.items = -2;
-                change_cmd_items_num(-2, newlc.items_num);
-
-                /// #3.1.b)
-                command newlcsub;
-                newlcsub = *lc;
-                newlcsub.items = subcmd_items_add(newlcsub.items_num);
-                int i;
-                for (i=0; i<newlcsub.items_num; ++i)
-                {
-                    put_cmd_item(newlcsub.items, i, *get_cmd_item(lc->items, i));
-                }
-                command_item fci;
-                fci.type = CMD_ITEM;
-                fci.cmd  = newlcsub;
-                put_cmd_item(newlc.items , 0, fci);
-
-                /// #3.1.c)
-                command_item sci;
-                sci.type = item_type;
-                if(item_type==TOKEN_ITEM)
-                    sci.tok = t;
-                else if(item_type==CMD_ITEM)
-                    sci.cmd = c;
-                else if(item_type==PAREN_ITEM)
-                    sci.paren = p;
-                put_cmd_item(newlc.items , 1, sci);
-
-                /// #3.1.d)
-                if (!parse_cmd(&newlc))
-                {
-                    /// #3.1.d.I)
-                    free(TMP_CMD_ITEMS_LIST);
-                    TMP_CMD_ITEMS_LIST = NULL;
-
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(lc));
-                }
-                else
-                {
-                    /// #3.1.d.II)
-                    if (newlc.items_num!=lc->items_num)
-                    {
-                        change_cmd_items_num(lc->items, newlc.items_num);
-                    }
-                    lc->cmd_class = newlc.cmd_class;
-                    lc->cmd_type = newlc.cmd_type;
-                    lc->is_compl = newlc.is_compl;
-                    lc->items_num = newlc.items_num;
-                    lc->ns = newlc.ns;
-                    lc->parenthesis = newlc.parenthesis;
-                    lc->value_class = newlc.value_class;
-                    lc->value_type = newlc.value_type;
-                    for(i=0; i<lc->items_num; ++i)
-                    {
-                        put_cmd_item(lc->items, i, *get_cmd_item(newlc.items, i));
-                    }
-                    add_to_def_var_list(lc);
-                    add_to_def_arr_list(lc);
-                    global_called_vars_add(lc);
-                    global_called_arrs_add(lc);
-                    free(TMP_CMD_ITEMS_LIST);
-                    TMP_CMD_ITEMS_LIST = NULL;
-
-                    /// #3.1.da.III)
-                    if (!parse_cmd(cmd))
-                    {
-                        /// #3.1.d.III.1)
-                        print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                    }
-                }
-            }
-            else
-            {
-
-                /// #3.1.e)
-                lc->items_num++;
-                change_cmd_items_num(lc->items, lc->items_num);
-
-                command_item ci;
-                ci.type = item_type;
-                if(item_type==TOKEN_ITEM)
-                    ci.tok = t;
-                else if (item_type==CMD_ITEM)
-                    ci.cmd = c;
-                else if (item_type==PAREN_ITEM)
-                {
-                    ci.paren = p;
-                }
-                put_cmd_item(lc->items, lc->items_num-1, ci);
-
-                /// #3.1.ä)
-                if (!parse_cmd(lc))
-                {
-                    /// #3.1.ä.I)
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(lc));
-                }
-                else if (!parse_cmd(cmd))
-                {
-                    /// 1.b.ä.I)
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                }
-                add_to_def_var_list(lc);
-                add_to_def_arr_list(lc);
-                global_called_vars_add(lc);
-                global_called_arrs_add(lc);
-            }
-        }
-        else if(lci->type==PAREN_ITEM)
-        {
-            /** ŞERT #4: Ýaýlar birlik hökümnde ulanylanda komanda ýasalmagy
-
-                #4.1)Täze komanda ýasalýar.
-                #4.2)Öňki komandadaky ähli birlikler täze komanda salynýar.
-
-                #4.3)Öňki komandadaky birlikleriň sany 2-ä getirilýär.
-
-                #4.4)Birinji birlik diýilip täze ýasalan komanda goýulýar.
-
-                #4.5)Ikinji birlik diýip goşulmaly birlik goýulýar.
-
-                #4.6)Eger komanda iki birlik bilen tanalmasa
-                    #4.6.a)"Token tanalmady" diýen ýalňyşlyk görkezilýär.
-            */
-            /// #4.1)
-            command fc;
-
-            /// #4.2)
-            fc = *cmd;
-            fc.items = subcmd_items_add(fc.items_num);
-            int i;
-            for (i=0; i<fc.items_num; ++i)
-            {
-                put_cmd_item(fc.items, i, *get_cmd_item(cmd->items, i));
-            }
-
-
-            /// #4.3)
-            if (cmd->items_num!=2)
-            {
-                cmd->items_num=2;
-                change_cmd_items_num(cmd->items, cmd->items_num);
-            }
-
-            /// #4.4)
-            command_item fci;
-            fci.type = CMD_ITEM;
-            fci.cmd  = fc;
-            put_cmd_item(cmd->items , 0, fci);
-
-            /// #4.5)
-            command_item sci;
-            sci.type = item_type;
-            if(item_type==TOKEN_ITEM)
-                sci.tok = t;
-            else if(item_type==CMD_ITEM)
-                sci.cmd = c;
-            else if(item_type==PAREN_ITEM)
-                sci.paren = p;
-            put_cmd_item(cmd->items , 1, sci);
-
-            /// #4.6)
-            if (!parse_cmd(cmd))
-            {
-                /// #4.6.a)
-                print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-            }
-        }
-    }
-    else
-    {
-        if (!add_to_cmd(cmd, item_type, t, p, c))
-        {
-            if (item_type==TOKEN_ITEM)
-            {
-                print_err(CODE4_CANT_ADD_TOKEN, &t);
-            }
-            else if(item_type==CMD_ITEM)
-            {
-                print_err(CODE4_CANT_ADD_TOKEN, (token *)inf_get_last_token(&c));
-            }
-            else if(item_type==PAREN_ITEM)
-            {
-                print_err(CODE4_CANT_ADD_TOKEN, &inf_tok);
-            }
-        }
-
-        /// C)
-
-        if (!parse_cmd(cmd))
-        {
-            cmd->items_num--;
-            /// C.I
-            if (cmd->items_num && parse_cmd(cmd) && cmd->is_compl)
-            {
-                add_to_def_var_list(cmd);
-                add_to_def_arr_list(cmd);
-                global_called_vars_add(cmd);
-                global_called_arrs_add(cmd);
-                /// C.I.1)
-                command new_cmd;
-                new_cmd = *cmd;
-                new_cmd.items = subcmd_items_add(cmd->items_num);
-                int i=0;
-                for (i=0; i<cmd->items_num; ++i)
-                {
-                    put_cmd_item(new_cmd.items, i, *get_cmd_item(cmd->items, i));
-                }
-
-                int tmp_items_num = cmd->items;
-                init_cmd(cmd, 0);
-                cmd->items_num = 2;
-                cmd->items = tmp_items_num;
-                if (new_cmd.items_num!=2)
-                {
-                    change_cmd_items_num(cmd->items, cmd->items_num);
-                }
-
-                /// C.I.2)
-                // Komandanyň birinji birligi - Önki komanda goşulýar
-                command_item cmd_item = {};
-                cmd_item.type = CMD_ITEM;
-                cmd_item.cmd = new_cmd;
-                put_cmd_item(cmd->items , 0, cmd_item);
-
-                /// C.I.3)
-                // Komandanyň ikinji birligi   - Täze token goşulýar
-                command_item cmd_tok_item;
-                cmd_tok_item.type  = item_type;
-                if (item_type==PAREN_ITEM)
-                    cmd_tok_item.paren = p;
-                else if(item_type==TOKEN_ITEM)
-                    cmd_tok_item.tok = t;
-                else if(item_type==CMD_ITEM)
-                    cmd_tok_item.cmd = c;
-                put_cmd_item(cmd->items , 1, cmd_tok_item);
-
-                /// C.I.4)
-                if (!parse_cmd(cmd))
-                {
-                    /// C.I.4.a)
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                }
-            }
-            else
-            {
-                /// C.I.5)
-                command new_subcmd;
-                init_cmd(&new_subcmd, 0);
-
-                /// C.I.6)
-                command_item cmd_tok_item;
-                cmd_tok_item.type = item_type;
-                if (item_type==PAREN_ITEM)
-                    cmd_tok_item.paren = p;
-                else if(item_type==TOKEN_ITEM)
-                    cmd_tok_item.tok = t;
-                else if(item_type==CMD_ITEM)
-                    cmd_tok_item.cmd = c;
-
-                new_subcmd.items_num = 1;
-                new_subcmd.items = subcmd_items_add(new_subcmd.items_num);
-                put_cmd_item(new_subcmd.items , 0, cmd_tok_item);
-
-                /// C.I.7)
-                if (!parse_cmd(&new_subcmd))
-                {
-                    cmd->items_num++;
-                    /// C.I.7.a)
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(&new_subcmd));
-                }
-
-                // Eger ulni yglan etme bolsa, onda ichki komandany ulni yglan etmelerin ichine gechirmeli
-                add_to_def_var_list(&new_subcmd);
-                add_to_def_arr_list(&new_subcmd);
-                global_called_vars_add(&new_subcmd);
-                global_called_arrs_add(&new_subcmd);
-
-                cmd->items_num++;
-                //change_cmd_items_num(cmd->items, cmd->items_num);
-
-                /// C.I.8)
-                // Komandanyň birinji birligi - Önki komanda goşulýar
-                command_item cmd_subitem = {};
-                cmd_subitem.type = CMD_ITEM;
-                cmd_subitem.cmd = new_subcmd;
-                put_cmd_item(cmd->items , cmd->items_num-1, cmd_subitem);
-
-                /// C.I.9)
-                /** ŞERT #5: Eger komanda-da gutarylmadyk birlik bar bolsa (is_cmd_not_compl_item_exist(cmd, recursive=0)),
-                    Onda birlik, öz duran ýerinde bolýan birligiň - komandanyň talap edýän birlik görnüşiniň
-                    haýsy bolsa biri bolup bilýämi ýa ýokdugy barlanýar (is_cmd_item_can_be_needed(cmd)).
-
-                    Eger ýokarky agzalan iki funksiýa-da ýalňyşlyk gaýtarsa, ýalňyşlyk görkezilýär.
-
-                    ** Komanda algoritme goşulanda **
-                    Eger komanda-da gutarylmadyk birlik bar bolsa (is_cmd_not_compl_item_exist(cmd, recursive=1))
-                        "Gutarylmadyk komanda birlik bar" diýen ýalňyşlyk görkezilýär. */
-
-                if (!parse_cmd(cmd))
-                {
-                    /// C.I.9.a)
-                    debug_cmd(cmd);
-                    print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token(cmd));
-                }
-            }
-        }
-    }
-
-	CUR_PART = prev_part;
-
-    /// Komanda - blok bolsa üýtgetmeli maglumatlary ýerine ýetirýän funksiýa çagyrmaly
-    work_with_blocks(cmd);
-
-	return 1;
-}
-
 
 command get_empty_cmd()
 {
@@ -1456,3 +802,431 @@ void make_cmd_copy(command *cmd, command *cmd_out)
     }
 }
 
+/** Recognize complete command from series of tokens*/
+int     recognize_cmd( command *cmd )
+{
+    /**
+    1. get_op_positions() int *
+    2. minimize_operands(cmd, ops) void
+    3. get_op_positions() int *
+    4. make_subcmd_from_op(cmd, ops)
+    5. Eger komanda bir ýa nol operator bolanda tanalmasa
+           Komanda tanalmady diýen ýalňyşlyk görkezilýär.*/
+
+    int *op_positions = get_op_positions( cmd );   // First element includes number of operators.
+    minimize_operands( cmd, op_positions );
+
+    free( op_positions );
+    op_positions = get_op_positions(cmd);   // First element includes number of operators.
+    int num_of_ops = op_positions[0];
+    make_subcmd_from_op( cmd, op_positions );
+
+    free(op_positions);
+
+    if ( !parse_cmd(cmd) )
+    {
+        print_err(CODE4_CANT_IDENT_CMD, (token*)inf_get_last_token(cmd));
+    }
+
+    return 1;
+}
+
+void    minimize_operands( command *cmd, int *op_positions )
+{
+    int i, start = -1, end = -1;
+    for ( i=1; i<=op_positions[ 0 ]; ++i )
+    {
+        if ( op_positions[ i ]==0 )
+            continue;
+        command_item *ci = get_cmd_item( cmd->items, op_positions[ i ] );
+
+        // Find first token position of data items
+        if ( i==1 )
+            start = 0;
+        else
+        {
+            if ( op_positions[ i-1 ]+1 == op_positions[ i ] )       // Between previous and current operator no data.
+            {
+                continue;
+            }
+            else
+            {
+                start = op_positions[ i-1 ]+1;
+            }
+        }
+        // Find last token position of data items
+        end = op_positions[ i ]-1;
+        // Minimize data to single item
+        if ( end - start==0 )
+            continue;
+        else
+        {
+            command new_cmd;
+            init_cmd( &new_cmd, 0 );
+            new_cmd.items = get_mem_for_cmd_items();
+            new_cmd.items_num = end - start + 1;
+            change_cmd_items_num( new_cmd.items, new_cmd.items_num );
+
+            // Move items to new data
+            int j, cur_pos = start;
+            for ( j=0; j<new_cmd.items_num; ++j, ++cur_pos )
+            {
+                command_item *ci = get_cmd_item( cmd->items, cur_pos );
+                put_cmd_item( new_cmd.items, j, *ci );
+            }
+
+            if ( !parse_cmd( &new_cmd ) || !new_cmd.is_compl )
+            {
+                printf( "CANNOT IDENTIFY OPERAND: %d\n", __LINE__ );
+            }
+
+            // Set made sub cmd from data items to main Command. Move next operators to left
+            command_item data_cmd;
+            data_cmd.type = CMD_ITEM;
+            data_cmd.cmd  = new_cmd;
+            put_cmd_item( cmd->items, start, data_cmd );
+
+            move_cmd_items ( start+1, end+1, cmd );
+        }
+    }
+
+    // Minimize last token data on the right side of operator
+    if ( op_positions[ op_positions[ 0 ]-1 ]+2 < cmd->items_num-1 )
+    {
+        command new_cmd;
+        init_cmd( &new_cmd, 0 );
+        new_cmd.items = get_mem_for_cmd_items();
+        new_cmd.items_num = end - start;
+        change_cmd_items_num( new_cmd.items, end - start );
+
+        // Move items to new data
+        int j, cur_pos = start;
+        for ( j=0; j<end-start; ++j )
+        {
+            command_item *ci = get_cmd_item( cmd->items, cur_pos++ );
+            put_cmd_item( new_cmd.items, j, *ci );
+        }
+
+        if ( !parse_cmd( &new_cmd ) )
+        {
+            printf( "CANNOT IDENTIFY OPERAND: %d\n", __LINE__ );
+        }
+
+        // Set made sub cmd from data items to main Command. Move next operators to left
+        command_item data_cmd;
+        data_cmd.type = CMD_ITEM;
+        data_cmd.cmd  = new_cmd;
+        put_cmd_item( cmd->items, start, data_cmd );
+
+        move_cmd_items ( start+1, end-1, cmd );
+    }
+}
+
+
+void    move_cmd_items ( int orig_pos, int start_pos, command *cmd )
+{
+    command tmpcmd;
+    init_cmd( &tmpcmd, 0 );
+    tmpcmd.items = -2;
+    tmpcmd.items_num = cmd->items_num;
+    change_cmd_items_num( -2, tmpcmd.items_num );
+
+    int i;
+    for ( i=0; i<tmpcmd.items_num; ++i )
+    {
+        command_item *ci = get_cmd_item( cmd->items, i );
+        put_cmd_item( -2, i, *ci );
+    }
+
+    // Cut the items num for tokens
+    cmd->items_num -= ( start_pos ) - ( orig_pos );
+    change_cmd_items_num( cmd->items, cmd->items_num );
+
+    for ( i=start_pos; i<tmpcmd.items_num; ++i, ++orig_pos, ++start_pos )
+    {
+        command_item *ci = get_cmd_item( tmpcmd.items, start_pos );
+        put_cmd_item( cmd->items, orig_pos, *ci );
+    }
+
+    free(TMP_CMD_ITEMS_LIST);
+    TMP_CMD_ITEMS_LIST = NULL;
+}
+
+
+/** Makes sub-cmd for operator*/
+int     make_subcmd_from_op(command *cmd, int *op_position)
+{
+    //Tä bir operator galýança
+    int i, most_prior_pos = -1, most_prior_lvl = -1, left_operand_pos, right_operand_pos,
+            until_one = op_position[ 0 ]-1;
+    for ( i=0; i<until_one; ++i )
+    {
+        left_operand_pos = -1;
+        right_operand_pos = -1;
+        //Iň wajyp operator tapylýar (find_most_prior_op)
+        find_most_prior_op( cmd, op_position, &most_prior_pos, &most_prior_lvl );
+
+        //Eger operator çep tarapda birlik talap edýän bolsa
+        if ( is_op_require_left_data( most_prior_lvl ) )
+        {
+            if ( most_prior_pos==0 )
+            {
+                print_err(0, &inf_tok);
+            }
+            else if ( most_prior_pos!=op_position[1] && most_prior_pos==get_prev_op_pos(op_position, most_prior_pos )+1 )
+            {
+                // eger öňki operatoryň numeri häzirki operator - 1 bolsa
+                print_err(0, &inf_tok);
+            }
+            else
+            {
+                //çep operand numeri alynyp çep operand üçin goýulýar.
+                left_operand_pos = most_prior_pos-1;
+            }
+        }
+        if ( is_op_require_right_data( most_prior_lvl ) )
+        {
+            if ( most_prior_pos==cmd->items_num-1 )
+            {
+                print_err(0, &inf_tok);
+            }
+            else if ( most_prior_pos<op_position[ 0 ]-2 && most_prior_pos==get_next_op_pos(op_position, most_prior_pos )-1 )
+            {
+                // eger operator soňky birlik bolsa ýa operator soňky operatoryň numeri häzirki operator + 1 bolsa
+                print_err(0, &inf_tok);
+            }
+            else
+            {
+                //sag_operand numeri alynyp sag operand üçin diýilýär.
+                right_operand_pos = most_prior_pos+1;
+            }
+        }
+
+        // Täze komanda ýasalýar.
+        command newcmd;
+        init_cmd( &newcmd, 0 );
+        newcmd.items = get_mem_for_cmd_items();
+
+        // Eger çep we sag operand talap edýän bolsa
+        if ( left_operand_pos!=-1 && right_operand_pos!=-1 )
+        {
+            newcmd.items_num = 3;
+        }
+        // Ýa çep we sag operand talap edilmeýän bolsa
+        else if ( left_operand_pos==-1 && right_operand_pos==-1 )
+        {
+            newcmd.items_num = 1;
+        }
+        else
+        {
+            newcmd.items_num = 2;
+        }
+        change_cmd_items_num( newcmd.items, newcmd.items_num );
+
+        // Eger çep birlik bar bolsa
+        int item_pos = 0;
+        if ( left_operand_pos!=-1 )
+        {
+            command_item *ci = get_cmd_item( cmd->items, left_operand_pos );
+           //birinji birlik çep operand salynýar
+           put_cmd_item( newcmd.items, item_pos++, *ci );
+        }
+        //operand salynýar.
+        command_item *op_ci = get_cmd_item( cmd->items, most_prior_pos );
+        put_cmd_item( newcmd.items, item_pos++, *op_ci );
+        //eger sag birlik bar bolsa
+        if ( right_operand_pos!=-1 )
+        {
+            command_item *rci = get_cmd_item( cmd->items, right_operand_pos );
+           // üçünji birlik sag operand salynýar.
+           put_cmd_item( newcmd.items, item_pos++, *rci );
+        }
+
+        //Eger komanda tanalmasa
+        if ( !parse_cmd( &newcmd) )
+        {
+            //Komandany tanap bolmady diýen ýalňyşlyk görkezilýär.
+            print_err( 0, &inf_tok );
+        }
+        else
+        {
+            //çepki birlik bolsa şonuň deregine ýogsa operator deregine goýulýar.
+            command_item op_as_subcmd;
+            op_as_subcmd.type = CMD_ITEM;
+            op_as_subcmd.cmd = newcmd;
+
+            int put_place = left_operand_pos==-1 ? most_prior_pos : left_operand_pos;
+            put_cmd_item( cmd->items, put_place, op_as_subcmd );
+
+            int last_moved = right_operand_pos==-1 ? most_prior_pos : right_operand_pos;
+
+            //häzirki komanda gysgalýar.
+            if ( put_place+1!=last_moved+1 )
+            {
+                // If the last operand is moved deleted to, short cut the command
+                if ( cmd->items_num-1<last_moved+1 )
+                    cmd->items_num -= ( last_moved ) - ( put_place );
+                else
+                    move_cmd_items( put_place+1, last_moved+1, cmd );
+                free (op_position);
+                op_position = get_op_positions( cmd );
+            }
+        }
+    }
+}
+
+int     get_prev_op_pos( int *pos, int cur_pos )
+{
+    int i, prev = -1;
+    for ( i=1; i<=pos[ 0 ]; ++i )
+    {
+        if ( pos[ i ]==cur_pos )
+            return prev;
+        pos[ i ] = prev;
+    }
+}
+
+int     get_next_op_pos( int *pos, int cur_pos )
+{
+    int i, next = -1;
+    for ( i=1; i<pos[ 0 ]; ++i )
+    {
+        if ( pos[ i ]==cur_pos )
+            return pos[ i+1 ];
+    }
+}
+
+void     find_most_prior_op(command *cmd, int *op_positions, int *most_prior_pos, int *most_prior_lvl )
+{
+    int i;
+    *most_prior_lvl = *most_prior_pos = -1;
+    for (i=1; i<=op_positions[ 0 ]; ++i)
+    {
+        if ( get_op_prior( cmd->items, op_positions[i] ) > *most_prior_lvl )
+        {
+            *most_prior_pos = op_positions [ i ];
+            *most_prior_lvl  = get_op_prior(cmd->items, op_positions[i]);
+        }
+    }
+}
+
+int    *get_op_positions(command *cmd)
+{
+    int *op_positions = malloc(sizeof(int));
+    op_positions[0] = 0;
+
+    int i;
+    for ( i=0; i<cmd->items_num; ++i )
+    {
+        command_item *ci = get_cmd_item( cmd->items, i );
+        if ( is_cmd_item_op( ci ) )
+        {
+            op_positions[0] += 1;
+            op_positions = realloc( op_positions, ( op_positions[0]+1 )*sizeof(int) );     // Additional one for number of  operators
+            op_positions[ op_positions[0] ] = i;
+        }
+    }
+    return op_positions;
+}
+
+int     get_op_prior(int cmd_items, int op_position)
+{
+    command_item *ci = get_cmd_item( cmd_items, op_position );
+    int item_type=ci->type,
+        op_class,
+        op_type;
+
+    if ( item_type==PAREN_ITEM && ci->paren.type==PAREN_TYPE_DEF_TYPE )
+        return 7;       // Most prior high values.
+    op_class = get_token_type_class(&ci->tok);
+    op_type  = get_token_type(&ci->tok);
+    if ( op_class==TOK_CLASS_ARIF && (op_type==TOK_CLASS_ARIF_MULTI_TYPE || op_type==TOK_CLASS_ARIF_DIV_TYPE) )
+        return 6;
+    if ( op_class==TOK_CLASS_ARIF && (op_type==TOK_CLASS_ARIF_PLUS_TYPE || op_type==TOK_CLASS_ARIF_MINUS_TYPE) )
+        return 5;
+    if ( op_class==TOK_CLASS_CMP )
+        return 4;
+    if ( op_class==TOK_CLASS_LOGIC && op_type==TOK_CLASS_LOGIC_NOT_TYPE )
+        return 3;
+    if ( op_class==TOK_CLASS_LOGIC && op_type!=TOK_CLASS_LOGIC_NOT_TYPE )
+        return 2;
+    if ( op_class==TOK_CLASS_ASSIGN )
+        return 1;           // Least prior operator
+    return 0;
+}
+
+/** 1.Conv. type: (simple_type)                 paren_item
+    2.Arithmetik high-lvl:  *, :                token_item
+    3.Arithmetik low-lvl:   +, -                token_item
+    4.Compare:               >, <, =, <=, =>    token_item
+    5.Boolean single op:    !                   token_item
+    6.Boolean binary op:    &, ?                token_item
+    7.Assign:               <-, ->              token_item
+
+**/
+int is_cmd_item_op( command_item *ci )
+{
+    int i = 0, tok_class = -1, tok_type;
+    for (i=0; i<7; ++i)
+    {
+        if ( ci->type==CMD_ITEM )
+            return 0;
+
+        if ( ci->type==PAREN_ITEM )
+        {
+            if ( ci->paren.type==PAREN_TYPE_DEF_TYPE )
+                return 1;       // Most prior high values.
+            else
+                return 0;
+        }
+
+        tok_class = get_token_type_class(&ci->tok);
+        tok_type = get_token_type(&ci->tok);
+        if ( tok_class==TOK_CLASS_ARIF && (tok_type==TOK_CLASS_ARIF_MULTI_TYPE || tok_type==TOK_CLASS_ARIF_DIV_TYPE) )
+            return 2;
+        if ( tok_class==TOK_CLASS_ARIF && (tok_type==TOK_CLASS_ARIF_PLUS_TYPE || tok_type==TOK_CLASS_ARIF_MINUS_TYPE) )
+            return 3;
+        if ( tok_class==TOK_CLASS_CMP )
+            return 4;
+        if ( tok_class==TOK_CLASS_LOGIC && tok_type==TOK_CLASS_LOGIC_NOT_TYPE )
+            return 5;
+        if ( tok_class==TOK_CLASS_LOGIC && tok_type!=TOK_CLASS_LOGIC_NOT_TYPE )
+            return 6;
+        if ( tok_class==TOK_CLASS_ASSIGN )
+            return 7;           // Least prior operator
+    }
+    return 0;
+}
+
+
+int is_op_require_left_data(int op_code)
+{
+    // All operators require left data, except Basic type converts
+    if ( op_code==7)
+        return 0;
+    return 1;
+}
+
+int is_op_require_right_data( int op_code )
+{
+    // All operators require right data, except SINGLE LOGIC OPERATOR
+    if ( op_code==3 )
+        return 0;
+    return 1;
+}
+
+int get_mem_for_cmd_items()
+{
+    ++GLOB_SUBCMDS_NUM;
+
+    GLOB_SUBCMD_ITEMS_LIST = realloc( GLOB_SUBCMD_ITEMS_LIST, sizeof( **GLOB_SUBCMD_ITEMS_LIST )*GLOB_SUBCMDS_NUM );
+    if ( GLOB_SUBCMD_ITEMS_LIST==NULL )
+    {
+        CUR_PART = 4;
+        print_err( CODE4_CANT_IDENT_CMD, &inf_tok );
+    }
+
+    GLOB_SUBCMD_ITEMS_LIST[ GLOB_SUBCMDS_NUM-1 ] = NULL;
+
+    return GLOB_SUBCMDS_NUM-1;
+}

@@ -55,9 +55,7 @@ int add_to_file_list_name(wchar_t *name)
 }
 
 
-/**
- * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Headeriniň salgysy.
-**/
+/** Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Headeriniň salgysy.*/
 int add_last_file_h_source_inf(wchar_t *source)
 {
     wcsncpy(FILES[CUR_FILE_NUM-1].h_source, source, wcslen(source)+1);
@@ -65,9 +63,7 @@ int add_last_file_h_source_inf(wchar_t *source)
 }
 
 
-/**
- * Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Kodynyň salgysy.
-**/
+/** Programma-da ulanylýan faýllaryň sanawynda, faýlyň ýasalan kodly faýlynyň Kodynyň salgysy.*/
 int add_last_file_c_source_inf(wchar_t *source)
 {
     wcsncpy(FILES[CUR_FILE_NUM-1].c_source, source, wcslen(source)+1);

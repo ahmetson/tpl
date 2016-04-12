@@ -1,20 +1,2 @@
-﻿ 
-san s <- 1.
-drob d.
-
-/***/
-
-tä ( s > 2 ) bolýança
-	("salam")çap_et.
-	s <- s + 1.
-===.
-
-harp h <- 'h'.
-h <- ((harp)()kabul_et).
-harpl hl <- ( ( harpl )h ).
-(hl)çap_et.
-
-
-
-
+﻿drob d <- ( drob )1 + 23.
 #b1

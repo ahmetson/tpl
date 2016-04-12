@@ -61,6 +61,7 @@ int CODE2_PRAGMA_NOT_SUPPORT_IN_TRIANGLE_BLOCK = 8;
 int CODE2_CMD_END_CHAR_NOT_SUPPORT_IN_TRIANGLE_BLOCK = 9;
 int CODE2_TRIANGLE_BLOCK_NOT_SUPPORT_CMD = 10;
 int CODE2_TRIANGLE_BLOCK_CANT_BE_EMPTY   = 11;
+int CODE2_CANT_IDENT_CMD_IN_PAREN        = 12;
 
 int CODE3_PREV_TOK_INCORRECT            = 0;
 
@@ -151,6 +152,8 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         L"Üçburç bloklaryň içinde beýle komandalary ulanmak bolanok"},
     {2, 11, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         L"Üçburç bloklar boş bolmaly däl"},
+    {2, 12, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
+        L"Ýaýlaryň içindäki komandany tanap bolmady"},
     // 3. TOKENLER ******************************************************
     {3, 0, YES_FILE, YES_LINE, YES_CHAR, YES_CHAR, NO_CMD,
         L"Nädogry komanda birligi gabat gelindi"},
@@ -236,7 +239,7 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
 **/
 void print_err(int num, token *tok)
 {
-	printf("%ls #%d.%d\n", L"ÝALŇYŞLYK", CUR_PART, num);								// Yalnyshlyk hakda title
+	printf("%ls #%d.%d\n", L"ÝALŇYŞLYKlar", CUR_PART, num);								// Yalnyshlyk hakda title
 	error_item *err = get_err_inf(num);
 	if (err->file_num || err->line_num || err->wchar_t_num)
 	//if (CUR_PART>=2 && CUR_PART<=7)

@@ -76,7 +76,7 @@ int add_addtn_file_fns()
 		else if(cmode==4)
         {
             // Header goşmalary gutarandygy bellenilýär.
-            wchar_t *end_of_headers = L"//, bash blok gutardy\n\t//  Programmanyn bashga bolekleri yerine yetirilmeli\n";
+            wchar_t *end_of_headers = L"//,\n";
             for(i=0; i<wcslen(end_of_headers); ++i)
             {
 
