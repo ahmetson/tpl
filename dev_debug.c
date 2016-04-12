@@ -226,7 +226,7 @@ void debug_paren(parenthesis *paren)
 	print_tabs(DEV_ITEMS_STEPS);
 	printf("'%ls' %ls\n", paren_type, L"görnüşindäki ýaý" );
 	print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls: %d", paren->elems_num, L"Birlikleriniň sany" );
+	printf("%ls: %d", L"Birlikleriniň sany", paren->elems_num);
 	if (paren->elems_num>0)
 	{
 	    parenthesis_elem *p_es = get_paren_elems(paren->elems);

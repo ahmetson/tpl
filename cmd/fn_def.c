@@ -19,23 +19,30 @@ int is_cmd_fn_def(command *cmd)
     if (!cmd->items_num)
         return 1;
 
-    command_item *fci = get_cmd_item(cmd->items, 0);
-    if (fci->type==CMD_ITEM && (fci->cmd.cmd_class==CMD_CLASS_FN_CALL &&
-                                fci->cmd.cmd_type ==FN_CALL_TYPE_NUM))
+    if (cmd->items_num)
     {
-        mod_cmd_by_fn_def(cmd, 0);
-    }
-    else
-    {
-        return 0;
+       command_item *fci = get_cmd_item(cmd->items,0);
+        if (fci->type==PAREN_ITEM && fci->paren.type!=PAREN_TYPE_DEF_TYPE)
+            mod_cmd_by_fn_def(cmd, 0);
+        else
+            return 0;
     }
 
     if (cmd->items_num>=2)
     {
-        command_item *sci = get_cmd_item(cmd->items, 1);
-        if (sci->type==TOKEN_ITEM && (sci->tok.type_class==TOK_CLASS_DEF_TYPE ||
-                                      sci->tok.type_class==TOK_CLASS_UTYPE_CON ||
-                                      sci->tok.type_class==TOK_CLASS_VOID))
+        command_item *sci = get_cmd_item(cmd->items,1);
+        if (sci->type==TOKEN_ITEM && sci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
+            mod_cmd_by_fn_def(cmd, 0);
+        else
+            return 0;
+    }
+
+    if (cmd->items_num>=3)
+    {
+        command_item *tci = get_cmd_item(cmd->items, 2);
+        if (tci->type==TOKEN_ITEM && (tci->tok.type_class==TOK_CLASS_DEF_TYPE ||
+                                      tci->tok.type_class==TOK_CLASS_UTYPE_CON ||
+                                      tci->tok.type_class==TOK_CLASS_VOID))
         {
             mod_cmd_by_fn_def(cmd, 1);
         }
@@ -44,11 +51,11 @@ int is_cmd_fn_def(command *cmd)
             return 0;
         }
 
-        if (cmd->items_num>=3)
+        if (cmd->items_num>=4)
         {
-            command_item *tci = get_cmd_item(cmd->items, 2);
-            if (tci->type==TOKEN_ITEM && (tci->tok.type_class==TOK_CLASS_ASSIGN &&
-                                           tci->tok.potentional_types[0].type_num==RIGHT_ASSIGN_TOK_NUM))
+            command_item *fourci = get_cmd_item(cmd->items, 3);
+            if (fourci->type==TOKEN_ITEM && (fourci->tok.type_class==TOK_CLASS_ASSIGN &&
+                                           fourci->tok.potentional_types[0].type_num==RIGHT_ASSIGN_TOK_NUM))
             {
                 mod_cmd_by_fn_def(cmd, 2);
             }
@@ -57,7 +64,7 @@ int is_cmd_fn_def(command *cmd)
                 return 0;
             }
 
-            if (cmd->items_num>3)
+            if (cmd->items_num>4)
             {
                 return 0;
             }
@@ -89,8 +96,7 @@ void mod_cmd_by_fn_def(command *cmd, int item_num)
 /** IÇINI SOŇ GOÝARYS*/
 int semantic_cmd_fn_def(command *cmd)
 {
-    command_item *fci = get_cmd_item(cmd->items, 0);
-    command_item *ident_item = get_cmd_item(fci->cmd.items, 1);
+    command_item *ident_item = get_cmd_item(cmd->items, 1);
     token        *ident_tok = &ident_item->tok;
     wchar_t         *ident = ident_tok->potentional_types[0].value;
     if (is_ident_used(ident_tok, 0))

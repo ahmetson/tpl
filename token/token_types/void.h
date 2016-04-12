@@ -4,7 +4,7 @@
 #ifndef TOK_VOID_NUM
 #define TOK_VOID_NUMS 1
 #define TOK_VOID_NUM  0
-#define TOK_VOID_NUM_KEYWORD L"hich_zat"
+#define TOK_VOID_NUM_KEYWORD L"hiç_zat"
 #endif // TOK_VOID_NUM
 
 #include "../token_structs.h"

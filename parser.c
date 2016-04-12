@@ -153,7 +153,7 @@ int parser_mode_end_cmd( FILE *s)
     if ( CUR_CHAR!=CMD_END )
         return 0;
 
-    work_with_cmd();
+    work_with_cmd( &cmd );
     init_cmd(&cmd, 0);
     return 1;
 }

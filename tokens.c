@@ -229,7 +229,7 @@ void work_with_token(token *tok, command *cmd)
     if ( !is_token_empty(tok) && tok->is_compl )
     {
         if ( tok->type_class!=TOK_CLASS_COMMENT )
-            cmd_add_item(cmd, TOKEN_ITEM, get_empty_paren(), get_empty_cmd(), *tok);
+            add_to_cmd(cmd, TOKEN_ITEM, *tok, get_empty_paren(), get_empty_cmd());
     }
 }
 

@@ -178,6 +178,22 @@ int add_to_def_var_list(command *cmd)
 {
 	if (!is_def_var_cmd(cmd))
 	{
+	    int i;
+	    for ( i=0; i<cmd->items_num; ++i )
+        {
+            command_item *ci = get_cmd_item( cmd->items, i );
+            if ( ci->type!=CMD_ITEM )
+                continue;
+            if ( !is_def_var_cmd( &ci->cmd ) )
+                add_to_def_var_list( &ci->cmd );
+            else
+            {
+                if ( ci->cmd.ns==GLOB)
+                    var_def_add( &ci->cmd, 1);
+                else
+                    var_def_add( &ci->cmd, 0);
+            }
+        }
         // Ulni yglan etme komanda dal
         return 0;
 	}
@@ -194,6 +210,22 @@ int add_to_def_arr_list(command *cmd)
 {
 	if (!is_def_arr_cmd(cmd))
 	{
+	    int i;
+	    for ( i=0; i<cmd->items_num; ++i )
+        {
+            command_item *ci = get_cmd_item( cmd->items, i );
+            if ( ci->type!=CMD_ITEM )
+                continue;
+            if ( !is_def_arr_cmd( &ci->cmd ) )
+                add_to_def_arr_list( &ci->cmd );
+            else
+            {
+                if ( ci->cmd.ns==GLOB )
+                    arr_def_add( &ci->cmd, 1);
+                else
+                    arr_def_add( &ci->cmd, 0);
+            }
+        }
         // Ulni yglan etme komanda dal
         return 0;
 	}

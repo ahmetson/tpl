@@ -125,8 +125,6 @@ int last_glob_str_add_chr( wchar_t c )
     long size = ( sizeof( c )*2 ) + count_bytes( GLOB_STRINGS[last] );
 
     GLOB_STRINGS[ last ] = realloc( GLOB_STRINGS[last], size );
-    if ( GLOB_STRINGS[ last ]==NULL )
-        printf("Soz uchin yer yasap bolmady: %s\n", __FILE__ );
 
     GLOB_STRINGS[last][size/sizeof(c)-1] = L'\0';
     GLOB_STRINGS[last][size/sizeof(c)-2] = c;
@@ -146,18 +144,15 @@ int last_glob_str_conc_str( wchar_t *str )
         size = count_bytes( GLOB_STRINGS[ LAST ] );
         GLOB_STRINGS[ LAST ] = realloc(GLOB_STRINGS[ LAST ], size);
 
-        if ( GLOB_STRINGS[ LAST ]==NULL)
-            printf("Soz uchin yer yasap bolmady: %s\n", __FILE__ );
-        else
+        if ( GLOB_STRINGS[ LAST ]!=NULL)
             wcsncat( GLOB_STRINGS[ LAST ], str, wcslen( str ) );
     }
     else
     {
         size += count_bytes( str )+get_null_size();
         GLOB_STRINGS[ LAST ] = realloc( GLOB_STRINGS[ LAST ], size );
-        if ( GLOB_STRINGS[ LAST ]==NULL )
-            printf("Soz uchin yer yasap bolmady: %s\n", __FILE__);
-        wcsncpys( GLOB_STRINGS[ LAST ], str );
+        if ( GLOB_STRINGS[ LAST ]!=NULL )
+            wcsncpys( GLOB_STRINGS[ LAST ], str );
     }
 
     #undef LAST

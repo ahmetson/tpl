@@ -55,10 +55,9 @@ void prepare_tmp_fn_data_container(command *cmd)
             *dot_h  = L".h";
     TMP_FUNC_NUM=GLOB_BLOCK_INCLUDES-1;
 
-    command_item *fci  = get_cmd_item(cmd->items, 0);
-    command_item *args_ci = get_cmd_item(fci->cmd.items, 0);
-    command_item *ident_ci = get_cmd_item(fci->cmd.items, 1);
-    command_item *ret_val_ci  = get_cmd_item(cmd->items, 1);
+    command_item *args_ci = get_cmd_item(cmd->items, 0);
+    command_item *ident_ci = get_cmd_item(cmd->items, 1);
+    command_item *ret_val_ci  = get_cmd_item(cmd->items, 2);
     int fnum = ident_ci->tok.inf_file_num;
     wchar_t fname[MAX_FILE_LEN] = {0};
     wcsncpy(fname, FILES[fnum].c_source, wcslen(FILES[fnum].c_source)+1);

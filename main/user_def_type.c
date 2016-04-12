@@ -13,6 +13,8 @@
 #include "../fns.h"
 #include "conv_basic_types.h"
 
+int swprintf (wchar_t*, const wchar_t*, ...);
+
 wchar_t             *USER_DEF_TYPES_SOURCE_NAME_NO_H = L"_tpl_utypes";
 wchar_t             *USER_DEF_TYPES_SOURCE_NAME      = L"_tpl_utypes.h";
 
