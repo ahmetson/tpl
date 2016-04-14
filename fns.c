@@ -94,9 +94,16 @@ int sys_rmdir(wchar_t *folder_name)
 	return !system(sys_cmd);
 }
 
+int sys_is_dir_exists( wchar_t folder_name[ MAX_FILE_LEN ] )
+{
+    if ( _waccess( folder_name, 0 )!=-1 ) {
+      return 1;
+    }
+    return 0;
+}
 
 // Berlen fayl adynyn onundaki papkalaryn atlaryny pozyar.
-wchar_t *remove_dirnames(wchar_t *f)
+wchar_t *remove_dirnames( wchar_t *f )
 {
 	int i;
 	for (i=0; i<wcslen(f); ++i)

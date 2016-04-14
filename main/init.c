@@ -3,6 +3,8 @@
 **/
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <windows.h>
 
 #include "init.h"
 #include "glob.h"
@@ -112,11 +114,15 @@ int init()
 
     /// Bloklaryň içindeliginiň sanawy
     GLOB_BLOCKS = NULL;
-    GLOB_BLOCK_INCLUDES =
-        GLOB_BLOCKS_NUM = 0;
+    GLOB_BLOCK_INCLUDES = GLOB_BLOCKS_NUM = 0;
+
+    /// Prepare used paths
+    prepare_paths();
+	/// GCC compiler create
+	prepare_gcc();
 
 	/// C dilinin kody uchin papkany tayynlayar
-	sys_mkdir(C_SOURCE_FOLDER, 1);
+	sys_mkdir( DIR_C_FOLDER, 1);
 
     /// Standard lib'däki funksiýalar goşulýar
     add_std_funs();
@@ -124,4 +130,127 @@ int init()
 	return 1;
 }
 
+void    prepare_gcc()
+{
+    wchar_t archiver[ MAX_FILE_LEN ] = { 0 },
+            archive[ MAX_FILE_LEN ] = { 0 };
+    wcsncpys( archiver, DIR_TPL_BASE );
+    wcsncat( archiver, L"7za.exe", wcslen( L"7za.exe" )+1 );
+    wcsncpys( archive, DIR_TPL_BASE );
+    wcsncat( archive, L"mingw.7z", wcslen( L"mingw.7z" ) );
+    if ( !sys_is_dir_exists( DIR_GCC_FOLDER ) )
+    {
+        if( _waccess( archiver, F_OK ) != -1 && _waccess( archive, F_OK ) != -1  )
+        {
+            printf("%ls", L"C kompilýatory siziň kompýuteriňize ötürdilýär. Azajyk garaşyň...\n");
+            wchar_t *sys_cmd = L"7za.exe x -y mingw.7z >nul 2>nul";		// >nul hides result, and
+            if ( _wsystem(sys_cmd)<1 )
+            {
+                // Can't prepare GCC compiler
+                CUR_PART = 0;
+                print_err( CODE0_CANT_PREPARE_TPL, &inf_tok );
+            }
 
+        } else {
+            // file doesn't exist
+
+            CUR_PART = 0;
+            print_err( CODE0_MISSING_REQUIRED_FILES, &inf_tok );
+        }
+    }
+}
+
+#include <stdio.h>  /* defines FILENAME_MAX */
+#define WINDOWS
+#ifdef WINDOWS
+    #include <direct.h>
+    #define GetCurrentDir _wgetcwd
+#else
+    #include <unistd.h>
+    #define GetCurrentDir getcwd
+ #endif
+
+void prepare_paths()
+{
+    /// The directory where TPL called from.
+    /// All additional programs (GCC) and directories (TEMPORARY FOLDER FOR C FILES) included in this folder
+    get_tpl_main_dir();
+
+    /// Folder, where stored temporary .C and .O files while making program
+    wcsncpy( DIR_C_FOLDER, DIR_TPL_BASE, wcslen( DIR_TPL_BASE )+1 );
+    wcsncat( DIR_C_FOLDER, L"tmp_c\\", wcslen( L"tmp_c\\" ) );
+
+    /// Folder, where stored GCC program
+    wcsncpy( DIR_GCC_FOLDER, DIR_TPL_BASE, wcslen( DIR_TPL_BASE )+1 );
+    wcsncat( DIR_GCC_FOLDER, L"mingw\\", wcslen( L"mingw\\" ) );
+
+    /// Path of GCC compiler
+    wcsncpy( FILE_GCC_EXE, DIR_GCC_FOLDER, wcslen( DIR_GCC_FOLDER )+1 );
+    wcsncat( FILE_GCC_EXE, L"bin\\gcc.exe", wcslen( L"bin\\gcc.exe" ) );
+
+    /// Additional required arguments for commands, when using GCC compiler
+
+    wchar_t add1[ MAX_FILE_LEN ] = {0},
+            add2[ MAX_FILE_LEN ],
+            add3[ MAX_FILE_LEN ];
+    wcsncpy( add1, L" -I\"", wcslen( L" -I\"" )+1 );
+    wcscat( add1, DIR_GCC_FOLDER );
+    wcscat( add1, L"include\" " );
+    wcsncpy( add2, L" -I\"", wcslen( L" -I\"" )+1 );
+    wcscat( add2, DIR_GCC_FOLDER );
+    wcscat( add2, L"x86_64-w64-mingw32\\include\" " );
+    wcsncpy( add3, L" -I\"", wcslen( L" -I\"" )+1 );
+    wcscat( add3, DIR_GCC_FOLDER );
+    wcscat( add3, L"lib\\gcc\\x86_64-w64-mingw32\\4.9.2\\include\" " );
+
+    wcsncpy( GCC_C_TO_O_ADDS, add1, wcslen( add1 )+1 );
+    wcscat( GCC_C_TO_O_ADDS, add2 );
+    wcscat( GCC_C_TO_O_ADDS, add3 );
+
+    // Arguments used in GCC linker
+    wchar_t add21[ MAX_FILE_LEN ] = {0},
+            add22[ MAX_FILE_LEN ],
+            add23[ MAX_FILE_LEN ];
+    wcsncpy( add21, L" -L\"", wcslen( L" -I\"" )+1 );
+    wcscat( add21, DIR_GCC_FOLDER );
+    wcscat( add21, L"lib\" " );
+    wcsncpy( add22, L" -L\"", wcslen( L" -I\"" )+1 );
+    wcscat( add22, DIR_GCC_FOLDER );
+    wcscat( add22, L"x86_64-w64-mingw32\\lib\" " );
+    wcsncpy( add23, L"  -static-libgcc", wcslen( L"  -static-libgcc" )+1 );
+
+    wcsncpy( GCC_O_TO_EXE_ADDS, add21, wcslen( add21 )+1 );
+    wcscat( GCC_O_TO_EXE_ADDS, add22 );
+    wcscat( GCC_O_TO_EXE_ADDS, add23 );
+
+    /// Save full path of directory,
+    /// Where TPL called from. ( The created .EXE must be saved in this directory )
+    GetCurrentDir( CUR_DIR, sizeof( CUR_DIR ) );
+
+    CUR_DIR[ wcslen( CUR_DIR )-1] = '\\'; /* not really required */
+    CUR_DIR[ wcslen( CUR_DIR )] = '\0'; /* not really required */
+}
+
+void get_tpl_main_dir()
+{
+    wchar_t Buffer[ MAX_FILE_LEN ];
+
+    GetModuleFileNameW( NULL, Buffer, MAX_FILE_LEN );
+
+    // Find last dir delimeter
+    int i;
+    for ( i=wcslen( Buffer )-1; i>=0; --i )
+    {
+        if ( Buffer[ i ]==L'\\' )
+        {
+            break;
+        }
+    }
+    // Put as folder name
+    int j;
+    for ( j=0; j<i+1; ++j )
+    {
+        DIR_TPL_BASE[ j ] = Buffer[ j ];
+    }
+    DIR_TPL_BASE[ wcslen( Buffer )-1 ] = L'\0';
+}

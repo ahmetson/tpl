@@ -819,7 +819,7 @@ int     recognize_cmd( command *cmd )
     free( op_positions );
     op_positions = get_op_positions(cmd);   // First element includes number of operators.
     int num_of_ops = op_positions[0];
-    make_subcmd_from_op( cmd, op_positions );
+    make_subcmd_from_op( cmd, &op_positions );
 
     free(op_positions);
 
@@ -954,17 +954,17 @@ void    move_cmd_items ( int orig_pos, int start_pos, command *cmd )
 
 
 /** Makes sub-cmd for operator*/
-int     make_subcmd_from_op(command *cmd, int *op_position)
+int     make_subcmd_from_op(command *cmd, int **op_position)
 {
     //Tä bir operator galýança
     int i, most_prior_pos = -1, most_prior_lvl = -1, left_operand_pos, right_operand_pos,
-            until_one = op_position[ 0 ]-1;
+            until_one = (*op_position)[ 0 ]-1;
     for ( i=0; i<until_one; ++i )
     {
         left_operand_pos = -1;
         right_operand_pos = -1;
         //Iň wajyp operator tapylýar (find_most_prior_op)
-        find_most_prior_op( cmd, op_position, &most_prior_pos, &most_prior_lvl );
+        find_most_prior_op( cmd, (*op_position), &most_prior_pos, &most_prior_lvl );
 
         //Eger operator çep tarapda birlik talap edýän bolsa
         if ( is_op_require_left_data( most_prior_lvl ) )
@@ -973,7 +973,7 @@ int     make_subcmd_from_op(command *cmd, int *op_position)
             {
                 print_err(0, &inf_tok);
             }
-            else if ( most_prior_pos!=op_position[1] && most_prior_pos==get_prev_op_pos(op_position, most_prior_pos )+1 )
+            else if ( most_prior_pos!=(*op_position)[1] && most_prior_pos==get_prev_op_pos((*op_position), most_prior_pos )+1 )
             {
                 // eger öňki operatoryň numeri häzirki operator - 1 bolsa
                 print_err(0, &inf_tok);
@@ -990,7 +990,7 @@ int     make_subcmd_from_op(command *cmd, int *op_position)
             {
                 print_err(0, &inf_tok);
             }
-            else if ( most_prior_pos<op_position[ 0 ]-2 && most_prior_pos==get_next_op_pos(op_position, most_prior_pos )-1 )
+            else if ( most_prior_pos<(*op_position)[ 0 ]-2 && most_prior_pos==get_next_op_pos((*op_position), most_prior_pos )-1 )
             {
                 // eger operator soňky birlik bolsa ýa operator soňky operatoryň numeri häzirki operator + 1 bolsa
                 print_err(0, &inf_tok);
@@ -1068,8 +1068,8 @@ int     make_subcmd_from_op(command *cmd, int *op_position)
                     cmd->items_num -= ( last_moved ) - ( put_place );
                 else
                     move_cmd_items( put_place+1, last_moved+1, cmd );
-                free (op_position);
-                op_position = get_op_positions( cmd );
+                free ((*op_position));
+                (*op_position) = get_op_positions( cmd );
             }
         }
     }

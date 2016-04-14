@@ -17,6 +17,7 @@
 #include "dev_debug.h"
 #include "error.h"
 #include "semantic.h"
+#include "main/create_exe.h"
 
 
 void tpl(int argc, const char **args)
@@ -41,6 +42,9 @@ void tpl(int argc, const char **args)
 
     /// Ähli TPL proýektine degişli bolan goşmaça C dilindäki kodlary goşýar
     work_with_translator_whole_project();
+
+    /// TPL program automatically calls GCC and makes .EXE file of project
+    create_exe();
 
 	/// TPL PROGRAMMADAN ÇYKMALY
 	printf("OK!\n");

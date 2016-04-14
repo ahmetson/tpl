@@ -14,6 +14,20 @@
 #define UNCHECK_VALID_CHAR 0
 #endif
 
+#include <stdio.h>  /* defines FILENAME_MAX */
+#ifdef WINDOWS
+    #include <direct.h>
+    #define GetCurrentDir _wgetcwd
+#else
+    #include <unistd.h>
+    #define GetCurrentDir wgetcwd
+ #endif
+
+#include <stdlib.h>
+#include <windows.h>
+#define TMP_FOLDER_NAME     "tmp_c_code"
+#define GCC_PATH            "gcc\\gcc.exe"
+
 
 void tpl(int argc, const char **args);
 

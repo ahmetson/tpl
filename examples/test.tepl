@@ -1,2 +1,3 @@
-﻿drob d <- ( drob )1 + 23.
-#b1
+﻿#b1
+drob d <- ( drob )1 + 23_0.
+

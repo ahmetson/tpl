@@ -1,6 +1,7 @@
 #ifndef FNS_H
 #define FNS_H
 #include <stdio.h>
+#include "main/files.h"
 
 // Concatinate string with wchar_t and put them to @to
 void wcsstrchcat( wchar_t *to, wchar_t *from, wchar_t c );
@@ -54,5 +55,7 @@ int realloc_wchar_null_heap( wchar_t **mem, int *memlen );
 
 int wcsncpys( wchar_t *d, wchar_t *s );
 int is_wcseq( wchar_t *s1, wchar_t *s2 );
+
+int sys_is_dir_exists( wchar_t folder_name[ MAX_FILE_LEN ] );
 
 #endif

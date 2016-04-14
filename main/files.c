@@ -126,7 +126,7 @@ void dec_files_add_new( wchar_t fn[ MAX_FILE_LEN ] )
 
 void add_file_info(wchar_t *file_name)
 {
-    wchar_t *dquote = L"\\", *dot_h = L".h", *dot_c = L".c", *dot_tpl = L".tepl";
+    wchar_t *dot_h = L".h", *dot_c = L".c", *dot_tpl = L".tepl";
 
     wchar_t f_name[ MAX_FILE_LEN ] = {0};// = CUR_FILE_NAME;
 	wcsncpys( f_name, file_name );
@@ -138,16 +138,14 @@ void add_file_info(wchar_t *file_name)
 	remove_ext(f_name, dot_tpl);
     add_to_file_list_name(f_name);
 
-	wchar_t h_path[MAX_FILE_LEN] = {0};
-	wcsncat(h_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
-	wcsncat(h_path, dquote, wcslen(dquote));
+	wchar_t h_path[ MAX_FILE_LEN ] = {0};
+	wcsncat(h_path, DIR_C_FOLDER, wcslen( DIR_C_FOLDER ));
 	wcsncat(h_path, f_name, wcslen(f_name));
 	wcsncat(h_path, dot_h, wcslen(dot_h));
 
 	// .c faylyn boljak adresi
-	wchar_t c_path[MAX_FILE_LEN] = {0};
-	wcsncat(c_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
-	wcsncat(c_path, dquote, wcslen(dquote));
+	wchar_t c_path[ MAX_FILE_LEN ] = {0};
+	wcsncat(c_path, DIR_C_FOLDER, wcslen( DIR_C_FOLDER ));
 	wcsncat(c_path, f_name, wcslen(f_name));
 	wcsncat(c_path, dot_c, wcslen(dot_c));
 
