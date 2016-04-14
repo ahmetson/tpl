@@ -173,6 +173,10 @@ void act_pragma_main_file(pragma *prag)
 
     /**  program'daky baş faýl bellenilýär */
     wcsncpys( MAIN_FILE_NAME, CUR_FILE_NAME );
+    /** Çykarylýan .EXE faýlyň adam baş faýlyň ady ýaly bolmaly */
+    wcsncpys( FILE_OUT_EXE, CUR_DIR );
+    wcscat( FILE_OUT_EXE, FILES[CUR_FILE_NUM-1].name );
+    wcscat( FILE_OUT_EXE, L".exe" );
 }
 
 

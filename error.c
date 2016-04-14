@@ -44,6 +44,9 @@ int CODE0_IDENT_CANT_ADD                = 4;
 int CODE0_INCLUDES_CANT_ADD             = 5;
 int CODE0_CANT_OPEN_FILE                = 6;
 int CODE0_UNSUPPORT_INCLUDE_FILE_CMD    = 7;
+int CODE0_MISSING_REQUIRED_FILES        = 8;
+int CODE0_CANT_PREPARE_TPL        = 9;
+int CODE0_CANT_CREATE_EXE        = 10;
 
 int CODE1_FILE_NOT_FOUND                = 0;
 int CODE1_FILE_CANT_OPEN                = 1;
@@ -120,6 +123,12 @@ Baş faýlyň kodly faýlynda ýörite pragmany ýazyň"},
         L"Pragma yglan edilen maglumatlaryň faýlyny açyp bilmedi"},
     {0, 7, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
         L"Pragma arkaly görülýän faýllarda diňe yglan etme komandalary bolup bilýär"},
+    {0, 8, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        L"Programa gerek bolan faýllar ýetenok"},
+    {0, 9, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        L"TPL ulanylmana taýynlap bolmady. C kompilýatoryny kompýuteriňize ötürdip bolmady"},
+    {0, 10, YES_FILE, YES_FILE, YES_FILE, YES_FILE, NO_CMD,
+        L".EXE faýly ýasap bolmady. C kompilýatory bilen bagly näsazlyklar ýüze çykdy"},
     // 1. FAÝL ******************************************************
     {1, 0, NO_FILE, 0, 0, 0, NO_CMD,
         L"Kodly faýl gelmedi"},

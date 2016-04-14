@@ -182,6 +182,16 @@ extern int                  GLOB_BLOCKS_NUM;
 extern char                **PRINTED_STRINGS;
 extern int                 PRINTED_STRINGS_NUM;
 
+extern /// Paths
+wchar_t DIR_TPL_BASE[ MAX_FILE_LEN ],
+        DIR_C_FOLDER[ MAX_FILE_LEN ],
+        DIR_GCC_FOLDER[ MAX_FILE_LEN ],
+        FILE_GCC_EXE[ MAX_FILE_LEN ],
+        GCC_C_TO_O_ADDS[ MAX_FILE_LEN*4 ],
+        GCC_O_TO_EXE_ADDS[ MAX_FILE_LEN*3 ],
+        CUR_DIR[ MAX_FILE_LEN ],
+        FILE_OUT_EXE[ MAX_FILE_LEN ];
+
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);
 void free_locals(void);

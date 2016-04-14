@@ -180,7 +180,7 @@ int is_op_require_right_data( int pos );
 
 void    minimize_operands( command *cmd, int *op_positions );
 void    move_cmd_items ( int orig_pos, int start_pos, command *cmd );
-int     make_subcmd_from_op(command *cmd, int *op_position);
+int     make_subcmd_from_op(command *cmd, int **op_position);
 int is_cmd_item_op( command_item *ci );
 
 int     get_prev_op_pos( int *pos, int cur_pos );
