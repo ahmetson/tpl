@@ -227,8 +227,7 @@ void prepare_paths()
     /// Where TPL called from. ( The created .EXE must be saved in this directory )
     GetCurrentDir( CUR_DIR, sizeof( CUR_DIR ) );
 
-    CUR_DIR[ wcslen( CUR_DIR )-1] = '\\'; /* not really required */
-    CUR_DIR[ wcslen( CUR_DIR )] = '\0'; /* not really required */
+    CUR_DIR[ wcslen( CUR_DIR )] = '\\'; /* not really required */
 }
 
 void get_tpl_main_dir()

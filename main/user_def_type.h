@@ -40,8 +40,6 @@ int get_utype_addr_by_cmd(command *cmd, int *utype_addr);
 int get_utype_item_addr_by_cmd(command *cmd, int *utype_item_addr);
 
 
-void add_utypes_c_code_file();
-
 void add_addtn_headers(FILE *f);
 
 void add_utype_define_c_code(FILE *f);

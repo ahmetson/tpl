@@ -269,7 +269,7 @@ void print_err(int num, token *tok)
 
 	printf("%ls\n\n", err->msg);
 
-	sys_rmdir(C_SOURCE_FOLDER);
+	sys_rmdir( DIR_C_FOLDER );
 
 	exit(num);
 }

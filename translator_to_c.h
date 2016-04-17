@@ -12,10 +12,6 @@
 #define MAX_PREP_LEN 350
 #endif
 
-/// C kod nirede saklanyar?
-extern wchar_t *C_SOURCE_FOLDER;
-
-
 /** Kodly setiri ýazýar. Eger kodly setir blogyň içinde bolsa, onda öňünden TAB goýýar */
 void write_code_line(FILE *f, wchar_t **l, int *llen, wchar_t *code);
 
@@ -35,6 +31,7 @@ int c_trans_source_add_glob_def_arr(FILE *f);
 // Lokal yglan edilen funksiyalary ichine goshyar
 int c_trans_source_add_loc_def_var(FILE *f, wchar_t main_file);
 
+void c_trans_add_addtn_fns( FILE *f );
 int prepare_main_func(FILE *f);
 int finishize_main_func(FILE *f);
 int finishize_void_func(FILE *f);

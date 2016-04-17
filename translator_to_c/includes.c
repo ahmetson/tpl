@@ -52,7 +52,7 @@ void includes_file_add_include( file_incs *fi, wchar_t *h_source )
     /** 1.b)*/
     fi->num++;
 
-    fi->inc = realloc( fi->inc, sizeof( wchar_t[ MAX_FILE_LEN ] )*fi->num );
+    fi->inc = realloc( fi->inc, sizeof( *fi->inc )*fi->num );
 
     wcsncpys( fi->inc[ fi->num-1 ], h_source );
 }
@@ -66,11 +66,11 @@ void translator_to_c_add_includes()
     for(i=0; i<INCLUDES_NUM; ++i)
     {
         /** Faýla inklud etmeli. */
-        if (INCLUDES[i].num)
+        if ( INCLUDES[i].num>0 )
         {
             /** Diýmek inkludlar ýazylýar */
             FILE *s = _wfopen( FILES[i].c_source, L"r+, ccs=UTF-8" );
-            add_includes_to_source(s, INCLUDES[i].inc, INCLUDES[i].num);
+            add_includes_to_source(s, i );
             fclose(s);
         }
     }

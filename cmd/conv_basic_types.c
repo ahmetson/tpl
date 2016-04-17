@@ -8,24 +8,6 @@
 #include "../translator_to_c.h"
 #include "../fns.h"
 #include "../error.h"
-/** Esasy tipdäki maglumatlary başga esasy tipdäki maglumata üýtgedýär */
-/** Gaýtarýan tipi
-    Sada tip klasynda, birinji birlikdäki, skobkadanyň içindäki tip
-
-    Semantikasy:
-    Ikinji birlik many gaýtarmaly.
-    Eger gaýtarmasa, onda:
-        "Özbaşdak many gaýtarmaýan maglumaty üýtgedip bolanok" diýen ýalňyşlyk görkezilýär.
-    Ýa   gaýtarýan tipi sada tip bolmasa:
-        "Diňe sada tipdäki maglumatyň tipini üýtgedip bolýar" diýen ýalňyşlyk görkezilýär.
-
-    C Kody:
-    Komandanyň tipiniň nomeri tanalýar. get_conv_type_num(cmd)
-    Komandanyň tipiniň nomeri boýunça, konwertasýa edýän funksiýa çagyrylýar.
-    Funksiýanyň argumenti hökmünde, komandanyň ikinji birligi goýulýar.
-    Funksiýany ýapýan, ÝAÝY GUTARÝAN düwme goýulýar.
-*/
-
 
 wchar_t *conv_c_codes[CMD_CONV_TYPES][3] = {
     {L"_tpl_conv_if(",  L"_tpl_conv_ic(",  L"_tpl_conv_ia("},
@@ -83,6 +65,14 @@ int semantic_cmd_conv_basic_type(command *cmd)
     parenthesis_elem *pe = get_paren_elems(fci->paren.elems_num);
 
     command_item *sci = get_cmd_item(cmd->items, 1);
+    if ( sci->type==CMD_ITEM )
+        check_semantics( &sci->cmd );
+    else if ( sci->type==PAREN_ITEM && sci->paren.elems_num==1 )
+    {
+        parenthesis_elem *pi = get_paren_elems( sci->paren.elems );
+        if ( pi[ 0 ].type==CMD_ITEM )
+            check_semantics( &pi[ 0 ].cmd );
+    }
     int sclass = -1, stype = -1;
     if (sci->type==CMD_ITEM && CMD_RETURN_TYPE[sci->cmd.cmd_class][sci->cmd.cmd_type](&sci->cmd, &sclass, &stype) ||
         sci->type==TOKEN_ITEM && TOK_RETURN_TYPE[sci->tok.type_class][sci->tok.potentional_types[0].type_num](&sci->tok, &sclass, &stype)||

@@ -331,3 +331,13 @@ int is_wcseq( wchar_t *s1, wchar_t *s2 )
     return  wcslen( s1 )==wcslen( s2 ) &&
             wcsncmp( s1, s2, wcslen( s1 ) )==0;
 }
+
+void    str_change_char( wchar_t *s, wchar_t c, wchar_t with )
+{
+    int i;
+    for ( i=0; i<wcslen( s ); ++i )
+    {
+        if ( s[ i ]==c )
+            s[ i ] = with;
+    }
+}

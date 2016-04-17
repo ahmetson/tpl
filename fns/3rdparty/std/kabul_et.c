@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "../../fn.h"
+#include "../../../main/glob.h"
 #include "chap_et.h"
 #include "../../../token/token_types.h"
 #include "../../../token/token_types/const_data.h"
@@ -50,12 +51,12 @@ void write_source_std_kabul_et_source_code()
 {
     wchar_t *bslash = L"\\";
     wchar_t h_path[MAX_FILE_LEN] = {0};
-	wcsncat(h_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
+	wcsncat(h_path, DIR_C_FOLDER, wcslen(DIR_C_FOLDER));
 	wcsncat(h_path, bslash, wcslen(bslash));
 	wcsncat(h_path, h_source, wcslen(h_source));
 
     wchar_t c_path[MAX_FILE_LEN] = {0};
-	wcsncat(c_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
+	wcsncat(c_path, DIR_C_FOLDER, wcslen(DIR_C_FOLDER));
 	wcsncat(c_path, bslash, wcslen(bslash));
 	wcsncat(c_path, c_source, wcslen(c_source));
 

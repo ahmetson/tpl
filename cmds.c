@@ -891,7 +891,7 @@ void    minimize_operands( command *cmd, int *op_positions )
     }
 
     // Minimize last token data on the right side of operator
-    if ( op_positions[ op_positions[ 0 ]-1 ]+2 < cmd->items_num-1 )
+    if ( op_positions[ op_positions[ 0 ] ]+2 < cmd->items_num-1 )
     {
         command new_cmd;
         init_cmd( &new_cmd, 0 );

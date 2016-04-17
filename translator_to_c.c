@@ -18,28 +18,6 @@
 #include "token/helpers.h"
 #include "fns/fn_helpers.h"
 #include "fns/3rdparty/std/kabul_et.h"
-// C kod nirede saklanyar?
-wchar_t *C_SOURCE_FOLDER = L"c:\\\\c_by_tpl";
-
-/** ŞERT #7: Ýasalýan kodda: içki komandalaryň, enelerinden bir TAB saga süýşürilip tämiz görkezilmeli.
-
-    1) Ýasalýan kodyň häzir haýsy blogyň içindeliginiň basgançagyny görkezýän global ülňi bolýar.
-    Adatça ol 0-njy derejede bolýar.
-
-    3) Her kodly setiri ýasaljak koda ýazýan funksiýadan öň write_tabs_c_code() funksiýasy çagyrylýar.
-
-    4) algoritmleri ýasaljak koda geçirýän funksiýa-da, eger komanda blok açýan bolsa (is_open_block_cmd(command *cmd))
-        (Meselem Eger, Tä komandalary çagyrylanda)
-            Içindeliginiň basgançagy bir san ulalýar.
-    5) algoritmleri ýasaljak koda geçirýän funksiýa-da, eger komanda blok ýapýan bolsa (is_close_block_md(command *cmd))
-            Içindeliginiň basgançagy bir san kiçelýär.
-    6) Eger ýasalýan koda ýazýan funksiýa, C dilindäki blogy açýan bolsa, onda funksiýa çagyrylan soň
-        (Meselem Main funksiýasy, ýa kodly faýllaryň baş funksiýalary çagyrylanda)
-            Içindeliginiň basgançagy bir san ulalýar.
-    7) Eger ýasalýan koda ýazýan funksiýa, C dilindäki blogy ýapýan bolsa, onda funksiýa çagyrylan soň
-            Içindeliginiň basgançagy bir san kiçelýär.*/
-
-int TRANS_C_BLOCK_DEPTH = 0;
 
 /** Kodly setiri ýazýar. Eger kodly setir blogyň içinde bolsa, onda öňünden TAB goýýar */
 void write_code_line(FILE *f, wchar_t **l, int *llen, wchar_t *code)
@@ -282,10 +260,21 @@ int c_trans_source_add_glob_def_arr(FILE *f)
 
 	return 1;
 }
+
+void c_trans_add_addtn_fns( FILE *f )
+{
+    if (USER_DEF_TYPES_NUM)
+    {
+        add_utype_define_c_code( f );
+    }
+
+}
+
 // Esasy funksiyanyn bashy yazylyar
 int prepare_main_func(FILE *f)
 {
-    add_conv_basic_prepere_atexit(f);
+    add_conv_basic_prepere_atexit( f );
+    c_trans_add_addtn_fns( f );
     add_turkmen_locale_support_lib(f);
 
 	wchar_t *line = L"int main() {\n\tchar *tk = setlocale(LC_ALL, \".1250\");\n\
@@ -300,13 +289,10 @@ int prepare_main_func(FILE *f)
 int finishize_main_func(FILE *f)
 {
     add_conv_basic_free_atexit(f);
-    wchar_t *line1 = L"\n\n\treturn 1;\n";
-    wchar_t *line2 = L"}\n\n";
+    wchar_t *line1 = L"_tpl_call_another_files(); return 1; }\n\n";
     wchar_t *l = NULL;
     int llen = 0;
     write_code_line(f, &l, &llen , line1);
-
-    write_code_line(f, &l, &llen , line2);
 
 	return 1;
 }
@@ -520,6 +506,7 @@ int work_with_translator()
 	{
 		main_file = 1;
 		// Bash sahypada esasy funksiya achylyar.
+		add_conv_basic_type_c_code_file( c_source, h_source );
 		prepare_main_func( c_source );
 	}
 	else
@@ -563,6 +550,8 @@ int work_with_translator()
         finishize_void_func(c_source);
     write_to_hsource_loc_fns_proto(h_source);
     write_to_csource_loc_fns(c_source);
+    if ( main_file )
+        write_to_csource_call_another_files_fn_open(c_source);
 
     write_source_std_kabul_et_source_code();
 
@@ -583,6 +572,9 @@ int work_with_translator()
 **/
 int c_trans_write_file_fn_prototype(FILE *f_h, wchar_t *fn_name)
 {
+    /// Fn names are directories, so change them to file names
+    str_change_char( fn_name, L'/', L'_' );
+    fn_name = remove_ext( fn_name, L".tepl" );
     wchar_t *l = NULL;
     int llen = 0;
 
@@ -620,6 +612,8 @@ int c_trans_write_file_fn_prototype(FILE *f_h, wchar_t *fn_name)
 
 int c_trans_write_file_fn_open(FILE *f_h, wchar_t *fn_name)
 {
+    str_change_char( fn_name, L'/', L'_' );
+    fn_name = remove_ext( fn_name, L".tepl" );
     wchar_t *l = NULL;
     int llen = 0;
 
@@ -679,6 +673,8 @@ int c_trans_source_add_algor(FILE *f, int main_file)
 // Faýlyň funksiýasynyň prototipini gaýtarýar
 wchar_t *c_trans_get_file_fn_prototype(wchar_t *fn_name, wchar_t *line)
 {
+    str_change_char( fn_name, L'/', L'_' );
+    fn_name = remove_ext( fn_name, L".tepl" );
     wchar_t *start = L"_";
 
     wcsncpy(line, start, wcslen(start)+1);
@@ -737,26 +733,25 @@ void get_type_init_val_c_code(wchar_t is_arr, int type_class, int type_num, wcha
     if ( type_class!=TOK_CLASS_DEF_TYPE )
         return;
 
-    wchar_t *arr_o = L" = {",
-            *arr_c = L"}",
-            *o     = L" = ",
-            *f = NULL;
+    wchar_t *arr_o = L" = {",   // array open
+            *arr_c = L"}",      // array close
+            *o     = L" = ";    // open brace
 
+    /// Add open brace
     if ( is_arr )
     {
-        f = arr_o;
+        wcsadd_on_heap( l, llen, arr_o );
     }
     else
     {
-        f = o;
+        wcsadd_on_heap( l, llen, o );
     }
 
-    wcsadd_on_heap( l, llen, f );
-
-    // Ülňileriň başlangyç maglumatlary
+    /// Add initial value between braces
     wcsadd_on_heap( l, llen, def_type_list[type_num].init_val );
 
-    if (is_arr)
+    /// Add close brace
+    if ( is_arr )
     {
         wcsadd_on_heap( l, llen, arr_c );
     }
@@ -783,7 +778,6 @@ void cmd_item_get_c_code( command_item *ci, wchar_t **mem, int *memlen )
         paren_get_c_code( &ci->paren, mem, memlen );
     }
 }
-
 void paren_item_get_c_code( parenthesis_elem *pe, wchar_t **mem, int *memlen )
 {
     if( pe->type==CMD_ITEM )
@@ -799,8 +793,6 @@ void paren_item_get_c_code( parenthesis_elem *pe, wchar_t **mem, int *memlen )
         paren_get_c_code( &pe->paren, mem, memlen );
     }
 }
-
-
 void tok_get_c_code( token *t, wchar_t **mem, int *memlen )
 {
     TOK_GET_C_CODE[ get_token_type_class( t ) ][ get_token_type( t ) ]( t, mem, memlen );
@@ -826,9 +818,7 @@ void work_with_translator_whole_project()
         translator_to_c_add_includes();
     }
 
-    /// Hemme ýasaýlan C projektlere gerek, goşmaça TPL programmanyň öz faýllary hem goşulýar.
-    add_utypes_c_code_file();
-    add_conv_basic_type_c_code_file();
+    write_to_csource_call_another_files_fn_close( );
 }
 
 

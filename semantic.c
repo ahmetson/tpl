@@ -48,9 +48,10 @@ void work_with_semantic()
         Algoritmlerini saklaýan funksiýalar (ýasalan kodly faýlyň adyna gabat gelýär) çagyrylmaly*/
     if (MAIN_FILE_INCLUDES_NUM)
     {
-        if (!add_addtn_file_fns())
+        if ( !add_addtn_file_fns() )
             print_err(CODE0_INCLUDES_CANT_ADD, &inf_tok);
     }
+
 }
 
 
