@@ -58,4 +58,6 @@ int is_wcseq( wchar_t *s1, wchar_t *s2 );
 
 int sys_is_dir_exists( wchar_t folder_name[ MAX_FILE_LEN ] );
 
+void    str_change_char( wchar_t *s, wchar_t c, wchar_t with );
+
 #endif

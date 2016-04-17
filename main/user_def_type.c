@@ -227,26 +227,6 @@ int get_arr_item_type_by_cmd(command *cmd, int *ret_class, int *ret_type)
 }
 
 
-void add_utypes_c_code_file()
-{
-    wchar_t *dquote = L"\\";
-    wchar_t h_path[MAX_FILE_LEN] = {0};
-	wcsncat(h_path, C_SOURCE_FOLDER, wcslen(C_SOURCE_FOLDER));
-	wcsncat(h_path, dquote, wcslen(dquote));
-	wcsncat(h_path, USER_DEF_TYPES_SOURCE_NAME, wcslen(USER_DEF_TYPES_SOURCE_NAME));
-
-	FILE *h_source = _wfopen(h_path, L"w, ccs=UTF-8");
-
-	prepare_h_source(h_source, USER_DEF_TYPES_SOURCE_NAME_NO_H);
-
-    if (USER_DEF_TYPES_NUM)
-    {
-        add_utype_define_c_code(h_source);
-    }
-
-	finishize_h_source(h_source);
-}
-
 void add_utype_define_c_code(FILE *f)
 {
     int i, j, llen = 0, closer_len = 0;
@@ -337,25 +317,24 @@ int is_reserved_source_name(wchar_t *fname)
 
 void add_addtn_headers(FILE *f)
 {
+    /// Include main file. Because there is included all additional information
+    if ( is_wcseq( MAIN_FILE_NAME, CUR_FILE_NAME ) )
+        return; // No need to include itself. It will included in another place
+
     wchar_t *line = malloc(MAX_PREP_LEN),
             *include = L"#include \"",
             *dquote_space = L"\" \n";
-    wcsncpy(line, include, wcslen(include)+get_null_size());
-    wcsncat(line, USER_DEF_TYPES_SOURCE_NAME, wcslen(USER_DEF_TYPES_SOURCE_NAME));
-    wcsncat(line, dquote_space, wcslen(dquote_space));
+    wcsncpys( line, include );
+    wchar_t *main_header = malloc( sizeof( wchar_t )*MAX_FILE_LEN );
+    file_item *main_file = get_file_by_name( MAIN_FILE_NAME );
+    wcsncpys( main_header, main_file->h_source );
+    main_header = remove_dirnames( main_header );
+    wcsncat(  line, main_header, wcslen( main_header ) );
+    wcsncat(  line, dquote_space, wcslen( dquote_space) );
 
     fputws(line, f);
-
-    free(line);
-
-    line = malloc(MAX_PREP_LEN);
-    wcsncpy(line, include, wcslen(include)+get_null_size());
-    wcsncat(line, CONV_DEF_TYPES_SOURCE_NAME, wcslen(CONV_DEF_TYPES_SOURCE_NAME));
-    wcsncat(line, dquote_space, wcslen(dquote_space));
-
-    fputws(line, f);
-
-    free(line);
+    free( main_header );
+    free( line );
 }
 
 

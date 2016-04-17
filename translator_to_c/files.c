@@ -41,14 +41,13 @@ wchar_t *get_c_source_by_source(wchar_t *s)
 }
 
 
-/**
- * Ýasalan kodyň içine: #include "" goýýar.
+/** Ýasalan kodyň içine: #include "" goýýar.
  *
  * @s               - Içine goýmaly ýasalan kod.
  * @included_files  - #include komanda-da ulanylmaly faýl atlary
  * @files_num       - #include komanda-da ulanylýan faýl atlarynyň möçberi
 **/
-int add_includes_to_source(FILE *s, wchar_t (*included_files)[MAX_FILE_LEN], int files_num)
+int add_includes_to_source(FILE *s, int inc )
 {
 	int i, len = sizeof( wchar_t ), cmode = 0;
 
@@ -97,12 +96,12 @@ int add_includes_to_source(FILE *s, wchar_t (*included_files)[MAX_FILE_LEN], int
 		else
 		{
             // Fayllar goshulyar
-		    for(i=0; i<files_num; ++i)
+		    for(i=0; i<INCLUDES[ inc ].num; ++i)
             {
-                //printf(L"Goshmaly:%s %d\n", included_files[i], files_num);
+                //printf("Goshmaly:%ls\n", INCLUDES[ inc ].inc[ i ] );
                 wchar_t putme[MAX_FILE_LEN+20] = {0};
                 wcsncpy(putme, include, wcslen(include)+1);
-                wcsncat(putme, included_files[i], wcslen(included_files[i]));
+                wcsncat(putme, INCLUDES[ inc ].inc[ i ], wcslen(INCLUDES[ inc].inc[ i ]));
                 wcsncat(putme, nl, wcslen(nl));
                 wcsadd_on_heap( &l, &len, putme );
             }

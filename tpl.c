@@ -19,7 +19,6 @@
 #include "semantic.h"
 #include "main/create_exe.h"
 
-
 void tpl(int argc, const char **args)
 {
     /// Kompýuterdäki ähli zatlar türkmen dilini harplaryny tanar ýaly.

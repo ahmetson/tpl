@@ -95,6 +95,9 @@ void tok_int_c_code(token *tok, wchar_t **l, int *llen)
 void tok_float_c_code(token *tok, wchar_t **l, int *llen)
 {
     wchar_t *val = tok->potentional_types[0].value;
+    /// Translate _ to .
+    size_t index = wcscspn( val, L"_" );
+    val[ index ] = L'.';
     wcsadd_on_heap( l, llen, val );
 }
 void tok_wchar_t_c_code(token *tok, wchar_t **l, int *llen)
