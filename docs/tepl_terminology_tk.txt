@@ -1,0 +1,25 @@
+Variable			- ülňi													- переменная
+System 				- ulgam													- система
+Array				- sanaw													- массив
+Mult-array			- içkili sanaw											- вложенный массив
+Onetype array		- Birsyhly sanaw 										- однотипный массив
+Multitype array		- Köpsyhly sanaw 										- многотипный массив
+
+
+
+Character			- harp													- символ
+String				- harpl, (harplar sözüniň gysgaldylan görnüşi)			- строка
+Integer				- sada san, (ýa-da ýöne: san)							- целочисленный
+Float				- drob san												- плавающией точкой
+
+Program 			- program, programma									- программа
+programming language- programlama dili										- язык программирования
+
+Bit, Byte			- Bit, Baýt (ş.b.z)										- Бит, Байт
+		
+Software			- Üstkizat												- Софт
+Hardware 			- Astkyzat												- Железо
+
+Computer			- Kompýuter (şol bir zat ş.b.z)							- Комьпютер
+
+

@@ -316,6 +316,13 @@ void write_utype_structs( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_B
     /// write function definitions and global variable definitions
     fputws( second_part, s );
 
+    if ( SOURCE_BYTES_NUM )
+    {
+        free( SOURCE );
+        SOURCE = NULL;
+        SOURCE_BYTES_NUM = 0;
+    }
+
     fclose( s );
 }
 

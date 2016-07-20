@@ -371,6 +371,8 @@ void trans_to_c_move_fn_arg_to_malloc( token *tok )
         add_string_to_free_list( var_name, &C_CODE_LOC_FREE_VARS_NUM, &C_CODE_LOC_FREE_VARS );
     }
 
+    free( var_name );
+
     ++C_CODE_FN_HARPL_ARG_NUM;
 }
 
