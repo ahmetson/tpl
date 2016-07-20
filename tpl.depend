@@ -382,7 +382,7 @@
 1452017589 d:\c_source\tpl\dev_debug.h
 	"algor.h"
 
-1468297094 source:d:\c_source\tpl\cmd\assign.c
+1469006833 source:d:\c_source\tpl\cmd\assign.c
 	<stdlib.h>
 	<string.h>
 	"../main/glob.h"
@@ -396,7 +396,7 @@
 	"../fns/fn_helpers.h"
 	"../translator_to_c.h"
 
-1468741295 source:d:\c_source\tpl\cmds.c
+1469007739 source:d:\c_source\tpl\cmds.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -516,7 +516,7 @@
 
 1452018491 source:d:\c_source\tpl\other.c
 
-1469003993 source:d:\c_source\tpl\parser.c
+1469004040 source:d:\c_source\tpl\parser.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -540,7 +540,7 @@
 1463335491 d:\c_source\tpl\pragma\pragma.h
 	"../main/glob.h"
 
-1468924120 source:d:\c_source\tpl\pragma\pragma.c
+1469007623 source:d:\c_source\tpl\pragma\pragma.c
 	<stdio.h>
 	<string.h>
 	<ctype.h>
@@ -662,7 +662,7 @@
 	"dev_debug.h"
 	"error.h"
 
-1468840131 source:d:\c_source\tpl\tpl.c
+1469008229 source:d:\c_source\tpl\tpl.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -679,7 +679,7 @@
 
 1468906565 d:\c_source\tpl\work_with_source.h
 
-1469002673 source:d:\c_source\tpl\translator_to_c.c
+1469008121 source:d:\c_source\tpl\translator_to_c.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -842,7 +842,7 @@
 
 1446318733 d:\c_source\tpl\paren\types\empty.h
 
-1468928292 source:d:\c_source\tpl\cmd\fn_call.c
+1469008200 source:d:\c_source\tpl\cmd\fn_call.c
 	<stdlib.h>
 	<string.h>
 	"../cmds.h"

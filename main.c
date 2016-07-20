@@ -1,6 +1,6 @@
 #include "tpl.h"
 
-#define TPL_DEBUG_MODE
+//#define TPL_DEBUG_MODE
 
 #ifdef TPL_DEBUG_MODE
     #include <stdlib.h>

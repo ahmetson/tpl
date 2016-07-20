@@ -984,18 +984,22 @@ void    minimize_operands( command *cmd, int *op_positions )
 
     }
 
+    int *minimized_op_positions = get_op_positions( cmd );
+
     /// Minimize last token data on the right side of operator
-    if ( op_positions[ op_positions[ 0 ] ]+2 < cmd->items_num-1 )
+    if ( minimized_op_positions[ minimized_op_positions[ 0 ] ]+2 <= cmd->items_num-1 )
     {
+        start   = minimized_op_positions[ minimized_op_positions[ 0 ] ]+1;
+        end     = cmd->items_num-1;
         command new_cmd;
         init_cmd( &new_cmd, 0 );
         new_cmd.items = get_mem_for_cmd_items();
-        new_cmd.items_num = end - start;
-        change_cmd_items_num( new_cmd.items, end - start );
+        new_cmd.items_num = end - start+1;
+        change_cmd_items_num( new_cmd.items, end - start+1 );
 
         // Move items to new data
         int j, cur_pos = start;
-        for ( j=0; j<end-start; ++j )
+        for ( j=0; j<end - start+1; ++j )
         {
             command_item *ci = get_cmd_item( cmd->items, cur_pos++ );
             put_cmd_item( new_cmd.items, j, *ci );
@@ -1003,6 +1007,7 @@ void    minimize_operands( command *cmd, int *op_positions )
 
         if ( !parse_cmd( &new_cmd ) )
         {
+            free( minimized_op_positions );
             /// TODO
             printf( "CANNOT IDENTIFY OPERAND: %d\n", __LINE__ );
         }
@@ -1013,8 +1018,10 @@ void    minimize_operands( command *cmd, int *op_positions )
         data_cmd.cmd  = new_cmd;
         put_cmd_item( cmd->items, start, data_cmd );
 
-        move_cmd_items ( start+1, end-1, cmd );
+        cmd->items_num -= end - start;
+        //move_cmd_items ( start+1, end-1, cmd );
     }
+    free( minimized_op_positions );
 }
 
 

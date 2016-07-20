@@ -238,16 +238,11 @@ int semantic_cmd_assign(command *cmd)
         /// Ikinji masagaraçylyk: ikisiniňem tipleri biri birine gabat gelmeli
         command_item *ci = tci;
         int class1 = -1, type1 = -1, class2 = -1, type2 = -1;
-	    if((ci->type==TOKEN_ITEM &&
-		   return_tok_type(&ci->tok, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED) ||
-		   (ci->type==CMD_ITEM &&
-           CMD_RETURN_TYPE[ci->cmd.cmd_class][ci->cmd.cmd_type](&ci->cmd,&class2, &type2) &&
-        class2!=TOK_CLASS_UNDEFINED) ||
-           (ci->type==PAREN_ITEM &&
-            PAREN_RETURN_TYPE[ci->paren.type](&ci->paren, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED))
+
+	    if( return_cmd_item_type( ci, &class2, &type2  ) && class2!=TOK_CLASS_UNDEFINED )
 		{
 		    command_item *f = fci;
-            if( return_cmd_item_type( f, &class1, &type1 ) && class1!=TOK_CLASS_UNDEFINED )
+            if( !return_cmd_item_type( f, &class1, &type1 ) )
             {
                 if ( f->type==CMD_ITEM &&  f->cmd.cmd_class==CMD_CLASS_DEF_VAR)
                 {
@@ -269,12 +264,15 @@ int semantic_cmd_assign(command *cmd)
             }
             else
             {
-                if(f->type==TOKEN_ITEM)
-                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &f->tok);
-                if(f->type==CMD_ITEM)
-                   print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&f->cmd));
-                if(f->type==PAREN_ITEM)
-                    print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&f->paren));
+                if (!(class1==class2 && type1==type2))
+                {
+                    if(f->type==TOKEN_ITEM)
+                        print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, &f->tok);
+                    if(f->type==CMD_ITEM)
+                       print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_last_token(&f->cmd));
+                    if(f->type==PAREN_ITEM)
+                        print_err(CODE7_TYPES_NOT_MATCH_LEFT_DATA, (token *)inf_get_parens_last_token(&f->paren));
+                }
             }
 		}
 		else

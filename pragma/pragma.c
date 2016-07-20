@@ -281,7 +281,7 @@ void act_pragma_include_glob_decl_file( pragma *p )
     free_inf();
 
     --CUR_FILE_NUM;
-    NOT_COUNTED_FILES_NUM++;
+    //NOT_COUNTED_FILES_NUM++;
 	//free_locals();
 
 	CUR_PART = prev_part;
