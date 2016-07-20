@@ -26,12 +26,12 @@ act_pragma_item act_pragma_items[] = {
 };
 
 
-int parser_mode_pragma( FILE *source )
+int parser_mode_pragma( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM )
 {
     if( CUR_CHAR!=PRAGMA_START_CHAR )
         return 0;
 
-    parse_pragma( source );
+    parse_pragma( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
     return 1;
 }
 
@@ -47,14 +47,14 @@ void init_pragma(pragma *prag)
 
 /** Pragma bilen işleýän parseriň bölümi
 **/
-void parse_pragma(FILE *s)
+void parse_pragma( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM  )
 {
-	pragma prag;	  init_pragma(&prag);
+	pragma prag;	  init_pragma( &prag );
 
-    while ( 1 )
+    int i, sizeof_wchar = sizeof( wchar_t );
+    for( i= ( *SOURCE_POINTER_NUM )-1; i<SOURCE_BYTES_NUM/sizeof_wchar; ++i )
     {
-        if ( !process_char( s, UNCHECK_VALID_CHAR ) )
-            break;
+        process_char( UNCHECK_VALID_CHAR, SOURCE_POINTER_NUM, SOURCE );
 
         if ( CUR_CHAR==PRAGMA_END_CHAR )
         {
@@ -62,7 +62,7 @@ void parse_pragma(FILE *s)
             if ( !prag.is_compl )
                 print_err(CODE2_PRAGMA_NOT_END, &inf_tok);
 
-            prevent_from_parsing_file();
+            prevent_from_parsing_file( SOURCE_POINTER_NUM );
             return;
         }
         else
@@ -73,7 +73,7 @@ void parse_pragma(FILE *s)
             {
                 // Pragma bilen işlenilip durka ýalňyşlyk çyksa, nireden çykanyny bilmek üçin.
                 inf_add_to_token(&inf_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
-                print_err(CODE2_PRAGMA_NOT_IDENT, &inf_tok);
+                print_err( CODE2_PRAGMA_NOT_IDENT, &inf_tok );
             }
             else if ( prag.is_compl )
             {
@@ -93,9 +93,7 @@ void parse_pragma(FILE *s)
 **/
 int recognise_pragma(pragma *prag)
 {
-	int i, answer;
-
-    /** Pragmalaryň iki görnüşi bar:
+	/** Pragmalaryň iki görnüşi bar:
         #global yglan etmeleriň maglumatly faýlyny ýükleýän
         1)Eger pragma '@' ýa @" diýip başlaýan bolsa
         a)Eger pragma =" däl we " harp bilen gutarýan bolsa
@@ -113,9 +111,15 @@ int recognise_pragma(pragma *prag)
     /// 1)
     prag->is_compl = 0;
     /**  ADY: @"f" - bolup biljek iň kiçi pragma mody*/
-    if ( wcslen(prag->name)>4 && prag->name[0]==PRAGMA_INCLUDE_GLOB_DEC
-                              && prag->name[1]==PRAGMA_ADDR_QUOTE )
+    if ( wcslen(prag->name)>=1 && prag->name[0]==PRAGMA_INCLUDE_GLOB_DEC )
     {
+        if ( wcslen(prag->name)<2 )
+        {
+            prag->is_compl = 0;
+            return 1;
+        }
+        if ( wcslen(prag->name)>=2 && prag->name[1]!=PRAGMA_ADDR_QUOTE )
+            return 0;
         if  ( is_string_const_data_compl(prag->name, 1) )
         {
             prag->is_compl = 1;
@@ -211,7 +215,7 @@ void act_pragma_include_glob_decl_file( pragma *p )
     add_file_info(fn);
 
     /** Türkmen harplary düşünmek üçin UTF-8 formatda açylýar*/
-	FILE *source = _wfopen(fn, L"r, ccs=UTF-8");
+	FILE *source = _wfopen(fn, L"r");
 
 	if (source==NULL)
 	{
@@ -219,17 +223,22 @@ void act_pragma_include_glob_decl_file( pragma *p )
 		print_err(CODE0_CANT_OPEN_FILE, &inf_tok);
 	}
 
+	move_file_to_tmp_var( source, &CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_BYTES_NUM );
+	fclose( source );   /// TEPL source code copied to temporary variable. No need file
+
+
     /// Adaty parser komandalary saýgarýar
-	while( 1 )
-	{
-	    if ( !process_char( source, CHECK_VALID_CHAR ) )
-            break;
+    int	sizeof_wchar = sizeof( wchar_t );
+    for( ; CUR_BASHY_SOURCE_POINTER<CUR_BASHY_SOURCE_BYTES_NUM/sizeof_wchar-1; )    /// Last character ('\0') doesnt count
+    {
+	    process_char( CHECK_VALID_CHAR, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE );
 
 	    if ( !iswspace( CUR_CHAR )               &&
-             !parser_mode_pragma( source )       &&
-             !parser_mode_paren( source, &cmd )  &&
-             !parser_mode_string( source, &cmd ) &&
-             !parser_mode_end_cmd( source ) )
+             !parser_mode_pragma( CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM )       &&
+             !parser_mode_paren( &cmd, CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM )  &&
+             !parser_mode_string( &cmd, CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM ) //&&
+             //!parser_mode_end_cmd( CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM )
+            )
         {
             if ( CUR_CHAR==CMD_END )
             {
@@ -245,12 +254,12 @@ void act_pragma_include_glob_decl_file( pragma *p )
             }
             else
             {
-                token tok = parse_token( source );
+                token tok = parse_token( CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM );
                 tok.inf_file_num = CUR_FILE_NUM-1;
                 work_with_token( &tok, &cmd );
                 if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
                 {
-                    parse_triangle_block_inside( source );
+                    parse_triangle_block_inside( CUR_BASHY_SOURCE, &CUR_BASHY_SOURCE_POINTER, CUR_BASHY_SOURCE_BYTES_NUM );
                 }
             }
         }
@@ -260,10 +269,20 @@ void act_pragma_include_glob_decl_file( pragma *p )
 	if ( cmd.items_num )
         print_err(CODE2_REMAIN_TOKEN, (token *)inf_get_last_token(&cmd));
 
-    fclose( source );
+    /// Clear local data. And init again. Might be used for next TEPL source code.
+    if ( CUR_BASHY_SOURCE_BYTES_NUM!=0 )
+    {
+        free( CUR_BASHY_SOURCE );
+        CUR_BASHY_SOURCE = NULL;
+    }
+    CUR_BASHY_SOURCE_BYTES_NUM = 0;
+    CUR_BASHY_SOURCE_POINTER   = 0;
 
     free_inf();
-	free_locals();
+
+    --CUR_FILE_NUM;
+    NOT_COUNTED_FILES_NUM++;
+	//free_locals();
 
 	CUR_PART = prev_part;
 }

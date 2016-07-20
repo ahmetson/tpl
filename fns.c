@@ -14,6 +14,19 @@
 // Folder name = 255, command name = 45
 #define MAX_SYS_CMD_LEN 300
 
+int count_mb_bytes( char *str )
+{
+    return MultiByteToWideChar( CP_UTF8, 0, str, -1, NULL, 0 );
+}
+
+
+/** Short variant of MultiByteWideCharacter */
+void mb2wc( char *str, wchar_t *out, int out_size )
+{
+    MultiByteToWideChar( CP_UTF8, 0, str, -1, out, out_size );
+}
+
+
 /**2 sozi we bir harpy goshyar
  *
  * @to        - final string
@@ -266,6 +279,7 @@ int get_null_size()
 int realloc_wchar_heap( wchar_t **mem, int *memlen, wchar_t *add )
 {
     *memlen += count_bytes( add );
+
     *mem = realloc( *mem, *memlen );
 
     return ( *mem==NULL ) ? 0 : 1;

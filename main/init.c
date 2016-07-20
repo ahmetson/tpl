@@ -40,7 +40,17 @@ int init()
 	CUR_ALGOR_ITEMS_NUM =
 	CUR_FILE_NUM = 0;
 	CUR_CHAR = -1;
+	NOT_COUNTED_FILES_NUM = 0;
 	wcsncpys( CUR_FILE_NAME, empty );
+
+	CUR_SOURCE = NULL;
+    CUR_SOURCE_BYTES_NUM = 0;
+	CUR_SOURCE_POINTER   = 0;
+
+	CUR_BASHY_SOURCE = NULL;
+    CUR_BASHY_SOURCE_BYTES_NUM = 0;
+	CUR_BASHY_SOURCE_POINTER   = 0;
+
 	/// Maglumatlary çap edýän funksiýa
 	init_token(&inf_tok);
 
@@ -127,6 +137,31 @@ int init()
     /// Standard lib'däki funksiýalar goşulýar
     add_std_funs();
 
+    CMD_C_CODE_PRE = CMD_ASSIGN_C_CODE_PRE = CMD_C_CODE_AFTER = CMD_ASSIGN_C_CODE_AFTER = NULL;
+    CMD_C_CODE_PRE_LEN = CMD_C_CODE_AFTER_LEN = CMD_ASSIGN_C_CODE_PRE_LEN = CMD_ASSIGN_C_CODE_AFTER_LEN = 0;
+
+    CUR_LOC_FN = -1;
+
+    C_CODE_CONV_TMP_NUM = 0,
+    C_CODE_FN_CALLS_NUM = 0,
+    C_CODE_FN_HARPL_ARG_NUM = 0;
+
+    /** Variables that allocated memory inside of defined function */
+//    C_CODE_FN_DEF_FREE_VARS = NULL;
+//    C_CODE_FN_DEF_FREE_VARS_NUM = 0;
+
+    /** Variables that allocated memory inside of local function or main function */
+    C_CODE_LOC_FREE_VARS = NULL;
+    C_CODE_LOC_FREE_VARS_NUM = 0;
+
+    /** Variables that allocated memory inside of user defined function */
+    C_CODE_DEF_FN_FREE_VARS = NULL;
+    C_CODE_DEF_FN_FREE_VARS_NUM = NULL;
+
+    /** Global variables that allocated memory */
+    C_CODE_GLOB_FREE_VARS = NULL;
+    C_CODE_GLOB_FREE_VARS_NUM = 0;
+
 	return 1;
 }
 
@@ -142,7 +177,7 @@ void    prepare_gcc()
     {
         if( _waccess( archiver, F_OK ) != -1 && _waccess( archive, F_OK ) != -1  )
         {
-            printf("%ls", L"C kompilýatory siziň kompýuteriňize ötürdilýär. Azajyk garaşyň...\n");
+            printf("C kompilýatory siziň kompýuteriňize ötürdilýär. Azajyk garaşyň...\n");
             wchar_t *sys_cmd = L"7za.exe x -y mingw.7z >nul 2>nul";		// >nul hides result, and
             if ( _wsystem(sys_cmd)<1 )
             {
@@ -186,7 +221,10 @@ void prepare_paths()
 
     /// Path of GCC compiler
     wcsncpy( FILE_GCC_EXE, DIR_GCC_FOLDER, wcslen( DIR_GCC_FOLDER )+1 );
-    wcsncat( FILE_GCC_EXE, L"bin\\gcc.exe", wcslen( L"bin\\gcc.exe" ) );
+    wcsncat( FILE_GCC_EXE, L"bin\\x86_64-w64-mingw32-gcc.exe", wcslen( L"bin\\x86_64-w64-mingw32-gcc.exe" ) );
+    /// Path of GCC Linker
+    wcsncpy( FILE_GPP_EXE, DIR_GCC_FOLDER, wcslen( DIR_GCC_FOLDER )+1 );
+    wcsncat( FILE_GPP_EXE, L"bin\\x86_64-w64-mingw32-g++.exe", wcslen( L"bin\\x86_64-w64-mingw32-g++.exe" ) );
 
     /// Additional required arguments for commands, when using GCC compiler
 

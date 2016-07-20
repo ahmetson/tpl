@@ -9,7 +9,8 @@
 #include "../fns.h"
 #include "../error.h"
 
-wchar_t *conv_c_codes[CMD_CONV_TYPES][3] = {
+
+wchar_t *conv_c_codes[ CMD_CONV_TYPES ][ 3 ] = {
     {L"_tpl_conv_if(",  L"_tpl_conv_ic(",  L"_tpl_conv_ia("},
     {L"_tpl_conv_fi(",  L"_tpl_conv_fc(",  L"_tpl_conv_fa("},
     {L"_tpl_conv_ci(",  L"_tpl_conv_cf(",  L"_tpl_conv_ca("},
@@ -62,7 +63,6 @@ void cmd_conv_basic_type_mod(command *cmd, int item_num)
 int semantic_cmd_conv_basic_type(command *cmd)
 {
     command_item *fci = get_cmd_item(cmd->items, 0);
-    parenthesis_elem *pe = get_paren_elems(fci->paren.elems_num);
 
     command_item *sci = get_cmd_item(cmd->items, 1);
     if ( sci->type==CMD_ITEM )
@@ -74,9 +74,7 @@ int semantic_cmd_conv_basic_type(command *cmd)
             check_semantics( &pi[ 0 ].cmd );
     }
     int sclass = -1, stype = -1;
-    if (sci->type==CMD_ITEM && CMD_RETURN_TYPE[sci->cmd.cmd_class][sci->cmd.cmd_type](&sci->cmd, &sclass, &stype) ||
-        sci->type==TOKEN_ITEM && TOK_RETURN_TYPE[sci->tok.type_class][sci->tok.potentional_types[0].type_num](&sci->tok, &sclass, &stype)||
-        sci->type==PAREN_ITEM && PAREN_RETURN_TYPE[sci->paren.type](&sci->paren, &sclass, &stype))
+    if ( return_cmd_item_type( sci, &sclass, &stype ) )
     {
         if (sclass!=TOK_CLASS_CONST_DATA)
         {
@@ -116,15 +114,76 @@ void cmd_conv_basic_type_c_code(command *cmd, wchar_t **l, int *llen)
 {
     int f, s;
     get_conv_type_num(cmd, &f, &s);
-    wcsadd_on_heap( l, llen, conv_c_codes[f][s] );
 
-    command_item *e2 = get_cmd_item(cmd->items,1);
-    cmd_item_get_c_code( e2, l, llen );
+    if ( is_return_string( f, s ) )
+    {
+        /// Temporary variable to hold converted string in C code
+        wchar_t *var_name = NULL;
+        int len = 0;
+        wcsadd_on_heap( &var_name, &len, C_CODE_CONV_TMP_STR );
+        wchar_t var_num[10] = { 0 };
+        wsprintfW(var_num, L"%d", C_CODE_CONV_TMP_NUM );
+        wcsadd_on_heap( &var_name, &len, var_num );
 
-    wchar_t *c = L")";
-    wcsadd_on_heap( l, llen, c );
+        /// Variable initializing
+        wchar_t *var_init = NULL;
+        int init_len = 0;
+        wcsadd_on_heap( &var_init, &init_len, L" wchar_t * " );
+        wcsadd_on_heap( &var_init, &init_len, var_name );
+        wcsadd_on_heap( &var_init, &init_len, L" = NULL;\n " );
+
+        wcsadd_on_heap( &CMD_C_CODE_PRE, &CMD_C_CODE_PRE_LEN, var_init );
+
+        free( var_init );
+
+        /// Variable finishizing
+        wchar_t *var_finish = NULL;
+        int finish_len = 0;
+
+        wcsadd_on_heap( &var_finish, &finish_len, L" if ( " );
+        wcsadd_on_heap( &var_finish, &finish_len, var_name );
+        wcsadd_on_heap( &var_finish, &finish_len, L" != NULL)\n\t free( " );
+        wcsadd_on_heap( &var_finish, &finish_len, var_name );
+        wcsadd_on_heap( &var_finish, &finish_len, L" );\n " );
+
+        wcsadd_on_heap( &CMD_C_CODE_AFTER, &CMD_C_CODE_AFTER_LEN, var_finish );
+
+        free( var_finish );
+
+        /// Add code: ( varname = [data] )
+        wcsadd_on_heap( l, llen, L" ( " );
+        wcsadd_on_heap( l, llen, var_name );
+        wcsadd_on_heap( l, llen, L" = " );
+        wcsadd_on_heap( l, llen, conv_c_codes[f][s] );
+        command_item *e2 = get_cmd_item(cmd->items,1);
+        write_cmd_item_c_code( e2, l, llen );
+        wchar_t *c = L")";
+        wcsadd_on_heap( l, llen, c );
+        wcsadd_on_heap( l, llen, c );
+
+        free( var_name );
+
+    }
+    else
+    {
+        wcsadd_on_heap( l, llen, conv_c_codes[f][s] );
+
+        command_item *e2 = get_cmd_item(cmd->items,1);
+        write_cmd_item_c_code( e2, l, llen );
+
+        wchar_t *c = L")";
+        wcsadd_on_heap( l, llen, c );
+    }
 }
 
+
+/** Determines whether data type is string or not */
+int is_return_string( int from, int to )
+{
+    if ( from<3 && to==2 )
+        return 1;
+    return 0;
+}
 
 void get_conv_type_num(command *cmd, int *rclass, int *rtype)
 {
@@ -139,9 +198,7 @@ void get_conv_type_num(command *cmd, int *rclass, int *rtype)
 
     command_item *sci = get_cmd_item(cmd->items, 1);
     int sclass = -1, stype = -1;
-    if (sci->type==CMD_ITEM && CMD_RETURN_TYPE[sci->cmd.cmd_class][sci->cmd.cmd_type](&sci->cmd, &sclass, &stype) ||
-        sci->type==TOKEN_ITEM && TOK_RETURN_TYPE[sci->tok.type_class][sci->tok.potentional_types[0].type_num](&sci->tok, &sclass, &stype)||
-        sci->type==PAREN_ITEM && PAREN_RETURN_TYPE[sci->paren.type](&sci->paren, &sclass, &stype));
+    if ( return_cmd_item_type( sci, &sclass, &stype ) );
     if (sclass==TOK_CLASS_DEF_TYPE)
         set_def_type_alias_const_data(&sclass, &stype);
 

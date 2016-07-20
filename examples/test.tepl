@@ -1,6 +1,39 @@
 ﻿#b1
-drob d <- ( drob )1 + 23_0.
-("Drob sany ýazyň: =s")çap_et.
-d <- (drob)(()kabul_et).
-((harpl)d, " sany ýazyldy=s")çap_et.
+#@"test.bashy"
 
+<: san s
+:>buda tipi.
+
+<: (10,20) harpl hlar,
+   harpl h,
+   buda b
+:>harps tipi.
+
+(2)harps barlag.
+
+barlag 0 / hlar 0 0 .
+
+@harpl glob.
+
+@san a.
+
+( san s, harpl ha )funk harpl ->
+	
+	("SALAM, Funksiyanyn icinde!=s")chap_et.
+	"San" yza.
+	harpl h.
+	
+===.
+
+( 2, "harpl" )funk.
+
+()sanlar san ->
+
+===.
+
+san s2.
+harpl h2.
+
+
+
+/**/

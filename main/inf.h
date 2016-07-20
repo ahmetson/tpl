@@ -9,7 +9,7 @@
 void inf_add_source_code_last_file();
 
 void inf_add_to_token(token *tok, wchar_t c, int c_pos, int line);
-int update_inf();
+void update_inf();
 void inf_next_line();
 void inf_next_wchar_t();
 

@@ -60,4 +60,7 @@ int sys_is_dir_exists( wchar_t folder_name[ MAX_FILE_LEN ] );
 
 void    str_change_char( wchar_t *s, wchar_t c, wchar_t with );
 
+int count_mb_bytes( char *str );
+void mb2wc( char *str, wchar_t *out, int out_size );
+
 #endif

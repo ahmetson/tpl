@@ -21,6 +21,7 @@
 #include "token_types/utype_con.h"
 #include "token_types/void.h"
 #include "token_types/comment.h"
+#include "token_types/block_inside.h"
 #include "keywords.h"
 #include "token_types.h"
 #include "../main/tpl_esc_keys.h"
@@ -47,6 +48,7 @@ const int TOK_CLASS_UTYPE           = 13;
 const int TOK_CLASS_UTYPE_CON       = -2;
 const int TOK_CLASS_VOID            = 15;
 const int TOK_CLASS_COMMENT         = 16;
+const int TOK_CLASS_BLOCK_INSIDE    = 17;
 
 /// DEV_DEBUG.c arkaly debug'lamak üçin, token tipleriniň klaslarynyň atlary
 char *dev_type_class_names[] = {
@@ -66,6 +68,7 @@ char *dev_type_class_names[] = {
 	"user type",
 	"user type connection",
 	"empty type",
-	"comment"
+	"comment",
+	"function and repeat block helpers"
 };
 

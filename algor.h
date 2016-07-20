@@ -21,9 +21,9 @@ typedef struct{
 // Algoritmde komandany goshyar
 int algor_add_cmd(command cmd);
 
-void var_def_add(command *cmd, wchar_t glob);
+void var_def_add(command *cmd, int glob);
 
-void arr_def_add(command *cmd, wchar_t glob);
+void arr_def_add(command *cmd, int glob);
 
 // Wagtlayyn fayllaryn rasshireniyasyny
 extern wchar_t loc_head_file[MAX_FILE_LEN];

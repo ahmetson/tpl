@@ -16,6 +16,7 @@
 #include "../cmds.h"
 #include "../main/inf.h"
 #include "../fns.h"
+#include "../fns/fn_helpers.h"
 #include "../translator_to_c.h"
 
 /**
@@ -37,6 +38,9 @@
  *    1) (token)  identifikator, ulninin ady    - on yglan edilen ulni taze
  *                                                ulninin maglumaty baglap bolyar.
 **/
+
+wchar_t *assign_right = L" _tpl_assign_right = ";
+wchar_t *assign_left = L" _tpl_assign_left = ";
 
 
 /** Berlen komandanyň 'assign' komandasymy ýa däldigini barlýar.
@@ -193,7 +197,12 @@ int semantic_cmd_assign(command *cmd)
         if (fci->type==TOKEN_ITEM && fci->tok.type_class==TOK_CLASS_IDENT)
         {
             token *item = &fci->tok; // Gysgaltmak uchin ulanlyar
-            if (!is_local_var_def_exist(item->potentional_types[0].value))
+            if ( is_inside_fn() && (
+                            !is_tmp_fn_var_ident_used( item->potentional_types[0].value) &&
+                            !is_tmp_fn_var_arg_ident_used( item->potentional_types[0].value )
+                                    ) )
+                print_err(CODE7_LEFT_IDENT_NOT_DEFINED, item);
+            else if ( is_inside_fn()==0 && !is_local_var_def_exist(item->potentional_types[0].value))
             {
                 print_err(CODE7_LEFT_IDENT_NOT_DEFINED, item);
             }
@@ -210,7 +219,12 @@ int semantic_cmd_assign(command *cmd)
         {
             token *item = &tci->tok; // Gysgaltmak uchin ulanlyar
 
-            if (!is_local_var_def_exist(item->potentional_types[0].value))
+            if ( is_inside_fn() && (
+                 !is_tmp_fn_var_ident_used( item->potentional_types[0].value ) &&
+                 !is_tmp_fn_var_arg_ident_used( item->potentional_types[0].value )
+                                    ) )
+                print_err(CODE7_RIGHT_IDENT_NOT_DEFINED, item);
+            else if ( !is_inside_fn() && !is_local_var_def_exist(item->potentional_types[0].value))
             {
                 print_err(CODE7_RIGHT_IDENT_NOT_DEFINED, item);
             }
@@ -233,15 +247,7 @@ int semantic_cmd_assign(command *cmd)
             PAREN_RETURN_TYPE[ci->paren.type](&ci->paren, &class2, &type2) && class2!=TOK_CLASS_UNDEFINED))
 		{
 		    command_item *f = fci;
-            if((f->type==TOKEN_ITEM &&
-               return_tok_type(&f->tok, &class1, &type1) &&
-                class1!=TOK_CLASS_UNDEFINED) ||
-               (f->type==CMD_ITEM &&
-               (CMD_RETURN_TYPE[f->cmd.cmd_class][f->cmd.cmd_type](&f->cmd,&class1, &type1) &&
-                class1!=TOK_CLASS_UNDEFINED) ||
-                f->cmd.cmd_class==CMD_CLASS_DEF_VAR) ||
-               (f->type==PAREN_ITEM &&
-                PAREN_RETURN_TYPE[f->paren.type](&f->paren, &class1, &type1) && class1!=TOK_CLASS_UNDEFINED))
+            if( return_cmd_item_type( f, &class1, &type1 ) && class1!=TOK_CLASS_UNDEFINED )
             {
                 if ( f->type==CMD_ITEM &&  f->cmd.cmd_class==CMD_CLASS_DEF_VAR)
                 {
@@ -299,47 +305,74 @@ void cmd_assign_c_code(command *cmd, wchar_t **l, int *llen)
     command_item *second = get_cmd_item(cmd->items,1);
     command_item *third =  get_cmd_item(cmd->items,2);
 
+    int cmd_class, cmd_type;
+
     if ( second->tok.potentional_types[0].type_num==LEFT_ASSIGN_TOK_NUM )
     {
-        // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
-        // Eger birinji ülňi identifikator bolsa, özi alynýar.
-        if ( first->type==CMD_ITEM )
+        return_cmd_item_type( first, &cmd_class, &cmd_type );
+
+        if ( cmd_class==TOK_CLASS_CONST_DATA && cmd_type==STRING_CONST_DATA_TOK_NUM )
         {
-            command *c = &first->cmd;   /// Ýöne komandana çatylaňda çalt bolar ýaly, gysgaltdyldy
-            CMD_GET_C_CODE[ c->cmd_class ][ c->cmd_type ]( c, l, llen );
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, assign_right );
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, L" ( " );
+            write_cmd_item_c_code( third, &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN );
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, L" );\n " );
+
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, assign_left );
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, L" ( " );
+            write_cmd_item_c_code( first, &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN );
+            wcsadd_on_heap( &CMD_ASSIGN_C_CODE_PRE, &CMD_ASSIGN_C_CODE_PRE_LEN, L" );\n " );
+            wchar_t *add_right_to_left =
+L" if ( ( _tpl_assign_left==NULL || _tpl_assign_right==NULL ) || wcslen( _tpl_assign_left )!=wcslen( _tpl_assign_right ) )\
+    _tpl_assign_left = realloc( _tpl_assign_left,  ( wcslen( _tpl_assign_right )+1 )*sizeof( wchar_t ) ); \
+   wcsncpy( _tpl_assign_left, _tpl_assign_right, wcslen( _tpl_assign_right )+1 ); ";
+            wcsadd_on_heap( l, llen, add_right_to_left );
+
         }
-        else if (first->type==TOKEN_ITEM)
+        else
         {
-            token *t = &first->tok;
-            TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
+            // Eger birinji birlik ülňi yglan etmek bolsa, komandanyň içinden tokeniň ady alynýar
+            // Eger birinji ülňi identifikator bolsa, özi alynýar.
+            if ( first->type==CMD_ITEM )
+            {
+                command *c = &first->cmd;   /// Ýöne komandana çatylaňda çalt bolar ýaly, gysgaltdyldy
+                CMD_GET_C_CODE[ c->cmd_class ][ c->cmd_type ]( c, l, llen );
+            }
+            else if (first->type==TOKEN_ITEM)
+            {
+                token *t = &first->tok;
+                TOK_GET_C_CODE[t->potentional_types[0].type_class][t->potentional_types[0].type_num](t, l, llen);
+            }
+
+            // baglanma ülňiniň c dili üçin warianty goýulýar
+            wchar_t *assign_c = L" = ";
+            wcsncat_on_heap( l, llen, assign_c );
+
+            // üçünji ülňi maglumat.
+            // Üçünji birlik identifikator bolsa, özüni geçirmeli.
+            if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_IDENT )
+            {
+                wchar_t *rvalue = third->tok.potentional_types[0].value;
+                wcsncat_on_heap( l, llen, rvalue );
+            }
+            // Üçünji birlik, konstanta maglumat bolsa, onda gerekli funksiýa arkaly maglumat içine salynýar.
+            else if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA )
+            {
+                //wchar_t *rvalue = get_const_data_string(&third->tok);
+                //wcsncat_on_heap( l, llen, rvalue );
+                write_tok_c_code( &third->tok, l, llen );
+            }
+            else if ( third->type==CMD_ITEM )
+            {
+                write_cmd_c_code( &third->cmd, l, llen);
+            }
+            else if ( third->type==PAREN_ITEM )
+            {
+                paren_get_c_code(&third->paren, l, llen);
+            }
         }
 
-        // baglanma ülňiniň c dili üçin warianty goýulýar
-        wchar_t *assign_c = L" = ";
-        wcsncat_on_heap( l, llen, assign_c );
 
-        // üçünji ülňi maglumat.
-        // Üçünji birlik identifikator bolsa, özüni geçirmeli.
-        if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_IDENT )
-        {
-            wchar_t *rvalue = third->tok.potentional_types[0].value;
-            wcsncat_on_heap( l, llen, rvalue );
-        }
-        // Üçünji birlik, konstanta maglumat bolsa, onda gerekli funksiýa arkaly maglumat içine salynýar.
-        else if ( third->type==TOKEN_ITEM && third->tok.potentional_types[0].type_class==TOK_CLASS_CONST_DATA )
-        {
-            //wchar_t *rvalue = get_const_data_string(&third->tok);
-            //wcsncat_on_heap( l, llen, rvalue );
-            tok_get_c_code( &third->tok, l, llen );
-        }
-        else if ( third->type==CMD_ITEM )
-        {
-            cmd_get_c_code( &third->cmd, l, llen);
-        }
-        else if ( third->type==PAREN_ITEM )
-        {
-            paren_get_c_code(&third->paren, l, llen);
-        }
     }
 }
 

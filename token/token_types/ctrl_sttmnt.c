@@ -20,8 +20,8 @@ wchar_t *TOK_CLASS_CTRL_STTMNT_CHARS[TOK_CLASS_CTRL_STTMNT_NUM][2] = {
 // DEBUG UCHIN
 wchar_t *TOK_CLASS_CTRL_STTMNT_WORDS[TOK_CLASS_CTRL_STTMNT_NUM] = {
 	L"eger",
-	L"ýa",
-	L"ýogsa",
+	L"ya",
+	L"yogsa",
 	L"bolsa"
 };
 

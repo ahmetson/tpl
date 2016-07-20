@@ -319,6 +319,10 @@ int is_cmd_arr(command *cmd)
         }
     }
 
+    /** Check second element.
+        Array element connecting:   index number token
+        Array defining:             type token
+    */
     if (next_item+1<=cmd->items_num)
     {
         if (cmd->cmd_type==CMD_CLASS_ARR_DEF)
@@ -339,31 +343,37 @@ int is_cmd_arr(command *cmd)
         {
             int i, type_class = -1, type_num = -1;
 
-            /** ŞERT #15: Eger ikinji elementiň görnüşi HARPL identifikatory bolsa
-                Onda next_item bir san ulalýar.
+            /** Check all indexes. And put them into single String.
+                So command will be shorter and always fix size.
 
-                ** Komandanyň maglumatlaryny üýtgedýän funksiýada
-                Eger ikinji elementi üýtgetmeli diýen komanda bolsa:
-                    Eger ikinji birlik HARPL görnüşde bolsa,
-                        Onda, üçünji birlikden |SAN diýen sözlem ýasalýar.
-                        Sözlem iň Global HARPL-laryň sanawyndaky iň soňky birligiň içine salynýar.
-                    Ýogsa
-                        Täze HARPL görnüşde token ýasalýar.
-                        Içine ikinji birlikdäki maglumat salynýar.
-                        Täze ýasalan token, komanda-daky ikinji birligiň deregine ulanylýar.
+                Inside of string, indexes separated by |
             */
-            command_item *sci = get_cmd_item(cmd->items, next_item);
-            if (sci->type==TOKEN_ITEM && sci->tok.type_class==TOK_CLASS_CONST_DATA &&
-                sci->tok.potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM)
-                    ++next_item;
 
-            for (i=next_item; i<cmd->items_num; ++i)
+            command_item *sci = get_cmd_item(cmd->items, next_item);
+
+            /// Make string from first index number
+            if ( return_cmd_item_type( sci, &type_class, &type_num ) )
+            {
+                set_def_type_alias_const_data( &type_class, &type_num );
+                if ( type_class!=TOK_CLASS_CONST_DATA && type_num!=INT_CONST_DATA_TOK_NUM )
+                    return 0;
+                else
+                {
+                    type_class = type_num = -1;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+            cmd_arr_con_mod(cmd, 1);
+
+            /// Check all indexes. All indexes must be Number
+            for (i=(++next_item); i<cmd->items_num; ++i)
             {
                 command_item *ci = get_cmd_item(cmd->items, i);
 
-                if ((ci->type==TOKEN_ITEM && return_tok_type(&ci->tok, &type_class, &type_num)) ||
-                    (ci->type==CMD_ITEM && CMD_RETURN_TYPE[ci->cmd.cmd_class][ci->cmd.cmd_type](&ci->cmd, &type_class, &type_num)) ||
-                    (ci->type==PAREN_ITEM && PAREN_RETURN_TYPE[ci->paren.type](&ci->paren, &type_class, &type_num)))
+                if ( return_cmd_item_type( ci, &type_class, &type_num ) )
                 {
                     if (type_class!=TOK_CLASS_DEF_TYPE && type_num!=INT_CONST_DATA_TOK_NUM)
                         return 0;
@@ -377,11 +387,9 @@ int is_cmd_arr(command *cmd)
                     return 0;
                 }
             }
-            if (!(sci->type==TOKEN_ITEM && sci->tok.type_class==TOK_CLASS_CONST_DATA &&
-                sci->tok.potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM))
-                ++next_item;
-            cmd_arr_con_mod(cmd, 1);
 
+            /// Make single string from index tokens
+            cmd_arr_con_mod( cmd, 2 );
         }
     }
 
@@ -415,11 +423,6 @@ int is_cmd_arr(command *cmd)
 
 void cmd_arr_def_mod(command *cmd, int item_num)
 {
-    int item_pos = item_num;
-    if (cmd->ns==LOCAL)
-    {
-        item_pos = item_num+1;
-    }
     if (item_num==0)
     {
         cmd->cmd_class = CMD_CLASS_ARR;
@@ -439,12 +442,6 @@ void cmd_arr_def_mod(command *cmd, int item_num)
 
 void cmd_arr_con_mod(command *cmd, int item_num)
 {
-
-    int item_pos = item_num;
-    if (cmd->ns==GLOB)
-    {
-        item_pos = item_num+1;
-    }
     if (item_num==0)
     {
         cmd->cmd_class = CMD_CLASS_ARR;
@@ -466,54 +463,61 @@ void cmd_arr_con_mod(command *cmd, int item_num)
                         Içine ikinji birlikdäki maglumat salynýar.
                         Täze ýasalan token, komanda-daky ikinji birligiň deregine ulanylýar. */
         cmd->is_compl = 1;
-        int i, len = 0;
+        int len = 0, second = 1;
 
-        command_item *sci = get_cmd_item(cmd->items, item_pos);
-        if (sci->type==TOKEN_ITEM && sci->tok.type_class==TOK_CLASS_CONST_DATA &&
-                sci->tok.potentional_types[0].type_num==STRING_CONST_DATA_TOK_NUM)
+        increment_string_tokens();
+        token string_tok;
+        set_token_string_params(&string_tok);
+        last_glob_str_free();
+
+        wchar_t *last = NULL;
+
+        if ( cmd->ns==GLOB )
+            second = 2;
+        command_item *ci = get_cmd_item( cmd->items, second );
+
+        write_tok_c_code(&ci->tok, &last, &len);
+
+        last_glob_str_conc_str(last);
+        free(last);
+
+        string_tok.is_compl = 1;
+        string_tok.potentional_types[0].is_compl = 1;
+
+        command_item put_me;
+        put_me.type = TOKEN_ITEM;
+        put_me.tok = string_tok;
+
+        put_cmd_item(cmd->items, second, put_me);
+
+    }
+    else if ( item_num==2 )
+    {
+        int i = 2, len = 0;
+        if ( cmd->ns==GLOB )
+            i = 3;
+
+        // item_pos 0-dan başlaýar, items_num bolsa 1-den. Şonuň üçin item_pos+1
+        for ( ; i<cmd->items_num; ++i )
         {
-            // item_pos 0-dan başlaýar, items_num bolsa 1-den. Şonuň üçin item_pos+1
-            if (cmd->items_num>item_pos+1)
-            {
-                command_item *tci = get_cmd_item(cmd->items, cmd->items_num-1);
-                wchar_t *line = NULL,
-                        *separator = L"|";
-                wcsadd_on_heap( &line, &len, separator );
+            command_item *tci = get_cmd_item(cmd->items, i );
+            wchar_t *line = NULL,
+                *separator = L"|";
+            wcsadd_on_heap( &line, &len, separator );
 
-                tok_get_c_code(&tci->tok, &line, &len);
+            write_tok_c_code(&tci->tok, &line, &len);
 
-                last_glob_str_conc_str(line);
-                free(line);
+            last_glob_str_conc_str(line);
+            free(line);
 
-                cmd->items_num--;
-                change_cmd_items_num(cmd->items, cmd->items_num);
-            }
         }
+
+        if ( cmd->ns==GLOB )
+            cmd->items_num = 3;
         else
-        {
-            token string_tok;
-            set_token_string_params(&string_tok);
-            last_glob_str_free();
+            cmd->items_num = 2;
 
-            wchar_t *last = NULL;
-
-            command_item *ci = get_cmd_item(cmd->items, cmd->items_num-1);
-
-            tok_get_c_code(&ci->tok, &last, &len);
-
-            last_glob_str_conc_str(last);
-            free(last);
-
-            string_tok.is_compl = 1;
-            string_tok.potentional_types[0].is_compl = 1;
-
-            command_item put_me;
-            put_me.type = TOKEN_ITEM;
-            put_me.tok = string_tok;
-
-            put_cmd_item(cmd->items, cmd->items_num-1, put_me);
-        }
-
+        change_cmd_items_num(cmd->items, cmd->items_num);
     }
 }
 
@@ -535,6 +539,11 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
             type = 4;
             get_tmp_func_arr_address_by_ident(ident, &num);
         }
+        else if ( is_inside_loc_fn() )
+        {
+            type = 5;
+            get_loc_func_arr_address_by_ident(ident, &num);
+        }
         else
         {
             get_arr_address_by_ident(ident, &type, &num);
@@ -554,6 +563,10 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
         {
             ai = &TMP_FUNC_ARRS[num];
         }
+        else if ( type==5 )
+        {
+            ai = &LOC_FUNCS_ARRS[ CUR_LOC_FN ][ num ];
+        }
         else if (type==1)
         {
             ai = &LOCAL_ARR_DEFS[num];
@@ -571,9 +584,9 @@ int cmd_arr_con_return_type(command *cmd, int *type_class, int *type_num)
 }
 
 
-int semantic_cmd_arr_con(command *cmd)
+int semantic_cmd_arr_con( command *cmd )
 {
-    int ident_num, elems_num = -1;
+    int ident_num;
     if (cmd->ns==GLOB)
     {
         ident_num = 1;
@@ -583,8 +596,8 @@ int semantic_cmd_arr_con(command *cmd)
         ident_num = 0;
     }
 
-    command_item *ident_ci = get_cmd_item(cmd->items, ident_num);
-    command_item *elems_ci = get_cmd_item(cmd->items, ident_num+1);
+    command_item *ident_ci = get_cmd_item( cmd->items, ident_num );
+    command_item *elems_ci = get_cmd_item( cmd->items, ident_num+1 );
 
     wchar_t *elems = get_glob_str_by_index(elems_ci->tok.potentional_types[0].string_value);
 
@@ -597,9 +610,10 @@ int semantic_cmd_arr_con(command *cmd)
             type = 3;
             if (!is_utype_arr_item(utype_addr, utype_item_addr))
             {
-                #ifdef TPL_DEBUG_MODE
-                printf("%s %d: %ls", __FILE__, __LINE__, L"Ulanyjynyň ýasan tipiniň sanaw däl ülňisine çatylyndy\n");
-                #endif
+                //#ifdef TPL_DEBUG_MODE
+                /// TODO
+                printf("%s SETIR:%d: Ulanyjynyň ýasan tipiniň sanaw däl ülňisine çatylyndy\n", __FILE__, __LINE__);
+                //#endif
             }
             else
             {
@@ -752,7 +766,7 @@ int semantic_cmd_arr_con(command *cmd)
             items = NULL;
         }
     }
-
+    return 1;
 }
 
 int semantic_cmd_arr_def(command *cmd)
@@ -786,7 +800,7 @@ void cmd_arr_con_c_code(command *cmd, wchar_t **line, int *line_len)
 
     command_item *fci = get_cmd_item(cmd->items, ident_pos);
 
-    cmd_item_get_c_code( fci, line, line_len );
+    write_cmd_item_c_code( fci, line, line_len );
 
     command_item *sci = get_cmd_item(cmd->items, cmd->items_num-1);
     wchar_t *elems = get_glob_str_by_index(sci->tok.potentional_types[0].string_value);
@@ -831,7 +845,7 @@ void cmd_arr_def_c_code(command *cmd, wchar_t **line, int *line_len)
     command_item *type_ci  = get_cmd_item(cmd->items, 1);
     command_item *ident_ci = get_cmd_item(cmd->items, 2);
 
-    get_type_c_code(type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
+    write_type_c_code_analog(type_ci->tok.type_class, type_ci->tok.potentional_types[0].type_num, line, line_len);
 
     wchar_t *space = L" ";
     wcsadd_on_heap( line, line_len, space );
@@ -884,7 +898,7 @@ void add_to_last_tmp_arr_items(command *cmd)
 {
     int yay_pos = cmd->items_num-3;
 
-    command_item *ci = get_cmd_item(cmd->items, yay_pos);
+    command_item *ci = get_cmd_item( cmd->items, yay_pos );
 
     parenthesis *p = &ci->paren;
 
@@ -996,7 +1010,7 @@ void global_called_arrs_add(command *cmd)
     wchar_t *ident= ci->tok.potentional_types[0].value;
 
     /// Eger ülňi yglan edilen faýlynda çagyrylan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
-    int i, len;
+    int i;
     for(i=0; i<GLOB_ARR_DEFS_NUMS; ++i)
     {
         if ((wcslen(GLOB_ARR_DEFS[i].ident)==wcslen(ident) &&

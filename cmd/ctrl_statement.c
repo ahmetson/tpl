@@ -103,7 +103,7 @@ int is_cmd_ctrl_sttmnt(command *cmd)
     {
         return 0;
     }
-
+    return 1;
 }
 
 

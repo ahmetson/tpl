@@ -14,7 +14,7 @@ wchar_t             *CONV_DEF_TYPES_C_SOURCE_NAME    = L"_tpl_conv_def_types.c";
 
 void add_conv_basic_type_c_code_file( FILE *c_file, FILE *h_file )
 {
-    wchar_t *dquote = L"\\";
+    //wchar_t *dquote = L"\\";
     wchar_t *h_code = L"#ifndef INT_DECIMAL_STRING_SIZE  \n\
 #define INT_DECIMAL_STRING_SIZE(int_type_size) ((CHAR_BIT*int_type_size-1)*10/33+3)\n\
 #endif\n\
@@ -43,71 +43,87 @@ double _tpl_conv_af(wchar_t *hl);\n\
 wchar_t _tpl_conv_ac(wchar_t *hl);\n\
 \n\
 void _tpl_free_tmp_str();\n\
-void _tpl_call_another_files();\n";
+void _tpl_call_another_files();\n\
+void _tpl_multi_free( int addr_num, ... );\n\
+void _tpl_glob_vars_free(  );\n";
     fputws( h_code, h_file );
 
-    wchar_t *c_code = L"#include <stdio.h>\n\
-#include <stdlib.h>\n\
-#include <string.h>\n\
-#include <wchar.h>\n\
-wchar_t _tpl_tmp_str[INT_DECIMAL_STRING_SIZE(sizeof(int))] = {0} ;\n\
-wchar_t **_tpl_str = NULL;\n\
-int     _tpl_str_num = 0;\n\
-double  _tpl_conv_if(int s)\n\ { return (double)s; }\n\
+    wchar_t *c_code = L"/** Integer to float */\n\
+double  _tpl_conv_if( int s ) {\n\
+   return (double)s;\n\
+}\n\
+/** Integer to char  */\n\
 wchar_t _tpl_conv_ic( int s ) {\n\
     int delete_bits = (sizeof(s)-1)*8;\n\
-    int s2 = s<<delete_bits; // Iň kiçi baýtdan öňküleri nollaýas\n\
-        s2 = s>>delete_bits; // Iň kiçi baýty yza geçirýäs\n\
+    int s2 = s<<delete_bits; // Set zero to variable `s`, except least single byte\n\
+        s2 = s>>delete_bits; // For setting zero, shift least byte to left corner.\n\
+                             // Then move least byte to original position. \n\
     return s2;\n\
 }\n\
-wchar_t * _tpl_conv_ia(int s) {\n\
+/** Integer to String */\n\
+wchar_t * _tpl_conv_ia( int s ) {\n\
     wchar_t hl[INT_DECIMAL_STRING_SIZE(sizeof(s))] = {0};\n\
-    swprintf(hl, INT_DECIMAL_STRING_SIZE(sizeof(s))/sizeof(s), L\"%i\", s);\n\
+    //swprintf(hl, INT_DECIMAL_STRING_SIZE(sizeof(s)), L\"%i\", s);\n\
+    swprintf(hl, L\"%i\", s);\n\
 \n\
-    ++_tpl_str_num;\n\
-    _tpl_str = realloc(_tpl_str, sizeof(*_tpl_str)*_tpl_str_num);\n\
-    _tpl_str[_tpl_str_num-1] = malloc(sizeof(**_tpl_str)*INT_DECIMAL_STRING_SIZE(sizeof(s)));\n\
-    wcsncpy(_tpl_str[_tpl_str_num-1], hl, wcslen(hl)+1);\n\
-    return _tpl_str[_tpl_str_num-1]; }\n\
-void _tpl_free_tmp_str() {\n\
-    if (!_tpl_str_num)\n\
-    {\n\
-        return;\n\
-    }\n\
-\n\
-    int i;\n\
-    for (i=0; i<_tpl_str_num; ++i)\n\
-    {\n\
-        free(_tpl_str[i]);\n\
-    }\n\
-    free(_tpl_str);\n\
+    wchar_t *str = malloc( sizeof( wchar_t )*INT_DECIMAL_STRING_SIZE( sizeof( s ) ) );\n\
+    wcsncpy( str, hl, wcslen( hl )+1 );\n\
+    return str; \n\
 }\n\
 \n\
-int     _tpl_conv_fi(double d)  { return (int)d; }\n\
-wchar_t _tpl_conv_fc(double d)  {  int s = _tpl_conv_fi(d); return _tpl_conv_ic(s); }\n\
-wchar_t *_tpl_conv_fa(double d) {\n\
+/** Float to integer  */\n\
+int     _tpl_conv_fi( double d )  {\n\
+    return (int)d; \n\
+}\n\
+\n\
+/** Float to char  */\n\
+wchar_t _tpl_conv_fc(double d)  {\n\
+  int s = _tpl_conv_fi( d );\n\
+  return _tpl_conv_ic( s );\n\
+}\n\
+/** Float to string  */\n\
+wchar_t *_tpl_conv_fa( double d ) {\n\
     wchar_t hl[100] = {0};\n\
-    ++_tpl_str_num;\n\
-    _tpl_str = realloc(_tpl_str, sizeof(*_tpl_str)*_tpl_str_num);\n\
-    _tpl_str[_tpl_str_num-1] = malloc(sizeof(**_tpl_str)*100);\n\
-    wcsncpy(_tpl_str[_tpl_str_num-1], hl, wcslen(hl)+1);\n\
-    return _tpl_str[_tpl_str_num-1];}\n\
-int     _tpl_conv_ci(wchar_t c) {\n\ return (int)c;}\n\
-wchar_t _tpl_conv_cf(wchar_t h) {int s = _tpl_conv_ci(h); return  _tpl_conv_if(s); }\n\
+    //swprintf(hl, 100, L\"%f\", d);\n\
+    swprintf(hl, L\"%f\", d);\n\
+    wchar_t * str = malloc(sizeof( wchar_t )*100);\n\
+    wcsncpy( str, hl, wcslen( hl )+1 );\n\
+    return str;\n\
+}\n\
+/** Char to integer */\n\
+int     _tpl_conv_ci( wchar_t c ) {\n\
+    return (int)c;\n\
+}\n\
+/** Char to float */\n\
+wchar_t _tpl_conv_cf( wchar_t h ) {\n\
+    int s = _tpl_conv_ci(h); \n\
+    return  _tpl_conv_if(s);\n\
+}\n\
+/** Char to string */\n\
 wchar_t *_tpl_conv_ca(wchar_t h){\n\
     #define L sizeof(h)*2\n\
-    wchar_t hl[L] = {0};\n\
+    wchar_t hl[ L ] = {0};\n\
     hl[0]=h;\n\
 \n\
-    ++_tpl_str_num;\n\
-    _tpl_str = realloc(_tpl_str, sizeof(*_tpl_str)*_tpl_str_num);\n\
-    _tpl_str[_tpl_str_num-1] = malloc(sizeof(**_tpl_str)*L);\n\
-    wcsncpy(_tpl_str[_tpl_str_num-1], hl, wcslen(hl)+1);\n\
-    return _tpl_str[_tpl_str_num-1];\n\
+    wchar_t *str = malloc( sizeof( wchar_t )*2 );\n\
+    str[0] = h;\n\
+    str[1] = L'\\0';\n\
+    return str;\n\
 }\n\
-int     _tpl_conv_ai(wchar_t *hl)   { wchar_t *stop_str; return (int)wcstol(hl, &stop_str, 10); }\n\
-double  _tpl_conv_af(wchar_t *hl)   { wchar_t *stop_str; return  (double)wcstof(hl, &stop_str); }\n\
-wchar_t _tpl_conv_ac(wchar_t *hl)   { return hl[0]; }\n";
+/** String to integer */\n\
+int     _tpl_conv_ai(wchar_t *hl)   {\n\
+    wchar_t *stop_str; \n\
+    return (int)wcstol( hl, &stop_str, 10 ); \n\
+}\n\
+/** String to float */\n\
+double  _tpl_conv_af(wchar_t *hl)   {\n\
+    wchar_t *stop_str; \n\
+    return  (double)wcstof( hl, &stop_str ); \n\
+}\n\
+/** String to char */\n\
+wchar_t _tpl_conv_ac(wchar_t *hl)   {\n\
+ return hl[0]; \n\
+}";
 
     fputws( c_code, c_file );
 }
@@ -115,25 +131,17 @@ wchar_t _tpl_conv_ac(wchar_t *hl)   { return hl[0]; }\n";
 
 void add_conv_basic_free_atexit(FILE *f)
 {
-    wchar_t *line = L"atexit(_tpl_free_tmp_str);";
+    wchar_t *line = L"//atexit();\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen , line);
+    write_strings_to_file(f, &l, &llen , line);
 }
 
 void add_conv_basic_prepere_atexit(FILE *f)
 {
-    wchar_t *line = L"#include <stdlib.h>\n";
+    wchar_t *line = L"\n#include <stdlib.h>\n";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen , line);
-}
-
-void add_turkmen_locale_support_lib(FILE *f)
-{
-    wchar_t *line = L"#include <locale.h>\n";
-    wchar_t *l = NULL;
-    int llen = 0;
-    write_code_line(f, &l, &llen , line);
+    write_strings_to_file(f, &l, &llen , line);
 }
 

@@ -182,12 +182,12 @@ void cmd_cmp_c_code(command *cmd, wchar_t **l, int *llen)
     // Eger birinji ülňi identifikator bolsa, özi alynýar.
     command_item *e1 = get_cmd_item(cmd->items,0), *e2 = get_cmd_item(cmd->items,1), *e3 = get_cmd_item(cmd->items,2);
 
-    cmd_item_get_c_code( e1, l, llen );
+    write_cmd_item_c_code( e1, l, llen );
 
     // baglanma ülňiniň c dili üçin warianty goýulýar
     wchar_t *cmp_c = TOK_CLASS_CMP_CHARS[e2->tok.potentional_types[0].type_num][1];
     wcsadd_on_heap( l, llen, cmp_c );
 
-    cmd_item_get_c_code( e3, l, llen );
+    write_cmd_item_c_code( e3, l, llen );
 }
 

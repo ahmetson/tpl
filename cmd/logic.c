@@ -146,12 +146,12 @@ void cmd_logic_c_code(command *cmd, wchar_t **l, int *llen)
     if (cmd->cmd_type==CMD_LOGIC_MONO_TYPE)
     {
         command_item *e2 = get_cmd_item(cmd->items,1);
-        cmd_item_get_c_code( e2, l, llen );
+        write_cmd_item_c_code( e2, l, llen );
 
         wcsadd_on_heap( l, llen, o );
 
         command_item *e1 = get_cmd_item(cmd->items,0);
-        cmd_item_get_c_code( e1, l, llen );
+        write_cmd_item_c_code( e1, l, llen );
 
         wcsadd_on_heap( l, llen, c );
     }
@@ -160,13 +160,13 @@ void cmd_logic_c_code(command *cmd, wchar_t **l, int *llen)
         wcsadd_on_heap( l, llen, o );
 
         command_item *e1 = get_cmd_item(cmd->items,0);
-        cmd_item_get_c_code( e1, l, llen );
+        write_cmd_item_c_code( e1, l, llen );
 
         command_item *e2 = get_cmd_item(cmd->items,1);
-        cmd_item_get_c_code(e2, l, llen ); /// Tokeniň Kodyny çap edýär
+        write_cmd_item_c_code(e2, l, llen ); /// Tokeniň Kodyny çap edýär
 
         command_item *e3 = get_cmd_item(cmd->items,0);
-        cmd_item_get_c_code(e3, l, llen );
+        write_cmd_item_c_code(e3, l, llen );
 
         wcsadd_on_heap( l, llen, c );
     }

@@ -25,4 +25,6 @@ void cmd_conv_basic_type_c_code(command *cmd, wchar_t **l, int *llen);
 
 void get_conv_type_num(command *cmd, int *rclass, int *rtype);
 
+int is_return_string( int from, int to );
+
 #endif // CMD_CONV_BASIC_TYPES_H

@@ -3,8 +3,9 @@
 #include "token_types/loop_sttmnt.h"
 #include "token_types/utype.h"
 #include "keywords.h"
+#include "token_types/block_inside.h"
 
-int MAX_KEYWORDS_NUM = (4) + 1 + (4) + 1; /// 10 sany açar söz ulanylýar
+int MAX_KEYWORDS_NUM = 13; /// 13 sany açar söz ulanylýar
 
 wchar_t *keywords[] = {
 	L"san",					/// tipler
@@ -18,5 +19,6 @@ wchar_t *keywords[] = {
 	CTRL_STTMNT_CLOSE_BLOCK,
 	UNTIL_WORD,             /// loop_sttmnt
 	UNTIL_CLOSE_WORD,
-	UTYPE_DEF_SIGNIFIER_WORD/// user_type
+	UTYPE_DEF_SIGNIFIER_WORD,/// user_type
+	TOK_CLASS_BLOCK_INSIDE_FN_RETURN_CHAR /// block_inside: return
 };

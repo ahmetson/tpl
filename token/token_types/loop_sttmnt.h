@@ -4,8 +4,8 @@
 #include "../token_structs.h"
 
 #ifndef UNTIL_WORD
-#define UNTIL_WORD L"tä"
-#define UNTIL_CLOSE_WORD L"bolýança"
+#define UNTIL_WORD L"ta"
+#define UNTIL_CLOSE_WORD L"bolyancha"
 #endif // UNTIL_WORD
 
 #ifndef TOK_CLASS_LOOP_STTMNT_NUM

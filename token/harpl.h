@@ -16,12 +16,12 @@ wchar_t *get_glob_str_by_index(int str_num);
 
 int is_token_string_const_data(token *tok);
 
-token parse_string(FILE *f);
+token parse_string( );
 void  set_token_string_params(token *string_toke);
 void last_glob_str_init();
 
 int is_string_const_data_compl(wchar_t *tok_val, wchar_t onstack);
 
-int parser_mode_string( FILE *s, command *cmd );
+int parser_mode_string( command *cmd, wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM );
 
 #endif // TOKEN_HARPL_H

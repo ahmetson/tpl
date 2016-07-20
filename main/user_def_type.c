@@ -79,8 +79,8 @@ int get_utype_addr_by_cmd(command *cmd, int *utype_addr)
 {
     int tmp_type=-1, tmp_class=-1;
     command_item *fci = get_cmd_item(cmd->items, 0);
-    command_item *tci = get_cmd_item(cmd->items, 2);
-    token        *tok = &tci->tok;
+    //command_item *tci = get_cmd_item(cmd->items, 2);
+    //token        *tok = &tci->tok;
     if (fci->type==CMD_ITEM)
     {
         /// MESELEM: ug1 "adam" "süýdemriji"
@@ -140,13 +140,15 @@ int get_utype_addr_by_cmd(command *cmd, int *utype_addr)
         Ýogsa
             Tipiň nomeri ötürdilip, yzyna şowlylyk gaýtarylýar.
     */
+    int ret = 0;
     if (tmp_class!=TOK_CLASS_UTYPE_CON)
         printf("%s %d setirde: Sada tipdäki (san, drob, harp, harpl) ülňiniň birligine çatyljak bolundy\n", __FILE__, __LINE__);
     else
     {
         *utype_addr = tmp_type;
-        return 1;
+         ret = 1;
     }
+    return ret;
 }
 
 
@@ -237,7 +239,7 @@ void add_utype_define_c_code(FILE *f)
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
         // Tip açýan kodly setir
-        write_code_line(f, &line, &llen , utype_opener);
+        write_strings_to_file(f, &line, &llen , utype_opener);
 
         for (j=0; j<USER_DEF_TYPES[i].items_num; ++j)
         {
@@ -249,7 +251,7 @@ void add_utype_define_c_code(FILE *f)
             type_class = USER_DEF_TYPE_ITEMS[i][j].type_class;
             type_num   = USER_DEF_TYPE_ITEMS[i][j].type_num;
 
-            get_type_c_code(type_class, type_num, &elem_line, &elem_line_len);
+            write_type_c_code_analog(type_class, type_num, &elem_line, &elem_line_len);
 
             /// Birligiň identifikatory
             wcsadd_on_heap( &elem_line, &elem_line_len, space );
@@ -278,9 +280,9 @@ void add_utype_define_c_code(FILE *f)
             }
 
             /// Birligi gutaryjy
-            get_cmd_end_c_code(&elem_line, &elem_line_len);
+            write_terminator(&elem_line, &elem_line_len);
 
-            write_code_line(f, &line, &llen , elem_line);
+            write_strings_to_file(f, &line, &llen , elem_line);
             free(elem_line);
             elem_line = NULL;
             elem_line_len = 0;
@@ -295,7 +297,7 @@ void add_utype_define_c_code(FILE *f)
         wcsadd_on_heap( &closer, &closer_len, USER_DEF_TYPES[i].ident );
         wcsadd_on_heap( &closer, &closer_len, end );
 
-        write_code_line(f, &line, &llen , closer);
+        write_strings_to_file(f, &line, &llen , closer);
         free(closer);
         closer = NULL;
         closer_len = 0;
@@ -319,7 +321,14 @@ void add_addtn_headers(FILE *f)
 {
     /// Include main file. Because there is included all additional information
     if ( is_wcseq( MAIN_FILE_NAME, CUR_FILE_NAME ) )
+    {
+        fputws( L"#define _CRT_NON_CONFORMING_SWPRINTFS\n#include <stdlib.h>\n\
+#include <stdio.h>\n\
+#include <string.h>\n\
+#include <wchar.h>\n", f );
         return; // No need to include itself. It will included in another place
+    }
+
 
     wchar_t *line = malloc(MAX_PREP_LEN),
             *include = L"#include \"",
@@ -338,7 +347,7 @@ void add_addtn_headers(FILE *f)
 }
 
 
-void parse_triangle_block_inside(FILE *source)
+void parse_triangle_block_inside( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM  )
 {
     ///  Häzir üçburç bloklar diňe Ug'laryň yglan etmegine ulanylýany üçin,
     ///  diňe şol komandanyň talap edýän maglumatlary barlanýar.
@@ -367,18 +376,18 @@ void parse_triangle_block_inside(FILE *source)
 */
     int prev_part = CUR_PART;
 	CUR_PART = 2;
-	command item; init_cmd(&item, 0);
+	command item; init_cmd(&item, 0); /** Temporary item, that hold each element of triangle block */
 	item.items = -2;
 
     // Adaty parser komandalary saýgarýar
-	while( 1 )
+	int i, sizeof_wchar = sizeof( wchar_t );
+    for( i= ( *SOURCE_POINTER_NUM )-1; i<SOURCE_BYTES_NUM/sizeof_wchar; ++i )
 	{
-	    if ( !process_char( source, CHECK_VALID_CHAR ) )
-            break;
+	    process_char( CHECK_VALID_CHAR, SOURCE_POINTER_NUM, SOURCE );
 
         if ( iswspace(CUR_CHAR) ||
-             parser_mode_paren( source, &item ) ||
-             parser_mode_string( source, &item ) )
+             parser_mode_paren( &item, SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM ) ||
+             parser_mode_string( &item, SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM ) )
         {
             continue;
         }
@@ -390,16 +399,16 @@ void parse_triangle_block_inside(FILE *source)
         }
         else if (CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR)
         {
-            if (!item.items_num)
+            if ( !item.items_num )
             {
                 print_err(CODE2_TRIANGLE_BLOCK_CANT_BE_EMPTY, &inf_tok);
             }
-            else if (!is_triangle_block_support_cmd(&item))
+            else if ( !is_triangle_block_support_cmd( &item ) )
             {
                 print_err(CODE2_TRIANGLE_BLOCK_NOT_SUPPORT_CMD, (token *)inf_get_last_token(&item));
             }
             add_to_tmp_triangle_blok_items(&item);
-            if (item.items_num)
+            if ( item.items_num )
                 free(TMP_CMD_ITEMS_LIST);
             TMP_CMD_ITEMS_LIST = NULL;
             init_cmd(&item, 0);
@@ -412,7 +421,7 @@ void parse_triangle_block_inside(FILE *source)
         else
         {
             CUR_CMD = &item;
-            token tok = parse_token(source);
+            token tok = parse_token( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
             // Komanda goşulýar
             if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_CLOSE_TYPE)
             {
@@ -532,7 +541,7 @@ void move_tmp_utype_items_to_last()
     {
         USER_DEF_TYPE_ITEMS[last][i] = TMP_USER_DEF_TYPE_ITEMS[i];
         arr_addr = USER_DEF_TYPE_ITEMS[last][i].arr_items_addr;
-        if (arr_addr!=-1)
+        if ( -1!=arr_addr )
         {
 
             USER_DEF_TYPES_ARRS_NUMS[last] += 1;
@@ -554,7 +563,6 @@ void move_tmp_utype_items_to_last()
 
 void free_tmp_user_type()
 {
-    int i;
     if (TMP_USER_DEF_TYPES_NUM)
     {
         /// Eger tipiň sanaw birlikleri bar bolsa
@@ -580,7 +588,7 @@ void free_tmp_user_type()
 
 int is_utype_ident(wchar_t *ident)
 {
-    int i, len = wcslen(ident);
+    int i;
     for (i=0; i<USER_DEF_TYPES_NUM; ++i)
     {
         if ( is_wcseq( USER_DEF_TYPES[i].ident, ident ) )

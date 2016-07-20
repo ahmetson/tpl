@@ -6,7 +6,7 @@
 int is_token_comment(token *tok, wchar_t *tok_val)
 {
 	/*Go through array of possible types*/
-	int i, complete = 0, len = wcslen(tok_val), type;
+	int complete = 0, len = wcslen(tok_val), type;
 	token_type tok_type;
 
     if (len>0)
@@ -49,7 +49,7 @@ int is_token_comment(token *tok, wchar_t *tok_val)
                     {
                         complete = 1;
                     }
-                    else
+                    else if (tok->potentional_types[0].is_compl)
                     {
                         return 0;
                     }

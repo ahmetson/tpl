@@ -28,6 +28,7 @@ extern int CMD_CLASS_ARR;
 extern int CMD_CLASS_UTYPE;
 extern int CMD_CLASS_FN_DEF;
 extern int CMD_CLASS_CONV_BASIC_TYPES;
+extern int CMD_CLASS_BLOCK_INSIDE;
 
 #ifndef CONST_CMD_CLASS_UTYPE
 #define CONST_CMD_CLASS_UTYPE  12
@@ -88,7 +89,7 @@ extern is_cmd_item cmd_types[];
 
 // Komandalaryn sany
 #ifndef CMDS_TYPES_NUM
-#define CMDS_TYPES_NUM 14
+#define CMDS_TYPES_NUM 15
 #endif
 
 #ifndef MAX_CLASS_TYPES
@@ -166,6 +167,7 @@ void  work_with_glob_var_decs();
 void  work_with_glob_arr_decs();
 void work_with_glob_fn_decs();
 
+int return_cmd_item_type( command_item *ci, int *type_class, int *type_num);
 
 int    *get_op_positions(command *cmd);
 int     get_op_prior(int cmd_items, int op_position);
@@ -179,11 +181,14 @@ int is_op_require_left_data( int pos );
 int is_op_require_right_data( int pos );
 
 void    minimize_operands( command *cmd, int *op_positions );
+void    minimize_single_operand_cmds( command *cmd );
 void    move_cmd_items ( int orig_pos, int start_pos, command *cmd );
 int     make_subcmd_from_op(command *cmd, int **op_position);
 int is_cmd_item_op( command_item *ci );
 
 int     get_prev_op_pos( int *pos, int cur_pos );
 int     get_next_op_pos( int *pos, int cur_pos );
+
+void get_left_side_operand( command *cmd, int *op_positions, int op, int *cmd_start, int *cmd_end );
 
 #endif

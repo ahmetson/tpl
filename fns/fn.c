@@ -100,14 +100,23 @@ void make_user_def_fn_args(parenthesis *paren, wchar_t **line, int *llen)
 {
     wchar_t *space = L" ",
             *dot_space = L", ";
-    int i;
+    int i, elem, elem_type_class, elem_type;
 
     wcsadd_on_heap( line, llen, space );
 
+    parenthesis_elem *p_es = get_paren_elems(paren->elems);
     for(i=0; i<paren->elems_num; ++i)
     {
-        parenthesis_elem *p_es = get_paren_elems(paren->elems);
-        paren_item_get_c_code( &p_es[i], line, llen );
+        get_parenthesis_elem_type( &p_es[ i ], &elem, &elem_type_class, &elem_type );
+        if ( elem==TOKEN_ITEM && elem_type_class==TOK_CLASS_CONST_DATA && elem_type==STRING_CONST_DATA_TOK_NUM )
+        {
+            trans_to_c_move_fn_arg_to_malloc( &p_es[ i ].tok );
+            trans_to_c_write_last_fn_arg( line, llen );
+        }
+        else
+        {
+            write_paren_item_c_code( &p_es[i], line, llen );
+        }
 
         if (i<paren->elems_num-1)
         {

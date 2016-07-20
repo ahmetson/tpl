@@ -45,7 +45,13 @@ extern token   inf_tok;
 extern command        *CUR_ALGOR;
 extern long            CUR_ALGOR_SIZE;
 extern int             CUR_ALGOR_ITEMS_NUM;
+extern wchar_t        *CUR_SOURCE;
+extern int             CUR_SOURCE_BYTES_NUM ;
+extern int             CUR_SOURCE_POINTER;
 
+extern wchar_t        *CUR_BASHY_SOURCE;
+extern int             CUR_BASHY_SOURCE_BYTES_NUM ;
+extern int             CUR_BASHY_SOURCE_POINTER;
 
 // Komandanyň içinde bolýan komandalaryň birliklerine, ýatda emeli usulda ýer berilýär.
 extern command_item  **GLOB_SUBCMD_ITEMS_LIST;
@@ -187,10 +193,48 @@ wchar_t DIR_TPL_BASE[ MAX_FILE_LEN ],
         DIR_C_FOLDER[ MAX_FILE_LEN ],
         DIR_GCC_FOLDER[ MAX_FILE_LEN ],
         FILE_GCC_EXE[ MAX_FILE_LEN ],
+        FILE_GPP_EXE[ MAX_FILE_LEN ],
         GCC_C_TO_O_ADDS[ MAX_FILE_LEN*4 ],
         GCC_O_TO_EXE_ADDS[ MAX_FILE_LEN*3 ],
         CUR_DIR[ MAX_FILE_LEN ],
         FILE_OUT_EXE[ MAX_FILE_LEN ];
+
+extern wchar_t         *CMD_C_CODE_PRE;
+extern wchar_t         *CMD_ASSIGN_C_CODE_PRE;
+extern wchar_t         *CMD_C_CODE_AFTER;
+extern wchar_t         *CMD_ASSIGN_C_CODE_AFTER;
+extern int              CMD_C_CODE_PRE_LEN;
+extern int              CMD_C_CODE_AFTER_LEN;
+extern int              CMD_ASSIGN_C_CODE_PRE_LEN;
+extern int              CMD_ASSIGN_C_CODE_AFTER_LEN;
+
+extern int             CUR_LOC_FN;
+
+extern wchar_t         *C_CODE_CONV_TMP_STR;
+extern int             C_CODE_CONV_TMP_NUM;
+
+extern wchar_t         *C_CODE_FN_CALLS_STR;
+extern int             C_CODE_FN_CALLS_NUM;
+
+extern wchar_t         *C_CODE_FN_HARPL_ARG_STR;
+extern int             C_CODE_FN_HARPL_ARG_NUM;
+
+//extern wchar_t         ***C_CODE_FN_DEF_FREE_VARS;
+//extern int             *C_CODE_FN_DEF_FREE_VARS_NUM;
+
+/** Variables that allocated memory inside of local function or main function */
+extern wchar_t         **C_CODE_LOC_FREE_VARS;
+extern int             C_CODE_LOC_FREE_VARS_NUM;
+
+/** Variables that allocated memory inside of user defined function */
+extern wchar_t         ***C_CODE_DEF_FN_FREE_VARS;
+extern int             *C_CODE_DEF_FN_FREE_VARS_NUM;
+
+/** Global variables that allocated memory */
+extern wchar_t         **C_CODE_GLOB_FREE_VARS;
+extern int             C_CODE_GLOB_FREE_VARS_NUM;
+
+extern int              NOT_COUNTED_FILES_NUM;
 
 // TPL'den cykmazdan öňürti, programmanyň eýelän ýatdaky ýerlerini şu iki funksiýa arkaly boşadylýar.
 void free_globs(void);

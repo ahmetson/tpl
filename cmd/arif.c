@@ -1,8 +1,6 @@
-/** Arifmetiki operatorlar
-**/
+/** Arifmetiki operatorlar*/
 #include <string.h>
 #include <stdlib.h>
-#include "arif.h"
 
 #include "../cmds.h"
 #include "../main/glob.h"
@@ -11,6 +9,8 @@
 #include "../error.h"
 #include "../fns.h"
 #include "../translator_to_c.h"
+
+#include "arif.h"
 
 /// Iki sany tipleri bolýar
 int CMD_ARIF_LOW_PRIOR_TYPE  = 0;   // +, -
@@ -25,6 +25,7 @@ int is_cmd_arif(command *cmd)
 
     /// Ähli arifmetiki görnüşleri edil birinji ärifmetiki komandanyň görnüşi ýaly birlikleri kabul etmeli.
     /// Birinji arifmetiki komanda görnüşi bolsa, 3 birligi kabul edýär
+
     if (cmd->items_num>CMD_MAX_ITEMS[CMD_CLASS_ARIF][CMD_ARIF_LOW_PRIOR_TYPE] || !cmd->items_num)
 	{
 		return 0;
@@ -234,12 +235,12 @@ void cmd_arif_c_code(command *cmd, wchar_t **l, int *llen)
     command_item    *e1 = get_cmd_item(cmd->items,0),
                     *e2 = get_cmd_item(cmd->items,1),
                     *e3 = get_cmd_item(cmd->items,2);
-    cmd_item_get_c_code( e1, l, llen );
+    write_cmd_item_c_code( e1, l, llen );
 
     // baglanma ülňiniň c dili üçin warianty goýulýar
     wchar_t *arif_c = TOK_CLASS_ARIF_CHARS[e2->tok.potentional_types[0].type_num][1];
     wcsncat_on_heap( l, llen, arif_c );
 
-    cmd_item_get_c_code( e3, l, llen );
+    write_cmd_item_c_code( e3, l, llen );
 }
 

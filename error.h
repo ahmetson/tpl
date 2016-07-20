@@ -22,7 +22,7 @@ typedef struct {
     wchar_t start_wchar_t;
     wchar_t wchar_t_num;
     wchar_t code_line;      // Koddaky ýalňyşlygyň duşan ýerini görkezmelimi
-    wchar_t *msg;          // Ulanyja düşnükli ýalňyşlygyň teksti
+    char *msg;          // Ulanyja düşnükli ýalňyşlygyň teksti
 }error_item;
 
 extern wchar_t *parts_names[];
@@ -93,6 +93,8 @@ extern int CODE7_FN_RET_TYPE_NOT_MATCH;
 extern int CODE7_FN_NOT_DEF;
 extern int CODE7_MUST_BE_DEF_TYPE;
 extern int CODE7_MUST_RETURN_TYPE;
+extern int CODE7_RETURN_CMD_CAN_BE_USED_INSIDE_FUNCTION;
+extern int CODE7_RETURN_CMD_TYPE_NOT_MATCH;
 //extern int CODE7_LEFT_IDENT_DEFINED;
 //extern int CODE7_LEFT_IDENT_NOT_DEFINED;
 //extern int CODE7_RIGHT_IDENT_NOT_DEFINED;

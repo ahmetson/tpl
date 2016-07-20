@@ -21,7 +21,7 @@ void tok_void_con_c_code(token *tok, wchar_t **l, int *llen)
 int is_token_void(token *tok, wchar_t *tok_val)
 {
 	/*Go through array of possible types*/
-	int i, answer, found = 0;
+	int answer, found = 0;
 	token_type tok_type;
 
 	answer = wcsstr_by_offset(TOK_VOID_CHARS[0][0], tok_val, 0);

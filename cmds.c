@@ -20,6 +20,7 @@
 #include "cmd/user_def_type.h"
 #include "cmd/fn_def.h"
 #include "cmd/conv_basic_types.h"
+#include "cmd/block_inside.h"
 #include "paren/types.h"
 #include "algor.h"
 #include "dev_debug.h"
@@ -27,6 +28,7 @@
 #include "main/inf.h"
 #include "fns/fn_helpers.h"
 #include "fns.h"
+#include "main/user_def_type.h"
 
 // Komandanyň birliginiň nomeri
 const int UNKNOWN_ITEM  = 0;
@@ -50,6 +52,7 @@ int CMD_CLASS_ARR           = 11;
 int CMD_CLASS_UTYPE         = 12;
 int CMD_CLASS_FN_DEF        = 13;
 int CMD_CLASS_CONV_BASIC_TYPES = 14;
+int CMD_CLASS_BLOCK_INSIDE = 15;
 
 int GLOB = 0;
 int LOCAL = 1;
@@ -68,7 +71,8 @@ is_cmd_item cmd_types[] = {
 	   {is_cmd_arr},
 	   {is_cmd_utype},
 	   {is_cmd_fn_def},
-	   {is_cmd_conv_basic_type}
+	   {is_cmd_conv_basic_type},
+	   {is_cmd_block_inside}
 };
 
 // Dine debug üçin ulanylyar. Komanda tiplerinin atlary
@@ -86,7 +90,8 @@ char *cmd_classes[] = {
 	"Birsyhly sanaw",
 	"UG bilen baglanyşykly",
 	"Ulanyjynyň funksiýasy",
-	"Sada tipini üýtgetme"
+	"Sada tipini üýtgetme",
+	"Bloklar içinde ulanyp bolýan komandalar"
 };
 
 // diňe debuglamak üçin
@@ -104,7 +109,8 @@ char *cmd_class_types[][MAX_CLASS_TYPES] = {
 	{"yglanlama", "çatylma"},
 	{"yglanlama", "çatylma"},
 	{"yglanlama", "beýanlama"},
-	{"sada tipi üýtgetme"}
+	{"sada tipi üýtgetme"},
+	{"funksiýadan çykýan komanda"}
 };
 
 
@@ -123,7 +129,8 @@ int (*CMD_RETURN_TYPE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, int *cmd
     {empty_cmd_return_type,         cmd_arr_con_return_type},//CMD_CLASS_ARR = 11;
     {empty_cmd_return_type,         cmd_utype_con_return_type},//CMD_CLASS_UTYPE = 12;
     {empty_cmd_return_type,         empty_cmd_return_type},//CMD_CLASS_FN_DEF = 13;
-    {cmd_arr_conv_basic_return_type}    //CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {cmd_arr_conv_basic_return_type},    //CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {cmd_block_inside_return_type}    //CMD_CLASS_BLOCK_INSIDE = 15;
 };
 
 
@@ -143,7 +150,8 @@ int (*CMD_CHECK_SEMANTICS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd) = {
     {semantic_cmd_arr_def,        semantic_cmd_arr_con}, //CMD_CLASS_ARR = 11;
     {semantic_cmd_utype_def,      semantic_cmd_utype_con},//CMD_CLASS_UTYPE = 12;
     {semantic_cmd_fn_def,         semantic_cmd_fn_dec}, //CMD_CLASS_FN_DEF = 13;
-    {semantic_cmd_conv_basic_type }//CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {semantic_cmd_conv_basic_type },//CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {semantic_cmd_block_inside }//CMD_CLASS_CONV_BASIC_TYPE = 14;
 };
 
 // Komandanyň klasy we tipi boýunça semantikasyny barlaýan funksiýalar
@@ -162,7 +170,8 @@ int CMD_MAX_ITEMS[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES] = {
     {},                                               //CMD_CLASS_ARR  = 11;
     {MAX_THREE_ITEMS, MAX_THREE_ITEMS},               //CMD_CLASS_UTYPE  = 12;
     {MAX_FOUR_ITEMS,  MAX_THREE_ITEMS},               //CMD_CLASS_FN_DEF  = 13;
-    {MAX_TWO_ITEMS}                                   //CMD_CLASS_CONV_BASIC_TYPES  = 14;
+    {MAX_TWO_ITEMS},                                  //CMD_CLASS_CONV_BASIC_TYPES  = 14;
+    {MAX_TWO_ITEMS}                                   //CMD_CLASS_:BLOCK_INSIDE  = 15;
 };
 
 
@@ -182,7 +191,8 @@ void (*CMD_GET_C_CODE[CMDS_TYPES_NUM+1][MAX_CLASS_TYPES])(command *cmd, wchar_t 
     {cmd_arr_def_c_code,        cmd_arr_con_c_code},    //CMD_CLASS_ARR = 11;
     {empty_cmd_c_code,          cmd_utype_con_c_code},  //CMD_CLASS_UTYPE = 12;
     {cmd_fn_def_c_code,         cmd_fn_dec_c_code}, //CMD_CLASS_FN_DEF = 13;
-    {cmd_conv_basic_type_c_code}  //CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {cmd_conv_basic_type_c_code},  //CMD_CLASS_CONV_BASIC_TYPE = 14;
+    {cmd_block_inside_fn_return_c_code}  //CMD_CLASS_BLOCK_INSIDE = 15;
 };
 
 
@@ -255,34 +265,37 @@ int work_with_cmd( command *cmd )
 	int prev_part = CUR_PART;
 	CUR_PART = 4;
 
-    if (!cmd->items_num)
+    if ( 0==cmd->items_num )
         return 0;
 
     // TODO
     // KOMANDA gutarylmadyk bolsa, yalnyshlyk haty komanda gutarylmady diyip gaytaryar
 	// Komanda saygarylyp showly gutardy
-	if (!recognize_cmd( cmd ) )
+
+	if ( 0==recognize_cmd( cmd ) )
 	{
         print_err(CODE4_CANT_IDENT_CMD, (token *)inf_get_last_token( cmd ) );
 	}
+	//debug_cmd( cmd );
 	// Eger komanda funksiyanyn ichinde bolsa,
     //      bolup biljek komandalara barlanyar.
-	if (is_inside_fn() && is_unvalid_inside_fn_cmd( cmd ) )
+	if ( is_inside_fn() &&
+        is_unvalid_inside_fn_cmd( cmd ) )
     {
         print_err(CODE4_UNSUPPORT_CMD_INSIDE_FN, (token *)inf_get_last_token( cmd ) );
     }
-    if (is_fn_def( cmd ))
+    if ( is_fn_def( cmd ) )
     {
         check_semantics( cmd );
         prepare_tmp_fn_data_container( cmd );
     }
-    else if (is_fn_close_cmd( cmd ))
+    else if ( is_fn_close_cmd( cmd ) )
     {
         move_tmp_fn_data_to_local();
         CUR_PART = prev_part;
         return 1;
     }
-    if (is_inside_fn())
+    if ( is_inside_fn() )
     {
         if ( !( cmd->cmd_class==CMD_CLASS_FN_DEF &&
                 cmd->cmd_type ==CMD_FN_DEF_TYPE )&& !add_to_tmp_fn_def_var_list( cmd ) && !add_to_tmp_fn_def_arr_list( cmd ) )
@@ -292,8 +305,11 @@ int work_with_cmd( command *cmd )
     }
     else
     {
-        if (!add_to_def_var_list( cmd ) && !add_to_def_arr_list( cmd ) &&
-            !( cmd->cmd_class==CMD_CLASS_UTYPE && cmd->cmd_type==CMD_UTYPE_DEF_TYPE ) ) // Komanda ulnini yglan etme dal eken
+        if ( cmd->cmd_class==CMD_CLASS_UTYPE && cmd->cmd_type==CMD_UTYPE_DEF_TYPE ) {
+            add_new_utype( cmd );
+            move_tmp_utype_items_to_last();
+        }
+        else if (!add_to_def_var_list( cmd ) && !add_to_def_arr_list( cmd ) ) // Komanda ulnini yglan etme dal eken
         {
             global_called_vars_add( cmd );
             global_called_arrs_add( cmd );
@@ -351,6 +367,8 @@ int is_cmd_item_compl(command_item *ci)
         return ci->cmd.is_compl;
     else if(ci->type==PAREN_ITEM)
         return is_paren_compl(&ci->paren);
+
+    return 0;
 }
 
 int is_paren_compl(parenthesis *p)
@@ -365,6 +383,7 @@ int is_paren_compl(parenthesis *p)
         return p_es[0].cmd.is_compl;
     else if(p_es[0].type==PAREN_ITEM)
         return is_paren_compl(&p_es[0].paren);
+    return 0;
 }
 
 
@@ -551,7 +570,7 @@ void get_glob_var_dec_value_type(wchar_t *ident, int *c, int *t)
 
 void  work_with_glob_var_decs()
 {
-    int j, len;
+    int j;
     for (j=0; j<GLOB_VAR_DECS_NUMS; ++j)
     {
         if (!is_glob_var_def_exist(GLOB_VAR_DECS[j].name))
@@ -579,7 +598,7 @@ void  work_with_glob_var_decs()
 
 void  work_with_glob_arr_decs()
 {
-    int j, len;
+    int j;
     for (j=0; j<GLOB_ARR_DECS_NUMS; ++j)
     {
         if (!is_glob_arr_def_exist(GLOB_ARR_DECS[j].ident))
@@ -608,7 +627,7 @@ void  work_with_glob_arr_decs()
 
 void work_with_glob_fn_decs()
 {
-    int j, len;
+    int j;
     for (j=0; j<DEC_FUNCS_NUM; ++j)
     {
         if (!is_fn_name_used(DEC_FUNCS[j].name))
@@ -621,7 +640,7 @@ void work_with_glob_fn_decs()
             print_err(CODE7_FN_NOT_DEF, &inf_tok);
         }
         /// Yglan edilen we maglumaty yglan edilen funksiýalaryň kabul edýän argumentleri deň bolmaly
-        array_item *gi = glob_arrs_def_get_by_name(GLOB_VAR_DECS[j].name);
+        //array_item *gi = glob_arrs_def_get_by_name(GLOB_VAR_DECS[j].name);
         /// Yglan edilen şol bir identifikatorly funksiýanyň nomeri
         int fn = get_fn_by_ident(DEC_FUNCS[j].name);
         if (FUNCS[fn].args_num != DEC_FUNCS[j].args_num)
@@ -758,6 +777,8 @@ int is_cmd_not_compl_item_exist(command *cmd, wchar_t rec)
             }
         }
     }
+
+    return 1;
 }
 
 int is_cmd_item_can_be_needed(command *cmd)
@@ -814,32 +835,99 @@ int     recognize_cmd( command *cmd )
            Komanda tanalmady diýen ýalňyşlyk görkezilýär.*/
 
     int *op_positions = get_op_positions( cmd );   // First element includes number of operators.
-    minimize_operands( cmd, op_positions );
+    minimize_single_operand_cmds( cmd );
 
     free( op_positions );
-    op_positions = get_op_positions(cmd);   // First element includes number of operators.
-    int num_of_ops = op_positions[0];
+    op_positions = get_op_positions( cmd );
+    minimize_operands( cmd, op_positions );
+
+    //int num_of_ops = op_positions[0];
     make_subcmd_from_op( cmd, &op_positions );
+
+    //debug_cmd( cmd );
 
     free(op_positions);
 
     if ( !parse_cmd(cmd) )
     {
+        printf("------------------------------\n\n\n");
+        parse_cmd(cmd);
+        debug_cmd( cmd );
         print_err(CODE4_CANT_IDENT_CMD, (token*)inf_get_last_token(cmd));
     }
 
     return 1;
 }
 
+
+/** Make nested commands from list of tokens
+    Where command's operand must contain only one item.
+    Currently only one command's operands can contain only one item:
+    connecting to user defined type variable
+*/
+void minimize_single_operand_cmds( command *cmd )
+{
+    int *op_positions = get_op_positions( cmd ),
+        i, start, end;
+    for ( i=0; i<op_positions[ 0 ]; ++i  )
+    {
+        command_item *ci = get_cmd_item( cmd->items, op_positions[ i+1 ] );
+
+        if ( ci->type==TOKEN_ITEM && ci->tok.type_class==TOK_CLASS_UTYPE &&
+             get_token_type( &ci->tok )==UTYPE_ITEM_SEPARATOR )
+        {
+            get_left_side_operand( cmd, op_positions, op_positions[ i+1 ], &start, &end );
+//            start   = op_positions[ i+1 ]-1;
+//            end     = op_positions[ i+1 ]+1;
+
+            command new_cmd;
+            init_cmd( &new_cmd, 0 );
+            new_cmd.items = get_mem_for_cmd_items();
+            new_cmd.items_num = end - start + 1;
+            change_cmd_items_num( new_cmd.items, new_cmd.items_num );
+
+            // Move items to new data
+            int j, cur_pos = start;
+            for ( j=0; j<new_cmd.items_num; ++j, ++cur_pos )
+            {
+                command_item *ci = get_cmd_item( cmd->items, cur_pos );
+                put_cmd_item( new_cmd.items, j, *ci );
+            }
+
+            if ( !parse_cmd( &new_cmd ) || !new_cmd.is_compl )
+            {
+                printf( "CANNOT IDENTIFY OPERAND FOR UTYPE VAR CALL: %d\n", __LINE__ );
+            }
+
+            // Set made sub cmd from data items to main Command. Move next operators to left
+            command_item data_cmd;
+            data_cmd.type = CMD_ITEM;
+            data_cmd.cmd  = new_cmd;
+            put_cmd_item( cmd->items, start, data_cmd );
+
+            move_cmd_items ( start+1, end+1, cmd );
+
+            free( op_positions );
+            op_positions = get_op_positions( cmd );
+            i = 0;
+        }
+    }
+
+    free( op_positions );
+}
+
+/** Make nested commands from list of tokens.
+*/
 void    minimize_operands( command *cmd, int *op_positions )
 {
-    int i, start = -1, end = -1;
+    int i, start = 0, end = cmd->items_num-1;
+
+    if ( op_positions[ 0 ]==0 )
+        return;
+
+    /// Minimize left sides of operators
     for ( i=1; i<=op_positions[ 0 ]; ++i )
     {
-        if ( op_positions[ i ]==0 )
-            continue;
-        command_item *ci = get_cmd_item( cmd->items, op_positions[ i ] );
-
         // Find first token position of data items
         if ( i==1 )
             start = 0;
@@ -854,6 +942,11 @@ void    minimize_operands( command *cmd, int *op_positions )
                 start = op_positions[ i-1 ]+1;
             }
         }
+
+        if ( op_positions[ i ]==0 )
+            continue;
+        //command_item *ci = get_cmd_item( cmd->items, op_positions[ i ] );
+
         // Find last token position of data items
         end = op_positions[ i ]-1;
         // Minimize data to single item
@@ -888,9 +981,10 @@ void    minimize_operands( command *cmd, int *op_positions )
 
             move_cmd_items ( start+1, end+1, cmd );
         }
+
     }
 
-    // Minimize last token data on the right side of operator
+    /// Minimize last token data on the right side of operator
     if ( op_positions[ op_positions[ 0 ] ]+2 < cmd->items_num-1 )
     {
         command new_cmd;
@@ -909,6 +1003,7 @@ void    minimize_operands( command *cmd, int *op_positions )
 
         if ( !parse_cmd( &new_cmd ) )
         {
+            /// TODO
             printf( "CANNOT IDENTIFY OPERAND: %d\n", __LINE__ );
         }
 
@@ -1073,6 +1168,8 @@ int     make_subcmd_from_op(command *cmd, int **op_position)
             }
         }
     }
+
+    return 1;
 }
 
 int     get_prev_op_pos( int *pos, int cur_pos )
@@ -1084,16 +1181,22 @@ int     get_prev_op_pos( int *pos, int cur_pos )
             return prev;
         pos[ i ] = prev;
     }
+    return prev;
 }
 
 int     get_next_op_pos( int *pos, int cur_pos )
 {
-    int i, next = -1;
+    int i, ret;//, next = -1;
     for ( i=1; i<pos[ 0 ]; ++i )
     {
         if ( pos[ i ]==cur_pos )
-            return pos[ i+1 ];
+        {
+            ret = pos[ i+1 ];
+            break;
+        }
     }
+
+    return ret;
 }
 
 void     find_most_prior_op(command *cmd, int *op_positions, int *most_prior_pos, int *most_prior_lvl )
@@ -1119,7 +1222,9 @@ int    *get_op_positions(command *cmd)
     for ( i=0; i<cmd->items_num; ++i )
     {
         command_item *ci = get_cmd_item( cmd->items, i );
-        if ( is_cmd_item_op( ci ) )
+        if ( is_cmd_item_op( ci ) && !( ci->type==TOKEN_ITEM && get_token_type_class( &ci->tok )==TOK_CLASS_ASSIGN
+                                        && get_token_type( &ci->tok )==RIGHT_ASSIGN_TOK_NUM &&
+                                        i==cmd->items_num-1 ) ) /// -> as last operand in command means block opener.
         {
             op_positions[0] += 1;
             op_positions = realloc( op_positions, ( op_positions[0]+1 )*sizeof(int) );     // Additional one for number of  operators
@@ -1137,31 +1242,37 @@ int     get_op_prior(int cmd_items, int op_position)
         op_type;
 
     if ( item_type==PAREN_ITEM && ci->paren.type==PAREN_TYPE_DEF_TYPE )
-        return 7;       // Most prior high values.
+        return 8;       // Most prior high values.
     op_class = get_token_type_class(&ci->tok);
     op_type  = get_token_type(&ci->tok);
+    if ( op_class==TOK_CLASS_UTYPE && op_type==UTYPE_ITEM_SEPARATOR )
+        return 9;
     if ( op_class==TOK_CLASS_ARIF && (op_type==TOK_CLASS_ARIF_MULTI_TYPE || op_type==TOK_CLASS_ARIF_DIV_TYPE) )
-        return 6;
+        return 7;
     if ( op_class==TOK_CLASS_ARIF && (op_type==TOK_CLASS_ARIF_PLUS_TYPE || op_type==TOK_CLASS_ARIF_MINUS_TYPE) )
-        return 5;
+        return 6;
     if ( op_class==TOK_CLASS_CMP )
-        return 4;
+        return 5;
     if ( op_class==TOK_CLASS_LOGIC && op_type==TOK_CLASS_LOGIC_NOT_TYPE )
-        return 3;
+        return 4;
     if ( op_class==TOK_CLASS_LOGIC && op_type!=TOK_CLASS_LOGIC_NOT_TYPE )
-        return 2;
+        return 3;
     if ( op_class==TOK_CLASS_ASSIGN )
-        return 1;           // Least prior operator
+        return 2;           // Least prior operator
+    if ( op_class==TOK_CLASS_BLOCK_INSIDE && op_type==TOK_CLASS_BLOCK_INSIDE_FN_RETURN )
+        return 1;
     return 0;
 }
 
-/** 1.Conv. type: (simple_type)                 paren_item
-    2.Arithmetik high-lvl:  *, :                token_item
-    3.Arithmetik low-lvl:   +, -                token_item
-    4.Compare:               >, <, =, <=, =>    token_item
-    5.Boolean single op:    !                   token_item
-    6.Boolean binary op:    &, ?                token_item
-    7.Assign:               <-, ->              token_item
+/** 1.item delimiter:       /                   token_item
+    2.Conv. type: (simple_type)                 paren_item
+    3.Arithmetik high-lvl:  *, :                token_item
+    4.Arithmetik low-lvl:   +, -                token_item
+    5.Compare:               >, <, =, <=, =>    token_item
+    6.Boolean single op:    !                   token_item
+    7.Boolean binary op:    &, ?                token_item
+    8.Assign:               <-, ->              token_item
+    8.Return:               yza                 token_item
 
 **/
 int is_cmd_item_op( command_item *ci )
@@ -1175,25 +1286,29 @@ int is_cmd_item_op( command_item *ci )
         if ( ci->type==PAREN_ITEM )
         {
             if ( ci->paren.type==PAREN_TYPE_DEF_TYPE )
-                return 1;       // Most prior high values.
+                return 2;       // Most prior high values.
             else
                 return 0;
         }
 
         tok_class = get_token_type_class(&ci->tok);
         tok_type = get_token_type(&ci->tok);
+        if ( tok_class==TOK_CLASS_UTYPE && tok_type==UTYPE_ITEM_SEPARATOR )
+            return 1;
         if ( tok_class==TOK_CLASS_ARIF && (tok_type==TOK_CLASS_ARIF_MULTI_TYPE || tok_type==TOK_CLASS_ARIF_DIV_TYPE) )
-            return 2;
-        if ( tok_class==TOK_CLASS_ARIF && (tok_type==TOK_CLASS_ARIF_PLUS_TYPE || tok_type==TOK_CLASS_ARIF_MINUS_TYPE) )
             return 3;
-        if ( tok_class==TOK_CLASS_CMP )
+        if ( tok_class==TOK_CLASS_ARIF && (tok_type==TOK_CLASS_ARIF_PLUS_TYPE || tok_type==TOK_CLASS_ARIF_MINUS_TYPE) )
             return 4;
-        if ( tok_class==TOK_CLASS_LOGIC && tok_type==TOK_CLASS_LOGIC_NOT_TYPE )
+        if ( tok_class==TOK_CLASS_CMP )
             return 5;
-        if ( tok_class==TOK_CLASS_LOGIC && tok_type!=TOK_CLASS_LOGIC_NOT_TYPE )
+        if ( tok_class==TOK_CLASS_LOGIC && tok_type==TOK_CLASS_LOGIC_NOT_TYPE )
             return 6;
+        if ( tok_class==TOK_CLASS_LOGIC && tok_type!=TOK_CLASS_LOGIC_NOT_TYPE )
+            return 7;
         if ( tok_class==TOK_CLASS_ASSIGN )
-            return 7;           // Least prior operator
+            return 8;           // Least prior operator
+        if ( tok_class==TOK_CLASS_BLOCK_INSIDE && tok_type==TOK_CLASS_BLOCK_INSIDE_FN_RETURN )
+            return 9;
     }
     return 0;
 }
@@ -1202,7 +1317,7 @@ int is_cmd_item_op( command_item *ci )
 int is_op_require_left_data(int op_code)
 {
     // All operators require left data, except Basic type converts
-    if ( op_code==7)
+    if ( op_code==8)
         return 0;
     return 1;
 }
@@ -1210,7 +1325,7 @@ int is_op_require_left_data(int op_code)
 int is_op_require_right_data( int op_code )
 {
     // All operators require right data, except SINGLE LOGIC OPERATOR
-    if ( op_code==3 )
+    if ( op_code==4 )
         return 0;
     return 1;
 }
@@ -1230,3 +1345,90 @@ int get_mem_for_cmd_items()
 
     return GLOB_SUBCMDS_NUM-1;
 }
+
+/** Returns operands type of command item */
+int return_cmd_item_type( command_item *ci, int *type_class, int *type_num)
+{
+    /// Make string from first index number
+    if ( (ci->type==TOKEN_ITEM && return_tok_type( &ci->tok, type_class, type_num ) ) ||
+         (ci->type==CMD_ITEM   && CMD_RETURN_TYPE[ ci->cmd.cmd_class][ci->cmd.cmd_type](&ci->cmd, type_class, type_num )) ||
+         (ci->type==PAREN_ITEM && PAREN_RETURN_TYPE[ ci->paren.type ]( &ci->paren, type_class, type_num ) ) )
+    {
+        return 1;
+    }
+    return 0;
+}
+
+
+void get_left_side_operand( command *cmd, int *op_positions, int op, int *start, int *end )
+{
+    if ( op==0 )
+        return;
+
+    int pre_op = op-1;
+move_to_prev_operand:
+{
+    command_item *pre_op_item = get_cmd_item( cmd->items, pre_op );
+    //debug_token ( &pre_op_item->tok );
+    if ( pre_op_item->type==TOKEN_ITEM && get_token_type_class( &pre_op_item->tok )==TOK_CLASS_CONST_DATA
+         && get_token_type( &pre_op_item->tok )==STRING_CONST_DATA_TOK_NUM )
+    {
+        /// Only integers as indexes of arrays can be inserted as multiple operand
+        wchar_t *index = ( wchar_t* )get_glob_str_by_index( pre_op_item->tok.potentional_types[0].string_value );
+        if ( ( wcslen( index )==1 && index[ 0 ]==L'0' ) ||
+              _wtoi( index )!=0 )
+        {
+            --pre_op;
+            goto move_to_prev_operand;
+        }
+    }
+}
+    *start   = pre_op;
+    *end     = op+1;
+
+    if ( *start != op-1 )
+    {
+        *end = op;
+
+        // Täze komanda ýasalýar.
+        command newcmd;
+        init_cmd( &newcmd, 0 );
+        newcmd.items = get_mem_for_cmd_items();
+
+        newcmd.items_num =  op - *start;
+
+        change_cmd_items_num( newcmd.items, newcmd.items_num );
+
+        // Eger çep birlik bar bolsa
+        int item_pos = *start, i;
+        for ( i=0; i<newcmd.items_num; ++i )
+        {
+            command_item *ci = get_cmd_item( cmd->items, item_pos++ );
+            //birinji birlik çep operand salynýar
+            put_cmd_item( newcmd.items, i, *ci );
+        }
+
+        //Eger komanda tanalmasa
+        if ( !parse_cmd( &newcmd) )
+        {
+            //Komandany tanap bolmady diýen ýalňyşlyk görkezilýär.
+            print_err( 0, &inf_tok );
+        }
+        else
+        {
+            //çepki birlik bolsa şonuň deregine ýogsa operator deregine goýulýar.
+            command_item op_as_subcmd;
+            op_as_subcmd.type = CMD_ITEM;
+            op_as_subcmd.cmd = newcmd;
+
+            int put_place = *start;
+            put_cmd_item( cmd->items, put_place, op_as_subcmd );
+
+            //häzirki komanda gysgalýar.
+            //cmd->items_num -= op-1 - *start ;
+
+            move_cmd_items( *start+1, *start+2, cmd );
+        }
+    }
+}
+

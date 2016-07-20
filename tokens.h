@@ -18,6 +18,7 @@
 #include "token/token_types/utype_con.h"
 #include "token/token_types/void.h"
 #include "token/token_types/comment.h"
+#include "token/token_types/block_inside.h"
 #include "fns/fn.h"
 // Ähli token tiplerine degişli funksiýalar
 #include "token/token_types.h"
@@ -41,7 +42,7 @@ void move_potentional_types (  token *tok, int deleted_potentional_type_num );
 int cmd_add_tok(token tok, command *cmd);                          // 4)Komanda salynýar
 
 void work_with_token(token *tok, command *cmd);
-token parse_token(FILE *s);
+token parse_token( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM );
 
 int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *tok_class, int *tok_num);
 

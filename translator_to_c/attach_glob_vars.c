@@ -25,8 +25,6 @@ int glob_vars_def_files_include_add(glob_ident *gi)
     file_incs *fi;
     //wchar_t var_def_f[MAX_FILE_LEN];
 
-    int i;
-
     /** ÜLŇILER:
     //      näbelli ülňiniň çagyrylan faýlynyň inkludlanýan faýl atlarynyň sanawynyň adresi (1-nji ülňi)
     //      näbelli ülňiniň çagyrylan faýlynyň, faýllar sanawyndan maglumatlarynyň adresi (2-nji ülňi)

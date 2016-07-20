@@ -21,33 +21,29 @@
 
 void tpl(int argc, const char **args)
 {
-    /// Kompýuterdäki ähli zatlar türkmen dilini harplaryny tanar ýaly.
-    char *tk = setlocale(LC_ALL, ".1250");
-    /// Türkmen harplaryny PROMPT'a çykarar ýaly.
+    /// Set UTF-8 as default encode for I/O.
     system("chcp 65001 > nul");
 
-	/// TPL kodly faýllar hökman argumentler bilen berilmeli.
+	/// TPL runs if there is source codes.
 	source_codes_exist(argc);
 
-	/// TPL programma işe girişmäne taýynlanýar.
-	/// Global ülňiler ötürdilýär.
+	/// Prepare TPL:
+	/// Initialize global variables.
 	init();
 
-	/// HER BERLEN KODLY FAÝLYŇ ALGORITMLERI ÝASALÝAR
+	/// Create algorithm tree by TEPL source code
 	work_with_sources(argc, args);
 
-    /// Hemme TPL kodly faýllar barlanan soň, biri-biriniň arasyndaky näsazlyklara barlanylýar.
+    /// After parsing TEPL source codes and building node tree, check interconnections between TEPL source codes
     work_with_semantic();
 
-    /// Ähli TPL proýektine degişli bolan goşmaça C dilindäki kodlary goşýar
-    work_with_translator_whole_project();
+    /// Add additional C codes to C source codes
+    async_source_codes();
 
     /// TPL program automatically calls GCC and makes .EXE file of project
     create_exe();
 
-	/// TPL PROGRAMMADAN ÇYKMALY
+	/// Success!
 	printf("OK!\n");
 }
-
-
 

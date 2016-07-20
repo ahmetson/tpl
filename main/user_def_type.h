@@ -42,11 +42,11 @@ int get_utype_item_addr_by_cmd(command *cmd, int *utype_item_addr);
 
 void add_addtn_headers(FILE *f);
 
-void add_utype_define_c_code(FILE *f);
+void add_utype_define_c_code();
 
 int is_reserved_source_name(wchar_t *fname);
 
-void parse_triangle_block_inside(FILE *f);
+void parse_triangle_block_inside();
 
 void exit_triangle_block_parser();
 

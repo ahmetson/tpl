@@ -86,13 +86,12 @@ token *inf_get_parens_last_token(parenthesis *par)
     return &inf_tok;
 }
 
-int update_inf()
+void update_inf()
 {
-    if (CUR_CHAR==L'\n')
+    if ( CUR_CHAR==L'\n' )
         inf_next_line();
     else
         inf_next_wchar_t();
-    return 1;
 }
 
 

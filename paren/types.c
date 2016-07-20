@@ -89,7 +89,7 @@ int paren_type_is_def_type(parenthesis *paren)
     if (paren->elems_num==1)
     {
         parenthesis_elem *pe = get_paren_elems(paren->elems);
-        int tmp_c, tmp_t, another = 0;
+        //int tmp_c, tmp_t, another = 0;
         if (pe[0].type==TOKEN_ITEM && pe[0].tok.type_class==TOK_CLASS_DEF_TYPE)
         {
             paren->type = PAREN_TYPE_DEF_TYPE;
