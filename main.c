@@ -1,19 +1,19 @@
 #include "tpl.h"
 
-//#define TPL_DEBUG_MODE
+#define TPL_DEBUG_MODE
 
 #ifdef TPL_DEBUG_MODE
-#include <stdlib.h>
-#define EXIT system("pause"); return 0
+    #include <stdlib.h>
+    #define EXIT system("pause"); return 0
 #else
-#define EXIT return 0
+    #define EXIT return 0
 #endif
 
 int main(int argc, const char **args)
 {
-    /// TPl baş funksiýasy hökmän programma gelen argumentleri we olaryň sanyny kabul etmeli.
+    /// Main function of TPL. It's a start point.
+    /// Arguments from CMD and their number are required.
 	tpl(argc, args);
-
 
 	EXIT;
 }

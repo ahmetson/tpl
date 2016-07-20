@@ -9,11 +9,18 @@
 #include "../main/glob.h"
 #include "../main/user_def_type.h"
 #include "../translator_to_c.h"
+#include "../token/helpers.h"
 
 /** Häzir funksiýa çagyrylýan wagty, Parseriň funksiýanyň içini parsing edýänini barlaýar*/
 int is_inside_fn()
 {
     if (TMP_FUNC_NUM!=-1 && TMP_FUNC_NUM==GLOB_BLOCK_INCLUDES-1)
+        return 1;
+    return 0;
+}
+int is_inside_loc_fn()
+{
+    if ( CUR_LOC_FN!=-1)
         return 1;
     return 0;
 }
@@ -23,7 +30,7 @@ int is_inside_fn()
 int is_unvalid_inside_fn_cmd(command *cmd)
 {
     /** Funksiýanyň bloklarynda hiç hili global maglumatlary yglan ýa beýan edip bolanok. */
-    if (cmd->ns==GLOB)
+    if ( cmd->ns==GLOB )
         return 1;
 
     int i;
@@ -105,10 +112,21 @@ void add_fn_dec(command *cmd)
             *dot_c  = L".c",
             *dot_h  = L".h";
 
-    command_item *fci  = get_cmd_item(cmd->items, 0);
-    command_item *args_ci = get_cmd_item(fci->cmd.items, 0);
-    command_item *ident_ci = get_cmd_item(fci->cmd.items, 1);
-    command_item *ret_val_ci  = get_cmd_item(cmd->items, 1);
+    command_item *args_ci, *ident_ci, *ret_val_ci;
+
+    if ( cmd->items_num==3 )
+    {
+        args_ci = get_cmd_item(cmd->items, 0);
+        ident_ci = get_cmd_item(cmd->items, 1);
+        ret_val_ci  = get_cmd_item(cmd->items, 2);
+    }
+    else
+    {
+        command_item *fci  = get_cmd_item(cmd->items, 0);
+        args_ci = get_cmd_item(fci->cmd.items, 0);
+        ident_ci = get_cmd_item(fci->cmd.items, 1);
+        ret_val_ci  = get_cmd_item(cmd->items, 1);
+    }
     if (is_fn_already_dec(ident_ci->tok.potentional_types[0].value))
     {
         return;
@@ -208,6 +226,8 @@ void move_tmp_fn_data_to_local()
     LOC_FUNCS_ARRS_NUM = realloc(LOC_FUNCS_ARRS_NUM, sizeof(*LOC_FUNCS_ARRS_NUM)*LOC_FUNCS_NUM);
     LOC_FUNCS_VARS = realloc(LOC_FUNCS_VARS, sizeof(*LOC_FUNCS_VARS)*LOC_FUNCS_NUM);
     LOC_FUNCS_VARS_NUM = realloc(LOC_FUNCS_VARS_NUM, sizeof(*LOC_FUNCS_VARS_NUM)*LOC_FUNCS_NUM);
+    C_CODE_DEF_FN_FREE_VARS = realloc(C_CODE_DEF_FN_FREE_VARS, sizeof(*C_CODE_DEF_FN_FREE_VARS)*LOC_FUNCS_NUM);
+    C_CODE_DEF_FN_FREE_VARS_NUM = realloc(C_CODE_DEF_FN_FREE_VARS_NUM, sizeof(*C_CODE_DEF_FN_FREE_VARS)*LOC_FUNCS_NUM);
     LOC_FUNCS_PARAMS = realloc(LOC_FUNCS_PARAMS, sizeof(*LOC_FUNCS_PARAMS)*LOC_FUNCS_NUM);
 
     LOC_FUNCS[last]             = TMP_FUNC;
@@ -221,6 +241,9 @@ void move_tmp_fn_data_to_local()
 
     LOC_FUNCS_VARS_NUM[last]    = TMP_FUNC_VARS_NUM;
     LOC_FUNCS_VARS[last]      = NULL;
+
+    C_CODE_DEF_FN_FREE_VARS[ last ] = NULL;
+    C_CODE_DEF_FN_FREE_VARS_NUM[ last ] = 0;
 
     LOC_FUNCS_PARAMS[last]    = NULL;
 
@@ -355,7 +378,7 @@ void add_to_tmp_fn_var_def(command *cmd)
 void add_to_tmp_fn_algor(command *cmd)
 {
     check_semantics(cmd);
-    int i;
+
     int last = TMP_FUNC_ALGOR_NUM;
     ++TMP_FUNC_ALGOR_NUM;
     TMP_FUNC_ALGOR = realloc(TMP_FUNC_ALGOR, sizeof(*TMP_FUNC_ALGOR)*TMP_FUNC_ALGOR_NUM);
@@ -446,6 +469,137 @@ int is_tmp_fn_var_ident_used(wchar_t *ident)
     }
     return 0;
 }
+int is_loc_fn_var_ident_used(wchar_t *ident)
+{
+    int i, len = wcslen(ident);
+    for(i=0; i<LOC_FUNCS_VARS_NUM[ CUR_LOC_FN ]; ++i)
+    {
+        wchar_t *ident_in_tmp = LOC_FUNCS_VARS[ CUR_LOC_FN ][i].name;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
+            return 1;
+    }
+    return 0;
+}
+
+int is_tmp_fn_arg_ident_used( wchar_t *ident )
+{
+    int i;
+    for (i=0; i<TMP_FUNC.args_num; ++i)
+    {
+        wchar_t *ident_in_tmp = {0};
+        get_def_cmd_ident( &TMP_FUNC_PARAMS[ i ], ident_in_tmp );
+
+        command_item *ci;
+        if( TMP_FUNC_PARAMS[ i ].cmd_class==CMD_CLASS_ARR_DEF )
+            ci = get_cmd_item( TMP_FUNC_PARAMS[ i ].items, 2 );
+        else if ( TMP_FUNC_PARAMS[ i ].cmd_class==CMD_CLASS_DEF_VAR )
+            ci = get_cmd_item( TMP_FUNC_PARAMS[ i ].items, 1 );
+
+        ident_in_tmp = ci->tok.potentional_types[0].value;
+
+        if ( is_wcseq( ident_in_tmp, ident )==1 )
+            return 1;
+    }
+    return 0;
+}
+
+int is_loc_fn_arg_ident_used( wchar_t *ident )
+{
+    int i;
+    for (i=0; i<LOC_FUNCS[ CUR_LOC_FN ].args_num; ++i)
+    {
+        wchar_t *ident_in_tmp = {0};
+        get_def_cmd_ident( &LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ], ident_in_tmp );
+
+        command_item *ci;
+        if( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].cmd_class==CMD_CLASS_ARR_DEF )
+            ci = get_cmd_item( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].items, 2 );
+        else if ( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].cmd_class==CMD_CLASS_DEF_VAR )
+            ci = get_cmd_item( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].items, 1 );
+
+        ident_in_tmp = ci->tok.potentional_types[0].value;
+
+        if ( is_wcseq( ident_in_tmp, ident )==1 )
+            return 1;
+    }
+    return 0;
+}
+
+int is_tmp_fn_var_arg_ident_used( wchar_t *ident )
+{
+    int i;
+    for (i=0; i<TMP_FUNC.args_num; ++i)
+    {
+        if ( TMP_FUNC_PARAMS[ i ].cmd_class!=CMD_CLASS_DEF_VAR )
+            continue;
+
+        wchar_t *ident_in_tmp = {0};
+        get_def_cmd_ident( &TMP_FUNC_PARAMS[ i ], ident_in_tmp );
+
+        command_item *ci;
+        ci = get_cmd_item( TMP_FUNC_PARAMS[ i ].items, 1 );
+
+        ident_in_tmp = ci->tok.potentional_types[0].value;
+
+        if ( is_wcseq( ident_in_tmp, ident )==1 )
+            return 1;
+    }
+    return 0;
+}
+
+int get_tmp_fn_arg_value_type(wchar_t *ident, int *type_class, int *type_num)
+{
+    int i;
+    for (i=0; i<TMP_FUNC.args_num; ++i)
+    {
+        wchar_t *ident_in_tmp;
+
+        command_item *ci;
+        if( TMP_FUNC_PARAMS[ i ].cmd_class==CMD_CLASS_ARR_DEF )
+            ci = get_cmd_item( TMP_FUNC_PARAMS[ i ].items, TMP_FUNC_PARAMS[ i ].items_num-1 );
+        else if ( TMP_FUNC_PARAMS[ i ].cmd_class==CMD_CLASS_DEF_VAR )
+            ci = get_cmd_item( TMP_FUNC_PARAMS[ i ].items, 1 );
+
+        ident_in_tmp = ci->tok.potentional_types[0].value;
+
+        if ( is_wcseq( ident_in_tmp, ident )==1 )
+        {
+            get_def_cmd_type( &TMP_FUNC_PARAMS[ i ], type_class, type_num );
+            set_def_type_alias_const_data(type_class, type_num);
+            return 1;
+
+        }
+    }
+
+    return 0;
+}
+int get_loc_fn_arg_value_type(wchar_t *ident, int *type_class, int *type_num)
+{
+    int i;
+    for (i=0; i<LOC_FUNCS[ CUR_LOC_FN ].args_num; ++i)
+    {
+        wchar_t *ident_in_tmp;
+
+        command_item *ci;
+        if( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].cmd_class==CMD_CLASS_ARR_DEF )
+            ci = get_cmd_item( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].items, LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].items_num-1 );
+        else if ( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].cmd_class==CMD_CLASS_DEF_VAR )
+            ci = get_cmd_item( LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ].items, 1 );
+
+        ident_in_tmp = ci->tok.potentional_types[0].value;
+
+        if ( is_wcseq( ident_in_tmp, ident )==1 )
+        {
+            get_def_cmd_type( &LOC_FUNCS_PARAMS[ CUR_LOC_FN ][ i ], type_class, type_num );
+            set_def_type_alias_const_data(type_class, type_num);
+            return 1;
+
+        }
+    }
+
+    return 0;
+}
 
 /** Funksiýa-da yglan edilen ülňi ady däldigi barlanýar*/
 int is_tmp_fn_arr_ident_used(wchar_t *ident)
@@ -478,6 +632,23 @@ int get_tmp_func_arr_address_by_ident(wchar_t *ident, int *type)
     }
     return 0;
 }
+/** Sanawyň ady boýunça, sanawyň nomerini alýar.*/
+int get_loc_func_arr_address_by_ident(wchar_t *ident, int *type)
+{
+    int i, len = wcslen(ident);
+
+    for(i=0; i<LOC_FUNCS_ARRS_NUM[ CUR_LOC_FN ]; ++i)
+    {
+        wchar_t *ident_in_tmp = LOC_FUNCS_ARRS[ CUR_LOC_FN ][ i ].ident;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
+        {
+            *type = i;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 
 /** Ülňiniň tipini gaýtarýar*/
@@ -492,6 +663,24 @@ int get_tmp_fn_var_def_value_type(wchar_t *ident, int *type_class, int *type_num
         {
             *type_class = TMP_FUNC_VARS[i].type_class;
             *type_num   = TMP_FUNC_VARS[i].type_num;
+            set_def_type_alias_const_data(type_class, type_num);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+int get_loc_fn_var_def_value_type(wchar_t *ident, int *type_class, int *type_num)
+{
+    int i, len = wcslen(ident);
+    for(i=0; i<LOC_FUNCS_VARS_NUM[ CUR_LOC_FN ]; ++i)
+    {
+        wchar_t *ident_in_tmp = LOC_FUNCS_VARS[ CUR_LOC_FN ][i].name;
+        if (wcslen(ident_in_tmp)==len &&
+            wcsncmp(ident_in_tmp, ident, len)==0)
+        {
+            *type_class = LOC_FUNCS_VARS[ CUR_LOC_FN ][i].type_class;
+            *type_num   = LOC_FUNCS_VARS[ CUR_LOC_FN ][i].type_num;
             set_def_type_alias_const_data(type_class, type_num);
             return 1;
         }
@@ -647,7 +836,7 @@ void write_fn_args(int n, wchar_t **p, int *l)
         ///
         /// Ülňi ulanylýan bolsa, onda ülňi yglan etmegi dolylygyna tipi bilen ýaly ýazýar
         TEST = 100;
-        cmd_get_c_code( &LOC_FUNCS_PARAMS[n][i], p, l );
+        write_cmd_c_code( &LOC_FUNCS_PARAMS[n][i], p, l );
         TEST = 0;
 
 
@@ -672,10 +861,18 @@ void write_to_csource_loc_fns(FILE *f)
     int i;
     for (i=0; i<LOC_FUNCS_NUM; ++i)
     {
+        CUR_LOC_FN = i;
+
+       // C_CODE_FN_DEF_FREE_VARS_NUM = realloc( C_CODE_FN_DEF_FREE_VARS_NUM, sizeof( *C_CODE_FN_DEF_FREE_VARS_NUM )*( i+1 ) );
+       // C_CODE_FN_DEF_FREE_VARS = realloc( C_CODE_FN_DEF_FREE_VARS, sizeof( *C_CODE_FN_DEF_FREE_VARS )*( i+1 ) );
+       // C_CODE_FN_DEF_FREE_VARS_NUM[ CUR_LOC_FN ] = 0;
+       // C_CODE_FN_DEF_FREE_VARS[ CUR_LOC_FN ] = NULL;
+
         wchar_t *p = NULL;
         int len = 0;
         get_loc_fn_prototype(i, &p, &len);
-        wchar_t *end = L"{ \n";
+        wchar_t *end = L"{ \n\
+	wchar_t *_tpl_assign_right, *_tpl_assign_left;\n";
         wcsadd_on_heap( &p, &len, end );
 
         fputws(p, f);
@@ -685,8 +882,11 @@ void write_to_csource_loc_fns(FILE *f)
         c_trans_source_add_fn_def_arr(f, i);
         c_trans_source_fn_add_algor(f, i);
 
+        write_multi_free_call_in_def_fn( f, i );
+
         fputws(L"} \n", f);
     }
+    CUR_LOC_FN = -1;
 }
 
 /** Funksiýanyň içinde yglan edilen ülňiler*/
@@ -696,19 +896,22 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
             *space = L" ";
     int llen = 0;
 
-	if (!LOC_FUNCS_VARS_NUM[fn])
+	if ( LOC_FUNCS_VARS_NUM[ fn ]==0 )
 	{
         return;
 	}
 
-    int i, type_num;
-    long line_len;
-
-    for(i=0; i<LOC_FUNCS_VARS_NUM[fn]; ++i)
+    int i;
+    for( i=0; i<LOC_FUNCS_VARS_NUM[ fn ]; ++i )
     {
         int  line_len = 0;
         wchar_t *line = NULL;
-        get_type_c_code(LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
+        write_type_c_code_analog(LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
+
+        if ( LOC_FUNCS_VARS[fn][ i ].type_class==TOK_CLASS_DEF_TYPE && LOC_FUNCS_VARS[fn][ i ].type_num==3 )
+            add_string_to_free_list( LOC_FUNCS_VARS[fn][ i ].name, &C_CODE_DEF_FN_FREE_VARS_NUM[ fn ], &C_CODE_DEF_FN_FREE_VARS[ fn ] );
+        else if ( LOC_FUNCS_VARS[fn][ i ].type_class!=TOK_CLASS_DEF_TYPE )
+            add_utype_string_elems_to_free_list( LOC_FUNCS_VARS[fn][ i ].type_num, LOC_FUNCS_VARS[fn][ i ].name, &C_CODE_DEF_FN_FREE_VARS_NUM[ fn ], &C_CODE_DEF_FN_FREE_VARS[ fn ] );
 
         wcsadd_on_heap( &line, &line_len, space );
 
@@ -716,12 +919,12 @@ void c_trans_source_add_fn_def_var(FILE *f, int fn)
         wcsadd_on_heap( &line, &line_len, LOC_FUNCS_VARS[fn][i].name );
 
         // Ülňiniň başlangyç maglumatlary goýulýar.
-        get_type_init_val_c_code(0, LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
+        write_type_init_val_c_code(0, LOC_FUNCS_VARS[fn][i].type_class, LOC_FUNCS_VARS[fn][i].type_num, &line, &line_len);
 
         // Komanda gutardy
-        get_cmd_end_c_code(&line, &line_len);
+        write_terminator(&line, &line_len);
 
-        write_code_line(f, &l, &llen , line);
+        write_strings_to_file(f, &l, &llen , line);
 
         free(line);
     }
@@ -739,15 +942,21 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
         return ;
 	}
 
-    int i, type_num, line_len;
+    int i;
 
     for(i=0; i<LOC_FUNCS_ARRS_NUM[fn]; ++i)
     {
-        type_num = LOC_FUNCS_ARRS[fn][i].type_num;
+        //int type_num = LOC_FUNCS_ARRS[fn][i].type_num;
 
         int line_len = 0;
         wchar_t *line = NULL;
-        get_type_c_code(LOC_FUNCS_ARRS[fn][i].type_class, LOC_FUNCS_ARRS[fn][i].type_num, &line, &line_len);
+        write_type_c_code_analog(LOC_FUNCS_ARRS[fn][i].type_class, LOC_FUNCS_ARRS[fn][i].type_num, &line, &line_len);
+
+        if ( LOC_FUNCS_ARRS[fn][ i ].type_class==TOK_CLASS_DEF_TYPE && LOC_FUNCS_ARRS[fn][ i ].type_num==3 )
+            add_arr_elems_to_free_list( LOC_FUNCS_ARRS[fn][ i ].ident, 0, LOC_FUNCS_ARRS[fn][ i ].incs , LOCAL_ARR_DEFS_ITEMS[ i ] , &C_CODE_DEF_FN_FREE_VARS_NUM[ fn ], &C_CODE_DEF_FN_FREE_VARS[ fn ] );
+        else if ( LOC_FUNCS_ARRS[fn][ i ].type_class!=TOK_CLASS_DEF_TYPE )
+            add_arr_utype_string_elems_to_free_list( 0, LOC_FUNCS_ARRS[fn][ i ].incs, LOCAL_ARR_DEFS_ITEMS[ i ], LOC_FUNCS_ARRS[fn][ i ].type_num, LOC_FUNCS_ARRS[fn][ i ].ident, &C_CODE_DEF_FN_FREE_VARS_NUM[ fn ], &C_CODE_DEF_FN_FREE_VARS[ fn ] );
+
 
         wcsadd_on_heap( &line, &line_len, space );
 
@@ -759,12 +968,12 @@ void c_trans_source_add_fn_def_arr(FILE *f, int fn)
         add_arr_elem_inf_c_code(&line, &line_len, 4, i, LOC_FUNCS_ARRS[fn][i].incs);
 
         // Ülňilere başlangyç maglumatlar baglamaly
-        get_type_init_val_c_code(1, LOC_FUNCS_ARRS[fn][i].type_class, LOC_FUNCS_ARRS[fn][i].type_num, &line, &line_len);
+        write_type_init_val_c_code(1, LOC_FUNCS_ARRS[fn][i].type_class, LOC_FUNCS_ARRS[fn][i].type_num, &line, &line_len);
 
         // Komanda gutardy
-        get_cmd_end_c_code(&line, &line_len);
+        write_terminator(&line, &line_len);
 
-        write_code_line(f, &l, &llen , line);
+        write_strings_to_file(f, &l, &llen , line);
 
         free(line);
     }
@@ -779,13 +988,63 @@ void c_trans_source_fn_add_algor(FILE *f, int fn)
 
     for (i=0; i<LOC_FUNCS_ALGOR_NUM[fn]; ++i)
     {
-        cmd_get_c_code( &LOC_FUNCS_ALGOR[fn][i], &l, &len );
-        if (!is_open_block_cmd(&LOC_FUNCS_ALGOR[fn][i]) && !is_close_block_cmd(&LOC_FUNCS_ALGOR[fn][i]))
+        if ( LOC_FUNCS_ALGOR[fn][i].cmd_class==CMD_CLASS_BLOCK_INSIDE &&
+             LOC_FUNCS_ALGOR[fn][i].cmd_type ==TOK_CLASS_BLOCK_INSIDE_FN_RETURN  )
+            write_multi_free_call_in_def_fn( f, fn );
+        write_cmd_c_code( &LOC_FUNCS_ALGOR[fn][i], &l, &len );
+        if ( !is_open_block_cmd(&LOC_FUNCS_ALGOR[fn][i]) && !is_close_block_cmd(&LOC_FUNCS_ALGOR[fn][i]) )
             cmd_wrapper_c_code(&l, &len);
         else
             cmd_block_wrapper_c_code(&l, &len);
 
-        write_code_line(f, &putl, &putllen , l);
+        /// Add pre codes
+        if ( CMD_C_CODE_PRE_LEN!=0 )
+        {
+            wchar_t *tmp =  NULL;
+            int tmplen = 0;
+            wcsadd_on_heap( &tmp, &tmplen, CMD_C_CODE_PRE );
+            wcsadd_on_heap( &tmp, &tmplen, l );
+
+            l = realloc( l, tmplen );
+            len = tmplen;
+            wcsncpy( l, tmp, wcslen( tmp )+1 );
+            free ( tmp );
+            free( CMD_C_CODE_PRE );
+            CMD_C_CODE_PRE = NULL;
+            CMD_C_CODE_PRE_LEN = 0;
+        }
+        if ( CMD_ASSIGN_C_CODE_PRE_LEN!=0 )
+        {
+            wchar_t *tmp =  NULL;
+            int tmplen = 0;
+            wcsadd_on_heap( &tmp, &tmplen, CMD_ASSIGN_C_CODE_PRE );
+            wcsadd_on_heap( &tmp, &tmplen, l );
+
+            l = realloc( l, tmplen );
+            wcsncpy( l, tmp, wcslen( tmp )+1 );
+            len = tmplen;
+            free ( tmp );
+            free( CMD_ASSIGN_C_CODE_PRE );
+            CMD_ASSIGN_C_CODE_PRE = NULL;
+            CMD_ASSIGN_C_CODE_PRE_LEN = 0;
+        }
+        /// Add after code
+        if ( CMD_C_CODE_AFTER_LEN!=0 )
+        {
+            wcsadd_on_heap( &l, &len, CMD_C_CODE_AFTER );
+            free( CMD_C_CODE_AFTER );
+            CMD_C_CODE_AFTER = NULL;
+            CMD_C_CODE_AFTER_LEN = 0;
+        }
+        if ( CMD_ASSIGN_C_CODE_AFTER_LEN!=0 )
+        {
+            wcsadd_on_heap( &l, &len, CMD_ASSIGN_C_CODE_AFTER );
+            free( CMD_ASSIGN_C_CODE_AFTER );
+            CMD_ASSIGN_C_CODE_AFTER = NULL;
+            CMD_ASSIGN_C_CODE_AFTER_LEN = 0;
+        }
+
+        write_strings_to_file(f, &putl, &putllen , l);
 
         if (l!=NULL)
         {
@@ -796,4 +1055,36 @@ void c_trans_source_fn_add_algor(FILE *f, int fn)
     }
 }
 
+
+void   get_def_cmd_ident( command *cmd, wchar_t *ident )
+{
+    int first = 0;
+    if( cmd->ns==GLOB )
+        ++first;
+
+    command_item *ci;
+    if( cmd->cmd_class==CMD_CLASS_ARR_DEF )
+        ci = get_cmd_item( cmd->items, first+2 );
+    else if ( cmd->cmd_class==CMD_CLASS_DEF_VAR )
+        ci = get_cmd_item( cmd->items, first+1 );
+
+    ident = ci->tok.potentional_types[0].value;
+}
+
+
+void   get_def_cmd_type( command *cmd, int *type_class, int *type_num )
+{
+    int first = 0;
+    if( cmd->ns==GLOB )
+        ++first;
+
+    command_item *ci;
+    if( cmd->cmd_class==CMD_CLASS_ARR_DEF )
+        ci = get_cmd_item( cmd->items, first+1 );
+    else if ( cmd->cmd_class==CMD_CLASS_DEF_VAR )
+        ci = get_cmd_item( cmd->items, first );
+
+    *type_class = get_token_type_class( &ci->tok );
+    *type_num   = get_token_type( &ci->tok );
+}
 

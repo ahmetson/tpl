@@ -42,7 +42,7 @@ int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, 
 int get_paren_item_type(parenthesis *p, int *item_type, int *rClass, int *rType);
 
 // Parserde skobka duşan wagty, içindäki elementler bilen işleýän bölüm
-parenthesis parse_paren(FILE *f);
+parenthesis parse_paren();
 
 parenthesis      parenthesis_new();
 parenthesis_elem parenthesis_elem_new();
@@ -59,6 +59,8 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen);
 
 int is_paren_not_compl_item_exist(parenthesis *p, wchar_t rec);
 
-int parser_mode_paren( FILE *source, command *cmd );
+int parser_mode_paren( command *cmd, wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM );
+
+void get_parenthesis_elem_type( parenthesis_elem *pe, int *elem_type, int *c, int *t );
 
 #endif

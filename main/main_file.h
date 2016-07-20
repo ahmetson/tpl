@@ -19,6 +19,7 @@ extern wchar_t            (*MAIN_FILE_INCLUDES)[2][MAX_INCLUDE_LEN];
 int add_addtn_file_fns();
 
 void write_to_csource_call_another_files_fn_open( FILE *f );
+void trans_to_c_write_addtn_fn_multi_free( FILE *f );
 void write_to_csource_call_another_files_fn_close(  );
 
 #endif

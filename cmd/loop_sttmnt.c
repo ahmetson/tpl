@@ -68,7 +68,7 @@ int is_cmd_loop_sttmnt(command *cmd)
     {
         return 0;
     }
-
+    return 1;
 }
 
 

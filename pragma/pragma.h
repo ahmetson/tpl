@@ -39,7 +39,7 @@ extern wchar_t PRAGMA_MODE;
 extern wchar_t *pragmas[];
 
 // Parserde pragma bilen işleýän bölüm
-void parse_pragma(FILE *s);
+void parse_pragma( );
 
 // Pragmany ulanmana tayynlayar.
 void init_pragma(pragma *prag);
@@ -51,5 +51,5 @@ void act_pragma(pragma *prag);				        // Pragma uchin kompilyator bir zat ed
 void act_pragma_main_file(pragma *prag);	        // Esasy fayl barada kompilyator bir zat eder
 void act_pragma_include_glob_decl_file(pragma *p);	// Global yglan edilen ülňiler babatda maglumatlar
 
-int parser_mode_pragma( FILE *s );
+int parser_mode_pragma( );
 #endif

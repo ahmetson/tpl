@@ -6,14 +6,13 @@ extern wchar_t STRING_PREPARE_MODE;
 extern wchar_t STRING_MODE;
 extern wchar_t PARENTHESIS_MODE;
 
-int parse(FILE *source);
+int parse();
 int is_valid_wchar_t();
 
 void prevent_from_parsing_file();
 
-int process_char( FILE *source, char check_char );
-int set_cur_char( FILE *source );
+void process_char( char check_char, int *source_pointer, wchar_t *source );
 
-int parser_mode_end_cmd( FILE *s);
+int parser_mode_end_cmd();
 
 #endif

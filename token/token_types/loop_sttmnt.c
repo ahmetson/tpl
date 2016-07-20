@@ -16,8 +16,8 @@ wchar_t *TOK_CLASS_LOOP_STTMNT_CHARS[TOK_CLASS_LOOP_STTMNT_NUM][2] = {
 
 // DEBUG UCHIN
 wchar_t *TOK_CLASS_LOOP_STTMNT_WORDS[TOK_CLASS_LOOP_STTMNT_NUM] = {
-	L"tä",
-	L"bolýança"
+	L"ta",
+	L"bolyancha"
 };
 
 

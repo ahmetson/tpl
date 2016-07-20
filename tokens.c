@@ -36,7 +36,8 @@ func_ptr check_token[] = {
 	   is_token_utype,
 	   is_token_utype_con,
 	   is_token_void,
-	   is_token_comment
+	   is_token_comment,
+	   is_token_block_inside
 };
 
 
@@ -59,7 +60,8 @@ int (*TOK_RETURN_TYPE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, int *
     {empty_tok_return_type, empty_tok_return_type},                                               // utype,
     {get_utype},                                                                                  // utype_con
     {empty_tok_return_type},                                                                      // void
-    {empty_tok_return_type, empty_tok_return_type}                                                // comment
+    {empty_tok_return_type, empty_tok_return_type},                                               // comment
+    {empty_tok_return_type}                                                                       // block_inside
 };
 
 
@@ -82,7 +84,8 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, wchar
     {empty_tok_c_code, utype_item_separator_c_code},                             // utype
     {tok_utype_con_c_code},                                                      // utype_con
     {tok_void_con_c_code},                                                       // void
-    {empty_tok_c_code, empty_tok_c_code}                                         // comment
+    {empty_tok_c_code, empty_tok_c_code},                                        // comment
+    {tok_block_inside_c_code}                                                    // block_inside
 };
 
 
@@ -91,8 +94,6 @@ void (*TOK_GET_C_CODE[TOKEN_CLASSES_NUM][TOKEN_MAX_TYPES_NUM])(token *tok, wchar
 void init_token(token *tok)
 {
 	tok->ns = 0;							// Global ýa Lokal
-
-	int i; token_type tok_type;
 
     tok->potentional_types_num = 0;								// Number of recognized types for token
 	//wchar_t source_file[MAXLEN];									// source file of token
@@ -118,6 +119,8 @@ void empty_token(token *tok)
   * Eger token bolup bilýän bolsa, @tok ülňä ýasalan tokeni baglaýar */
 int recognize_token(token *tok, wchar_t *val)
 {
+    if ( wcslen( val )==0 )
+        return 0;
 	int i;
 	for (i=0; i<TOKEN_TYPES_NUM; ++i)
     {
@@ -156,7 +159,7 @@ int add_potentional_token_type(token *tok, token_type tok_type)
 **/
 int delete_potentional_token_type(token *tok, int type_class, int type_num)
 {
-    int i, j,                                               /// gaýtalamalaryň kounterleri
+    int i,                                               /// gaýtalamalaryň kounterleri
         potentional_class, potentional_type,
         potentional_types_num = tok->potentional_types_num;
 
@@ -235,7 +238,7 @@ void work_with_token(token *tok, command *cmd)
 
 
 /** Faýldan tokeni tanaýan parser.*/
-token parse_token( FILE *s )
+token parse_token( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM  )
 {
     /// Adaty parseriň modynda, tokenleri saýgarmak üçin.
 	wchar_t tok_string[ MAX_TOKEN_LEN ] = { 0 };
@@ -246,12 +249,13 @@ token parse_token( FILE *s )
 	init_token( &new_tok );
 
     /// Ilkinji parsing edilen harpy salmaly
-    prevent_from_parsing_file();
+    prevent_from_parsing_file( SOURCE_POINTER_NUM );
 
-    while( 1 )
+    int i, sizeof_wchar = sizeof( wchar_t );
+    for( i=( *SOURCE_POINTER_NUM )-1; i<(SOURCE_BYTES_NUM/sizeof_wchar)-1; ++i )
 	{
-	    if ( !process_char( s, CHECK_VALID_CHAR ) )
-            break;
+	    process_char( CHECK_VALID_CHAR, SOURCE_POINTER_NUM, SOURCE );
+	    i=( *SOURCE_POINTER_NUM )-1;
 
         /** Tokeniň uzynlygy MAX_TOKEN_LEN-den uly bolmaly däl*/
         check_tok_len( tok_string, &tok );
@@ -263,7 +267,7 @@ token parse_token( FILE *s )
         if ( !recognize_token( &new_tok, tok_string ) )
         {
             /** Parser, tanalmadyk harpy başga parserlere görä barlamaly */
-            prevent_from_parsing_file();
+            prevent_from_parsing_file( SOURCE_POINTER_NUM );
             break;
         }
         else
@@ -275,6 +279,10 @@ token parse_token( FILE *s )
 
     /** Tokenden komanda goşulanda gerek bolmajak maglumatlar pozulýar */
     finishize_token( &tok );
+    if ( is_token_empty( &tok ) ) {
+        CUR_PART = 3;
+        print_err( CODE3_PREV_TOK_INCORRECT, &inf_tok );
+    }
 
     return tok;
 }

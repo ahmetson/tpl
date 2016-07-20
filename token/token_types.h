@@ -24,7 +24,8 @@
  * utype (class num: 13)
  * utype_con (class num: -2)
  * void (class num: 15)
- * void (class num: 16)
+ * comment (class num: 16)
+ * block inside helpers (class num: 17)
 **/
 
 extern const int TOK_CLASS_UNDEFINED;   // Tokeniň hiç hili tipi ýok
@@ -45,6 +46,7 @@ extern const int TOK_CLASS_UTYPE;
 extern const int TOK_CLASS_UTYPE_CON;
 extern const int TOK_CLASS_VOID;
 extern const int TOK_CLASS_COMMENT;
+extern const int TOK_CLASS_BLOCK_INSIDE;
 
 /// Debag üçin
 extern char *dev_type_class_names[];

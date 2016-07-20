@@ -10,6 +10,7 @@
 #include "../main/user_def_type.h"
 #include "../main/inf.h"
 #include "../token/harpl.h"
+#include "../token/helpers.h"
 #include "../error.h"
 #include "../fns.h"
 
@@ -96,7 +97,7 @@
 
 
 
-/** Ulanyjynyň tipi bilen baglanyşykly (ýagny UG klasly) komandadygyny barlaýar.
+/** Check whether user defined type class command or not
 */
 int is_cmd_utype(command *cmd)
 {
@@ -107,10 +108,10 @@ int is_cmd_utype(command *cmd)
     return is_cmd_utype_def(cmd);
 }
 
-/** Ulanyjynyň tipindäki ülňiniň birligini çatylma komandalygyny barlaýar.*/
+/** Is connecting to user fined variable'e element? */
 int is_cmd_utype_con(command *cmd)
 {
-    /** Birinji element: token, sanawyň elementine ýa ug elementine çatylma bolmaly.*/
+    /** First element must be identifier of user defined type variable: variable, array or another user defined variable */
     command_item *fci = get_cmd_item(cmd->items, 0);
     int answer = (fci->type==TOKEN_ITEM && fci->tok.type_class==TOK_CLASS_IDENT);
     if (answer)
@@ -121,6 +122,7 @@ int is_cmd_utype_con(command *cmd)
     {
         answer    = (fci->type==CMD_ITEM   && ((fci->cmd.cmd_class==CMD_CLASS_ARR && fci->cmd.cmd_type==CMD_CLASS_ARR_CON)||
                                                (fci->cmd.cmd_class==CMD_CLASS_UTYPE && fci->cmd.cmd_type==CMD_UTYPE_CON_TYPE)));
+
         if (answer)
         {
             cmd_utype_con_mod(cmd, 0);
@@ -131,7 +133,7 @@ int is_cmd_utype_con(command *cmd)
         }
     }
 
-    /** Ikinji element: Birilikleri bölüji token bolmaly*/
+    /** Second element: element divider (/) */
     if (cmd->items_num>1)
     {
         command_item *sci = get_cmd_item(cmd->items, 1);
@@ -145,7 +147,7 @@ int is_cmd_utype_con(command *cmd)
             return 0;
         }
     }
-    /** Üçünji element: IDENT görnüşdäki token bolmaly*/
+    /** Third element: token in IDENT type */
     if (cmd->items_num>2)
     {
         command_item *tci = get_cmd_item(cmd->items, 2);
@@ -161,16 +163,15 @@ int is_cmd_utype_con(command *cmd)
     return 1;
 }
 
-/** Ulanyjynyň täze tipini yglan edýän komandalygyny barlaýar.*/
+/** Is defining user type variable */
 int is_cmd_utype_def(command *cmd)
 {
     command_item *fci = get_cmd_item(cmd->items, 0);
 
-    wchar_t type = 0;
+    /** First element: Triangle block that contain elements */
     if (fci->type==TOKEN_ITEM && fci->tok.potentional_types[0].type_class==TOK_CLASS_TRIANGLE_BLOCK &&
                                  fci->tok.potentional_types[0].type_num==  TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
     {
-        type = CMD_UTYPE_DEF_TYPE;
         cmd_utype_def_mod(cmd, 0);
     }
     else
@@ -180,10 +181,11 @@ int is_cmd_utype_def(command *cmd)
 
     if (cmd->items_num-1>=1)
     {
+        /** Second element: Token in IDENT type which is identifier of new type */
         command_item *sci = get_cmd_item(cmd->items, 1);
         if (sci->type==TOKEN_ITEM && sci->tok.potentional_types[0].type_class==TOK_CLASS_IDENT)
         {
-            if (is_ident_used(&sci->tok, 0))
+            if ( is_ident_used(&sci->tok, 0) )
             {
                 CUR_PART = 4;
                 print_err(CODE4_VARS_IDENT_USED, &sci->tok);
@@ -198,11 +200,12 @@ int is_cmd_utype_def(command *cmd)
 
     if (cmd->items_num-1>=2)
     {
+        /** Third element: Keyword 'tipi' for understanding by coders */
         command_item *tci = get_cmd_item(cmd->items, 2);
-        if (tci->type==TOKEN_ITEM && tci->tok.potentional_types[0].type_class==TOK_CLASS_UTYPE &&
-            tci->tok.potentional_types[0].type_num==UTYPE_DEF_SIGNIFIER)
+        if ( tci->type==TOKEN_ITEM && get_token_type_class( &tci->tok )==TOK_CLASS_UTYPE &&
+            get_token_type( &tci->tok)==UTYPE_DEF_SIGNIFIER )
         {
-            cmd_utype_def_mod(cmd, 2);
+            cmd_utype_def_mod( cmd, 2 );
         }
         else
         {
@@ -212,15 +215,14 @@ int is_cmd_utype_def(command *cmd)
 
     if (CMD_MAX_ITEMS[cmd->cmd_class][cmd->cmd_type]<cmd->items_num)
     {
-        /// GATY KAN BIRLIKLER BAR
-        /// TODO "Komanda-da artykmaç birlik bar" diýen ýalňyşlyk görkezilýär.
+        /// To many items
         return 0;
     }
 
     return 1;
 }
 
-/** Komandanyň düzmelerini, täze tipi yglan edýän komandanyň talabyna görä üýtgedýär*/
+/** Change command parameters by command type */
 void cmd_utype_def_mod(command *cmd, int item_num)
 {
     if (item_num==0)
@@ -235,14 +237,12 @@ void cmd_utype_def_mod(command *cmd, int item_num)
     }
     else if (item_num==2)
     {
-        add_new_utype(cmd);
-        move_tmp_utype_items_to_last();
+
         cmd->is_compl = 1;
     }
 }
 
-/** Komandanyň düzmelerini, Ulanyjynyň tipindäki ülňiniň birligine çatylmak komandanyň
-    talabyna görä üýtgedýär.*/
+/** Change command parameters, by needs of user defined type varaible connecting type */
 void cmd_utype_con_mod(command *cmd, int item_num)
 {
     if (item_num==0)
@@ -261,14 +261,14 @@ void cmd_utype_con_mod(command *cmd, int item_num)
 }
 
 
-/** Ulanyjynyň görnüşindäki ülňiniň çatylýan birliginiň tipini gaýtarýar.*/
+/** Return type of element of user defined variable */
 int cmd_utype_con_return_type(command *cmd, int *type_class, int *type_num)
 {
     return get_utype_item_type_by_cmd(cmd, type_class, type_num);
 }
 
-/** Ulanyjynyň görnüşindäki ülňiniň birligine çatylanda,
-    görnüşde birligiň barlygyny, görnüşiň dogrylygyny barlaýar*/
+/** Check semantics:
+    Is element that connects, exists inside of user defined type or not? */
 int semantic_cmd_utype_con(command *cmd)
 {
     /// Birinji berlen at boýunça tapylan tipde ikinji berlen birlik bolmaly.
@@ -305,6 +305,7 @@ int semantic_cmd_utype_con(command *cmd)
         return_tok_type(&fci->tok, &tmp_class, &tmp_type);
         if (tmp_class!=TOK_CLASS_UTYPE_CON)
         {
+            /// TODO
             printf("%s %d setirde: Diňe UG tipidäki ülňileriň birliklerine çatylyp bolýar\n", __FILE__, __LINE__);
             return 0;
         }
@@ -315,6 +316,7 @@ int semantic_cmd_utype_con(command *cmd)
         {
             if (!get_utype_item_type_by_cmd(&fci->cmd, &tmp_class, &tmp_type))
             {
+                /// TODO
                 printf("%s %d setirde: Diňe UG tipidäki ülňileriň birliklerine çatylyp bolýar\n", __FILE__, __LINE__);
                 return 0;
             }
@@ -323,14 +325,16 @@ int semantic_cmd_utype_con(command *cmd)
         {
             if (!get_arr_item_type_by_cmd(&fci->cmd, &tmp_class, &tmp_type))
             {
+                /// TODO
                 printf("%s %d setirde: Diňe UG tipidäki ülňileriň birliklerine çatylyp bolýar\n", __FILE__, __LINE__);
                 return 0;
             }
         }
         else
         {
-                printf("%s %d setirde: Haýsy ülňiniň birligi çagyrylýany tanalmady\n", __FILE__, __LINE__);
-                return 0;
+            /// TODO
+            printf("%s %d setirde: Haýsy ülňiniň birligi çagyrylýany tanalmady\n", __FILE__, __LINE__);
+            return 0;
         }
     }
 
@@ -338,6 +342,7 @@ int semantic_cmd_utype_con(command *cmd)
     wchar_t *item_ident = tci->tok.potentional_types[0].value;
     if (!get_utype_item_addr(tmp_type, item_ident, &tmp_class))
     {
+        /// TODO
         printf("%s %d setirde: Ugyň çagyrylan birligi duş gelmedi\n", __FILE__, __LINE__);
         return 0;
     }

@@ -98,18 +98,20 @@ int semantic_cmd_fn_def(command *cmd)
 {
     command_item *ident_item = get_cmd_item(cmd->items, 1);
     token        *ident_tok = &ident_item->tok;
-    wchar_t         *ident = ident_tok->potentional_types[0].value;
+    //wchar_t         *ident = ident_tok->potentional_types[0].value;
     if (is_ident_used(ident_tok, 0))
     {
         CUR_PART = 4;
         print_err(CODE4_VARS_IDENT_USED, (token *)inf_get_last_token(cmd));
     }
+    return 1;
 }
 
 /** IÇINI SOŇ GOÝARYS*/
 int semantic_cmd_fn_dec(command *cmd)
 {
     glob_fns_decl_add(cmd);
+    return 1;
 }
 
 
@@ -143,14 +145,14 @@ void cmd_fn_dec_c_code(command *cmd, wchar_t **l, int *llen)
     int e_class = e3->tok.type_class;
     int e_type = e3->tok.potentional_types[0].type_num;
 
-    get_type_c_code(e_class, e_type, l, llen);
+    write_type_c_code_analog(e_class, e_type, l, llen);
 
     wcsadd_on_heap( l, llen, space );
 
     command_item *fn_call = get_cmd_item(cmd->items,0);
 
     command_item *e2 = get_cmd_item(fn_call->cmd.items,1);
-    tok_get_c_code( &e2->tok, l, llen );
+    write_tok_c_code( &e2->tok, l, llen );
 
     command_item *e1 = get_cmd_item(fn_call->cmd.items, 0);
     paren_get_c_code(&e1->paren, l, llen);

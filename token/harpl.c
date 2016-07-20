@@ -17,17 +17,17 @@ wchar_t HARPL_OPENER = L'"';            /// TPL kodynda HARPL'yň başlaýan har
 wchar_t *HARPL_OPENER_STRING = L"L\"";  /// C kodynda HARPL'yň başlaýan harpy
 
 
-int parser_mode_string( FILE *source, command *cmd )
+int parser_mode_string( command *cmd, wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM )
 {
     if ( CUR_CHAR!=HARPL_OPENER )
         return 0;
-    token tok = parse_string( source );
+    token tok = parse_string( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
     work_with_token( &tok, cmd );
     return 1;
 }
 
 /** Parserden harplary tanaýan bölüm */
-token parse_string( FILE *s )
+token parse_string( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM  )
 {
     /** Harplaryň näçe sany simboldan durjagy näbelli bolany üçin,
         HEAP'de global sanawda ýatda saklanylýar.
@@ -42,10 +42,10 @@ token parse_string( FILE *s )
     Şonuň üçin goşa dyrnagy ötürýär*/
     last_glob_str_init();
 
-    while ( 1 )
+    int i, sizeof_wchar = sizeof( wchar_t );
+    for( i=( *SOURCE_POINTER_NUM )-1; i<SOURCE_BYTES_NUM/sizeof_wchar; ++i )
     {
-        if ( !process_char( s, UNCHECK_VALID_CHAR ) )
-            break;
+        process_char( UNCHECK_VALID_CHAR, SOURCE_POINTER_NUM, SOURCE );
 
         last_glob_str_add_chr( CUR_CHAR );
 
@@ -67,11 +67,13 @@ token parse_string( FILE *s )
 /** Berlen tokene HARPL parametrleri ötürdýär*/
 void set_token_string_params(token *string_tok)
 {
+    init_token( string_tok );
     inf_add_to_token(string_tok, CUR_CHAR, CUR_CHAR_POS, CUR_LINE);
 
     string_tok->is_compl = 0;
     string_tok->potentional_types_num = 0;
     string_tok->type_class = TOK_CLASS_CONST_DATA;
+    //string_tok->inf_file_num
 
     token_type tok_type;
     tok_type.is_compl       = 0;
@@ -139,9 +141,11 @@ int last_glob_str_conc_str( wchar_t *str )
     #endif // LAST
     int size = 0;
 
+    if ( GLOB_STRINGS_NUM==0 )
+        return 0;
     if ( GLOB_STRINGS[ LAST ]!=NULL )
     {
-        size = count_bytes( GLOB_STRINGS[ LAST ] );
+        size = count_bytes( GLOB_STRINGS[ LAST ] ) + count_bytes( str ) + get_null_size();
         GLOB_STRINGS[ LAST ] = realloc(GLOB_STRINGS[ LAST ], size);
 
         if ( GLOB_STRINGS[ LAST ]!=NULL)
@@ -163,6 +167,8 @@ int last_glob_str_conc_str( wchar_t *str )
 void last_glob_str_free()
 {
     #define LAST  GLOB_STRINGS_NUM-1
+    if ( GLOB_STRINGS_NUM == 0 )
+        return;
     if ( GLOB_STRINGS[ LAST ]!=NULL )
     {
         free( GLOB_STRINGS[ LAST ] );
@@ -190,7 +196,6 @@ int last_glob_str_change_val( wchar_t *new_val )
 /// Tokeniň sözmidigini barlaýar
 int is_token_string_const_data(token *tok)
 {
-    int i;
     wchar_t *tok_val = GLOB_STRINGS[ GLOB_STRINGS_NUM-1 ];
 
     if ( !( get_token_type_class( tok )==TOK_CLASS_CONST_DATA &&
@@ -219,7 +224,7 @@ int is_string_const_data_compl(wchar_t *tok_val, wchar_t onstack)
 {
     #define LAST ( wcslen( tok_val )-1 )
 
-    if (wcslen(tok_val)<2)
+    if (wcslen(tok_val)<=2)
         return 0;
     if ( tok_val[ LAST ]==HARPL_OPENER && tok_val[ LAST-1 ]!=TPL_ESC_KEY_OPENER )
     {

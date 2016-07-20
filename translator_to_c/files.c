@@ -98,14 +98,14 @@ int add_includes_to_source(FILE *s, int inc )
             // Fayllar goshulyar
 		    for(i=0; i<INCLUDES[ inc ].num; ++i)
             {
-                //printf("Goshmaly:%ls\n", INCLUDES[ inc ].inc[ i ] );
+                //printf("Goshmaly:%s\n", INCLUDES[ inc ].inc[ i ] );
                 wchar_t putme[MAX_FILE_LEN+20] = {0};
                 wcsncpy(putme, include, wcslen(include)+1);
                 wcsncat(putme, INCLUDES[ inc ].inc[ i ], wcslen(INCLUDES[ inc].inc[ i ]));
                 wcsncat(putme, nl, wcslen(nl));
                 wcsadd_on_heap( &l, &len, putme );
             }
-            //printf("TEST:<%ls>\n", l);
+            //printf("TEST:<%s>\n", l);
 
             // Header goşmalary gutarandygy bellenilýär.
             wchar_t *end_of_headers = L"//.\n\n";
@@ -116,9 +116,9 @@ int add_includes_to_source(FILE *s, int inc )
 	}
 
 	fseek(s, 0, SEEK_SET);
-	int answ2 = fputws(l, s);
+	fputws(l, s);
 	//int answ = fwrite(l, sizeof(wchar_t), wcslen(l)+1, s);
-	//printf("%ls\n", l);
+	//printf("%s\n", l);
 
 	free(l);
 

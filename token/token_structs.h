@@ -6,14 +6,14 @@
 #include <wchar.h>
 
 #ifndef TOKEN_CLASSES_NUM
-#define TOKEN_CLASSES_NUM 17
+#define TOKEN_CLASSES_NUM 18
 #endif
 
 #define MAXLEN 255
 
 // Harpl tokeni hasaplananok.
 #ifndef TOKEN_TYPES_NUM
-#define TOKEN_TYPES_NUM 18
+#define TOKEN_TYPES_NUM 19
 #endif
 
 

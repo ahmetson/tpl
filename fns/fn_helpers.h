@@ -5,6 +5,7 @@
 #include "../cmds.h"
 
 int is_inside_fn();
+int is_inside_loc_fn();
 
 int is_unvalid_inside_fn_cmd(command *cmd);
 
@@ -23,6 +24,7 @@ void add_to_tmp_fn_algor(command *cmd);
 void add_to_tmp_fn_arr_def(command *cmd);
 
 int is_tmp_fn_ident_used(wchar_t *ident);
+int is_tmp_fn_arg_ident_used( wchar_t *ident );
 
 int is_fn_name_used(wchar_t *ident);
 int get_fn_by_ident(wchar_t *ident);
@@ -32,6 +34,9 @@ int get_tmp_fn_var_def_value_type(wchar_t *ident, int *type_class, int *type_num
 
 int is_tmp_fn_arr_ident_used(wchar_t *ident);
 int get_tmp_func_arr_address_by_ident(wchar_t *ident, int *type);
+
+int is_tmp_fn_var_arg_ident_used( wchar_t *ident );
+int get_tmp_fn_arg_value_type(wchar_t *ident, int *type_class, int *type_num);
 
 void get_loc_fn_prototype(int n, wchar_t **p, int *l);
 void write_fn_args(int n, wchar_t **p, int *l);
@@ -52,5 +57,15 @@ int is_fn_already_dec(wchar_t *ident);
 
 void write_to_hsource_loc_fns_proto(FILE *f);
 void write_to_csource_loc_fns(FILE *f);
+
+void   get_def_cmd_ident( command *cmd, wchar_t *ident );
+void   get_def_cmd_type( command *cmd, int *type_class, int *type_num );
+
+int get_loc_func_arr_address_by_ident(wchar_t *ident, int *type);
+
+int is_loc_fn_arg_ident_used( wchar_t *ident );
+int get_loc_fn_arg_value_type(wchar_t *ident, int *type_class, int *type_num);
+int is_loc_fn_var_ident_used(wchar_t *ident);
+int get_loc_fn_var_def_value_type(wchar_t *ident, int *type_class, int *type_num);
 
 #endif // FNS_FN_HELPERS_H

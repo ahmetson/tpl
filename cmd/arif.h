@@ -2,7 +2,6 @@
 **/
 #ifndef CMD_ARIF_H
 #define CMD_ARIF_H
-#include "../cmds.h"
 
 /// Iki sany tipleri bolýar
 extern int CMD_ARIF_LOW_PRIOR_TYPE;    // +, -

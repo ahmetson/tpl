@@ -10,6 +10,5 @@ void add_conv_basic_type_c_code_file();
 void add_conv_basic_free_atexit(FILE *f);
 
 void add_conv_basic_prepere_atexit(FILE *f);
-void add_turkmen_locale_support_lib(FILE *f);
 
 #endif // MAIN_CONV_BASIC_TYPES_H

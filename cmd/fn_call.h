@@ -29,4 +29,7 @@ void cmd_fn_call_c_code(command *cmd, wchar_t **l, int *len);
 
 int cmd_fn_call_return_type(command *cmd, int *return_class, int *return_type);
 
+void trans_to_c_write_last_fn_arg( wchar_t **mem, int *memlen, wchar_t *add );
+void trans_to_c_move_fn_arg_to_malloc( token *tok );
+
 #endif // CMD_FN_H

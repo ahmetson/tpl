@@ -5,8 +5,8 @@
 
 #ifndef IF_WORD
 #define IF_WORD L"eger"
-#define IFELSE_WORD L"ýa"
-#define ELSE_WORD L"ýogsa"
+#define IFELSE_WORD L"ya"
+#define ELSE_WORD L"yogsa"
 #define CTRL_STTMNT_CLOSE_BLOCK L"bolsa"
 #endif // IF_WORD
 

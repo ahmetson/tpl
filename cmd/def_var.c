@@ -42,7 +42,7 @@ int is_cmd_def_var(command *cmd)
 	    def_var_cmd_mod(cmd, &fci->tok, 0);
 		is_glob = 1;
 	}
-	else if (fci->type==1 && (fci->tok.type_class==TOK_CLASS_DEF_TYPE ||
+	else if (fci->type==TOKEN_ITEM && (fci->tok.type_class==TOK_CLASS_DEF_TYPE ||
                              fci->tok.type_class==TOK_CLASS_UTYPE_CON))
 	{
 	    def_var_cmd_mod(cmd, &fci->tok, 0);
@@ -248,7 +248,7 @@ void global_called_vars_add(command *cmd)
     wchar_t *ident= lci->tok.potentional_types[0].value;
 
     /// Eger ülňi yglan edilen faýlynda çagyrylýan bolsa, onda ülňiniň yglan edilen .h faýly eýýäm inklud edildi.
-    int i, len;
+    int i;
     for(i=0; i<GLOB_VAR_DEFS_NUMS; ++i)
     {
         if ((wcslen(GLOB_VAR_DEFS[i].name)==wcslen(ident) &&
@@ -356,13 +356,13 @@ void cmd_def_var_as_subcmd_c_code(command *cmd, wchar_t **l, int *llen)
         command_item *lci = get_cmd_item(cmd->items,cmd->items_num-2);
         token *t = &lci->tok;
 
-        get_type_c_code(t->potentional_types[0].type_class, t->potentional_types[0].type_num, l, llen);
+        write_type_c_code_analog(t->potentional_types[0].type_class, t->potentional_types[0].type_num, l, llen);
 
         wcsadd_on_heap( l, llen, space );
     }
     command_item *lci = get_cmd_item(cmd->items,cmd->items_num-1);
     token *t = &lci->tok;
-    tok_get_c_code(t, l, llen);
+    write_tok_c_code(t, l, llen);
 }
 
 

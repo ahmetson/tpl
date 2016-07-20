@@ -36,6 +36,14 @@ long            CUR_ALGOR_SIZE;		        // Algoritmiň göwrümi
 int             CUR_ALGOR_ITEMS_NUM;	    // Algoritmdaki komandalaryň sany
 command        *CUR_ALGOR;                  // Algoritmiň poýnteri
 
+wchar_t        *CUR_SOURCE;
+int             CUR_SOURCE_BYTES_NUM;             // Number of bytes
+int             CUR_SOURCE_POINTER;
+
+wchar_t        *CUR_BASHY_SOURCE;
+int             CUR_BASHY_SOURCE_BYTES_NUM;             // Number of bytes
+int             CUR_BASHY_SOURCE_POINTER;
+
 /**
  * Komandanyn ichindaki komandalaryn birlikleri kuchada yerleshmeli
  * Programmadan chykylanda, olary kuchadan boshatmaly
@@ -49,11 +57,11 @@ unsigned int    GLOB_SUBCMDS_NUM;
 
 
 /** Programmadaky kodlaryň setirleri. **/
-wchar_t ***GLOB_SOURCE_CODES;
+wchar_t      ***GLOB_SOURCE_CODES;
 
 
 /// Global harpl ülňileriniň sanawy. Olaryň uzynlyklary näbelli bolup durýar.
-wchar_t                  **GLOB_STRINGS;
+wchar_t               **GLOB_STRINGS;
 unsigned long           GLOB_STRINGS_NUM;
 
 /** Ýasaljak programmadaky faýllaryň sanawy **/
@@ -143,12 +151,12 @@ int                  LOCAL_ARR_DEFS_NUMS;
 
 /// Ýasaljak kodlarda çagyrylan global ülňileriň sanawy.
 /// C translator global ülňileriň çagyrylan faýlyna, çagyrylan global ülňiniň yglan edilen .h faýlyny goşmaly.
-called_var         *GLOB_CALLED_ARRS;
-int                 GLOB_CALLED_ARRS_NUM;
+called_var          *GLOB_CALLED_ARRS;
+int                  GLOB_CALLED_ARRS_NUM;
 
 
 /// Global yglan etmeli faýllaryň sanawy
-wchar_t               **GLOB_DECS_FILES;
+wchar_t              **GLOB_DECS_FILES;
 int                  GLOB_DECS_FILES_NUM;
 
 /// Häzirki içine parsing edilip goşulýan birlikli komanda
@@ -175,10 +183,56 @@ wchar_t DIR_TPL_BASE[ MAX_FILE_LEN ],
         DIR_C_FOLDER[ MAX_FILE_LEN ],
         DIR_GCC_FOLDER[ MAX_FILE_LEN ],
         FILE_GCC_EXE[ MAX_FILE_LEN ],
+        FILE_GPP_EXE[ MAX_FILE_LEN ],
         GCC_C_TO_O_ADDS[ MAX_FILE_LEN*4 ],
         GCC_O_TO_EXE_ADDS[ MAX_FILE_LEN*3 ],
         CUR_DIR[ MAX_FILE_LEN ],
         FILE_OUT_EXE[ MAX_FILE_LEN ];
+
+/// pre and after codes of main command in algorithm.
+wchar_t         *CMD_C_CODE_PRE;
+wchar_t         *CMD_ASSIGN_C_CODE_PRE;
+wchar_t         *CMD_C_CODE_AFTER;
+wchar_t         *CMD_ASSIGN_C_CODE_AFTER;
+int              CMD_C_CODE_PRE_LEN;
+int              CMD_C_CODE_AFTER_LEN;
+int              CMD_ASSIGN_C_CODE_PRE_LEN;
+int              CMD_ASSIGN_C_CODE_AFTER_LEN;
+
+
+/// Number of local function that written in C code
+int             CUR_LOC_FN;
+
+/// Variable name's template that holds converted to string data in C code
+/// Number of template variables used in to hold converted strings
+wchar_t         *C_CODE_CONV_TMP_STR = L"_tpl_conv_str";
+int             C_CODE_CONV_TMP_NUM;
+
+/// Variable name's template that holds returned string data from function in C code
+/// Number of template variables used in function used to hold returned by function strings
+wchar_t         *C_CODE_FN_CALLS_STR  = L"_tpl_fn_calls";
+int             C_CODE_FN_CALLS_NUM;
+
+wchar_t         *C_CODE_FN_HARPL_ARG_STR = L"_tpl_fn_arg";
+int             C_CODE_FN_HARPL_ARG_NUM;
+
+/** Variables that allocated memory inside of defined function */
+//wchar_t         ***C_CODE_FN_DEF_FREE_VARS;
+//int             *C_CODE_FN_DEF_FREE_VARS_NUM;
+
+/** Variables that allocated memory inside of local function or main function */
+wchar_t         **C_CODE_LOC_FREE_VARS;
+int             C_CODE_LOC_FREE_VARS_NUM;
+
+/** Variables that allocated memory inside of user defined function */
+wchar_t         ***C_CODE_DEF_FN_FREE_VARS;
+int             *C_CODE_DEF_FN_FREE_VARS_NUM;
+
+/** Global variables that allocated memory */
+wchar_t         **C_CODE_GLOB_FREE_VARS;
+int             C_CODE_GLOB_FREE_VARS_NUM;
+
+int             NOT_COUNTED_FILES_NUM;
 
 /** Bütin TPL boýunça ulanylýan ülňileriň kompýuteriň ýadynda eýelän ýerleri boşadylýar */
 void free_globs(void)
@@ -277,7 +331,7 @@ void free_globs(void)
     // Faýllaryň sanawy hem arassalanýar
     if (CUR_FILE_NUM)
     {
-        for(i=0; i<CUR_FILE_NUM; ++i)
+        for(i=0; i<CUR_FILE_NUM+NOT_COUNTED_FILES_NUM; ++i)
         {
             if (GLOB_SOURCE_CODES[i]!=NULL)
             {
@@ -366,14 +420,23 @@ void free_globs(void)
     /*if (COMPARE_IDENTS_NUM)
         free(COMPARE_IDENTS);*/
 
+    /** Global variables that allocated memory */
+    if ( C_CODE_GLOB_FREE_VARS_NUM )
+    {
+        int i;
+        for ( i=0; i<C_CODE_GLOB_FREE_VARS_NUM; ++i )
+        {
+            free( C_CODE_GLOB_FREE_VARS[ i ] );
+        }
+        free( C_CODE_GLOB_FREE_VARS );
+    }
+
 	// Diňe parsing edilýän wagty ulanylýan ülpileriň ýerleri boşadylýar
 	free_locals();
 }
 
 
-/***
- * Diňe parsing edilip duran wagty ulanylýan ýerler boşadylýar.
-**/
+/** Diňe parsing edilip duran wagty ulanylýan ýerler boşadylýar. */
 void free_locals(void)
 {
 	// Parsing edilýän faýlyň komandalarynyň sanawy boşadylýar
@@ -415,6 +478,80 @@ void free_locals(void)
         free(LOCAL_ARR_DEFS_ITEMS);
         LOCAL_ARR_DEFS_ITEMS = NULL;
     }
+
+    if ( CUR_SOURCE_BYTES_NUM )
+    {
+        free( CUR_SOURCE );
+        CUR_SOURCE = NULL;
+        CUR_SOURCE_BYTES_NUM = 0;
+    }
+    if ( CUR_BASHY_SOURCE_BYTES_NUM )
+    {
+        free( CUR_BASHY_SOURCE );
+        CUR_BASHY_SOURCE = NULL;
+        CUR_BASHY_SOURCE_BYTES_NUM = 0;
+    }
+
+    if ( CMD_C_CODE_PRE_LEN!=0 )
+    {
+        free( CMD_C_CODE_PRE );
+        CMD_C_CODE_PRE = NULL;
+        CMD_C_CODE_PRE_LEN = 0;
+    }
+    if ( CMD_ASSIGN_C_CODE_PRE_LEN!=0 )
+    {
+        free( CMD_ASSIGN_C_CODE_PRE );
+        CMD_ASSIGN_C_CODE_PRE = NULL;
+        CMD_ASSIGN_C_CODE_PRE_LEN = 0;
+    }
+    if ( CMD_C_CODE_AFTER_LEN!=0 )
+    {
+        free( CMD_C_CODE_AFTER );
+        CMD_C_CODE_AFTER = NULL;
+        CMD_C_CODE_AFTER_LEN = 0;
+    }
+    if ( CMD_ASSIGN_C_CODE_AFTER_LEN!=0 )
+    {
+        free( CMD_ASSIGN_C_CODE_AFTER );
+        CMD_ASSIGN_C_CODE_AFTER = NULL;
+        CMD_ASSIGN_C_CODE_AFTER_LEN = 0;
+    }
+
+    /*if ( LOC_FUNCS_NUM )
+    {
+        int i, j;
+
+        for ( j=0; j<LOC_FUNCS_NUM; ++j )
+        {
+            if ( C_CODE_FN_DEF_FREE_VARS_NUM[ j ] )
+            {
+                for ( i=0; i<C_CODE_FN_DEF_FREE_VARS_NUM[ j ]; ++i )
+                {
+                    free( C_CODE_FN_DEF_FREE_VARS[ j ][ i ] );
+                }
+                free( C_CODE_FN_DEF_FREE_VARS[ j ] );
+            }
+        }
+        free( C_CODE_FN_DEF_FREE_VARS_NUM );
+        C_CODE_FN_DEF_FREE_VARS_NUM = 0;
+        free( C_CODE_FN_DEF_FREE_VARS );
+        C_CODE_FN_DEF_FREE_VARS = NULL;
+    }*/
+
+    /** Variables that allocated memory inside of local function or main function */
+    if ( C_CODE_LOC_FREE_VARS_NUM )
+    {
+        int i;
+        for ( i=0; i<C_CODE_LOC_FREE_VARS_NUM; ++i )
+        {
+            free( C_CODE_LOC_FREE_VARS[ i ] );
+        }
+        free( C_CODE_LOC_FREE_VARS );
+        C_CODE_LOC_FREE_VARS = NULL;
+        C_CODE_LOC_FREE_VARS_NUM = 0;
+    }
+
+
     free_tmp_fn();
     free_local_fns();
 }
@@ -434,7 +571,7 @@ void free_tmp_fn()
     }
     if (TMP_FUNC_ARRS_NUM)
     {
-        int i, j;
+        int i;
         for (i=0; i<TMP_FUNC_ARRS_NUM; ++i)
         {
             free(TMP_FUNC_ARRS_ITEMS[i]);
@@ -462,17 +599,27 @@ void free_local_fns()
         int i;  // funksiýanyň nomeri
         for (i=0; i<LOC_FUNCS_NUM; ++i)
         {
-            int j, z;   /// j - sanawyň nomeri
+            int j;   /// j - sanawyň nomeri
             for (j=0; j<LOC_FUNCS_ARRS_NUM[i]; ++j)
             {
                 free(LOC_FUNCS_ARRS_ITEMS[i][j]);
+            }
+            int z;
+            for ( z=0; z<C_CODE_DEF_FN_FREE_VARS_NUM[ i ]; ++z )
+            {
+                free( C_CODE_DEF_FN_FREE_VARS[ i ][ z ] );
             }
             free(LOC_FUNCS_ARRS_ITEMS[i]);
             free(LOC_FUNCS_ALGOR[i]);
             free(LOC_FUNCS_PARAMS[i]);
             free(LOC_FUNCS_ARRS[i]);
             free(LOC_FUNCS_VARS[i]);
+            free(C_CODE_DEF_FN_FREE_VARS[ i ]);
         }
+        free( C_CODE_DEF_FN_FREE_VARS );
+        C_CODE_DEF_FN_FREE_VARS = NULL;
+        free( C_CODE_DEF_FN_FREE_VARS_NUM );
+        C_CODE_DEF_FN_FREE_VARS_NUM = NULL;
         free(LOC_FUNCS_ALGOR);
         LOC_FUNCS_ALGOR = NULL;
         free(LOC_FUNCS_ALGOR_NUM);
@@ -494,4 +641,5 @@ void free_local_fns()
         LOC_FUNCS_NUM = 0;
     }
 }
+
 

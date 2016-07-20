@@ -41,9 +41,9 @@ void debug_cmd(command *cmd)
 
     printf("\n");
     print_tabs(DEV_ITEMS_STEPS);
-	printf( "%ls", L"KOMANDANYŇ MAGLUMATY------------------------\n" );
+	printf( "%s", "KOMANDANYŇ MAGLUMATY------------------------\n" );
 	print_tabs(DEV_ITEMS_STEPS);
-	printf( "('%s') '%s'. '%s'->'%s' %ls\n", ns, complete, cmd_class, cmd_type, L"görnüşdäki komanda" );
+	printf( "('%s') '%s'. '%s'->'%s' %s\n", ns, complete, cmd_class, cmd_type, "görnüşdäki komanda" );
 	print_tabs(DEV_ITEMS_STEPS);
 	printf("%d sany birlikleri bar", cmd->items_num);
 	if (cmd->items_num>0)
@@ -79,14 +79,14 @@ void debug_token(token *tok)
 	// Çap edilýär
 	printf("\n");
     print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls", L"Tokeniň maglumatlary------------------------\n");
+	printf("Tokeniň maglumatlary------------------------\n");
     print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls: '%ls'; Setir: %d; %ls: %lc, %ls: %d\n", L"Faýl", FILES[tok->inf_file_num].source, tok->inf_line_num,
-        L"Başlaýan harpy", tok->inf_wchar_t==-1 ? L'?' : tok->inf_wchar_t, L"harpyň nomeri", tok->inf_wchar_t_num);
+	printf("Faýl: '%S'; Setir: %d; %s: %c, %s: %d\n" , FILES[tok->inf_file_num].source, tok->inf_line_num,
+        "Başlaýan harpy", tok->inf_wchar_t==-1 ? '?' : tok->inf_wchar_t, "harpyň nomeri", tok->inf_wchar_t_num);
     print_tabs(DEV_ITEMS_STEPS);
-	printf("(%s) '%s'. '%s' %ls\n", ns, complete, type_class, L"görnüş klasyndaky token");
+	printf("(%s) '%s'. '%s' görnüş klasyndaky token\n", ns, complete, type_class);
 	print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls:%d\n", L"Bolup biljek görnüşleriniň sany", tok->potentional_types_num);
+	printf("Bolup biljek görnüşleriniň sany:%d\n", tok->potentional_types_num);
 	if (tok->potentional_types_num>0)
 	{
 		int i;
@@ -166,19 +166,23 @@ void debug_token_type(token_type *tok_type)
         wchar_t *c = type_num==TOK_CLASS_COMMENT_SINGLE_TYPE?TOK_CLASS_COMMENT_SINGLE_DEBUG:TOK_CLASS_COMMENT_BLOCK_DEBUG;
         wcsncpy(type, c, wcslen(c)+1);
     }
+    else if (tok_type->type_class==TOK_CLASS_COMMENT )
+    {
+        wcsncpys( type, TOK_CLASS_BLOCK_INSIDE_CHARS[ tok_type->type_num ][ 2 ] );
+    }
     else
 		wcsncpy(type, L"", wcslen(L"")+1);
 
     printf("\n");
     print_tabs(DEV_ITEMS_STEPS);
-	printf("('%s') '%s'->'%ls' token tipi\n", complete, type_class, type);
+	printf("('%s') '%s'->'%S' token tipi\n", complete, type_class, type);
 
     print_tabs(DEV_ITEMS_STEPS);
 	if (tok_type->need_value==0)
 		printf("Maglumat saklanok\n");
 	else
     {
-		printf("Maglumat: '%ls'\n", get_tok_type_value(tok_type) );
+		printf("Maglumat: '%S'\n", get_tok_type_value(tok_type) );
     }
 	printf("\n");
 }
@@ -222,11 +226,11 @@ void debug_paren(parenthesis *paren)
 
     printf("\n");
     print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls", L"ÝAÝYŇ MAGLUMATLARY------------------------------\n");
+	printf("%s", "ÝAÝYŇ MAGLUMATLARY------------------------------\n");
 	print_tabs(DEV_ITEMS_STEPS);
-	printf("'%ls' %ls\n", paren_type, L"görnüşindäki ýaý" );
+	printf("'%s' %s\n", paren_type, "görnüşindäki ýaý" );
 	print_tabs(DEV_ITEMS_STEPS);
-	printf("%ls: %d", L"Birlikleriniň sany", paren->elems_num);
+	printf("%s: %d", "Birlikleriniň sany", paren->elems_num);
 	if (paren->elems_num>0)
 	{
 	    parenthesis_elem *p_es = get_paren_elems(paren->elems);

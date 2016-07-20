@@ -32,12 +32,12 @@ int (*PAREN_RETURN_TYPE[PARENTHESIS_TYPES])(parenthesis *paren, int *ret_class, 
 };
 
 
-int parser_mode_paren( FILE *source, command *cmd )
+int parser_mode_paren( command *cmd, wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM )
 {
     if( CUR_CHAR!=PARENTHESIS_OPEN )
         return 0;
-    parenthesis par = parse_paren( source );
-    add_to_cmd(cmd, PAREN_ITEM, get_empty_tok(), par, get_empty_cmd());
+    parenthesis par = parse_paren( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
+    add_to_cmd(cmd, PAREN_ITEM, get_empty_tok(), par, get_empty_cmd() );
 
     return 1;
 }
@@ -51,31 +51,31 @@ int parser_mode_paren( FILE *source, command *cmd )
     \line - parseriň häzirki duran setiri
 
     \return void
-**/
-parenthesis parse_paren(FILE *s)
+*/
+parenthesis parse_paren( wchar_t *SOURCE, int *SOURCE_POINTER_NUM, int SOURCE_BYTES_NUM )
 {
     parenthesis paren = parenthesis_new();
     parenthesis_elem elem = parenthesis_elem_new();
 
-    while (1)
+    int i, sizeof_wchar = sizeof( wchar_t );
+    for( i=( *SOURCE_POINTER_NUM )-1; i<SOURCE_BYTES_NUM/sizeof_wchar; ++i )
     {
-        if ( !process_char( s, CHECK_VALID_CHAR ) )
-            break;
+        process_char( CHECK_VALID_CHAR, SOURCE_POINTER_NUM, SOURCE );
 
         if(!is_valid_wchar_t())
             print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
 
         /* Bolmady. Parser ishlanok */
-        if (iswspace(CUR_CHAR))
+        if ( iswspace( CUR_CHAR ) )
             continue;
-        else if (CUR_CHAR==PARENTHESIS_CLOSE)
+        else if ( CUR_CHAR==PARENTHESIS_CLOSE )
         {
-            if (elem.type!=UNKNOWN_ITEM)
-                paren_add_element(&paren, elem);
-            recognize_paren(&paren);
+            if ( elem.type!=UNKNOWN_ITEM )
+                paren_add_element( &paren, elem );
+            recognize_paren( &paren );
             return paren;
         }
-        else if (CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR)
+        else if ( CUR_CHAR==PARENTHESIS_ELEM_SEPARATOR )
         {
             // Eger element boş bolmasa, onda ýalňyşlyk çykarylmaly
             if ((elem.type==CMD_ITEM && !elem.cmd.is_compl) ||
@@ -93,12 +93,12 @@ parenthesis parse_paren(FILE *s)
         }
         else if (CUR_CHAR==HARPL_OPENER)
         {
-            token tok = parse_string(s);
+            token tok = parse_string( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
             paren_elem_add_token(&elem, tok);
         }
         else if (CUR_CHAR==PARENTHESIS_OPEN)
         {
-           parenthesis in_paren = parse_paren(s);
+           parenthesis in_paren = parse_paren( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
            param_elem_add_paren(&elem, in_paren);
         }
         else
@@ -107,7 +107,7 @@ parenthesis parse_paren(FILE *s)
                 CUR_CMD = &elem.cmd;
             else
                 CUR_CMD = NULL;
-            token tok = parse_token(s);
+            token tok = parse_token( SOURCE, SOURCE_POINTER_NUM, SOURCE_BYTES_NUM );
             paren_elem_add_token(&elem, tok);
         }
     }
@@ -328,8 +328,7 @@ parenthesis get_empty_paren()
 
 void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
 {
-    wchar_t *tab = L"\t",
-            *o = L"(",
+    wchar_t *o = L"(",
             *c = L")";
 
     /// ( Ýaý açylýar
@@ -345,14 +344,14 @@ void paren_get_c_code(parenthesis *p, wchar_t **l, int *llen)
             int i;
             for (i=0; i<p->elems_num; ++i)
             {
-                paren_item_get_c_code( &p_es[i], l, llen );
+                write_paren_item_c_code( &p_es[i], l, llen );
             }
         }
     }
     else if ( !p->type && p->elems_num==1 )
     {
         parenthesis_elem *p_es = get_paren_elems(p->elems);
-        paren_item_get_c_code( &p_es[0], l, llen );
+        write_paren_item_c_code( &p_es[0], l, llen );
     }
 
     /// ) Ýaý ýapylýar
@@ -428,6 +427,27 @@ int is_paren_not_compl_item_exist(parenthesis *p, wchar_t rec)
     return 0;
 }
 
+
+void get_parenthesis_elem_type( parenthesis_elem *pe, int *elem_type, int *c, int *t )
+{
+    if ( pe->type==PAREN_ITEM )
+    {
+        get_paren_type( &pe->paren, elem_type, c, t);
+        *elem_type = PAREN_ITEM;
+    }
+    else if ( pe->type==TOKEN_ITEM )
+    {
+        *elem_type = TOKEN_ITEM;
+        *c = get_token_type_class( &pe->tok );
+        *t = get_token_type( &pe->tok );
+    }
+    else if ( pe->type==CMD_ITEM )
+    {
+        *elem_type = CMD_ITEM;
+        *c = pe->cmd.cmd_class;
+        *t = pe->cmd.cmd_type;
+    }
+}
 
 parenthesis_elem *get_paren_elems(int paren_num)
 {

@@ -14,7 +14,8 @@ def_type def_type_list[] = {
 	{L"harp", L"wchar_t", L"L'\\0'"},
 	{L"san", L"int", L"-1"},
 	{L"drob", L"double", L"-1"},
-	{L"harpl", L"wchar_t *", L"L\"\""}
+	//{L"harpl", L"wchar_t *", L"L\"\""}
+	{L"harpl", L"wchar_t *", L"NULL"}
 };
 
 /** Parsing edilende söz boýunça tokeni tanaýar*/

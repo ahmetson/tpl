@@ -24,45 +24,42 @@ wchar_t STRING_PREPARE_MODE = 2;
 wchar_t STRING_MODE         = 3;
 wchar_t PARENTHESIS_MODE    = 4;
 
-int parse(FILE *source)
+int parse()
 {
 	int prev_part = CUR_PART;
 	CUR_PART = 2;
 
-    /** The reaseon why loop is endless - Character that must be recognized
-        can be also previous one. There for in some situations getting character
-        from file doesnt required.*/
-	while( 1 )
+    int i, sizeof_wchar = sizeof( wchar_t );
+	for ( i=0; i<CUR_SOURCE_BYTES_NUM/sizeof_wchar-1; ++i )
 	{
-	    /** Indiki harpy alýar.
-            Parser boýunça umumy kömek üçin gerek bolan maglumatlary üýtgedýär*/
-	    if ( !process_char( source, CHECK_VALID_CHAR ) )
-            break;
+	    /** Get next character.
+            Set informations for parser */
+	    process_char( CHECK_VALID_CHAR, &CUR_SOURCE_POINTER, CUR_SOURCE );
 
         if ( !iswspace( CUR_CHAR ) &&
-             !parser_mode_pragma( source ) &&
-             !parser_mode_paren( source, &cmd ) &&
-             !parser_mode_string( source, &cmd ) &&
-             !parser_mode_end_cmd( source ) )
+             !parser_mode_pragma( CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM ) &&
+             !parser_mode_paren( &cmd, CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM ) &&
+             !parser_mode_string( &cmd, CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM ) &&
+             !parser_mode_end_cmd( CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM ) )
         {
             /** PARSERIŇ TOKEN MODASYNDA */
             CUR_CMD = &cmd;
-            token tok = parse_token( source );
+            token tok = parse_token( CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM );
 
             work_with_token( &tok, &cmd );
 
             if (tok.type_class==TOK_CLASS_TRIANGLE_BLOCK && tok.potentional_types[0].type_num==TOKEN_TRIANGLE_BLOCK_OPEN_TYPE)
             {
-                parse_triangle_block_inside(source);
+                parse_triangle_block_inside( CUR_SOURCE, &CUR_SOURCE_POINTER, CUR_SOURCE_BYTES_NUM );
             }
         }
-
+        i = CUR_SOURCE_POINTER;
 	}
 
 	check_semantics_after_parsing(&cmd);
 
 	/// TRANSLATOR TO C: algoritmi faýla ýazýar
-	work_with_translator();
+	translator_to_c();
 
     free_inf();
 	free_locals();
@@ -108,63 +105,40 @@ int is_valid_wchar_t()
     Faýldan indiki harpy ötürýär.
 
     Eger faýlyň soňunya ýetilse, şowsuzlyk, ýa-da
-    şowlylyk gaýtarýar.
-*/
-int process_char( FILE *source, char check_char )
+    şowlylyk gaýtarýar. */
+void process_char( char check_char, int *source_pointer, wchar_t *source )
 {
-    int success = set_cur_char( source ) && update_inf();
-    /** TPL goldaýan harpy bolmasa, program togtadylýar */
-    if ( success && !is_valid_wchar_t() )
+    *source_pointer +=1 ;
+    CUR_CHAR = source[ (*source_pointer)-1 ];
+
+    update_inf();
+    /** If Character is not support by TPL, break it */
+    /*if ( check_char && !is_valid_wchar_t() )
     {
         CUR_PART = 2;
-        print_err(CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok);
-    }
-    return success;
-}
-
-
-/** Eger eýýäm barlanmaly harp bar bolsa, şol harp ulanylýar.
-    Ýogsa faýldan indiki harp alynýar.
-
-    Eger faýl gutarsa, onda
-        0 gaýtarýar
-    Ýogsa
-        1 gaýtarýar.
-*/
-int set_cur_char( FILE *source )
-{
-    if ( TMP_CHAR )
-    {
-        CUR_CHAR = TMP_CHAR;
-        TMP_CHAR = 0;
-    }
-    else
-    {
-        if ( (CUR_CHAR=fgetwc(source))==WEOF )
-            return 0;
-    }
-    return 1;
+        print_err( CODE2_UNKNOWN_TOKENS_CHAR, &inf_tok );
+    }*/
 }
 
 
 
-int parser_mode_end_cmd( FILE *s)
+int parser_mode_end_cmd( )
 {
     if ( CUR_CHAR!=CMD_END )
         return 0;
 
     work_with_cmd( &cmd );
-    init_cmd(&cmd, 0);
+    init_cmd( &cmd, 0 );
     return 1;
 }
 
 
 
 /** Parser indiki harpy barlamaz */
-void prevent_from_parsing_file()
+void prevent_from_parsing_file( int *pointer )
 {
     /** Indiki parsing edilmeli harpy,
         ýene-de şu harpdan başla.
     */
-    TMP_CHAR = CUR_CHAR;
+    *pointer -= 1;
 }

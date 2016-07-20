@@ -23,7 +23,7 @@ int add_addtn_file_fns()
 {
     file_item *f = get_file_by_name( MAIN_FILE_NAME );
     FILE *s = _wfopen(f->c_source, L"r+, ccs=UTF-8");
-    int i, j;
+    int i;
 
     /// Begin at the end
     fseek(s, 0, SEEK_END);
@@ -76,7 +76,58 @@ void write_to_csource_call_another_files_fn_open( FILE *f )
     wchar_t *line1 = L"\nvoid _tpl_call_another_files(){ ";
     wchar_t *l = NULL;
     int llen = 0;
-    write_code_line(f, &l, &llen , line1);
+    write_strings_to_file(f, &l, &llen , line1);
+}
+void trans_to_c_write_addtn_fn_multi_free( FILE *f )
+{
+    wchar_t *line1 = L"\n#include <stdarg.h>\nvoid _tpl_multi_free( int addr_num, ... ) {\n\
+    int answer = 0;\n\
+    va_list argptr;   \n\
+\n\
+    va_start( argptr, addr_num );\n\
+\n\
+    for( ; addr_num > 0; addr_num-- ) {\n\
+      wchar_t *ws = va_arg( argptr, wchar_t * );\n\
+      if ( ws!=NULL )\n\
+        free( ws );\n\
+    }\n\
+\n\
+    va_end( argptr );\n\
+\n\
+  }      ";
+    wchar_t *l = NULL;
+    int llen = 0;
+    write_strings_to_file(f, &l, &llen , line1);
+}
+void trans_to_c_write_addtn_fn_glob_vars_free( )
+{
+    file_item *fi = get_file_by_name( MAIN_FILE_NAME );
+    FILE *s = _wfopen(fi->c_source, L"r+, ccs=UTF-8");
+    fseek(s, 0, SEEK_END);
+
+    wchar_t *line1 = L"\nvoid _tpl_glob_vars_free( ) { _tpl_multi_free( ";
+    fputws( line1, s );
+
+    if ( C_CODE_GLOB_FREE_VARS_NUM!=0 )
+    {
+        wchar_t var_num[10] = { 0 };
+        wsprintfW(var_num, L"%d", C_CODE_GLOB_FREE_VARS_NUM );
+        fputws( var_num, s );
+        fputws( L", ", s );
+
+        int i;
+        for ( i=0; i<C_CODE_GLOB_FREE_VARS_NUM; ++i )
+        {
+            fputws( C_CODE_GLOB_FREE_VARS[ i ], s );
+            if ( i+1<C_CODE_GLOB_FREE_VARS_NUM )
+                fputws( L", ", s );
+        }
+
+        fputws( L"    );\n", s );
+    }
+    fputws( L" }\n", s );
+
+    fclose( s );
 }
 void write_to_csource_call_another_files_fn_close(  )
 {
@@ -87,3 +138,18 @@ void write_to_csource_call_another_files_fn_close(  )
     fputws( L"}; \n", s );
     fclose( s );
 }
+
+void write_to_csource_free_glob_strings()
+{
+    if ( C_CODE_GLOB_FREE_VARS_NUM==0 )
+        return;
+
+    file_item *fi = get_file_by_name( MAIN_FILE_NAME );
+    FILE *s = _wfopen(fi->c_source, L"r+, ccs=UTF-8");
+
+    fseek(s, 0, SEEK_END);
+    fputws( L" atexit(  _tpl_glob_vars_free ); \n", s );
+
+    fclose( s );
+}
+
