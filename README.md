@@ -20,6 +20,7 @@ This programming language has 4 scope levels: TPL, global, local and function le
 * global level - is program level or in other words between source code level. In global level, data defined in A source code, can be used in B source code. User defined functions and user defined types ALWAYS defined in global scope. 
   Global variables and arrays always comes with "@" token on front:
 
+      // define global variable
       @san s.     // define s variable in integer type
       @s <- 2+2.  // assign 2+2 to global s variable
 
