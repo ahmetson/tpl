@@ -4,13 +4,13 @@ TPL is a static type, compiling, procedural programming language. It's language 
 
 ## HOW TO RUN? ##
 
-Program works through command prompt. Call 'tpl.exe' with path to the source codes as arguments. The executable program will be created where 'tpl.exe' was called from. (Name of executable file is first passed argument to the 'tpl.exe'.
+TPL works through command prompt. Call *tpl.exe* with path to the source codes as arguments. The executable program will be created where *tpl.exe* was called from. (Name of executable file is first passed argument to the *tpl.exe*).
 
 # DOCUMENTATION #
 
 ### SCOPES ####
 
-This programming language has 4 scope levels: TPL, global, local and function levels.
+The programming language has 4 scope levels:
 
 * TPL level - is the top level. Every function, variable come with tpl.exe, including third party libraries belongs to TPL level. And they are acceptable in other scopes.
 * global level - is program level or in other words between source code level. In global level, data defined in A source code, can be used in B source code. User defined functions and user defined types ALWAYS defined in global scope. 
