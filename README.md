@@ -1,14 +1,10 @@
-# TPL - Testable pogramming language #
+# **T**estable **P**rogramming **L**anguage#
 
-TPL - is a string static type, compiling, procedural programming language with turkmen language syntax. It's not a just replaced words of Mainstream language with non-english words, but language with new, great syntax understandable to turkmen language speakers.
+TPL is a static type, compiling, procedural programming language. It's language with new  grammar understandable to turkmen language speakers.
 
-TPL means 'testable programming language'.
+## HOW TO RUN? ##
 
-## HOW TO RUN TPL PROGRAMS? ##
-
-Program runs via command line. Just call 'tpl.exe' with adresses of source code as arguments. final program will be created where tpl.exe was called.
-
-Program name that will be created by TPL made by first passed source code name.
+Program works through command prompt. Call 'tpl.exe' with path to the source codes as arguments. The executable program will be created where 'tpl.exe' was called from. (Name of executable file is first passed argument to the 'tpl.exe'.
 
 # DOCUMENTATION #
 
@@ -442,5 +438,3 @@ There is 2 pragma commands:
    7. Logic And, Or operators. &, ?
    8. Assign operator. <-
    9. Yza operator. yza.
-
-
